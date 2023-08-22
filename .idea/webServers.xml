@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="45c27075-3c4f-4137-9c37-bacb805316c6" name="pandplus" url="http://ftp.pandplus.com">
+        <fileTransfer host="ftp.pandplus.com" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="9972a76e-8352-4741-8099-7c0950b47ffa" name="usef" url="http://ftp.binsy.ir">
+        <fileTransfer host="ftp.binsy.ir" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="afcdff11-6929-4ac5-a22b-937688573e39" name="kmpr" url="http://ftp.kmpr.ir">
+        <fileTransfer host="ftp.kmpr.ir" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

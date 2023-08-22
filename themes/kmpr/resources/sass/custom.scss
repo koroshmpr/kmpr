@@ -1,0 +1,292 @@
+//custom classes
+@import "custom/variables";
+// Bootstrap
+@import 'modules/bootstrap';
+
+//custom base classes
+@import "custom/base";
+@import "custom/editor";
+@import "custom/button";
+
+// header
+@import "custom/header";
+
+@import "responsive";
+
+.sticky-post__detail {
+  min-height: 70px;
+}
+
+.card__title-on-image {
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 400px;
+  background-position: center;
+
+  h5 {
+    text-shadow: 0 0 2px rgb(0 0 0 / 42%);
+  }
+
+  .info-part {
+    color: white !important;
+  }
+
+  &:after {
+    position: absolute;
+    content: "";
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    border-radius: $border-radius;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 65.37%, #000000 100%);
+  }
+}
+
+.card__title-under-image {
+  a {
+    transition: box-shadow 0.5s ease-in-out;
+  }
+
+  .post-cover {
+    height: 400px;
+  }
+
+  .category-badge {
+    width: auto;
+    transform: translateY(-50%);
+    border-radius: 0 $border-radius $border-radius $border-radius;
+  }
+
+  &:hover {
+    a {
+      @extend .shadow-sm
+    }
+  }
+}
+
+.card__title-side-image {
+  img {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.track-tab {
+  .nav-link {
+    transition: all 0.4s ease-out;
+    @extend .fs-6, .py-3, .px-4, .mb-0, .border-0;
+
+    &:hover, &.active, &:focus {
+      border-radius: 10px;
+      color: $primary;
+      box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+// comment section
+.comment-body {
+  @extend .col-md-8;
+  margin: 15px 0;
+  justify-content: start;
+  align-items: center;
+  border: 1px solid rgb(182, 182, 182);
+  padding: 30px;
+  border-radius: 12px;
+
+  p {
+    margin: 10px 0;
+  }
+
+  .comment-meta, .comment-author {
+    .avatar {
+      @extend .me-3, .mb-2, .rounded, .img-thumbnail;;
+    }
+
+    text-align: left;
+  }
+
+  .reply {
+    text-align: right;
+  }
+}
+
+.children, .comment-list {
+  list-style: none;
+}
+
+.input__style {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgb(207, 207, 207);
+  padding: 15px;
+}
+
+.comment-form {
+  @extend .py-4, .row;
+
+  .comment-notes, .comment-form-comment {
+    @extend .col-12
+  }
+
+  .comment-form-author, .comment-form-email, .comment-form-url {
+    @extend .col-12, .col-lg-4;
+
+    input, textarea {
+      @extend .input__style ;
+    }
+  }
+
+}
+
+#comment {
+  @extend .input__style ;
+  height: 70px;
+  padding: 20px;
+}
+
+#submit {
+  @extend .text-white, .fw-bold, .rounded, .btn, .bg-primary, .px-5, .py-3;
+  transition: 0.5s;
+}
+
+.form-submit {
+  @extend .text-end
+}
+
+//rating section
+.rating-section {
+  border-color: $primary $primary transparent $primary;
+  border-style: solid;
+  border-width: 8px 0 0 0px;
+}
+
+body.single-post blockquote {
+  p {
+    @extend .mb-0
+  }
+
+  @extend .p-3, .rounded, .my-4, .bg-info, .bg-opacity-25 ;
+  border-left: 10px solid $primary;
+  box-shadow: 0 0 2px rgba(254, 70, 0, 0.41)
+}
+.social-media li a {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.5s ease-out;
+
+  path {
+    transition: fill 0.5s ease-out;
+  }
+
+  @extend .p-2;
+
+  &:hover {
+    background-color: $primary;
+
+    path {
+      fill: white !important
+    }
+  }
+}
+
+.page-numbers.current {
+  @extend .px-2, .py-1, .rounded
+}
+// gravity form
+  #gform_2 {
+    gform_fields{
+      gap: 10px!important;
+    }
+    input , textarea {
+      transition: all 0.3s ease-out;
+      border: 1px solid #80808040;
+      border-radius: 5px;
+      padding: 15px;
+      &:hover , &:focus-visible , &:active{
+        @extend .bg-primary , .text-white;
+        outline-color: $primary!important;
+        &::placeholder {
+          color: white;
+        }
+      }
+    }
+    .gform_footer {
+      padding-bottom: 0;
+      input[type=submit] {
+        transition: all 0.3s linear;
+        border: 1px solid $primary;
+        background-color: $primary;
+        width: 100%;
+        font-weight: bolder;
+        color: white;
+
+        &:hover {
+          @extend .bg-opacity-75;
+        }
+      }
+    }
+  }
+
+    #field_submit {
+      border-top-left-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
+      @extend .btn, .bg-primary, .text-white, .px-lg-5, .px-3;
+
+      input {
+        @extend .h-100, .btn, .bg-primary, .text-white;
+      }
+    }
+
+
+
+.next-list-item a, .prev-list-item a, .page-numbers.current {
+  color: white;
+}
+// hero swiper
+#hero-section {
+  height:530px;
+  background-size: cover;
+  transition: all 0.5s ease-out 0s;
+  background-position: center center;
+  .swiper-pagination-bullet {
+    transition: all 0.5s ease-in-out;
+    background-color: $primary;
+    opacity: 1;
+    &.active {
+      background-color: $secondary;
+      opacity: 1;
+      padding: 0 15px;
+      border-radius: 5px;
+    }
+  }
+}
+
+.swiper-button-next {
+  &::after {
+    content: ' ' !important;
+  }
+  &.post__nav {
+    transform: translate(50% , 50%);
+  }
+}
+
+.swiper-button-prev {
+  &::after {
+    content: ' ' !important;
+  }
+  &.post__nav {
+    transform: translate(-50% , 50%);
+  }
+}
+//table of content
+.table-of-contents {
+  ul li::marker {
+    color: $secondary;
+  }
+}

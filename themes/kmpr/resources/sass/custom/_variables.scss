@@ -1,0 +1,53 @@
+//COLOR
+$body-color: #5E6972;
+$body-text: #212529;
+$light: rgba(255, 255, 255, 0.5);
+$dark: #1A1A1A;
+
+
+$gunmetal: #2B303E;
+
+$primary: #36383c;
+$secondary: #e9c77b;
+$warning: #e9c77b;
+$success: #6cbf84;
+$danger :  #f26968;
+$info : #E1E2E4;
+$info-half : #F8F9FA;
+$transparent: rgba(255, 255, 255, 0);
+$primary-half: rgba(254, 70, 0, 0.53);
+
+//border radius
+$border-radius: 5px;
+$border-radius-sm: 10px;
+$border-radius-lg: 15px;
+
+//base class variables
+$transition-base: all .4s;
+$transition-fast: all .2s ease-in-out;
+$transition: all .4s ease-in-out;
+$transition-slow: all .6s;
+
+//FONTS
+$font-weight-normal: 500;
+$font-weight-bold: 700;
+$font-weight-semibold: 800;
+$font-weight-bolder: 900;
+$font-weight-base: $font-weight-normal;
+
+$min-contrast-ratio: 2.5;
+$font-family-base: yekanBakh, 'sans-serif', 'Nunito';
+$font-size-base: 1rem * (14/16);
+$small-font-size: .875rem  * (14/16);
+$line-height-base: 1.5;
+$line-height-lg: 1.7;
+$enable-smooth-scroll: true;
+$enable-negative-margins: true;
+$stretched-link-z-index: 1;
+
+
+//link
+$link-decoration: none;
+$link-hover-decoration: none;
+$link-color: #212529;
+

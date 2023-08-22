@@ -1,0 +1,185 @@
+@include media-breakpoint-up(lg) {
+  .hero-section {
+    .card__title-on-image {
+      &.service-card {
+        .card_title {
+          transform: translateY(150%);
+        }
+
+        .services_badge, .services__description {
+          transition: all 0.5s ease-in;
+          opacity: 0;
+          transform: translateX(100%);
+        }
+
+        &:hover {
+          .info_card {
+            .services_badge {
+              transition: all 0.5s ease-in 200ms;
+            }
+
+            .services__description {
+              transition: all 0.5s ease-in 500ms;
+            }
+
+            .services_badge, .services__description {
+              opacity: 1;
+              transform: translateX(0);
+            }
+
+            .card_title {
+              transform: scale(1.5) translateY(0);
+            }
+
+            backdrop-filter: blur(3px) brightness(0.5);
+          }
+        }
+      }
+
+      transition: all 0.5s ease-in-out;
+
+      .info_card {
+        .card_title {
+          transform-origin: left;
+          transition: all 0.5s ease-out;
+        }
+
+        box-shadow: inset 0 -70px 20px 0px #00000075;
+        transition: all 0.5s ease-in-out;
+
+        .col-11, h5 {
+          transition: all 0.5s ease-in-out;
+          opacity: 0;
+        }
+      }
+
+      &.post-card:hover {
+        .info_card {
+          box-shadow: inset 0 -100px 40px 0px #00000061, inset 0 100px 40px 0px #00000069;
+
+          .col-11, h5 {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+@include media-breakpoint-down(lg) {
+  #hero-section {
+    .hero_swiper {
+      height: fit-content;
+    }
+  }
+  .hero-section {
+    .card__title-on-image {
+      &.service-card {
+        .info_card {
+          backdrop-filter: brightness(0.5);
+        }
+      }
+    }
+  }
+  .footer_description {
+    color: $dark !important;
+    opacity: 0.8;
+    text-align: justify;
+  }
+  .footer-information {
+    background-color: $secondary;
+  }
+  .hero_swiper {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+  }
+  #hero-section {
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .property p {
+    opacity: 1 !important;
+  }
+  .property-img {
+    filter: invert(1);
+  }
+  .hero-section {
+    .card__title-on-image {
+      box-shadow: inset 0 -100px 40px 0px rgba(0, 0, 0, 0.21), inset 0 100px 40px 0px rgba(0, 0, 0, 0.21);
+    }
+  }
+
+}
+
+@include media-breakpoint-down(xl) {
+}
+
+@include media-breakpoint-down(sm) {
+  .fs-1 {
+    font-size: calc(1.325rem + 1.4vw) !important;
+  }
+  .fs-2 {
+    font-size: calc(1.275rem + 0.8vw) !important;
+  }
+  .fs-3 {
+    font-size: calc(1.25rem + 0.5vw) !important;
+  }
+  .fs-4 {
+    font-size: calc(1.225rem + 0.2vw) !important;
+  }
+  .fs-5 {
+    font-size: 1.2rem !important;
+  }
+  .fs-6 {
+    font-size: 1rem !important;
+  }
+  p, span {
+    font-size: 0.90rem !important;
+    line-height: 1.7;
+  }
+  small, .small {
+    font-size: 0.875rem !important;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .swiper-button-next {
+    transform: translateX(-150%);
+  }
+  .swiper-button-prev {
+    transform: translateX(150%);
+  }
+
+  .logo-brand__footer {
+    span {
+      z-index: 2;
+    }
+
+    width: 50%;
+    transition: all 0.5s;
+
+    p {
+      z-index: 1;
+      height: 0;
+      transform: translateX(-100%);
+      opacity: 0;
+      transition: all 0.5s;
+    }
+
+    &:hover {
+      width: 85%;
+
+      p {
+        height: 100%;
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .logo-brand__footer {
+    width: 90%;
+    margin: 0 auto;
+  }
+}

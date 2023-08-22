@@ -1,0 +1,8 @@
+# Project exclude paths
+/themes/kmpr/node_modules/
+/backups-dup-lite/
+/languages/
+/plugins/
+/uploads/
+/upgrade/
+/advanced-cache.php
