@@ -1,6 +1,6 @@
 <article class="position-relative">
     <div class="shadow-sm pt-0 p-3">
-        <img class="position-absolute top-0 start-0 ms-4 translate-middle-y border border-3 shadow-sm border-white rounded-2 <?= get_field('logo_background')?>"
+        <img class="position-absolute top-0 start-0 object-fit ms-4 translate-middle-y border border-3 shadow-sm border-white rounded-2 <?= get_field('logo_background')?>"
              width="60" height="60"
              src="<?= get_field('brand-logo')['url']; ?>"
              alt="<?= get_field('brand-logo')['title']; ?>">

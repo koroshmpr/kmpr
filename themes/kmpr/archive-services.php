@@ -1,8 +1,14 @@
 <?php
 /** Template Name: services archive */
 get_header(); ?>
+   <?php
+                $title = 'خدمات';
+                $args = array(
+                    'title' => $title,
+                );
+        get_template_part('template-parts/loop/page-title', null, $args); ?>
     <section class="container my-5 hero-section">
-                <h1 class="fw-bold">خدمات</h1>
+
         <div class="row row-cols-lg-3 g-3 row-cols-1 pt-3 pt-lg-0 justify-content-lg-start justify-content-center">
             <?php
             $args = array(

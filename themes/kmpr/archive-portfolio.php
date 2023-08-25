@@ -2,12 +2,14 @@
 /** Template Name: portfolio archive */
 
 get_header(); ?>
-<div class="container pb-5">
-    <div class="d-flex justify-content-between align-items-center py-5">
-        <div>
-            <h1 class="mb-0 fw-bold">نمونه کارها</h1>
-        </div>
-    </div>
+<?php
+$title = 'نمونه کارها';
+$args = array(
+    'title' => $title,
+);
+get_template_part('template-parts/loop/page-title', null, $args); ?>
+<div class="container py-5">
+
     <?php
     $args = array(
         'post_type' => 'portfolio',
@@ -25,7 +27,7 @@ get_header(); ?>
     <div class="row row-cols-lg-3 row-cols-md-2 row-cols-1 gy-5">
         <?php while ($loop->have_posts()) :
             $loop->the_post(); ?>
-        <div data-aos="flip-up" data-aos-delay="<?= $j; ?>0"
+        <div data-aos="zoom-in" data-aos-delay="<?= $j; ?>0"
              data-aos-anchor-placement="top" >
             <?php get_template_part('template-parts/portfolio/portfolio-card'); ?>
         </div>

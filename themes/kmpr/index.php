@@ -2,6 +2,12 @@
 /** Template Name: Blog Page */
 
 get_header(); ?>
+<?php
+$title = 'مقالات';
+$args = array(
+    'title' => $title,
+);
+get_template_part('template-parts/loop/page-title', null, $args); ?>
     <section class="container py-5 hero-section">
         <div class="row row-cols-lg-3 g-3 row-cols-1 pt-3 pt-lg-0 justify-content-lg-between justify-content-center">
             <?php

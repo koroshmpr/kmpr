@@ -10,10 +10,10 @@ the_post();
 $comment_count = get_comments_number(); // Get the number of comments for this post
 
 ?>
-<section class="container py-3">
+<section class="container pb-3 pt-lg-3">
     <div class="row align-items-start pb-4 justify-content-lg-between justify-content-center">
         <!--            sidebar-->
-        <aside class="row justify-content-center col-lg-4 col-12 pt-4 px-lg-4 position-relative order-first order-lg-last h-100">
+        <aside class="row justify-content-center col-lg-4 col-12 pt-lg-4 px-lg-4 position-relative order-first order-lg-last h-100">
             <div class="sticky__navbar">
                 <div class="img-fluid mb-5 position-relative" data-aos="flip-right">
                     <img class="position-absolute top-100 start-50 translate-middle border border-3 shadow-sm border-white rounded-2 <?= get_field('logo_background')?>"

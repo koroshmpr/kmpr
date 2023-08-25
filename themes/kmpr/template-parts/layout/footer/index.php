@@ -28,7 +28,7 @@
         </div>
         <!--            column-02-->
         <div class="col-lg col-12 my-2 my-lg-0">
-            <h6 class="fw-bold fs-5 mb-4 text-center text-secondary text-lg-start"><?= get_field('first_menu', 'option'); ?></h6>
+            <p class="fw-bold fs-5 mb-4 text-center text-secondary text-lg-start"><?= get_field('first_menu', 'option'); ?></p>
             <?php
             $locations = get_nav_menu_locations();
             $menu = wp_get_nav_menu_object($locations['footerLocationOne']);
@@ -48,7 +48,7 @@
         </div>
         <!--            column-03-->
         <div class="col-lg col-4 my-2 my-lg-0">
-            <h6 class="fw-bold fs-5 mb-4 text-center text-secondary  text-lg-start"><?= get_field('second_menu', 'option'); ?></h6>
+            <p class="fw-bold fs-5 mb-4 text-center text-secondary  text-lg-start"><?= get_field('second_menu', 'option'); ?></p>
             <?php
             $locations = get_nav_menu_locations();
             $menu = wp_get_nav_menu_object($locations['footerLocationTwo']);
@@ -68,7 +68,7 @@
         </div>
         <!--            column-04-->
         <div class="col-lg col-12 my-2 my-lg-0 ">
-            <h6 class="fw-bold fs-5 mb-4 text-center text-secondary  text-lg-start"><?= get_field('third_menu', 'option'); ?></h6>
+            <p class="fw-bold fs-5 mb-4 text-center text-secondary  text-lg-start"><?= get_field('third_menu', 'option'); ?></p>
             <?php
             $locations = get_nav_menu_locations();
             $menu = wp_get_nav_menu_object($locations['footerLocationThree']);
@@ -103,7 +103,7 @@
                     );
                     get_template_part('template-parts/svg/call-fill', null, $args); ?>
                     <div>
-                        <h6 class="fw-bold fs-6 text-white-50"><?= get_field('phone_number', 'option'); ?></h6>
+                        <p class="fw-bold fs-6 text-white-50"><?= get_field('phone_number', 'option'); ?></p>
                     </div>
                 </a>
             </div>

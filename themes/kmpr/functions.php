@@ -364,3 +364,29 @@ function modify_search_query($query) {
     }
 }
 add_action('pre_get_posts', 'modify_search_query');
+
+function custom_post_type_args( $args, $post_type ) {
+
+    // Change 'project' to the slug of your custom post type
+
+    if ( 'portfolio' === $post_type ) {
+
+        // Set the with_front parameter to false
+
+        $args['rewrite']['with_front'] = false;
+
+    }
+
+    if ( 'services' === $post_type ) {
+
+        // Set the with_front parameter to false
+
+        $args['rewrite']['with_front'] = false;
+
+    }
+
+    return $args;
+
+}
+
+add_filter( 'register_post_type_args', 'custom_post_type_args', 10, 2 );

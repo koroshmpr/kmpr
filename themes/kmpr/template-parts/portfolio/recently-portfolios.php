@@ -38,7 +38,7 @@
         <div class="row row-cols-lg-3 row-cols-1 row-gap-5 align-items-stretch justify-content-center justify-content-lg-start">
             <?php while ($loop->have_posts()) :
                 $loop->the_post(); ?>
-            <div data-aos="fade-down">
+            <div data-aos="zoom-in">
                 <?php get_template_part('template-parts/portfolio/portfolio-card'); ?>
             </div>
             <?php

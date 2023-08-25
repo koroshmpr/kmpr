@@ -33,7 +33,7 @@ window.onscroll = function() {
 };
 
 function myFunction() {
-    if (document.body.classList.contains('single')) {
+    if (document.body.classList.contains('single-post')) {
         let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         let scrolled = (winScroll / height) * 100;

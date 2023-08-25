@@ -4,7 +4,7 @@ function portfolio_post_types(){
     register_post_type('portfolio',
         array('supports' =>
             array( 'title', 'editor', 'comments', 'excerpt', 'custom-fields', 'thumbnail' ),
-            'rewrite' => array('slug' => 'portfolio'),
+            'rewrite' => array('slug' => 'portfolios'),
             'has_archive' => true,
             'public' => true,
             'labels' => array(
