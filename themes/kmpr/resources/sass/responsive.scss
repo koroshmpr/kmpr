@@ -39,26 +39,31 @@
       transition: all 0.5s ease-in-out;
 
       .info_card {
-        .card_title {
-          transform-origin: left;
-          transition: all 0.5s ease-out;
-        }
 
         box-shadow: inset 0 -70px 20px 0px #00000075;
         transition: all 0.5s ease-in-out;
 
+        .card_title {
+          transform-origin: left;
+          transition: all 0.5s ease-out;
+        }
         .col-11, h5 {
           transition: all 0.5s ease-in-out;
           opacity: 0;
+        }
+        h5 {
+          transform: translateY(300%);
         }
       }
 
       &.post-card:hover {
         .info_card {
           box-shadow: inset 0 -100px 40px 0px #00000061, inset 0 100px 40px 0px #00000069;
-
           .col-11, h5 {
             opacity: 1;
+          }
+          h5{
+            transform: translateY(0);
           }
         }
       }
