@@ -21,7 +21,7 @@ get_header(); ?>
         <div class="row justify-content-center text-center py-5">
             <div class="col-12 col-lg-7">
                 <h4 class="text-primary fs-2 fw-bold"><?= get_field('title_statistics'); ?></h4>
-                <p class="text-justify text-primary px-3"><?= get_field('content_statistics'); ?></p>
+                <p class="text-justify text-primary px-3 fs-3"><?= get_field('content_statistics'); ?></p>
                 <div class="row row-cols-2 row-cols-lg-4 justify-content-center text-center py-5">
                     <?php
                     while (have_rows('statistics_list')): the_row();;
@@ -29,7 +29,7 @@ get_header(); ?>
                         <div data-aos="fade-up"
                              data-aos-anchor-placement="top-bottom">
                             <h5 class="fw-bolder fs-2 text-primary"><?= get_sub_field('list_statistics_value'); ?></h5>
-                            <p class="text-dark text-opacity-75"><?= get_sub_field('list_statistics_title'); ?></p>
+                            <p class="text-dark text-opacity-75 fs-3"><?= get_sub_field('list_statistics_title'); ?></p>
                         </div>
                         <?php
                     endwhile; ?>

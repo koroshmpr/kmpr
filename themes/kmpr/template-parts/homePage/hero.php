@@ -1,11 +1,11 @@
 <section class="bg-primary position-relative overflow-hidden py-5">
     <div class="container">
-        <div id="hero-section" class="row rounded-2 mb-3 border border-5 border-secondary mt-lg-0 justify-content-center align-content-lg-center align-items-end justify-content-lg-start object-fit-cover">
+        <div id="hero-section" data-aos="fade-in" data-aos-duration="200" class="row rounded-2 mb-3 border border-5 border-secondary mt-lg-0 justify-content-center align-content-lg-center align-items-end justify-content-lg-start object-fit-cover">
             <div class="swiper hero_swiper col-11 col-lg-4 ms-lg-4 mb-3 p-lg-5 p-4 bg-white rounded-2">
                 <div class="swiper-wrapper">
                     <?php while (have_rows('hero-slider')):
                         the_row(); ?>
-                        <div class="swiper-slide text-center text-lg-start" data-image="<?= get_sub_field('image')['url'];?>">
+                        <div class="swiper-slide text-center text-lg-start" data-aos="zoom-in" data-aos-delay="300" data-image="<?= get_sub_field('image')['url'];?>">
                             <span class="badge bg-secondary fs-6 mb-3"><?= get_sub_field('badge');?></span>
                             <p class="fs-2 fw-bold text-dark"><?= get_sub_field('title');?></p>
                             <p class="text-justify"><?= wp_trim_words(get_sub_field('content') , 25);?></p>

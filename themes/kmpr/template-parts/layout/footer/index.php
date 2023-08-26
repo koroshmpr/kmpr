@@ -1,5 +1,5 @@
 <section class="bg-primary pt-3">
-<div class="container">
+<div class="container overflow-hidden">
     <!--    main footer -->
     <div class="row justify-content-center pt-lg-4 align-items-start">
         <!--            column-01-->

@@ -3,23 +3,25 @@ html, body {
 }
 // SCROLL bar styles
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
   height: 0;
 }
 .background-cover {
   background-size: cover;
 }
 ::-webkit-scrollbar-track {
-  background: $secondary;
+  background: white;
 }
 
 ::-webkit-scrollbar-thumb {
   background: $primary;
-  border-radius: 2rem;
+  transition: border-top-color 0.3s linear , border-bottom-color 0.3s linear;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
+  border-top: 8px solid $secondary;
+  border-bottom: 8px solid $secondary;
 }
 //custom css
 a {
