@@ -1,7 +1,7 @@
 main {
   z-index: 2;
   -webkit-overflow-scrolling: touch;
-  background-color: white;
+  background-color: #ffffff;
   /* Force Hardware Acceleration in WebKit */
   -webkit-transform: translateZ(0);
   -moz-transform: translateZ(0);
@@ -62,12 +62,8 @@ header {
   left: 15px;
   bottom: 15px;
   z-index: 10;
-  transition: 0.5s;
   line-height: 2.4;
-  transform: translateX(-200%);
-  opacity: 0;
 }
-
 .sticky__nav {
   top: -100%;
   transition: top  0.8s ease-in-out;

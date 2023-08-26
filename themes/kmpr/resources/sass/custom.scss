@@ -2,21 +2,17 @@
 @import "custom/variables";
 // Bootstrap
 @import 'modules/bootstrap';
-
 //custom base classes
 @import "custom/base";
 @import "custom/editor";
 @import "custom/button";
-
 // header
 @import "custom/header";
-
 @import "responsive";
 
 .sticky-post__detail {
   min-height: 70px;
 }
-
 .card__title-on-image {
   background-repeat: no-repeat;
   background-size: cover;
@@ -74,20 +70,11 @@
     height: 100px;
   }
 }
-
-.track-tab {
-  .nav-link {
-    transition: all 0.4s ease-out;
-    @extend .fs-6, .py-3, .px-4, .mb-0, .border-0;
-
-    &:hover, &.active, &:focus {
-      border-radius: 10px;
-      color: $primary;
-      box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.1);
-    }
-  }
+//single post
+.post-content {
+  line-height: 2;
+  font-size: 17px;
 }
-
 // comment section
 .comment-body {
   @extend .col-md-8;
@@ -169,10 +156,13 @@ body.single-post blockquote {
   p {
     @extend .mb-0
   }
-
-  @extend .p-3, .rounded, .my-4, .bg-info, .bg-opacity-25 ;
-  border-left: 10px solid $primary;
-  box-shadow: 0 0 2px rgba(254, 70, 0, 0.41)
+  @extend .p-3, .rounded, .my-4, .bg-secondary, .bg-opacity-10 ;
+  border-left: 10px solid $secondary;
+  box-shadow: 0 0 2px rgba(254, 70, 0, 0.41);
+  a {
+    border-bottom : 5px solid $secondary;
+    padding-bottom: 15px;
+  }
 }
 .social-media li a {
   width: 35px;
@@ -201,7 +191,7 @@ body.single-post blockquote {
   @extend .px-2, .py-1, .rounded
 }
 // gravity form
-  #gform_2 {
+  #gform_2 , #gform_wrapper_3 {
     gform_fields{
       gap: 10px!important;
     }
@@ -291,4 +281,7 @@ body.single-post blockquote {
   ul li::marker {
     color: $secondary;
   }
+}
+body.page-template-faq  .accordion-button:not(.collapsed):after {
+  filter: invert(1);
 }

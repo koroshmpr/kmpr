@@ -121,13 +121,13 @@ while (have_posts()) :
                          alt="<?= the_title(); ?>"/>
                 </div>
                 <!--                content-->
-                <article class="pt-5 text-justify">
+                <article class="pt-5 text-justify post-content">
                     <?= the_content(); ?>
                     <div class="pb-3" id="share-section"></div>
                 </article>
                 <!--                rating-->
-                <div class="rating-section p-3 rounded bg-secondary d-flex justify-content-between align-items-center my-5">
-                    <p class="mb-0 fw-bold text-white">چه میزان از این مقاله لذت بردید</p>
+                <div class="rating-section p-3 rounded bg-secondary bg-opacity-50 d-flex justify-content-between align-items-center my-5">
+                    <p class="mb-0 fw-bold text-primary">چه میزان از این مقاله لذت بردید</p>
                     <div class="rating">
                         <?php
                         $post_id = get_the_ID();
@@ -193,6 +193,40 @@ while (have_posts()) :
                         comments_template();
                     endif;
                     ?>
+                </div>
+            </div>
+        </div>
+        <hr class="m-0"/>
+        <div class="col-12 pb-4 overflow-hidden">
+            <div class="row justify-content-center g-3 g-lg-2 mx-1 mx-lg-0">
+                <h4 class="fw-bold text-center w-auto bg-primary text-white p-2 rounded-bottom" data-aos="fade-down" data-aos-duration="800">خدمات</h4>
+                <div class="row row-cols-1 row-cols-lg-3 g-2 hero-section">
+                    <?php
+                    global $post;
+                    // Get the ID of the current post
+                    $current_post_id = $post->ID;
+                    $args = array(
+                        'post_type' => 'services',
+                        'post_status' => 'publish',
+                        'order' => 'DESC',
+                        'posts_per_page' => '-1',
+                        'ignore_sticky_posts' => true,
+                        'post__not_in' => array( $current_post_id )
+                    );
+                    $loop = new WP_Query($args);
+                    if ($loop->have_posts()) :
+                        $i = 0;
+                        /* Start the Loop */
+                        ?>
+                        <?php while ($loop->have_posts()) :
+                        $loop->the_post(); ?>
+                        <div data-aos="zoom-out">
+                            <?php get_template_part('template-parts/services/services-card');?>
+                        </div>
+                    <?php
+                    endwhile;
+                    endif;
+                    wp_reset_postdata(); ?>
                 </div>
             </div>
         </div>
