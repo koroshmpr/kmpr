@@ -1,4 +1,7 @@
 @include media-breakpoint-up(lg) {
+  header {
+    min-height: 70px;
+  }
   .hero-section {
     .card__title-on-image {
       &.service-card {

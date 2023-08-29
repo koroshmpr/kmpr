@@ -20,7 +20,7 @@ function theme_setup()
 {
     add_theme_support('custom-logo', array('height' => 250, 'width' => 250, 'flex-width' => true, 'flex-height' => true,));
     register_nav_menu('headerMenuLocation', 'منوی اصلی');
-    register_nav_menu('topHeaderMenuLocation', 'منوی دوم');
+    register_nav_menu('topHeaderMenuLocation', 'منوی گوشی');
     register_nav_menu('footerLocationOne', 'منوی اول فوتر');
     register_nav_menu('footerLocationTwo', 'منوی دوم فوتر');
     register_nav_menu('footerLocationThree', 'منوی سوم فوتر');

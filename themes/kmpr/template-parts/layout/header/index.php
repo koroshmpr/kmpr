@@ -1,4 +1,4 @@
-<nav class="sticky__nav <?= is_admin() ? 'is__admin' : ''; ?><?php !is_single() ? 'pb-3 ' : '' ?> pb-2 start-0 end-0 z-3 text-primary bg-white pt-2">
+<nav class="d-none d-lg-inline sticky__nav <?= is_admin() ? 'is__admin' : ''; ?><?php !is_single() ? 'pb-3 ' : '' ?> pb-2 start-0 end-0 z-3 text-primary bg-white pt-2">
     <div class="container <?= is_singular('post') ? 'pb-2' : ''; ?>">
         <div class="d-flex align-items-center pb-lg-0 justify-content-center">
             <!--        brand and search bar -->
@@ -46,40 +46,7 @@
     </div>
     <?php if (is_singular('post')) { get_template_part('template-parts/loop/post-detail-sticky');} ?>
 </nav>
-<div class="offcanvas offcanvas-end bg-primary" tabindex="-1" id="offcanvasMainMenu"
-     aria-labelledby="offcanvasNavbarLabel">
-    <div class="offcanvas-header bg-white border-5 border-bottom border-secondary shadow-sm">
-        <a class="offcanvas-title logo-brand" id="offcanvasNavbarLabel" href="/">
-            <!--            logo -->
-            <?php $sizeLogo = 'col';
-            get_template_part('template-parts/logo-brand', null, array('sizeLogo' => $sizeLogo)); ?>
-        </a>
-        <button type="button" class="btn-close text-reset fs-4" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <?php
-        $locations = get_nav_menu_locations();
-        $menu = wp_get_nav_menu_object($locations['headerMenuLocation']);
-        if ($menu) :
-            wp_nav_menu(array(
-                'theme_location' => 'headerMenuLocation',
-                'menu_class' => 'navbar-nav gap-3 p-3',
-                'container' => false,
-                'menu_id' => 'navbarTogglerMenu',
-                'item_class' => 'nav-item text-center',
-                'link_class' => 'lazy text-decoration-none fs-3 text-white fw-bold',
-                'depth' => 1,
-            ));
-        endif;
-        ?>
-    </div>
-    <?php
-    $place = 'mobile-header';
-    $sizeSearch = 'position-absolute start-50 col-10 translate-middle-x bottom-0 pb-3';
-    $args = array(
-    'place' => $place,
-    'size' => $sizeSearch
-    );
-    get_template_part('template-parts/search-bar', null, $args); ?>
-</div>
+<nav class="d-lg-none bg-white rounded-top-3 fixed-bottom py-2 shadow-sm border-top border-2 border-primary">
+    <?php get_template_part('template-parts/layout/header/mobile_navigation'); ?>
+</nav>
 
