@@ -46,7 +46,7 @@
     </div>
     <?php if (is_singular('post')) { get_template_part('template-parts/loop/post-detail-sticky');} ?>
 </nav>
-<nav class="d-lg-none bg-white rounded-top-3 fixed-bottom py-2 shadow-sm border-top border-2 border-primary">
+<nav class="d-lg-none bg-secondary-subtle rounded-top-3 fixed-bottom py-2 shadow-sm border-top border-2 border-primary">
     <?php get_template_part('template-parts/layout/header/mobile_navigation'); ?>
 </nav>
 

@@ -5,15 +5,15 @@ $i = 0;
 if ($menu) :
     $menu_items = wp_get_nav_menu_items($menu);
 
-    echo '<ul class="d-flex justify-content-evenly px-3 mb-0 gap-2 list-unstyled">';
+    echo '<ul class="d-flex justify-content-evenly px-3 mb-0 gap-3 list-unstyled">';
 
     foreach ($menu_items as $item) :
         $menu_item_title = $item->title;
         $menu_item_url = $item->url;
         $icon= get_field('icon', $item->ID); ?>
-        <li class="nav-item text-center <?=  $i == 2 ? 'bg-secondary px-4' : '' ;?>">
+        <li class="nav-item d-flex align-items-center text-center col <?=  $i == 2 ? 'bg-secondary shadow-sm rounded-3 text-primary' : '' ; echo $i == 0 || $i == 3 ? '' : ' border-start' ?>">
 <?php
-        echo '<a href="' . esc_url($menu_item_url) . '" class="lazy text-decoration-none fs-3 fw-bold">';
+        echo '<a href="' . esc_url($menu_item_url) . '" class="lazy text-decoration-none fs-3 fw-bold w-100">';
 
         // Check if ACF field value is not empty and is a valid SVG
         if ($icon) {

@@ -1,4 +1,4 @@
-<div class="bg-secondary copyright py-2 pb-5 pb-lg-2 mb-lg-0 mb-2 rounded-top text-center d-lg-none">
+<div class="bg-secondary copyright pt-3 pb-5 pb-lg-2 mb-lg-0 rounded-top-3 mb-3 text-center d-lg-none">
     <div class="container">
         <div class="">
             <!--                social media-->

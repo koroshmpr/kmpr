@@ -6,7 +6,7 @@ get_header(); ?>
         <div class="container">
         <div class="row justify-content-around align-items-center">
             <div class="col-lg-6 col-11 text-white">
-                <h1 class="fw-bold display-3" data-aos="fade-left"><?= get_field('aboutus-title');?></h1>
+                <h1 class="fw-bold display-3 text-center text-lg-start" data-aos="fade-left"><?= get_field('aboutus-title');?></h1>
                 <p class="mb-0 text-justify pt-5" data-aos="fade-left" data-aos-delay="100"><?= get_field('aboutus-content');?></p>
             </div>
             <div class="col-lg-6 col-11" data-aos="fade-right">
