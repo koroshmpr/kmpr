@@ -23,7 +23,7 @@
         wp_reset_postdata(); ?>
     </div>
 </div>
-<div class="mt-5">
+<div class="my-5">
     <h4 class="fw-bold">مقالات پیشنهادی</h4>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-1 g-2 hero-section">
     <?php

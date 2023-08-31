@@ -4,7 +4,7 @@ while (have_posts()) :
     the_post();
     ?>
     <section class="container-fluid pb-2 p-0">
-        <img class="vw-100 object-fit border-1 border py-3" data-aos="flip-right" height="500"
+        <img class="vw-100 object-fit border-1 border py-lg-3" data-aos="flip-right" height="500"
              src="<?= get_the_post_thumbnail_url(); ?>"
              alt="<?= the_title(); ?>">
         <div class="container">

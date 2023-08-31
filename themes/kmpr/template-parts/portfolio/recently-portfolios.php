@@ -1,7 +1,7 @@
 <section class="container py-4 px-0">
     <div class="row justify-content-center">
         <div class="d-flex justify-content-center align-items-center pb-3">
-            <div class="col-11 col-lg-8 py-5">
+            <div class="col-11 col-lg-8 py-lg-5 pt-1 pb-4">
                 <div class="mb-0 fs-5 text-center">
                     <?php while (have_rows('portfolio_title')):
                         the_row(); ?>

@@ -110,6 +110,9 @@
   .property-img {
     filter: invert(1);
   }
+  .name_last {
+    padding-left: 0!important;
+  }
   .hero-section {
     .card__title-on-image {
       box-shadow: inset 0 -100px 40px 0px rgba(0, 0, 0, 0.21), inset 0 100px 40px 0px rgba(0, 0, 0, 0.21);
