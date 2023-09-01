@@ -82,7 +82,7 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
                             get_template_part('template-parts/portfolio/social-media', null, $args); ?>
                         </div>
                         <!--                        website-->
-                        <a class="col-4 btn bg-secondary text-primary rounded-0 fw-bold d-flex align-items-center gap-1 justify-content-center" data-aos="fade-left"
+                        <a class="col-4 bg-secondary py-2 text-primary rounded-2 fw-bold d-flex align-items-center gap-1 justify-content-center" data-aos="fade-left"
                            data-aos-duration="700"
                            data-aos-delay="400"
                            target="_blank"

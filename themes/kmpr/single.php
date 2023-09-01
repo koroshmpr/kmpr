@@ -45,7 +45,7 @@ while (have_posts()) :
                     </nav>
                 </div>
                 <!--                title-->
-                <h1 class="fw-bold text-dark"><?= get_the_title(); ?></h1>
+                <h1 class="fw-bold text-primary"><?= get_the_title(); ?></h1>
                 <div class="d-flex justify-content-between align-items-center">
                     <!--                    post detail-->
                     <div class="d-flex gap-2 align-items-center justify-content-start py-3">
@@ -98,8 +98,6 @@ while (have_posts()) :
                             </div>
                             <div class="ratings-summary text-center">
                                 <?php
-                                //                            echo '<span class="total-ratings">' . $total_ratings . ' ratings</span>';
-                                //                            echo '<br>';
                                 echo '<span class="average-rating">' . $average_rating . '</span>';
                                 ?>
                             </div>
@@ -161,7 +159,7 @@ while (have_posts()) :
                 $sizeSvgX = '20';
                 $sizeSvgY = '20';
                 $class = 'fill-primary';
-                $mainClass = 'd-flex';
+                $mainClass = 'd-grid d-lg-flex';
                 $colorSvg = '#FE0000';
                 $args = array(
                     'sizeSvgX' => $sizeSvgX,

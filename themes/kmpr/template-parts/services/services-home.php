@@ -1,7 +1,7 @@
 <section class="container py-5">
     <div class="row justify-content-center g-3 g-lg-2">
         <h4 class="fw-bold fs-2 text-center">خدمات ما</h4>
-        <div class="row row-cols-1 row-cols-lg-2 g-2 hero-section">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2 hero-section">
             <?php
             $args = array(
                 'post_type' => 'services',

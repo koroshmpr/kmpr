@@ -4,7 +4,7 @@
              width="60" height="60"
              src="<?= get_field('brand-logo')['url']; ?>"
              alt="<?= get_field('brand-logo')['title']; ?>">
-        <a class="row p-2 rounded" href="<?php the_permalink(); ?>">
+        <a class="row p-4 rounded" href="<?php the_permalink(); ?>">
             <img height="300" class="post-cover object-fit rounded p-0" src="<?php echo the_post_thumbnail_url(); ?>"
                  alt="<?= get_the_title(); ?>">
             <div class="mt-3 px-lg-0">

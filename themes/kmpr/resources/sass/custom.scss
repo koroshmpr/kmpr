@@ -13,6 +13,7 @@
 .sticky-post__detail {
   min-height: 70px;
 }
+
 .card__title-on-image {
   background-repeat: no-repeat;
   background-size: cover;
@@ -70,11 +71,13 @@
     height: 100px;
   }
 }
+
 //single post
 .post-content {
   line-height: 2;
   font-size: 17px;
 }
+
 // comment section
 .comment-body {
   @extend .col-md-8;
@@ -156,14 +159,17 @@ body.single-post blockquote {
   p {
     @extend .mb-0
   }
+
   @extend .p-3, .rounded, .my-4, .bg-secondary, .bg-opacity-10 ;
   border-left: 10px solid $secondary;
   box-shadow: 0 0 2px rgba(254, 70, 0, 0.41);
+
   a {
-    border-bottom : 5px solid $secondary;
+    border-bottom: 5px solid $secondary;
     padding-bottom: 15px;
   }
 }
+
 .social-media li a {
   width: 35px;
   height: 35px;
@@ -190,66 +196,88 @@ body.single-post blockquote {
 .page-numbers.current {
   @extend .px-2, .py-1, .rounded
 }
-// gravity form
-  #gform_2 , #gform_wrapper_3 {
-    gform_fields{
-      gap: 10px!important;
-    }
-    input , textarea {
-      transition: all 0.3s ease-out;
-      border: 1px solid #80808040;
-      border-radius: 5px;
-      padding: 15px;
-      &:hover , &:focus-visible , &:active{
-        @extend .bg-primary , .text-white;
-        outline-color: $primary!important;
-        &::placeholder {
-          color: white;
-        }
-      }
-    }
-    .gform_footer {
-      padding-bottom: 0;
-      input[type=submit] {
-        transition: all 0.3s linear;
-        border: 1px solid $primary;
-        background-color: $primary;
-        width: 100%;
-        font-weight: bolder;
-        color: white;
 
-        &:hover {
-          @extend .bg-opacity-75;
-        }
+// gravity form
+#gform_2, #gform_wrapper_3 {
+  gform_fields {
+    gap: 10px !important;
+  }
+
+  input, textarea {
+    transition: all 0.3s ease-out;
+    border: 1px solid #80808040;
+    border-radius: 5px;
+    padding: 15px;
+
+    &:hover, &:focus-visible, &:active {
+      @extend .bg-primary, .text-white;
+      outline-color: $primary !important;
+
+      &::placeholder {
+        color: white;
       }
     }
   }
 
-    #field_submit {
-      border-top-left-radius: 0 !important;
-      border-bottom-left-radius: 0 !important;
-      @extend .btn, .bg-primary, .text-white, .px-lg-5, .px-3;
+  .gform_footer {
+    padding-bottom: 0;
 
-      input {
-        @extend .h-100, .btn, .bg-primary, .text-white;
+    input[type=submit] {
+      transition: all 0.3s linear;
+      border: 1px solid $primary;
+      background-color: $primary;
+      width: 100%;
+      font-weight: bolder;
+      color: white;
+
+      &:hover {
+        @extend .bg-opacity-75;
       }
     }
+  }
+}
 
+#field_submit {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  @extend .btn, .bg-primary, .text-white, .px-lg-5, .px-3;
+
+  input {
+    @extend .h-100, .btn, .bg-primary, .text-white;
+  }
+}
 
 
 .next-list-item a, .prev-list-item a, .page-numbers.current {
   color: white;
 }
+
 // hero swiper
 #hero-section {
-  height:530px;
+  height: 530px;
   background-size: cover;
   transition: all 0.5s ease-out 0s;
   background-position: center center;
+
   .swiper-pagination-bullet {
     transition: all 0.5s ease-in-out;
     background-color: $primary;
     opacity: 1;
+
+    &.active {
+      background-color: $secondary;
+      opacity: 1;
+      padding: 0 15px;
+      border-radius: 5px;
+    }
+  }
+}
+.swiper-pagination  , .portfolio-pagination{
+  .swiper-pagination-bullet {
+    transition: all 0.5s ease-in-out;
+    background-color: $primary;
+    opacity: 1;
+
     &.active {
       background-color: $secondary;
       opacity: 1;
@@ -259,29 +287,32 @@ body.single-post blockquote {
   }
 }
 
-.swiper-button-next {
+.swiper-button-next , .portfolio-button-next {
   &::after {
     content: ' ' !important;
   }
+
   &.post__nav {
-    transform: translate(50% , 50%);
+    transform: translate(50%, 50%);
   }
 }
 
-.swiper-button-prev {
+.swiper-button-prev , .portfolio-botton-prev {
   &::after {
     content: ' ' !important;
   }
+
   &.post__nav {
-    transform: translate(-50% , 50%);
+    transform: translate(-50%, 50%);
   }
 }
-//table of content
-.table-of-contents {
-  ul li::marker {
-    color: $secondary;
+  //table of content
+  .table-of-contents {
+    ul li::marker {
+      color: $secondary;
+    }
   }
-}
-body.page-template-faq  .accordion-button:not(.collapsed):after {
-  filter: invert(1);
-}
+
+  body.page-template-faq .accordion-button:not(.collapsed):after {
+    filter: invert(1);
+  }

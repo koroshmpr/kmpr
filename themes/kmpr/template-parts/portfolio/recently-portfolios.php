@@ -1,7 +1,7 @@
 <section class="container py-4 px-0">
     <div class="row justify-content-center">
         <div class="d-flex justify-content-center align-items-center pb-3">
-            <div class="col-11 col-lg-8 py-lg-5 pt-1 pb-4">
+            <div class="col-11 col-lg-8 py-lg-3 pt-1 pb-4">
                 <div class="mb-0 fs-5 text-center">
                     <?php while (have_rows('portfolio_title')):
                         the_row(); ?>
@@ -11,10 +11,10 @@
                     <span class="position-absolute top-50 pt-4 start-50 translate-middle">
                             <?php
                             $mainClass = "fill-secondary";
-                            $args = array (
+                            $args = array(
                                 'mainClass' => $mainClass
                             );
-                            get_template_part('template-parts/svg/word-underline-secondary' , null, $args); ?></span>
+                            get_template_part('template-parts/svg/word-underline-secondary', null, $args); ?></span>
                     </span>
                         <?= get_sub_field('second_part'); ?>
                     <?php
@@ -35,16 +35,25 @@
         $i = 0;
         /* Start the Loop */
         ?>
-        <div class="row row-cols-lg-3 row-cols-1 row-gap-5 align-items-stretch justify-content-center justify-content-lg-start">
-            <?php while ($loop->have_posts()) :
-                $loop->the_post(); ?>
-            <div data-aos="zoom-in">
-                <?php get_template_part('template-parts/portfolio/portfolio-card'); ?>
+        <div class="portfolio-main swiper py-5 col-11 col-lg-12">
+            <div class="swiper-wrapper">
+                <?php while ($loop->have_posts()) :
+                    $loop->the_post(); ?>
+                    <div class="swiper-slide">
+                        <?php get_template_part('template-parts/portfolio/portfolio-card'); ?>
+                    </div>
+                <?php
+                endwhile;
+                endif;
+                wp_reset_postdata(); ?>
             </div>
-            <?php
-            endwhile;
-            endif;
-            wp_reset_postdata(); ?>
+            <div class="portfolio-button-next position-absolute top-50 end-0 z-3 d-none d-lg-inline">
+                <i class="bi bi-arrow-left-circle-fill fs-1 text-primary ms-5"></i>
+            </div>
+            <div class="portfolio-button-prev position-absolute top-50 z-3 d-none d-lg-inline">
+                <i class="bi bi-arrow-right-circle-fill fs-1 text-primary"></i>
+            </div>
+            <div class="portfolio-pagination position-static w-auto text-center"></div>
         </div>
     </div>
 </section>

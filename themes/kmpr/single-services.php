@@ -31,54 +31,59 @@ while (have_posts()) :
                     <?= the_content(); ?>
                 </article>
                 <div class="col-12 p-2 mt-5">
-                    <div class="row justify-content-center g-3 g-lg-2 mx-1 mx-lg-0">
-                        <h4 class="fw-bold text-center">خدمات دیگر</h4>
-                        <div class="row row-cols-1 row-cols-lg-4 g-2 hero-section">
-                            <?php
-                            global $post;
-                            // Get the ID of the current post
-                            $current_post_id = $post->ID;
-                            $args = array(
-                                'post_type' => 'services',
-                                'post_status' => 'publish',
-                                'order' => 'DESC',
-                                'posts_per_page' => '-1',
-                                'ignore_sticky_posts' => true,
-                                'post__not_in' => array( $current_post_id )
-                            );
-                            $loop = new WP_Query($args);
-                            if ($loop->have_posts()) :
-                                $i = 0;
-                                /* Start the Loop */
-                                ?>
-                                <?php while ($loop->have_posts()) :
-                                $loop->the_post(); ?>
-                                <div data-aos="zoom-out">
-                                    <?php get_template_part('template-parts/services/services-card');?>
-                                </div>
-                            <?php
-                            endwhile;
-                            endif;
-                            wp_reset_postdata(); ?>
+                    <div class="row justify-content-lg-between align-items-stretch g-3 g-lg-2 mx-1 mx-lg-0">
+                        <div class="bg-primary col-lg-6 d-flex justify-content-center align-items-center shadow-sm">
+                            <h4 class="fw-bold fs-2 py-5 text-white">خدمات دیگر</h4>
+                        </div>
+                        <div class="services-main swiper col-lg-6">
+                            <div class="swiper-wrapper">
+                                <?php
+                                global $post;
+                                // Get the ID of the current post
+                                $current_post_id = $post->ID;
+                                $args = array(
+                                    'post_type' => 'services',
+                                    'post_status' => 'publish',
+                                    'order' => 'DESC',
+                                    'posts_per_page' => '-1',
+                                    'ignore_sticky_posts' => true,
+                                    'post__not_in' => array($current_post_id)
+                                );
+                                $loop = new WP_Query($args);
+                                if ($loop->have_posts()) :
+                                    $i = 0;
+                                    /* Start the Loop */
+                                    ?>
+                                    <?php while ($loop->have_posts()) :
+                                    $loop->the_post(); ?>
+                                    <div class="swiper-slide">
+                                        <?php get_template_part('template-parts/services/services-card'); ?>
+                                    </div>
+                                <?php
+                                endwhile;
+                                endif;
+                                wp_reset_postdata(); ?>
+                            </div>
+                            <div class="swiper-pagination hero-pagination position-static w-auto my-3"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-<section class="bg-secondary">
-    <div class="container">
-        <div class="row justify-content-center py-4">
-            <div class="col-lg-6 col-11">
-                <h6 class="text-center fw-bold fs-3 text-white">ارتباط با ما</h6>
-                <?php if (get_post_type() === 'services') {
-                    echo do_shortcode('[gravityform id="'. get_field('form-id' , 'option') .'" title="false" description="false" ajax="true"]');
-                }
-                ?>
+    <section class="bg-secondary">
+        <div class="container">
+            <div class="row justify-content-center py-4">
+                <div class="col-lg-6 col-11">
+                    <h6 class="text-center fw-bold fs-3 text-white">ارتباط با ما</h6>
+                    <?php if (get_post_type() === 'services') {
+                        echo do_shortcode('[gravityform id="' . get_field('form-id', 'option') . '" title="false" description="false" ajax="true"]');
+                    }
+                    ?>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 <?php endwhile;
 wp_reset_query();
 get_footer(); ?>
