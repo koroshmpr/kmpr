@@ -9,9 +9,9 @@
                     <?php $sizeLogo = 'col-3';
                     get_template_part('template-parts/logo-brand', null, array('sizeLogo' => $sizeLogo)); ?>
                     <!--                footer descriptions-->
-                    <p class="py-3 py-lg-3 mb-0 text-primary fw-bold text-center">
+                    <div class="py-3 text-center">
                         <?= get_field('footer_description', 'option'); ?>
-                    </p>
+                    </div>
                     <div class=" d-none d-lg-inline">
                         <!--                social media-->
                         <?php
