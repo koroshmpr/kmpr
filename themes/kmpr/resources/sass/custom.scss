@@ -316,3 +316,18 @@ body.single-post blockquote {
   body.page-template-faq .accordion-button:not(.collapsed):after {
     filter: invert(1);
   }
+  .about-us__image {
+    &:hover {
+      transform: scale(1.5);
+    }
+  }
+  //single portfolio
+.screenshot {
+  transition: background-position 5s linear;
+  height: 300px;
+  background-size: cover;
+  background-position: top;
+  &:hover {
+    background-position: bottom;
+  }
+}

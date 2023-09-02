@@ -16,7 +16,7 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
         <aside class="row justify-content-center col-lg-4 col-12 pt-lg-4 px-lg-4 position-relative order-first order-lg-last h-100">
             <div class="sticky__navbar">
                 <div class="img-fluid mb-5 position-relative" data-aos="flip-right">
-                    <img class="position-absolute top-100 start-50 translate-middle border border-3 shadow-sm border-white rounded-2 <?= get_field('logo_background')?>"
+                    <img class="position-absolute top-100 start-50 translate-middle border border-3 shadow-sm border-white rounded-2 <?= get_field('logo_background') ?>"
                          width="60" height="60"
                          src="<?= get_field('brand-logo')['url']; ?>"
                          alt="<?= get_field('brand-logo')['title']; ?>">
@@ -37,7 +37,7 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
                 $colorSvg = '#FE0000';
                 $args = array(
                     'sizeSvgX' => $sizeSvgX,
-                    'headingClass'=>  $headingClass,
+                    'headingClass' => $headingClass,
                     'class' => $class,
                     'mainClass' => $mainClass,
                     'sizeSvgY' => $sizeSvgY,
@@ -82,7 +82,8 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
                             get_template_part('template-parts/portfolio/social-media', null, $args); ?>
                         </div>
                         <!--                        website-->
-                        <a class="col-4 bg-secondary py-2 text-primary rounded-2 fw-bold d-flex align-items-center gap-1 justify-content-center" data-aos="fade-left"
+                        <a class="col-4 bg-secondary py-2 text-primary rounded-2 fw-bold d-flex align-items-center gap-1 justify-content-center"
+                           data-aos="fade-left"
                            data-aos-duration="700"
                            data-aos-delay="400"
                            target="_blank"
@@ -126,7 +127,43 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
         </div>
     </div>
     <?php endwhile;
-    wp_reset_query();
+    wp_reset_query(); ?>
+</section>
+<?php if (have_rows('screenshot')) {?>
+<section class="bg-secondary py-4">
+    <div class="container">
+        <div class="row row-cols-lg-3 justify-content-center gap-lg-4">
+            <?php while (have_rows('screenshot')): the_row(); ?>
+                    <div class="row bg-primary border border-5 border-secondary justify-content-center rounded-5 pb-4">
+                        <div class="py-3 mb-4 px-2 fs-1 text-center border-bottom border-bottom-2 border-secondary">
+                            <?php
+                            $sizeSvgX = '40';
+                            $sizeSvgY = '40';
+                            $svgColor = "#fff";
+                            $args = array(
+                                'sizeSvgX' => $sizeSvgX,
+                                'sizeSvgY' => $sizeSvgY,
+                                'color' => $svgColor
+                            );
+                            get_template_part('template-parts/svg/portfolio/' . get_sub_field('screen-size', null, $args)); ?>
+                        </div>
+                        <?php if (get_sub_field('screenshot-image')) { ?>
+                            <div class="overflow-hidden w-100 rounded-5">
+                                <div class="screenshot w-100"
+                                     style="background-image: url('<?= get_sub_field('screenshot-image')['url']; ?>')">
+                                </div>
+                            </div>
+                        <?php } ?>
+                    </div>
+
+                <?php endwhile;?>
+
+        </div>
+    </div>
+</section>
+ <?php } ?>
+<section class="container">
+    <?php
     global $post;
     // Get the ID of the current post
     $current_post_id = $post->ID;
@@ -137,14 +174,14 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
         'orderby' => 'rand',
         'posts_per_page' => '3',
         'ignore_sticky_posts' => true,
-        'post__not_in' => array( $current_post_id )
+        'post__not_in' => array($current_post_id)
     );
     $loop = new WP_Query($args);
     if ($loop->have_posts()) :
     $i = 0;
     /* Start the Loop */
     ?>
-    <div class="row row-cols-lg-3 row-cols-1 gy-5 align-items-stretch justify-content-center justify-content-lg-start mt-5">
+    <div class="row row-cols-lg-3 row-cols-1 gy-5 align-items-stretch justify-content-center justify-content-lg-start py-5">
         <?php while ($loop->have_posts()) :
             $loop->the_post(); ?>
             <?php get_template_part('template-parts/portfolio/portfolio-card'); ?>
