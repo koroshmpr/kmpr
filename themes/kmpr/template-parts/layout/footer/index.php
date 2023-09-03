@@ -91,35 +91,33 @@
             <!--            column-05-->
             <div class="col-lg-3 col-12">
                 <p class="fw-bold pb-3 mb-0 fs-5 text-lg-start text-center text-secondary">به مشاوره احتیاج دارید</p>
-                <div class="d-flex justify-content-lg-start justify-content-center gap-1">
+                <div class="row justify-content-lg-start justify-content-center row-gap-2">
                     <a href="tel:<?= get_field('phone_number', 'option'); ?>"
-                       class="call-btn d-flex align-items-center overflow-hidden rounded-pill"">
-                    <div class="tel-icon d-flex align-items-center backTo_Top m-n1 text-primary bg-secondary border overflow-hidden border-4 border-primary rounded-circle justify-content-center">
-                        <?php
-                        $sizeSvgX = '18';
-                        $sizeSvgY = '18';
-                        $colorSvg = '#333';
-                        $args = array(
-                            'sizeSvgX' => $sizeSvgX,
-                            'sizeSvgY' => $sizeSvgY,
-                            'colorSvg' => $colorSvg
-                        );
-                        get_template_part('template-parts/svg/call-fill', null, $args); ?>
-                    </div>
-                    <div class="tel-label bg-secondary fw-bold text-primary rounded-end-pill ps-4 pe-3 py-1 my-1 ms-n3 d-flex justify-content-center align-items-center">
-                        <?= get_field('phone_number_label', 'option'); ?>
-                    </div>
+                       class="call-btn d-flex align-items-center overflow-hidden rounded-pill justify-content-center justify-content-lg-start px-0">
+                        <div class="tel-icon d-flex align-items-center roll-btn m-n1 text-primary bg-secondary border overflow-hidden border-4 border-primary rounded-circle justify-content-center">
+                            <?php
+                            $sizeSvgX = '18';
+                            $sizeSvgY = '18';
+                            $colorSvg = '#333';
+                            $args = array(
+                                'sizeSvgX' => $sizeSvgX,
+                                'sizeSvgY' => $sizeSvgY,
+                                'colorSvg' => $colorSvg
+                            );
+                            get_template_part('template-parts/svg/call-fill', null, $args); ?>
+                        </div>
+                        <div class="tel-label bg-secondary fw-bold text-primary rounded-end-pill ps-4 pe-3 py-1 my-1 ms-n3 d-flex justify-content-center align-items-center">
+                            <?= get_field('phone_number_label', 'option'); ?>
+                        </div>
                     </a>
-                </div>
-                <div class="d-flex justify-content-lg-start justify-content-center gap-1">
                     <a href="mailto:<?= get_field('email', 'option'); ?>"
-                       class="call-btn d-flex align-items-center overflow-hidden rounded-pill"">
-                    <div class="tel-icon d-flex align-items-center backTo_Top m-n1 text-primary bg-secondary border overflow-hidden border-4 border-primary rounded-circle justify-content-center">
-                        <i class="bi bi-envelope-fill text-primary fs-4"></i>
-                    </div>
-                    <div class="tel-label bg-secondary fw-bold text-primary rounded-end-pill ps-4 pe-3 py-1 my-1 ms-n3 d-flex justify-content-center align-items-center">
-                        <?= get_field('email', 'option'); ?>
-                    </div>
+                       class="call-btn d-flex align-items-center overflow-hidden rounded-pill justify-content-center justify-content-lg-start px-0">
+                        <div class="tel-icon d-flex align-items-center roll-btn m-n1 text-primary bg-secondary border overflow-hidden border-4 border-primary rounded-circle justify-content-center">
+                            <i class="bi bi-envelope-fill text-primary fs-4"></i>
+                        </div>
+                        <div class="tel-label bg-secondary fw-bold text-primary rounded-end-pill ps-4 pe-3 py-1 my-1 ms-n3 d-flex justify-content-center align-items-center">
+                            <?= get_field('email', 'option'); ?>
+                        </div>
                     </a>
                 </div>
                 <!--                conformations-->

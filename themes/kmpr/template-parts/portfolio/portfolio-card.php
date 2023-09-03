@@ -1,11 +1,11 @@
-<article class="position-relative">
-    <div class="shadow-sm pt-0 p-3">
+<article class="position-relative <?= $args['class'] ?? ''; ?>">
+    <div class="pt-0 p-3">
         <img class="position-absolute top-0 start-0 object-fit ms-4 translate-middle-y border border-3 shadow-sm border-white rounded-2 <?= get_field('logo_background')?>"
              width="60" height="60"
              src="<?= get_field('brand-logo')['url']; ?>"
              alt="<?= get_field('brand-logo')['title']; ?>">
         <a class="row p-4 rounded" href="<?php the_permalink(); ?>">
-            <img height="300" class="post-cover object-fit rounded p-0" src="<?php echo the_post_thumbnail_url(); ?>"
+            <img height="300" class="post-cover object-fit rounded p-0 shadow-sm" src="<?php echo the_post_thumbnail_url(); ?>"
                  alt="<?= get_the_title(); ?>">
             <div class="mt-3 px-lg-0">
                 <p class="fs-5 fw-bold"> <?= get_the_title(); ?></p>

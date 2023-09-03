@@ -28,8 +28,13 @@ get_template_part('template-parts/loop/page-title', null, $args); ?>
         <?php while ($loop->have_posts()) :
             $loop->the_post(); ?>
         <div data-aos="zoom-in" data-aos-delay="<?= $j; ?>0"
-             data-aos-anchor-placement="top" >
-            <?php get_template_part('template-parts/portfolio/portfolio-card'); ?>
+             data-aos-anchor-placement="top">
+            <?php
+            $customClass = 'border border-primary border-opacity-10';
+            $args = array (
+                'class' => $customClass
+            );
+            get_template_part('template-parts/portfolio/portfolio-card', null , $args); ?>
         </div>
         <?php
         $j+= 20;

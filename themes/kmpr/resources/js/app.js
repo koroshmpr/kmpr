@@ -8,12 +8,7 @@ import 'swiper/css/bundle';
 import Search from "./search";
 
 $(document).ready(function () {
-        $(".nav-pills > button").hover(function (){
-            let megaMenu = $(this).children("button")
-            if (!megaMenu.hasClass('active')){
-                megaMenu.addClass("active")
-            }
-        })
+
         $(window).scroll(function () { // check if scroll event happened
             if ($(document).scrollTop() > 130) { // check if user scrolled more than 50 from top of the browser window
                 $('.sticky__nav').addClass('position-fixed top-0');
@@ -45,7 +40,12 @@ function myFunction() {
 document.addEventListener('DOMContentLoaded', function () {
     const search = new Search();
     AOS.init();
-
+    let backToTop = document.getElementById("backToTop");
+    backToTop.addEventListener('click' , backtoTopHandler)
+    function backtoTopHandler() {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    }
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 

@@ -40,7 +40,12 @@
                 <?php while ($loop->have_posts()) :
                     $loop->the_post(); ?>
                     <div class="swiper-slide">
-                        <?php get_template_part('template-parts/portfolio/portfolio-card'); ?>
+                        <?php
+                        $customClass = 'border border-primary border-opacity-10';
+                        $args = array(
+                            'class' => $customClass
+                        );
+                        get_template_part('template-parts/portfolio/portfolio-card', null, $args); ?>
                     </div>
                 <?php
                 endwhile;

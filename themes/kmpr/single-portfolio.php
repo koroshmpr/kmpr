@@ -132,32 +132,34 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
 <?php if (have_rows('screenshot')) {?>
 <section class="bg-secondary py-4">
     <div class="container">
-        <div class="row row-cols-lg-3 justify-content-center gap-lg-4">
+        <div class="row row-cols-lg-3 justify-content-center align-content-center-center gap-lg-4 mx-2">
             <?php while (have_rows('screenshot')): the_row(); ?>
-                    <div class="row bg-primary border border-5 border-secondary justify-content-center rounded-5 pb-4">
-                        <div class="py-3 mb-4 px-2 fs-1 text-center border-bottom border-bottom-2 border-secondary">
-                            <?php
-                            $sizeSvgX = '40';
-                            $sizeSvgY = '40';
-                            $svgColor = "#fff";
-                            $args = array(
-                                'sizeSvgX' => $sizeSvgX,
-                                'sizeSvgY' => $sizeSvgY,
-                                'color' => $svgColor
-                            );
-                            get_template_part('template-parts/svg/portfolio/' . get_sub_field('screen-size', null, $args)); ?>
-                        </div>
-                        <?php if (get_sub_field('screenshot-image')) { ?>
-                            <div class="overflow-hidden w-100 rounded-5">
-                                <div class="screenshot w-100"
-                                     style="background-image: url('<?= get_sub_field('screenshot-image')['url']; ?>')">
-                                </div>
+                    <div class="px-lg-4">
+                        <div class="row bg-primary justify-content-center my-3 gx-5">
+                            <div class="py-1 px-2 fs-1 text-center border-bottom border-5 border-secondary">
+                                <?php
+                                $sizeSvgX = '40';
+                                $sizeSvgY = '40';
+                                $svgColor = "#fff";
+                                $args = array(
+                                    'sizeSvgX' => $sizeSvgX,
+                                    'sizeSvgY' => $sizeSvgY,
+                                    'color' => $svgColor
+                                );
+                                get_template_part('template-parts/svg/portfolio/' . get_sub_field('screen-size', null, $args)); ?>
                             </div>
-                        <?php } ?>
+                            <?php if (get_sub_field('screenshot-image')) { ?>
+                                <div class="overflow-hidden w-100 p-1">
+                                    <div class="screenshot w-100"
+                                        <?php echo  get_sub_field('screenshot-image')['height']; ?>
+                                         style="background-image: url('<?= get_sub_field('screenshot-image')['url']; ?>');
+                                                 transition-duration: <?= get_sub_field('screenshot-image')['height'] * 1.8; ?>ms">
+                                    </div>
+                                </div>
+                            <?php } ?>
+                        </div>
                     </div>
-
                 <?php endwhile;?>
-
         </div>
     </div>
 </section>
@@ -182,9 +184,14 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
     /* Start the Loop */
     ?>
     <div class="row row-cols-lg-3 row-cols-1 gy-5 align-items-stretch justify-content-center justify-content-lg-start py-5">
-        <?php while ($loop->have_posts()) :
+        <?php
+        $customClass = 'border border-primary border-opacity-10';
+        $args = array (
+             'class' => $customClass
+        );
+        while ($loop->have_posts()) :
             $loop->the_post(); ?>
-            <?php get_template_part('template-parts/portfolio/portfolio-card'); ?>
+            <?php get_template_part('template-parts/portfolio/portfolio-card' , null , $args); ?>
         <?php
         endwhile;
         endif;

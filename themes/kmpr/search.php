@@ -1,10 +1,20 @@
-<?php get_header(); ?>
+<?php get_header();?>
 
 <div class="container py-5">
-    <div class="w-100 mb-5 mx-auto">
-        <!-- Your search form here -->
+    <div class="w-100 pb-3">
+        <?php
+        $place = 'search-page';
+        $sizeSearch = 'col';
+        $inputClass = 'py-3';
+        $buttonClass = "px-4";
+        $args = array(
+            'place' => $place,
+            'size' => $sizeSearch,
+            'inputClass' => $inputClass,
+            'buttonClass' => $buttonClass
+        );
+        get_template_part('template-parts/search-bar' ,null ,$args); ?>
     </div>
-
     <div class="d-block d-lg-flex align-items-center">
         نتیجه جستجو برای :
         <h1 class="fw-bold ms-3"> <?= the_search_query(); ?> </h1>
@@ -25,8 +35,8 @@
         if ($post_type_query->have_posts()) {
             $post_type_info = get_post_type_object($post_type); // Get the post type object
             $post_type_label = $post_type_info->labels->name; // Get the custom post type name
-            echo '<h2 class="mt-5 mb-3"> جستحو در ' . $post_type_label . '</h2>';
-            echo '<div class="row my-2 row-cols-lg-3 justify-content-lg-between row-cols-1">';
+            echo '<h2 class="mt-5 mb-4 pb-3 border-bottom border-2 border-secondary border-opacity-50"> جستحو در ' . $post_type_label . '</h2>';
+            echo '<div class="row my-5 row-cols-lg-3 justify-content-lg-between row-cols-1">';
 
             while ($post_type_query->have_posts()) {
                 $post_type_query->the_post();
