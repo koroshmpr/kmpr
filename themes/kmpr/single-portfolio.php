@@ -31,6 +31,7 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
                 <?php
                 $sizeSvgX = '20';
                 $sizeSvgY = '20';
+                $containerCLass = 'share-button';
                 $class = 'fill-primary border border-primary border-opacity-10';
                 $mainClass = 'd-grid gap-1';
                 $headingClass = 'd-none';
@@ -41,13 +42,14 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
                     'class' => $class,
                     'mainClass' => $mainClass,
                     'sizeSvgY' => $sizeSvgY,
-                    'colorSvg' => $colorSvg
+                    'colorSvg' => $colorSvg,
+                    'containerCLass' => $containerCLass
                 );
                 get_template_part('template-parts/share-button', null, $args); ?>
             </div>
         </aside>
         <!--            main content-->
-        <div class="col-11 col-lg-8 order-first order-lg-last">
+        <div class='col-11 col-lg-8 order-first order-lg-last'>
             <?php if (get_queried_object()->post_type == 'portfolio'): ?>
                 <!--                categories-->
                 <div class="py-3">
@@ -64,7 +66,8 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
                 </div>
             <?php endif; ?>
             <div class="p-2 border border-primary">
-                <div class="bg-primary row row-cols-1 row-cols-lg-2 justify-content-lg-between p-4 overflow-hidden row-gap-3 gx-5">
+                <div class="bg-primary row row-cols-1 row-cols-lg-2 justify-content-lg-between p-4 overflow-hidden row-gap-3 gx-5"
+                data-aos="zoom-in">
                     <!--                    social and website -->
                     <div class="row justify-content-center px-2 gap-3" data-aos="fade-left">
                         <h3 class="pt-3 text-secondary text-center">اطلاعات مشتری</h3>

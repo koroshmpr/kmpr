@@ -1,4 +1,4 @@
-<div class="d-flex justify-content-center my-3">
+<div class="d-flex justify-content-center my-3 <?= $args['containerCLass'] ?? '';?>">
     <div class="col-12 col-lg-7 <?= $args['mainClass'] ?? 'd-grid d-lg-flex';?> gap-2 justify-content-center align-items-center">
         <p class="col-lg-4 fs-4 fw-bold text-center mb-0 <?= $args['headingClass'] ?? '';?>">
             <span class="text-primary">اشتراک </span>گذاری

@@ -9,10 +9,14 @@
                 <!--        main menu-->
                 <?php
                 $place = 'header';
+                $inputClass= 'bg-opacity-10';
+                $dropdownClass = "d-none";
                 $sizeSearch = 'col d-none d-lg-inline';
                 $args = array(
                     'place' => $place,
-                    'size' => $sizeSearch
+                    'size' => $sizeSearch,
+                    'dropdownClass' => $dropdownClass,
+                    'inputClass' => $inputClass
                 );
                 get_template_part('template-parts/search-bar', null, $args); ?>
             </div>

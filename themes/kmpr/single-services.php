@@ -31,9 +31,9 @@ while (have_posts()) :
                     <?= the_content(); ?>
                 </article>
                 <div class="col-12 p-2 mt-5">
-                    <div class="row justify-content-lg-between align-items-stretch g-3 g-lg-2 mx-1 mx-lg-0">
-                        <div class="bg-primary col-lg-6 d-flex justify-content-center align-items-center shadow-sm">
-                            <h4 class="fw-bold fs-2 py-5 text-white">خدمات دیگر</h4>
+                    <div class="row justify-content-lg-between align-items-center g-3 g-lg-2 mx-1 mx-lg-0">
+                        <div class="col-lg-6 d-flex justify-content-center align-items-center">
+                            <h4 class="fw-bold display-2 py-5 text-primary">خدمات دیگر</h4>
                         </div>
                         <div class="services-main swiper col-lg-6">
                             <div class="swiper-wrapper">
@@ -64,7 +64,7 @@ while (have_posts()) :
                                 endif;
                                 wp_reset_postdata(); ?>
                             </div>
-                            <div class="swiper-pagination hero-pagination position-static w-auto my-3"></div>
+                            <div class="swiper-pagination hero-pagination position-static w-auto mt-5"></div>
                         </div>
                     </div>
                 </div>
