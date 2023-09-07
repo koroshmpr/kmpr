@@ -1,5 +1,5 @@
-<section class="container-fluid position-relative overflow-visible bg-secondary">
-    <div class="container py-5 hero-section position-relative">
+<section class="container-fluid position-relative overflow-visible bg-secondary p-0">
+    <div class="container py-5 hero-section position-relative p-0">
         <div class="text-center pb-3">
             <?php while (have_rows('cta_title')):
                 the_row(); ?>
@@ -47,8 +47,8 @@
             wp_reset_postdata(); ?>
             </div>
         </div>
-        <div class="swiper-button-next">
-            <i class="bi bi-arrow-right-circle-fill fs-1 text-primary"></i>
+        <div class="swiper-button-next text-white">
+            <i class="bi bi-arrow-right-circle-fill fs-1 text-primary "></i>
         </div>
         <div class="swiper-button-prev">
             <i class="bi bi-arrow-left-circle-fill fs-1 text-primary"></i>

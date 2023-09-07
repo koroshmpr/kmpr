@@ -67,7 +67,7 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
             <?php endif; ?>
             <div class="p-2 border border-primary">
                 <div class="bg-primary row row-cols-1 row-cols-lg-2 justify-content-lg-between p-4 overflow-hidden row-gap-3 gx-5"
-                data-aos="zoom-in">
+                     data-aos="zoom-in">
                     <!--                    social and website -->
                     <div class="row justify-content-center px-2 gap-3" data-aos="fade-left">
                         <h3 class="pt-3 text-secondary text-center">اطلاعات مشتری</h3>
@@ -132,11 +132,11 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
     <?php endwhile;
     wp_reset_query(); ?>
 </section>
-<?php if (have_rows('screenshot')) {?>
-<section class="bg-secondary py-4">
-    <div class="container">
-        <div class="row row-cols-lg-3 justify-content-center align-content-center-center gap-lg-4 mx-2">
-            <?php while (have_rows('screenshot')): the_row(); ?>
+<?php if (have_rows('screenshot')) { ?>
+    <section class="bg-secondary py-4">
+        <div class="container">
+            <div class="row row-cols-lg-3 justify-content-center align-content-center-center gap-lg-4 mx-2">
+                <?php while (have_rows('screenshot')): the_row(); ?>
                     <div class="px-lg-4">
                         <div class="row bg-primary justify-content-center my-3 gx-5">
                             <div class="py-1 px-2 fs-1 text-center border-bottom border-5 border-secondary">
@@ -154,7 +154,7 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
                             <?php if (get_sub_field('screenshot-image')) { ?>
                                 <div class="overflow-hidden w-100 p-1">
                                     <div class="screenshot w-100"
-                                        <?php echo  get_sub_field('screenshot-image')['height']; ?>
+                                        <?php echo get_sub_field('screenshot-image')['height']; ?>
                                          style="background-image: url('<?= get_sub_field('screenshot-image')['url']; ?>');
                                                  transition-duration: <?= get_sub_field('screenshot-image')['height'] * 1.8; ?>ms">
                                     </div>
@@ -162,12 +162,13 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
                             <?php } ?>
                         </div>
                     </div>
-                <?php endwhile;?>
+                <?php endwhile; ?>
+            </div>
         </div>
-    </div>
-</section>
- <?php } ?>
-<section class="container">
+    </section>
+<?php } ?>
+<section class="container pt-3">
+    <h3 class="bg-primary text-white text-center p-3 shadow-sm">نمونه کارهای دیگر</h3>
     <?php
     global $post;
     // Get the ID of the current post
@@ -186,15 +187,17 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
     $i = 0;
     /* Start the Loop */
     ?>
-    <div class="row row-cols-lg-3 row-cols-1 gy-5 align-items-stretch justify-content-center justify-content-lg-start py-5">
+    <div class="row row-cols-lg-3 row-cols-1 gy-5 align-items-stretch justify-content-center justify-content-lg-start pt-3 pb-5">
         <?php
-        $customClass = 'border border-primary border-opacity-10';
-        $args = array (
-             'class' => $customClass
+        $customClass = '';
+        $footerContainer = "pb-3";
+        $args = array(
+            'class' => $customClass,
+            'footerContainer' => $footerContainer
         );
         while ($loop->have_posts()) :
             $loop->the_post(); ?>
-            <?php get_template_part('template-parts/portfolio/portfolio-card' , null , $args); ?>
+            <?php get_template_part('template-parts/portfolio/portfolio-card', null, $args); ?>
         <?php
         endwhile;
         endif;

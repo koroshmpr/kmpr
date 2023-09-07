@@ -1,6 +1,6 @@
 <section class="container py-4 px-0">
     <div class="row justify-content-center">
-        <div class="d-flex justify-content-center align-items-center pb-3">
+        <div class="d-flex justify-content-center align-items-center">
             <div class="col-11 col-lg-8 py-lg-3 pt-1 pb-4">
                 <div class="mb-0 fs-5 text-center">
                     <?php while (have_rows('portfolio_title')):
@@ -35,13 +35,13 @@
         $i = 0;
         /* Start the Loop */
         ?>
-        <div class="portfolio-main swiper py-5 col-11 col-lg-12">
+        <div class="portfolio-main swiper py-lg-5 pb-5 pt-3 col-11 col-lg-12">
             <div class="swiper-wrapper">
                 <?php while ($loop->have_posts()) :
                     $loop->the_post(); ?>
-                    <div class="swiper-slide">
+                    <div class="swiper-slide rounded-3 overflow-hidden">
                         <?php
-                        $customClass = 'border border-primary border-opacity-10';
+                        $customClass = 'shadow-sm rounded-3';
                         $args = array(
                             'class' => $customClass
                         );
@@ -58,7 +58,7 @@
             <div class="portfolio-button-prev position-absolute top-50 z-3 d-none d-lg-inline">
                 <i class="bi bi-arrow-right-circle-fill fs-1 text-primary"></i>
             </div>
-            <div class="portfolio-pagination position-static w-auto text-center"></div>
+            <div class="portfolio-pagination position-static w-auto text-center pt-3"></div>
         </div>
     </div>
 </section>

@@ -30,9 +30,11 @@ get_template_part('template-parts/loop/page-title', null, $args); ?>
         <div data-aos="zoom-in" data-aos-delay="<?= $j; ?>0"
              data-aos-anchor-placement="top">
             <?php
-            $customClass = 'border border-primary border-opacity-10';
+            $customClass = 'shadow-sm rounded-3';
+            $footerContainer = 'pb-4';
             $args = array (
-                'class' => $customClass
+                'class' => $customClass,
+                'footerContainer' => $footerContainer
             );
             get_template_part('template-parts/portfolio/portfolio-card', null , $args); ?>
         </div>
