@@ -18,7 +18,7 @@
             </span>
             <div>
                 <div class="px-3 text-white">
-                    <h5 class="fs-5 fw-bold"> <?= get_the_title(); ?></h5>
+                    <h3 class="fs-5 fw-bold"> <?= get_the_title(); ?></h3>
                     <p class="fs-6"><?= wp_trim_words(get_the_content(), 18); ?></p>
                 </div>
             </div>

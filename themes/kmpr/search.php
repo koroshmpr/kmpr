@@ -57,5 +57,20 @@
     }
     wp_reset_postdata(); // Reset the post data
     ?>
+    <div class="pagination d-flex py-2 justify-content-center gap-3 align-items-center">
+        <?php
+        global $wp_query;
+        $big = 999999999; // need an unlikely integer
+        echo paginate_links(array(
+            'base' => str_replace($big, '%#%', esc_url(get_pagenum_link($big))),
+            'format' => '?paged=%#%',
+            'current' => max(1, get_query_var('paged')),
+            'total' => $wp_query->max_num_pages,
+            'prev_text' => __('&laquo; Previous'),
+            'next_text' => __('Next &raquo;'),
+        ));
+        ?>
+    </div>
+
 </section>
 <?php get_footer(); ?>

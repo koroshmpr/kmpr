@@ -3,18 +3,18 @@
         <div class="text-center pb-3">
             <?php while (have_rows('cta_title')):
                 the_row(); ?>
-                <h4 class="mb-2 fs-4"><?= get_sub_field('first_part_cta'); ?>
-                    <span class="fw-bold position-relative fs-3">
+                <h2 class="mb-2 fs-3 text-white"><?= get_sub_field('first_part_cta'); ?>
+                    <span class="fw-bold position-relative fs-2">
                     <?= get_sub_field('underline_word_cta'); ?>
                     <span class="position-absolute top-50 pt-4 start-50 translate-middle">
                         <?php
-                        $mainClass = "fill-white";
+                        $mainClass = "fill-primary";
                         $args = array (
                             'mainClass' => $mainClass
                         );
                         get_template_part('template-parts/svg/word-underline-secondary' , null, $args); ?></span>
                     </span>
-                </h4>
+                </h2>
                 <p><?= get_sub_field('short_description_cta'); ?></p>
             <?php
             endwhile; ?>

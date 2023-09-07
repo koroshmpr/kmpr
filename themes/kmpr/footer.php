@@ -8,6 +8,8 @@
 
     get_template_part('template-parts/search-mobile');
 
+    if (is_singular( 'services' ) ) {  get_template_part('template-parts/backToArchive') ;}
+
     ?>
 </footer>
 <?php wp_footer(); ?>

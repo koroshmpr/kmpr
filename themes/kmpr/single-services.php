@@ -4,11 +4,11 @@ while (have_posts()) :
     the_post();
     ?>
     <section class="container-fluid pb-2 p-0">
-        <img class="vw-100 object-fit border-1 border py-lg-3" data-aos="flip-right" height="500"
+        <img class="vw-100 object-fit" data-aos="fade-down" height="500"
              src="<?= get_the_post_thumbnail_url(); ?>"
              alt="<?= the_title(); ?>">
-        <div class="container">
-            <div class="row align-items-start py-4">
+        <div class="container mt-lg-0 mt-n5 bg-white rounded-top-5 position-relative" data-aos="fade-up">
+            <div class="row align-items-start py-lg-4 py-2">
                 <div class="col-12">
                     <h1 class="display-1 m-0 pt-3 text-center animate__animated animate__fadeInLeft animate__delay-1"><?= the_title(); ?></h1>
                     <!--                share button-->
@@ -27,13 +27,13 @@ while (have_posts()) :
                     );
                     get_template_part('template-parts/share-button', null, $args); ?>
                 </div>
-                <article class="col-12 text-dark text-justify border border-1 p-lg-5 p-3 fs-5">
+                <article class="col-12 text-dark text-justify border border-1 p-lg-5 px-3 py-4 fs-5">
                     <?= the_content(); ?>
                 </article>
-                <div class="col-12 p-2 mt-5">
-                    <div class="row justify-content-lg-between align-items-center g-3 g-lg-2 mx-1 mx-lg-0">
+                <div class="col-12 p-2 mt-3">
+                    <div class="row justify-content-lg-between align-items-center g-3 mx-1 mx-lg-0">
                         <div class="col-lg-6 d-flex justify-content-center align-items-center">
-                            <h4 class="fw-bold display-2 py-5 text-primary">خدمات دیگر</h4>
+                            <h4 class="fw-bold display-2 py-lg-5 text-primary m-0">خدمات دیگر</h4>
                         </div>
                         <div class="services-main swiper col-lg-6">
                             <div class="swiper-wrapper">
@@ -64,7 +64,7 @@ while (have_posts()) :
                                 endif;
                                 wp_reset_postdata(); ?>
                             </div>
-                            <div class="swiper-pagination hero-pagination position-static w-auto mt-5"></div>
+                            <div class="swiper-pagination hero-pagination position-static w-auto mt-4"></div>
                         </div>
                     </div>
                 </div>

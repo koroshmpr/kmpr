@@ -20,7 +20,9 @@ if ($menu) :
 
         ?>
         <li  class="nav-item d-flex align-items-center lazy text-center col<?= $is_current_page ? ' bg-secondary shadow-sm rounded-3 text-primary' : (($i == 0 || $i == 3 || $i == 2) ? '' : ' border-start') ?>">
-            <a href="<?= esc_url($menu_item_url) ?>" class="lazy text-decoration-none fs-3 fw-bold w-100">
+            <a href="<?= esc_url($menu_item_url) ?>" class="lazy text-decoration-none fs-3 fw-bold w-100"
+               aria-label="<?= $menu_item_title; ?>"
+                title="<?= $menu_item_title; ?>">
                 <?php
                 // Check if ACF field value is not empty and is a valid SVG
                 if ($icon) {
