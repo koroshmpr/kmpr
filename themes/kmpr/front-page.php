@@ -13,7 +13,7 @@ get_header();
 if (have_posts())
     the_post();
 // hero
-get_template_part('template-parts/homePage/hero');
+get_template_part('template-parts/homePage/hero-02');
 /// portfolio last posts
 get_template_part('template-parts/portfolio/recently-portfolios');
 /// most visited post

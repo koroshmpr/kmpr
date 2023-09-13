@@ -114,19 +114,6 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
             <article class="pt-5 text-justify">
                 <?= the_content(); ?>
             </article>
-            <!--                tags-->
-            <?php
-            $tags = get_the_tags();
-            if ($tags) { ?>
-                <div>
-                    <p class="fw-bold fs-3 py-3">برچسب های این مقاله</p>
-                    <?php echo '<ul class="d-flex gap-2 align-items-center list-unstyled">';
-                    foreach ($tags as $tag) {
-                        echo '<li class="bg-primary bg-opacity-10 px-2 text-primary py-2 rounded-2"><i class="bi bi-tag-fill me-1"></i><a class="text-primary" href="' . get_tag_link($tag->term_id) . '">' . $tag->name . '</a></li>';
-                    }
-                    echo '</ul>'; ?>
-                </div>
-            <?php } ?>
         </div>
     </div>
     <?php endwhile;
@@ -135,9 +122,9 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
 <?php if (have_rows('screenshot')) { ?>
     <section class="bg-secondary py-4">
         <div class="container">
-            <div class="row row-cols-lg-3 justify-content-center align-content-center-center gap-lg-4 mx-2">
+            <div class="d-flex flex-wrap flex-lg-nowrap justify-content-center align-content-center gap-3 justify-content-lg-between ">
                 <?php while (have_rows('screenshot')): the_row(); ?>
-                    <div class="px-lg-4">
+                    <div class="col-11 col-lg-4 px-lg-4">
                         <div class="row bg-primary justify-content-center my-3 gx-5">
                             <div class="py-1 px-2 fs-1 text-center border-bottom border-5 border-secondary">
                                 <?php
@@ -167,8 +154,8 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
         </div>
     </section>
 <?php } ?>
-<section class="container pt-3">
-    <h3 class="bg-primary text-white text-center p-3 shadow-sm">نمونه کارهای دیگر</h3>
+<section class="container py-5">
+    <h3 class="bg-primary text-white text-center p-4 shadow-sm mx-lg-3">نمونه کارهای دیگر</h3>
     <?php
     global $post;
     // Get the ID of the current post
@@ -187,18 +174,21 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
     $i = 0;
     /* Start the Loop */
     ?>
-    <div class="row row-cols-lg-3 row-cols-1 gy-5 align-items-stretch justify-content-center justify-content-lg-start pt-3 pb-5">
+    <div class="d-flex flex-nowrap gap-3 mt-n4 overflow-x-scroll p-lg-5 py-5 p-3 align-items-center justify-content-start border border-1 border-primary border-opacity-25 justify-content-lg-center bg-opacity-10 bg-info">
         <?php
-        $customClass = '';
         $footerContainer = "pb-3";
+        $customClass = "col-11 col-lg-4";
+        $buttonCard = "py-1 py-lg-3";
         $args = array(
             'class' => $customClass,
-            'footerContainer' => $footerContainer
+            'footerContainer' => $footerContainer,
+            'buttonCard' => $buttonCard
         );
         while ($loop->have_posts()) :
+
             $loop->the_post(); ?>
-            <?php get_template_part('template-parts/portfolio/portfolio-card', null, $args); ?>
-        <?php
+            <?php get_template_part('template-parts/portfolio/portfolio-card', null, $args);
+            $i++;
         endwhile;
         endif;
         wp_reset_postdata(); ?>

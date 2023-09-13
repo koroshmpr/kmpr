@@ -254,22 +254,20 @@ body.single-post blockquote {
 
 // hero swiper
 #hero-section {
-  height: 530px;
   background-size: cover;
   transition: all 0.5s ease-out 0s;
-  background-position: center center;
+  background-position: top center;
+  }
+.swiper-pagination-bullet {
+  transition: all 0.5s ease-in-out;
+  background-color: $primary;
+  opacity: 1;
 
-  .swiper-pagination-bullet {
-    transition: all 0.5s ease-in-out;
-    background-color: $primary;
+  &.active {
+    background-color: $secondary;
     opacity: 1;
-
-    &.active {
-      background-color: $secondary;
-      opacity: 1;
-      padding: 0 15px;
-      border-radius: 5px;
-    }
+    padding: 0 15px;
+    border-radius: 5px;
   }
 }
 .swiper-pagination  , .portfolio-pagination{
@@ -336,4 +334,7 @@ body.single-post blockquote {
   height: 50px;
   line-height: 2.4;
   z-index: 1;
+}
+.portrolio-card__content {
+  min-height: 50px;
 }

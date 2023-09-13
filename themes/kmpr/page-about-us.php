@@ -4,10 +4,10 @@
 get_header(); ?>
     <section class="bg-primary">
         <div class="container-fluid">
-        <div class="row justify-content-around align-items-center">
+        <div class="row justify-content-around align-items-center py-5 py-lg-0">
             <div class="col-lg-6 col-11 text-white px-lg-5">
                 <h1 class="fw-bold display-3 text-center text-lg-start" data-aos="fade-left"><?= get_field('aboutus-title');?></h1>
-                <p class="mb-0 text-justify pt-5" data-aos="fade-left" data-aos-delay="100"><?= get_field('aboutus-content');?></p>
+                <p class="mb-0 text-justify pt-5" data-aos="fade-left" data-aos-delay="100"><?= get_field('aboutus-content'); ?></p>
             </div>
             <div class="col-lg-6 col-11 px-lg-0 overflow-hidden" data-aos="fade-right">
                 <img class="about-us__image w-100 object-fit bg-secondary lazy"

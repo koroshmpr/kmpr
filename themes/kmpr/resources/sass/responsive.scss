@@ -1,4 +1,7 @@
 @include media-breakpoint-up(lg) {
+  #hero-section {
+    height: 600px;
+  }
   .call-btn {
     .tel-icon {
       transition: all 0.5s ease-out;
@@ -93,9 +96,7 @@
 
 @include media-breakpoint-down(lg) {
   #hero-section {
-    .hero_swiper {
-      height: fit-content;
-    }
+      height: 350px;
   }
   .hero-section {
     .card__title-on-image {
@@ -116,10 +117,6 @@
   }
   .hero_swiper {
     background-color: rgba(255, 255, 255, 0.85) !important;
-  }
-  #hero-section {
-    margin-right: auto;
-    margin-left: auto;
   }
   .property p {
     opacity: 1 !important;
@@ -176,38 +173,6 @@
   .swiper-button-prev {
     transform: translateX(150%);
   }
-
-  .logo-brand__footer {
-    span {
-      z-index: 2;
-    }
-
-    width: 50%;
-    transition: all 0.5s;
-
-    p {
-      z-index: 1;
-      height: 0;
-      transform: translateX(-100%);
-      opacity: 0;
-      transition: all 0.5s;
-    }
-
-    &:hover {
-      width: 85%;
-
-      p {
-        height: 100%;
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-  }
 }
-
 @include media-breakpoint-down(md) {
-  .logo-brand__footer {
-    width: 90%;
-    margin: 0 auto;
-  }
 }

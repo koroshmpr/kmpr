@@ -84,7 +84,7 @@ while (have_posts()) :
                         }
                         // Display the stars and average rating
                         ?>
-                        <div class="d-flex gap-1 align-items-center justify-content-center">
+                        <a href="#rating" class="d-flex gap-1 align-items-center justify-content-center">
                             <div class="rating">
                                 <?php
                                 for ($i = 1; $i <= 5; $i++) {
@@ -101,7 +101,7 @@ while (have_posts()) :
                                 echo '<span class="average-rating">' . $average_rating . '</span>';
                                 ?>
                             </div>
-                        </div>
+                        </a>
                         <div class="d-flex gap-2 align-items-stretch justify-content-center">
                             <a href="#comment-section"
                                class="rounded d-flex align-items-center shadow-sm px-2 bg-primary bg-opacity-10"><i
@@ -124,7 +124,7 @@ while (have_posts()) :
                     <div class="pb-3" id="share-section"></div>
                 </article>
                 <!--                rating-->
-                <div class="rating-section p-3 rounded bg-secondary bg-opacity-50 d-flex justify-content-between align-items-center my-5">
+                <div id="rating" class="rating-section p-3 rounded bg-secondary bg-opacity-50 d-flex justify-content-between align-items-center my-5">
                     <p class="mb-0 fw-bold text-primary">چه میزان از این مقاله لذت بردید</p>
                     <div class="rating">
                         <?php

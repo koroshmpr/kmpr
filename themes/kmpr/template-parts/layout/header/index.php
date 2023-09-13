@@ -1,5 +1,5 @@
-<nav class="d-none d-lg-inline sticky__nav <?= is_admin() ? 'is__admin' : ''; ?><?php !is_single() ? 'pb-3 ' : '' ?> pb-2 start-0 end-0 z-3 text-primary bg-white pt-2">
-    <div class="container <?= is_singular('post') ? 'pb-2' : ''; ?>">
+<nav class="sticky__nav <?= is_admin() ? 'is__admin' : ''; ?><?= !is_singular('post') ? 'pb-lg-3 shadow' : '' ?> start-0 end-0 z-3 text-primary bg-white pt-lg-2">
+    <div class="d-none d-lg-block container <?= is_singular('post') ? 'pb-2' : ''; ?>">
         <div class="d-flex align-items-center pb-lg-0 justify-content-center">
             <!--        brand and search bar -->
             <div class="col-lg-4 col-11 d-flex align-items-center gap-3 justify-content-between">
