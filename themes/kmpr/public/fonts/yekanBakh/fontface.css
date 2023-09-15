@@ -1,0 +1,42 @@
+﻿@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 400;
+    src: url('YEKANBAKH-EN01-LIGHT.ttf') format('truetype');
+    font-display: swap;
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 500;
+    src: url('YEKANBAKH-EN02-REGULAR.ttf') format('truetype');
+    font-display: swap;
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 600;
+    src: url('YEKANBAKH-EN03-MEDIUM.ttf') format('truetype');
+    font-display: swap;
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 700;
+    src: url('YEKANBAKH-EN04-BOLD.ttf') format('truetype');
+    font-display: swap;
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 800;
+    src: url('YEKANBAKH-EN05-HEAVY.ttf') format('truetype');
+    font-display: swap;
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 900;
+    src: url('YEKANBAKH-EN06-FAT.ttf') format('truetype');
+    font-display: swap;
+}
