@@ -1,7 +1,7 @@
 <article class="h-100 <?= $args['class'] ?? ''; ?>">
     <div class="bg-primary rounded-3 overflow-hidden h-100">
         <a class="row rounded mx-0" href="<?php the_permalink(); ?>">
-            <img height="300" class="post-cover object-fit border-5 border-bottom border-secondary px-0" src="<?php echo the_post_thumbnail_url(); ?>"
+            <img width="350" height="300" class="post-cover object-fit border-5 border-bottom border-secondary px-0" src="<?php echo the_post_thumbnail_url(); ?>"
                  alt="<?= get_the_title(); ?>">
             <div class="mt-3 px-4 text-white">
                 <div class="d-flex align-items-center justify-content-start gap-4">

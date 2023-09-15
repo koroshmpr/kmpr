@@ -12,18 +12,16 @@ $(document).ready(function () {
         $(window).scroll(function () { // check if scroll event happened
             if ($(document).scrollTop() > 130) { // check if user scrolled more than 50 from top of the browser window
                 $('.sticky__nav').addClass('position-fixed top-0');
-                if( $('body').hasClass('single-portfolio')) {}
                 $('.sticky-post__detail').removeClass('d-none');
-            }
-            else if ($(document).scrollTop() < 30) {
+            } else if ($(document).scrollTop() < 30) {
                 $('.sticky__nav').removeClass('position-fixed top-0');
                 $('.sticky-post__detail').addClass('d-none');
             }
-                })
+        })
     }
 );
 // When the user scrolls the page, execute myFunction
-window.onscroll = function() {
+window.onscroll = function () {
     myFunction();
 };
 
@@ -41,11 +39,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const search = new Search();
     AOS.init();
     let backToTop = document.getElementById("backToTop");
-    backToTop.addEventListener('click' , backtoTopHandler)
+    backToTop.addEventListener('click', backtoTopHandler)
+
     function backtoTopHandler() {
         document.body.scrollTop = 0; // For Safari
         document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
     }
+
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
@@ -57,126 +57,123 @@ document.addEventListener('DOMContentLoaded', function () {
             document.body.classList.remove('scrolled');
         }
     }
-
-    toggleScrollClass();
-
     //check scroll to take actions on it
-    window.addEventListener('scroll', function () {
-        toggleScrollClass();
-    });
-    if ($('body').hasClass('home')){
-    // hero slide
-    const swiper1 = new Swiper('.hero_swiper', {
-        // Optional parameters
-        loop: false,
-        effect: 'slide',
-        speed: 500,
-        slidesPerView: 1,
-        spaceBetween: 50,
-        direction: 'horizontal',
-        // If we need pagination
-        pagination: {
-            el: '.hero-pagination',
-            bulletActiveClass: 'active',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        autoplay: {
-            delay: 10000,
-        },
-        disableOnInteraction: false,
-    });
-    // change background of section based on slide image
-    const heroSection = document.querySelector('#hero-section');
-    const firstSlideImage = document.querySelector('.swiper-slide:first-child').dataset.image;
-    heroSection.style.backgroundImage = `url(${firstSlideImage})`;
-    swiper1.on('slideChange', function () {
-        const activeSlide = this.slides[this.activeIndex];
-        const imageUrl = activeSlide.getAttribute('data-image');
-        heroSection.style.backgroundImage = `url(${imageUrl})`;
-    });
+    window.addEventListener('scroll', toggleScrollClass() );
+    if ($('body').hasClass('home')) {
+        // hero slide
+        const swiper1 = new Swiper('.hero_swiper', {
+            // Optional parameters
+            loop: false,
+            effect: 'slide',
+            speed: 500,
+            slidesPerView: 1,
+            spaceBetween: 50,
+            direction: 'horizontal',
+            // If we need pagination
+            pagination: {
+                el: '.hero-pagination',
+                bulletActiveClass: 'active',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            autoplay: {
+                delay: 10000,
+            },
+            disableOnInteraction: false,
+        });
+        // change background of section based on slide image
+        const heroSection = document.querySelector('#hero-section');
+        const firstSlideImage = document.querySelector('.swiper-slide:first-child').dataset.image;
+        heroSection.style.backgroundImage = `url(${firstSlideImage})`;
+        swiper1.on('slideChange', function () {
+            const activeSlide = this.slides[this.activeIndex];
+            const imageUrl = activeSlide.getAttribute('data-image');
+            heroSection.style.backgroundImage = `url(${imageUrl})`;
+        });
+        const swiper6 = new Swiper('.portfolio-main', {
+            // Optional parameters
+            loop: true,
+            effect: 'coverflow',
+            speed: 500,
+            slidesPerView: 1,
+            spaceBetween: 30,
+            direction: 'horizontal',
+            // If we need pagination
+            pagination: {
+                el: '.portfolio-pagination',
+                bulletActiveClass: 'active',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.portfolio-button-next',
+                prevEl: '.portfolio-button-prev',
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 3,
+                },
+            },
+            autoplay: {
+                delay: 10000,
+            },
+            disableOnInteraction: false,
+        })
     }
-    // post slides
-    const swiper5 = new Swiper('.post_swiper', {
-        // Optional parameters
-        loop: true,
-        effect: 'slide',
-        speed: 500,
-        slidesPerView: 1,
-        spaceBetween: 30,
-        direction: 'horizontal',
-        // If we need pagination
-        pagination: {
-            el: '.swiper-pagination',
-            bulletActiveClass : ''
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        breakpoints: {
-            768: {
-                slidesPerView: 3,
+    if ($('body').hasClass('home') || $('body').hasClass('blog')) {
+        const swiper5 = new Swiper('.post_swiper', {
+            // Optional parameters
+            loop: true,
+            effect: 'slide',
+            speed: 500,
+            slidesPerView: 1,
+            spaceBetween: 30,
+            direction: 'horizontal',
+            // If we need pagination
+            pagination: {
+                el: '.swiper-pagination',
+                bulletActiveClass: ''
             },
-        },
-        autoplay: {
-            delay: 10000,
-        },
-        disableOnInteraction: false,
-    })
-    const swiper6 = new Swiper('.portfolio-main', {
-        // Optional parameters
-        loop: true,
-        effect: 'coverflow',
-        speed: 500,
-        slidesPerView: 1,
-        spaceBetween: 30,
-        direction: 'horizontal',
-        // If we need pagination
-        pagination: {
-            el: '.portfolio-pagination',
-            bulletActiveClass : 'active',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.portfolio-button-next',
-            prevEl: '.portfolio-button-prev',
-        },
-        breakpoints: {
-            768: {
-                slidesPerView: 3,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
             },
-        },
-        autoplay: {
-            delay: 10000,
-        },
-        disableOnInteraction: false,
-    })
-    const swiper7 = new Swiper('.services-main', {
-        // Optional parameters
-        loop: true,
-        effect: 'cube',
-        speed: 500,
-        slidesPerView: 1,
-        grabCursor : true,
-        direction: 'horizontal',
-        // If we need pagination
-        pagination: {
-            el: '.swiper-pagination',
-            bulletActiveClass : 'active',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        autoplay: {
-            delay: 3000,
-        },
-        disableOnInteraction: false,
-    })
-
+            breakpoints: {
+                768: {
+                    slidesPerView: 3,
+                },
+            },
+            autoplay: {
+                delay: 10000,
+            },
+            disableOnInteraction: false,
+        })
+    }
+    if ($('body').hasClass('single-services')) {
+        const swiper7 = new Swiper('.services-main', {
+            // Optional parameters
+            loop: true,
+            effect: 'cube',
+            speed: 500,
+            slidesPerView: 1,
+            grabCursor: true,
+            direction: 'horizontal',
+            // If we need pagination
+            pagination: {
+                el: '.swiper-pagination',
+                bulletActiveClass: 'active',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            autoplay: {
+                delay: 3000,
+            },
+            disableOnInteraction: false,
+        })
+    }
 })
