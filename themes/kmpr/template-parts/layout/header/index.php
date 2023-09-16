@@ -1,4 +1,4 @@
-<nav class="sticky__nav <?= is_admin() ? 'is__admin' : ''; ?><?= !is_singular('post') ? 'pb-lg-3 shadow' : '' ?> start-0 end-0 z-3 text-primary bg-white pt-lg-2">
+<nav class="sticky__nav <?= is_admin() ? 'is__admin' : ''; ?><?= !is_singular('post') ? 'pb-lg-2 shadow' : '' ?> start-0 end-0 z-3 text-primary bg-white pt-lg-2">
     <div class="d-none d-lg-block container <?= is_singular('post') ? 'pb-2' : ''; ?>">
         <div class="d-flex align-items-center pb-lg-0 justify-content-center">
             <!--        brand and search bar -->
@@ -20,11 +20,13 @@
                 );
                 get_template_part('template-parts/search-bar', null, $args); ?>
             </div>
-            <button class="navbar-toggler d-lg-none text-primary" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasMainMenu" aria-controls="offcanvasMainMenu"
-                    aria-labelledby="offcanvasMainMenu" aria-label="menu-icon">
-                <i class="bi bi-list fs-1 text-primary"></i>
-            </button>
+            <?php
+//            <button class="navbar-toggler d-lg-none text-primary" type="button" data-bs-toggle="offcanvas"
+//                    data-bs-target="#offcanvasMainMenu" aria-controls="offcanvasMainMenu"
+//                    aria-labelledby="offcanvasMainMenu" aria-label="menu-icon">
+//                <i class="bi bi-list fs-1 text-primary"></i>
+//            </button>
+            ?>
             <!--            menu-->
             <div class="col-lg-8 navbar navbar-expand-lg d-none d-lg-grid justify-content-end pe-3">
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">

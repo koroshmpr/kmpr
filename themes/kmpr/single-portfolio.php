@@ -121,10 +121,19 @@ $comment_count = get_comments_number(); // Get the number of comments for this p
 </section>
 <?php if (have_rows('screenshot')) { ?>
     <section class="bg-secondary py-4">
-        <div class="container">
-            <div class="d-flex flex-wrap flex-lg-nowrap justify-content-center align-content-center gap-3 justify-content-lg-between ">
-                <?php while (have_rows('screenshot')): the_row(); ?>
-                    <div class="col-11 col-lg-4 px-lg-4">
+        <div class="container-fluid">
+            <div class="d-flex flex-wrap flex-lg-nowrap justify-content-center align-content-center gap-3 mx-lg-3">
+                <?php while (have_rows('screenshot')): the_row();
+                    if (get_sub_field('screen-size') == 'laptop' ) {
+                        $screenSize = 'col-lg-6';
+                    }elseif (get_sub_field('screen-size') == 'tablet' ) {
+                        $screenSize = 'col-lg-4';
+                    }
+                    elseif (get_sub_field('screen-size') == 'mobile' ) {
+                        $screenSize = 'col-lg-2';
+                    };
+                    ?>
+                    <div class="col-11 <?= $screenSize ;?> px-lg-4">
                         <div class="row bg-primary justify-content-center my-3 gx-5">
                             <div class="py-1 px-2 fs-1 text-center border-bottom border-5 border-secondary">
                                 <?php

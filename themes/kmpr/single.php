@@ -154,33 +154,38 @@ while (have_posts()) :
                 <div id="rating"
                      class="rating-section p-3 rounded bg-secondary bg-opacity-50 d-flex justify-content-between align-items-center my-5">
                     <p class="mb-0 fw-bold text-primary">چه میزان از این مقاله لذت بردید</p>
-                    <div class="rating">
+                    <div class="rating position-relative">
+                        <div id="rating_loader" data-aos="zoom-out"
+                             class="d-none position-absolute top-0 bottom-0 start-0 end-0 bd-blur z-2 d-flex align-items-center justify-content-center">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        </div>
                         <?php
                         $post_id = get_the_ID();
                         $rating_value = get_post_meta($post_id, 'rating_value', true);
                         for ($i = 1; $i <= 5; $i++) {
                             if ($i <= $rating_value) { ?>
-                                <span class="star filled">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
-                                                 fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
-                                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
-                                            </svg>
-                                        </span>
+                                <button class="star filled btn p-0 text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                         fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                    </svg>
+                                </button>
                             <?php } else { ?>
-                                <span class="star">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
-                                                 fill="currentColor" class="bi bi-star"
-                                                 viewBox="0 0 16 16">
-                                                <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
-                                            </svg>
-                                        </span>
+                                <button class="star btn p-0 text-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                         fill="currentColor" class="bi bi-star"
+                                         viewBox="0 0 16 16">
+                                        <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                                    </svg>
+                                </button>
                             <?php }
                         } ?>
                     </div>
                     <script>
                         jQuery(document).ready(function ($) {
                             $('.rating .star').click(function () {
-                                $(this).prevAll('.star').addBack().find('path').attr('d' , 'M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z');
+                                $('#rating_loader').removeClass('d-none');
+                                $(this).prevAll('.star').addBack().find('path').attr('d', 'M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z');
                                 $(this).nextAll('.star').find('path').attr('d', 'M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z');
                                 var ratingValue = $(this).index() + 1;
                                 $.post('<?php echo admin_url('admin-ajax.php'); ?>', {
@@ -188,6 +193,9 @@ while (have_posts()) :
                                     post_id: <?php echo $post_id; ?>,
                                     rating_value: ratingValue
                                 });
+                                setTimeout(function () {
+                                    $('#rating_loader').addClass('d-none');
+                                }, 600)
                             });
                         });
                     </script>
@@ -213,11 +221,16 @@ while (have_posts()) :
                 if ($tags) { ?>
                     <div>
                         <p class="fw-bold fs-3 py-3">برچسب های این مقاله</p>
-                        <?php echo '<ul class="d-flex gap-2 align-items-center list-unstyled flex-wrap">';
-                        foreach ($tags as $tag) {
-                            echo '<li class="bg-primary bg-opacity-10 px-2 text-primary py-2 rounded-2"><i class="bi bi-tag-fill me-1"></i><a class="text-primary" href="' . get_tag_link($tag->term_id) . '">' . $tag->name . '</a></li>';
-                        }
-                        echo '</ul>'; ?>
+                        <ul class="d-flex gap-2 align-items-center list-unstyled flex-wrap">
+                            <li class="px-2 text-primary py-2 rounded-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-tag-fill" viewBox="0 0 16 16">
+                                    <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1H2zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                                </svg>
+                            </li>
+                            <?php foreach ($tags as $tag) {
+                                echo '<li class="bg-primary bg-opacity-10 px-2 text-primary pt-2 pb-1 rounded-2">'. $tag->name . '</li>';
+                            } ?>
+                        </ul>
                     </div>
                 <?php } ?>
                 <!--                author information-->
