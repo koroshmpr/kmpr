@@ -1932,6 +1932,9 @@ blockquote {
 .mt-1 {
   margin-top: var(--spacing);
 }
+.mt-1\.5 {
+  margin-top: calc(var(--spacing) * 1.5);
+}
 .mt-2 {
   margin-top: calc(var(--spacing) * 2);
 }
@@ -2055,6 +2058,26 @@ blockquote {
 .size-2\.5 {
   width: calc(var(--spacing) * 2.5);
   height: calc(var(--spacing) * 2.5);
+}
+.size-3 {
+  width: calc(var(--spacing) * 3);
+  height: calc(var(--spacing) * 3);
+}
+.size-3\.5 {
+  width: calc(var(--spacing) * 3.5);
+  height: calc(var(--spacing) * 3.5);
+}
+.size-4 {
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+}
+.size-4\.5 {
+  width: calc(var(--spacing) * 4.5);
+  height: calc(var(--spacing) * 4.5);
+}
+.size-5 {
+  width: calc(var(--spacing) * 5);
+  height: calc(var(--spacing) * 5);
 }
 .size-6 {
   width: calc(var(--spacing) * 6);
@@ -2189,11 +2212,20 @@ blockquote {
 .min-h-\[85vh\] {
   min-height: 85vh;
 }
+.min-h-\[96px\] {
+  min-height: 96px;
+}
+.min-h-\[170px\] {
+  min-height: 170px;
+}
 .min-h-\[260px\] {
   min-height: 260px;
 }
 .min-h-\[300px\] {
   min-height: 300px;
+}
+.min-h-\[460px\] {
+  min-height: 460px;
 }
 .min-h-\[520px\] {
   min-height: 520px;
@@ -2279,8 +2311,20 @@ blockquote {
 .shrink-0 {
   flex-shrink: 0;
 }
+.-translate-x-12 {
+  --tw-translate-x: calc(var(--spacing) * -12);
+  translate: var(--tw-translate-x) var(--tw-translate-y);
+}
+.translate-x-0 {
+  --tw-translate-x: 0px;
+  translate: var(--tw-translate-x) var(--tw-translate-y);
+}
 .translate-x-3 {
   --tw-translate-x: calc(var(--spacing) * 3);
+  translate: var(--tw-translate-x) var(--tw-translate-y);
+}
+.translate-x-12 {
+  --tw-translate-x: calc(var(--spacing) * 12);
   translate: var(--tw-translate-x) var(--tw-translate-y);
 }
 .\!translate-y-0 {
@@ -2654,6 +2698,14 @@ blockquote {
     border-color: color-mix(in oklab, var(--color-emerald-500) 20%, transparent);
   }
 }
+.border-emerald-500\/25 {
+  border-color: color-mix(in srgb, oklch(69.6% 0.17 162.48) 25%, transparent);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .border-emerald-500\/25 {
+    border-color: color-mix(in oklab, var(--color-emerald-500) 25%, transparent);
+  }
+}
 .border-emerald-500\/30 {
   border-color: color-mix(in srgb, oklch(69.6% 0.17 162.48) 30%, transparent);
 }
@@ -2732,6 +2784,14 @@ blockquote {
     border-color: color-mix(in oklab, var(--color-sky-500) 20%, transparent);
   }
 }
+.border-sky-500\/25 {
+  border-color: color-mix(in srgb, oklch(68.5% 0.169 237.323) 25%, transparent);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .border-sky-500\/25 {
+    border-color: color-mix(in oklab, var(--color-sky-500) 25%, transparent);
+  }
+}
 .border-sky-500\/30 {
   border-color: color-mix(in srgb, oklch(68.5% 0.169 237.323) 30%, transparent);
 }
@@ -2801,6 +2861,14 @@ blockquote {
 @supports (color: color-mix(in lab, red, red)) {
   .border-slate-800\/80 {
     border-color: color-mix(in oklab, var(--color-slate-800) 80%, transparent);
+  }
+}
+.border-slate-800\/90 {
+  border-color: color-mix(in srgb, oklch(27.9% 0.041 260.031) 90%, transparent);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .border-slate-800\/90 {
+    border-color: color-mix(in oklab, var(--color-slate-800) 90%, transparent);
   }
 }
 .border-slate-900 {
@@ -3008,6 +3076,14 @@ blockquote {
 @supports (color: color-mix(in lab, red, red)) {
   .bg-secondary\/60 {
     background-color: color-mix(in oklab, var(--color-secondary) 60%, transparent);
+  }
+}
+.bg-secondary\/\[0\.08\] {
+  background-color: var(--color-secondary);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .bg-secondary\/\[0\.08\] {
+    background-color: color-mix(in oklab, var(--color-secondary) 8%, transparent);
   }
 }
 .bg-sky-500\/10 {
@@ -4018,6 +4094,14 @@ blockquote {
     --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-emerald-600) 30%, transparent) var(--tw-shadow-alpha), transparent);
   }
 }
+.shadow-secondary\/5 {
+  --tw-shadow-color: var(--color-secondary);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .shadow-secondary\/5 {
+    --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-secondary) 5%, transparent) var(--tw-shadow-alpha), transparent);
+  }
+}
 .shadow-secondary\/10 {
   --tw-shadow-color: var(--color-secondary);
 }
@@ -4064,6 +4148,14 @@ blockquote {
 @supports (color: color-mix(in lab, red, red)) {
   .ring-secondary\/30 {
     --tw-ring-color: color-mix(in oklab, var(--color-secondary) 30%, transparent);
+  }
+}
+.ring-secondary\/40 {
+  --tw-ring-color: var(--color-secondary);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .ring-secondary\/40 {
+    --tw-ring-color: color-mix(in oklab, var(--color-secondary) 40%, transparent);
   }
 }
 .blur {
@@ -4190,6 +4282,10 @@ blockquote {
   --tw-duration: 1000ms;
   transition-duration: 1000ms;
 }
+.ease-\[cubic-bezier\(0\.16\,1\,0\.3\,1\)\] {
+  --tw-ease: cubic-bezier(0.16,1,0.3,1);
+  transition-timing-function: cubic-bezier(0.16,1,0.3,1);
+}
 .ease-in {
   --tw-ease: var(--ease-in);
   transition-timing-function: var(--ease-in);
@@ -4279,6 +4375,14 @@ blockquote {
   @supports (color: color-mix(in lab, red, red)) {
     .group-hover\:bg-secondary\/15:is(:where(.group):hover *) {
       background-color: color-mix(in oklab, var(--color-secondary) 15%, transparent);
+    }
+  }
+  .group-hover\:bg-secondary\/25:is(:where(.group):hover *) {
+    background-color: var(--color-secondary);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .group-hover\:bg-secondary\/25:is(:where(.group):hover *) {
+      background-color: color-mix(in oklab, var(--color-secondary) 25%, transparent);
     }
   }
   .group-hover\:text-emerald-400:is(:where(.group):hover *) {
@@ -4703,8 +4807,14 @@ blockquote {
   .sm\:h-28 {
     height: calc(var(--spacing) * 28);
   }
+  .sm\:min-h-\[185px\] {
+    min-height: 185px;
+  }
   .sm\:min-h-\[400px\] {
     min-height: 400px;
+  }
+  .sm\:min-h-\[420px\] {
+    min-height: 420px;
   }
   .sm\:w-11\/12 {
     width: calc(11 / 12 * 100%);
@@ -4735,6 +4845,9 @@ blockquote {
   }
   .sm\:gap-2 {
     gap: calc(var(--spacing) * 2);
+  }
+  .sm\:gap-4 {
+    gap: calc(var(--spacing) * 4);
   }
   .sm\:gap-6 {
     gap: calc(var(--spacing) * 6);
@@ -5003,6 +5116,9 @@ blockquote {
   }
   .lg\:justify-start {
     justify-content: flex-start;
+  }
+  .lg\:gap-5 {
+    gap: calc(var(--spacing) * 5);
   }
   .lg\:gap-8 {
     gap: calc(var(--spacing) * 8);

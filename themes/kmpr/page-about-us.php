@@ -80,8 +80,10 @@ $photo_url     = (!empty($about_image['url'])) ? $about_image['url'] : (get_temp
             <!-- Pillar 1 -->
             <div class="p-8 rounded-3xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 flex flex-col justify-between gap-4 hover:border-secondary/40 hover:shadow-2xl transition-all duration-300 group backdrop-blur-sm" data-aos="fade-up">
                 <div class="flex items-center justify-between">
-                    <span class="w-12 h-12 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center text-xl font-bold">
-                        ⚡
+                    <span class="w-12 h-12 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center">
+                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
                     </span>
                     <span class="text-xs font-mono font-bold text-slate-400">01 / PERFORMANCE</span>
                 </div>
@@ -96,8 +98,12 @@ $photo_url     = (!empty($about_image['url'])) ? $about_image['url'] : (get_temp
             <!-- Pillar 2 -->
             <div class="p-8 rounded-3xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 flex flex-col justify-between gap-4 hover:border-secondary/40 hover:shadow-2xl transition-all duration-300 group backdrop-blur-sm" data-aos="fade-up" data-aos-delay="100">
                 <div class="flex items-center justify-between">
-                    <span class="w-12 h-12 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center text-xl font-bold">
-                        💎
+                    <span class="w-12 h-12 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center">
+                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 3h12l4 6-10 13L2 9Z"/>
+                            <path d="M11 3 8 9l4 13 4-13-3-6"/>
+                            <path d="M2 9h20"/>
+                        </svg>
                     </span>
                     <span class="text-xs font-mono font-bold text-slate-400">02 / CLEAN ARCHITECTURE</span>
                 </div>
@@ -112,8 +118,15 @@ $photo_url     = (!empty($about_image['url'])) ? $about_image['url'] : (get_temp
             <!-- Pillar 3 -->
             <div class="p-8 rounded-3xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 flex flex-col justify-between gap-4 hover:border-secondary/40 hover:shadow-2xl transition-all duration-300 group backdrop-blur-sm" data-aos="fade-up" data-aos-delay="200">
                 <div class="flex items-center justify-between">
-                    <span class="w-12 h-12 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center text-xl font-bold">
-                        🤖
+                    <span class="w-12 h-12 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center">
+                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="3" rx="2"/>
+                            <path d="M9 9h.01"/>
+                            <path d="M15 9h.01"/>
+                            <path d="M8 15s1.5 2 4 2 4-2 4-2"/>
+                            <path d="M9 3v2"/>
+                            <path d="M15 3v2"/>
+                        </svg>
                     </span>
                     <span class="text-xs font-mono font-bold text-slate-400">03 / AI & FUTURE-READY</span>
                 </div>
@@ -128,8 +141,12 @@ $photo_url     = (!empty($about_image['url'])) ? $about_image['url'] : (get_temp
             <!-- Pillar 4 -->
             <div class="p-8 rounded-3xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 flex flex-col justify-between gap-4 hover:border-secondary/40 hover:shadow-2xl transition-all duration-300 group backdrop-blur-sm" data-aos="fade-up" data-aos-delay="300">
                 <div class="flex items-center justify-between">
-                    <span class="w-12 h-12 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center text-xl font-bold">
-                        🎯
+                    <span class="w-12 h-12 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center">
+                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="6"/>
+                            <circle cx="12" cy="12" r="2"/>
+                        </svg>
                     </span>
                     <span class="text-xs font-mono font-bold text-slate-400">04 / DIRECT TRANSPARENCY</span>
                 </div>

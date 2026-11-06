@@ -44,7 +44,10 @@ $desc_text  = $hero_subtitle ? esc_html($hero_subtitle) : 'طراحی و پیا�
                 <!-- Main Personal Title -->
                 <div data-aos="fade-up" data-aos-duration="800" data-aos-delay="100" class="space-y-3">
                     <div class="text-sm sm:text-base font-mono text-secondary tracking-wider uppercase font-bold flex items-center justify-center lg:justify-start gap-2">
-                        <span>👋</span>
+                        <svg class="size-4.5 text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6"/>
+                            <polyline points="8 6 2 12 8 18"/>
+                        </svg>
                         <span>کوروش محمدپور | توسعه‌دهنده ارشد و معمار وب</span>
                     </div>
                     <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black leading-tight sm:leading-tight lg:leading-[1.2] tracking-tight text-white">
@@ -76,17 +79,26 @@ $desc_text  = $hero_subtitle ? esc_html($hero_subtitle) : 'طراحی و پیا�
                 <div data-aos="fade-up" data-aos-duration="800" data-aos-delay="400"
                      class="mt-4 pt-6 border-t border-white/10 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-slate-400 font-bold w-full">
                     <span class="flex items-center gap-1.5">
-                        <span class="text-emerald-400">⚡</span>
+                        <svg class="size-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
                         <span>پرفورمنس و سرعت فوق‌العاده</span>
                     </span>
                     <span class="text-slate-700 hidden sm:inline">•</span>
                     <span class="flex items-center gap-1.5">
-                        <span class="text-secondary">🛡️</span>
+                        <svg class="size-4 text-secondary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="m9 12 2 2 4-4"/>
+                        </svg>
                         <span>کدنویسی تمیز، امن و بدون سربار</span>
                     </span>
                     <span class="text-slate-700 hidden sm:inline">•</span>
                     <span class="flex items-center gap-1.5">
-                        <span class="text-sky-400">🎯</span>
+                        <svg class="size-4 text-sky-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="12" r="6"/>
+                            <circle cx="12" cy="12" r="2"/>
+                        </svg>
                         <span>توسعه پایدار و مقیاس‌پذیر</span>
                     </span>
                 </div>
@@ -130,8 +142,10 @@ $desc_text  = $hero_subtitle ? esc_html($hero_subtitle) : 'طراحی و پیا�
 
                     <!-- Floating Quality Badge 2 (Bottom Start) -->
                     <div class="absolute -bottom-3 -start-3 bg-slate-900/90 backdrop-blur-md border border-white/15 py-2.5 px-4 rounded-2xl shadow-xl flex items-center gap-3 max-sm:hidden">
-                        <span class="w-8 h-8 rounded-xl bg-secondary/20 text-secondary flex items-center justify-center font-black text-sm">
-                            ⚡
+                        <span class="w-8 h-8 rounded-xl bg-secondary/20 text-secondary flex items-center justify-center font-black">
+                            <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
                         </span>
                         <div class="text-start">
                             <span class="text-xs font-black text-white block">+۷ سال سابقه تخصصی</span>

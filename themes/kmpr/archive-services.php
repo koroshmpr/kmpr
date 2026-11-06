@@ -94,28 +94,50 @@ get_header(); ?>
 <section class="py-16 bg-slate-950 border-b border-white/10 text-start text-white">
     <div class="container mx-auto px-4 sm:px-6 max-w-5xl">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="p-6 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-3">
-                <span class="text-3xl">⚡</span>
-                <h4 class="text-base font-black text-white">گارانتی عملکرد فوق‌سریع</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    تضمین نمره بالای ۹۵ در تست‌های رسمی گوگل و لودینگ زیر یک ثانیه در تمامی صفحات.
-                </p>
+            <div class="p-6 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-4">
+                <span class="size-12 rounded-2xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 flex items-center justify-center">
+                    <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                </span>
+                <div>
+                    <h4 class="text-base font-black text-white mb-1">گارانتی عملکرد فوق‌سریع</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        تضمین نمره بالای ۹۵ در تست‌های رسمی گوگل و لودینگ زیر یک ثانیه در تمامی صفحات.
+                    </p>
+                </div>
             </div>
 
-            <div class="p-6 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-3">
-                <span class="text-3xl">🛡️</span>
-                <h4 class="text-base font-black text-white">مالکیت کامل سورس‌کد</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    سورس‌کد تمیز و بدون وابستگی، بدون لایسنس‌های پولی اجباری و آماده برای توسعه تیم شما.
-                </p>
+            <div class="p-6 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-4">
+                <span class="size-12 rounded-2xl bg-secondary/15 text-secondary border border-secondary/25 flex items-center justify-center">
+                    <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </span>
+                <div>
+                    <h4 class="text-base font-black text-white mb-1">مالکیت کامل سورس‌کد</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        سورس‌کد تمیز و بدون وابستگی، بدون لایسنس‌های پولی اجباری و آماده برای توسعه تیم شما.
+                    </p>
+                </div>
             </div>
 
-            <div class="p-6 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-3">
-                <span class="text-3xl">🤝</span>
-                <h4 class="text-base font-black text-white">همکاری مستقیم با دولوپر</h4>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    جلسات فنی و پیگیری مستقیم با خود من، بدون اتلاف وقت در لایه‌های بازاریابی و فروش.
-                </p>
+            <div class="p-6 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-4">
+                <span class="size-12 rounded-2xl bg-sky-500/15 text-sky-400 border border-sky-500/25 flex items-center justify-center">
+                    <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </span>
+                <div>
+                    <h4 class="text-base font-black text-white mb-1">همکاری مستقیم با دولوپر</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        جلسات فنی و پیگیری مستقیم با خود من، بدون اتلاف وقت در لایه‌های بازاریابی و فروش.
+                    </p>
+                </div>
             </div>
         </div>
     </div>

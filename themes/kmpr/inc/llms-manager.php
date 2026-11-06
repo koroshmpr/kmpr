@@ -451,7 +451,7 @@ class KMPR_LLMs_Manager {
                         <?php wp_nonce_field('kmpr_regenerate_llms_action', 'kmpr_regenerate_llms_nonce'); ?>
                         <button type="submit" name="kmpr_regenerate_llms" class="button button-primary" 
                                 style="background: #d97706; border-color: #b45309; padding: 8px 24px; height: auto; font-size: 14px; font-weight: 800; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(217,119,6,0.3);">
-                            ⚡ بازسازی و به‌روزرسانی فایل‌های هوش مصنوعی
+                            بازسازی و به‌روزرسانی فایل‌های هوش مصنوعی
                         </button>
                     </form>
                 </div>

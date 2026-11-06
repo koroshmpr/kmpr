@@ -95,21 +95,37 @@ $website  = 'kmpr.ir';
                 </div>
 
                 <!-- Contact Details Card -->
-                <div class="flex flex-col gap-2 text-xs text-slate-300 font-mono text-start w-full md:w-auto bg-white/[0.02] md:bg-transparent p-4 md:p-0 rounded-2xl border border-white/5 md:border-0">
+                <div class="flex flex-col gap-2.5 text-xs text-slate-300 font-mono text-start w-full md:w-auto bg-white/[0.02] md:bg-transparent p-4 md:p-0 rounded-2xl border border-white/5 md:border-0">
                     <div class="flex items-center gap-2">
-                        <span class="text-secondary font-sans font-bold">📍 موقعیت:</span>
+                        <svg class="size-3.5 text-secondary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <span class="text-secondary font-sans font-bold">موقعیت:</span>
                         <span class="font-sans"><?= esc_html($location); ?></span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-secondary font-sans font-bold">📞 تماس:</span>
+                        <svg class="size-3.5 text-secondary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        <span class="text-secondary font-sans font-bold">تماس:</span>
                         <a href="tel:<?= esc_attr($phone); ?>" class="hover:text-secondary dir-ltr transition-colors"><?= esc_html($phone); ?></a>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-secondary font-sans font-bold">✉️ ایمیل:</span>
+                        <svg class="size-3.5 text-secondary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="16" x="2" y="4" rx="2"/>
+                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                        </svg>
+                        <span class="text-secondary font-sans font-bold">ایمیل:</span>
                         <a href="mailto:<?= esc_attr($email); ?>" class="hover:text-secondary dir-ltr transition-colors"><?= esc_html($email); ?></a>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-secondary font-sans font-bold">🌐 وب‌سایت:</span>
+                        <svg class="size-3.5 text-secondary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+                            <path d="M2 12h20"/>
+                        </svg>
+                        <span class="text-secondary font-sans font-bold">وب‌سایت:</span>
                         <a href="<?= esc_url(home_url('/')); ?>" class="hover:text-secondary dir-ltr transition-colors"><?= esc_html($website); ?></a>
                     </div>
                     <div class="flex items-center gap-3 pt-1 text-slate-400">
@@ -122,8 +138,12 @@ $website  = 'kmpr.ir';
 
             <!-- Section 1: Professional Summary -->
             <section class="py-8 border-b border-white/10 text-start">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="text-secondary text-base">📌</span>
+                <div class="flex items-center gap-2.5 mb-4">
+                    <span class="size-6 rounded-lg bg-secondary/15 text-secondary flex items-center justify-center">
+                        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </span>
                     <h2 class="text-lg sm:text-xl font-black text-white">خلاصه حرفه‌ای</h2>
                 </div>
                 <p class="text-xs sm:text-sm text-slate-300 leading-loose font-medium text-justify">
@@ -133,8 +153,12 @@ $website  = 'kmpr.ir';
 
             <!-- Section 2: Technical Skills Grid -->
             <section class="py-8 border-b border-white/10 text-start">
-                <div class="flex items-center gap-2 mb-6">
-                    <span class="text-secondary text-base">⚡</span>
+                <div class="flex items-center gap-2.5 mb-6">
+                    <span class="size-6 rounded-lg bg-secondary/15 text-secondary flex items-center justify-center">
+                        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                    </span>
                     <h2 class="text-lg sm:text-xl font-black text-white">مهارت‌های تخصصی</h2>
                 </div>
 
@@ -142,7 +166,11 @@ $website  = 'kmpr.ir';
                     <!-- Skill Box 1 -->
                     <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
                         <div class="flex items-center gap-2 text-secondary font-black text-xs sm:text-sm">
-                            <span>💻</span>
+                            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="20" height="14" x="2" y="3" rx="2"/>
+                                <line x1="8" x2="16" y1="21" y2="21"/>
+                                <line x1="12" x2="12" y1="17" y2="21"/>
+                            </svg>
                             <span>توسعه فرانت‌اند (Frontend)</span>
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed font-mono">
@@ -153,7 +181,10 @@ $website  = 'kmpr.ir';
                     <!-- Skill Box 2 -->
                     <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
                         <div class="flex items-center gap-2 text-secondary font-black text-xs sm:text-sm">
-                            <span>⚙️</span>
+                            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
                             <span>بک‌اند و سیستم‌های محتوا</span>
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed font-mono">
@@ -164,7 +195,9 @@ $website  = 'kmpr.ir';
                     <!-- Skill Box 3 -->
                     <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
                         <div class="flex items-center gap-2 text-secondary font-black text-xs sm:text-sm">
-                            <span>🛠️</span>
+                            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                            </svg>
                             <span>ابزارها و مفاهیم کلیدی</span>
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed font-mono">
@@ -176,8 +209,13 @@ $website  = 'kmpr.ir';
 
             <!-- Section 3: Work Experience Timeline -->
             <section class="py-8 border-b border-white/10 text-start">
-                <div class="flex items-center gap-2 mb-6">
-                    <span class="text-secondary text-base">💼</span>
+                <div class="flex items-center gap-2.5 mb-6">
+                    <span class="size-6 rounded-lg bg-secondary/15 text-secondary flex items-center justify-center">
+                        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                        </svg>
+                    </span>
                     <h2 class="text-lg sm:text-xl font-black text-white">سوابق شغلی و تجربیات کلیدی</h2>
                 </div>
 
@@ -257,8 +295,14 @@ $website  = 'kmpr.ir';
             <!-- Section 4: Dynamic Automated Projects Integration -->
             <section class="py-8 border-b border-white/10 text-start">
                 <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
-                    <div class="flex items-center gap-2">
-                        <span class="text-secondary text-base">🚀</span>
+                    <div class="flex items-center gap-2.5">
+                        <span class="size-6 rounded-lg bg-secondary/15 text-secondary flex items-center justify-center">
+                            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                            </svg>
+                        </span>
                         <h2 class="text-lg sm:text-xl font-black text-white">پروژه‌های شاخص و اجرایی</h2>
                     </div>
                     <span class="text-xs font-mono text-slate-400">همگام‌سازی خودکار با دیتابیس پروژه‌ها</span>
@@ -312,8 +356,13 @@ $website  = 'kmpr.ir';
 
             <!-- Section 5: Education & Certifications -->
             <section class="pt-8 text-start">
-                <div class="flex items-center gap-2 mb-6">
-                    <span class="text-secondary text-base">🎓</span>
+                <div class="flex items-center gap-2.5 mb-6">
+                    <span class="size-6 rounded-lg bg-secondary/15 text-secondary flex items-center justify-center">
+                        <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                    </span>
                     <h2 class="text-lg sm:text-xl font-black text-white">تحصیلات و دوره‌های تخصصی</h2>
                 </div>
 

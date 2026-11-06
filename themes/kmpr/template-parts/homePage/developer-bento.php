@@ -36,8 +36,10 @@
                 <div>
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center gap-2.5">
-                            <span class="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm">
-                                ⚡
+                            <span class="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold">
+                                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                </svg>
                             </span>
                             <span class="text-xs font-mono font-bold text-emerald-400 tracking-wider">CORE WEB VITALS</span>
                         </div>
@@ -80,8 +82,15 @@
                 
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <div class="w-10 h-10 rounded-2xl bg-secondary/15 border border-secondary/30 text-secondary flex items-center justify-center font-bold text-sm">
-                            🤖
+                        <div class="w-10 h-10 rounded-2xl bg-secondary/15 border border-secondary/30 text-secondary flex items-center justify-center font-bold">
+                            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="18" height="18" x="3" y="3" rx="2"/>
+                                <path d="M9 9h.01"/>
+                                <path d="M15 9h.01"/>
+                                <path d="M8 15s1.5 2 4 2 4-2 4-2"/>
+                                <path d="M9 3v2"/>
+                                <path d="M15 3v2"/>
+                            </svg>
                         </div>
                         <span class="text-xs bg-secondary/10 text-secondary border border-secondary/20 px-3 py-1 rounded-full font-mono font-bold">AI Native</span>
                     </div>
@@ -96,7 +105,12 @@
 
                 <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 font-mono">
                     <span>Protocol: llms.txt</span>
-                    <span class="text-secondary font-bold">Auto-Sync ✓</span>
+                    <span class="text-secondary font-bold flex items-center gap-1.5">
+                        <span>Auto-Sync</span>
+                        <svg class="size-3.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/>
+                        </svg>
+                    </span>
                 </div>
             </div>
 
@@ -106,8 +120,11 @@
                 
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <div class="w-10 h-10 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center font-bold text-sm">
-                            🛡️
+                        <div class="w-10 h-10 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center font-bold">
+                            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
                         </div>
                         <span class="text-xs bg-sky-500/10 text-sky-400 border border-sky-500/20 px-3 py-1 rounded-full font-mono font-bold">Clean Code</span>
                     </div>
@@ -144,8 +161,14 @@
                 <div>
                     <div class="flex items-center justify-between mb-6">
                         <div class="flex items-center gap-2.5">
-                            <span class="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold text-sm">
-                                🎨
+                            <span class="w-10 h-10 rounded-2xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold">
+                                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+                                    <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+                                    <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+                                    <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+                                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2Z"/>
+                                </svg>
                             </span>
                             <span class="text-xs font-mono font-bold text-purple-400 tracking-wider">TAILORED UI/UX</span>
                         </div>
