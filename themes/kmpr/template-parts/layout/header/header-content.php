@@ -18,7 +18,7 @@
             if (has_nav_menu('headerMenuLocation')) :
                 wp_nav_menu(array(
                     'theme_location' => 'headerMenuLocation',
-                    'menu_class'     => 'flex items-center gap-1.5 text-sm font-bold text-slate-700 [&_a]:px-3.5 [&_a]:py-2 [&_a]:rounded-xl [&_a]:transition-all [&_a]:duration-200 [&_a:hover]:text-secondary [&_a:hover]:bg-slate-100/80 [&_.current-menu-item_a]:text-secondary [&_.current-menu-item_a]:bg-secondary/10 [&_.current-menu-item_a]:font-black [&_.current_page_item_a]:text-secondary',
+                    'menu_class'     => 'flex items-center gap-1 text-sm font-bold text-slate-700 [&_a]:px-3.5 [&_a]:py-2 [&_a]:rounded-xl [&_a]:transition-all [&_a]:duration-200 [&_a:hover]:text-secondary [&_a:hover]:bg-slate-100/80 [&_.current-menu-item>a]:!text-secondary [&_.current-menu-item>a]:!bg-secondary/15 [&_.current-menu-item>a]:!font-black [&_.active>a]:!text-secondary [&_.active>a]:!bg-secondary/15 [&_.active>a]:!font-black',
                     'container'      => false,
                     'depth'          => 1,
                 ));
@@ -106,7 +106,7 @@
             $location = has_nav_menu('topHeaderMenuLocation') ? 'topHeaderMenuLocation' : 'headerMenuLocation';
             wp_nav_menu(array(
                 'theme_location' => $location,
-                'menu_class'     => 'flex flex-col gap-2 text-base font-bold text-slate-800 [&_a]:px-3 [&_a]:py-2 [&_a]:rounded-xl [&_a]:block [&_a]:transition-colors [&_a:hover]:text-secondary [&_a:hover]:bg-slate-100/70 [&_.current-menu-item_a]:text-secondary [&_.current-menu-item_a]:bg-secondary/10',
+                'menu_class'     => 'flex flex-col gap-2 text-base font-bold text-slate-800 [&_a]:px-3.5 [&_a]:py-2.5 [&_a]:rounded-xl [&_a]:block [&_a]:transition-colors [&_a:hover]:text-secondary [&_a:hover]:bg-slate-100/70 [&_.current-menu-item>a]:!text-secondary [&_.current-menu-item>a]:!bg-secondary/15 [&_.current-menu-item>a]:!font-black [&_.active>a]:!text-secondary [&_.active>a]:!bg-secondary/15 [&_.active>a]:!font-black',
                 'container'      => false,
                 'depth'          => 1,
             ));

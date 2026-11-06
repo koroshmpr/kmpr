@@ -6,12 +6,94 @@ while (have_posts()) :
     the_post();
     $post_id = get_the_ID();
     $comment_count = get_comments_number(); 
+    $categories = get_the_category();
+    $primary_cat = !empty($categories) ? $categories[0] : null;
     
     // Ratings variables
     $total_ratings = get_post_meta($post_id, 'total_ratings', true) ?: 0;
     $total_rating_value = get_post_meta($post_id, 'total_rating_value', true) ?: 0;
     $average_rating = ($total_ratings > 0) ? round($total_rating_value / $total_ratings, 1) : 0;
+
+    // Schema.org Article / BlogPosting JSON-LD
+    $schema_data = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BlogPosting',
+        'mainEntityOfPage' => [
+            '@type' => 'WebPage',
+            '@id' => get_permalink(),
+        ],
+        'headline' => get_the_title(),
+        'description' => wp_strip_all_tags(get_the_excerpt() ?: wp_trim_words(get_the_content(), 30)),
+        'datePublished' => get_the_date('c'),
+        'dateModified' => get_the_modified_date('c'),
+        'inLanguage' => 'fa-IR',
+        'author' => [
+            '@type' => 'Person',
+            'name' => get_the_author_meta('display_name'),
+            'url' => get_author_posts_url(get_the_author_meta('ID')),
+        ],
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => get_bloginfo('name'),
+            'url' => home_url('/'),
+        ],
+    ];
+
+    if (has_post_thumbnail()) {
+        $thumb_id = get_post_thumbnail_id();
+        $thumb_src = wp_get_attachment_image_src($thumb_id, 'full');
+        if ($thumb_src) {
+            $schema_data['image'] = [
+                '@type' => 'ImageObject',
+                'url' => $thumb_src[0],
+                'width' => $thumb_src[1],
+                'height' => $thumb_src[2],
+            ];
+        }
+    }
+
+    $breadcrumb_schema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'صفحه اصلی',
+                'item' => home_url('/'),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'مقالات',
+                'item' => esc_url(get_permalink(get_option('page_for_posts')) ?: home_url('/blog/')),
+            ],
+        ],
+    ];
+
+    if ($primary_cat) {
+        $breadcrumb_schema['itemListElement'][] = [
+            '@type' => 'ListItem',
+            'position' => 3,
+            'name' => $primary_cat->name,
+            'item' => get_category_link($primary_cat->term_id),
+        ];
+        $breadcrumb_schema['itemListElement'][] = [
+            '@type' => 'ListItem',
+            'position' => 4,
+            'name' => get_the_title(),
+            'item' => get_permalink(),
+        ];
+    }
     ?>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    <?= json_encode($schema_data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>
+    </script>
+    <script type="application/ld+json">
+    <?= json_encode($breadcrumb_schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>
+    </script>
 
     <!-- Alpine.js single page context wrapper -->
     <section x-data="{ active: null, toc: false, share: false, stickyMenu: false }" 
@@ -21,19 +103,16 @@ while (have_posts()) :
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             
             <!-- Breadcrumbs (Column span 12) -->
-            <nav class="lg:col-span-12 flex text-xs font-bold text-slate-400 gap-2 items-center mb-2" aria-label="breadcrumb">
-                <span>صفحه اصلی</span>
-                <span>&gt;</span>
-                <span>بلاگ</span>
-                <span>&gt;</span>
-                <span class="text-secondary">
-                    <?php
-                    $categories = get_the_category();
-                    if (!empty($categories)) {
-                        echo esc_html($categories[0]->name);
-                    }
-                    ?>
-                </span>
+            <nav class="lg:col-span-12 flex text-xs font-bold text-slate-500 gap-2 items-center mb-2" aria-label="breadcrumb">
+                <a href="<?= esc_url(home_url('/')); ?>" class="hover:text-secondary transition-colors">صفحه اصلی</a>
+                <span class="text-slate-300">&gt;</span>
+                <a href="<?= esc_url(get_permalink(get_option('page_for_posts')) ?: home_url('/blog/')); ?>" class="hover:text-secondary transition-colors">مقالات</a>
+                <?php if ($primary_cat) : ?>
+                    <span class="text-slate-300">&gt;</span>
+                    <a href="<?= esc_url(get_category_link($primary_cat->term_id)); ?>" class="hover:text-secondary transition-colors"><?= esc_html($primary_cat->name); ?></a>
+                <?php endif; ?>
+                <span class="text-slate-300">&gt;</span>
+                <span class="text-slate-400 truncate max-w-xs sm:max-w-md"><?= esc_html(get_the_title()); ?></span>
             </nav>
 
             <!-- Main post wrapper: lg:col-span-8 -->

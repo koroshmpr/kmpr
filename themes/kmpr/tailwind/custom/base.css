@@ -1,5 +1,24 @@
 @import 'swiper/swiper-bundle.css';
 
+/* Active Navigation Menu Links */
+.menu-item.current-menu-item > a,
+.menu-item.active > a,
+.menu-item.current_page_item > a,
+.menu-item.current-menu-ancestor > a,
+.menu-item.current_page_ancestor > a {
+	color: #d97706 !important;
+	background-color: rgba(217, 119, 6, 0.12) !important;
+	font-weight: 800 !important;
+}
+
+/* Footer text contrast rules */
+footer, .footer-panel {
+	color: #f1f5f9;
+}
+.footer-panel p, .footer-panel span, .footer-panel div {
+	color: #e2e8f0 !important;
+}
+
 [x-cloak] {
 	display: none !important;
 }

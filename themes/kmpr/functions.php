@@ -39,15 +39,88 @@ add_action('after_setup_theme', 'theme_setup');
 /** * Register widget area.
  * * @link https://developer.wordpress.org/themes/functionality/sidebars/#registering-a-sidebar
  */
-/** * @snippet
- * Add Inline Field Error Notifications @ WooCommerce Checkout * @how-to
- * Get CustomizeWoo.com FREE * @sourcecode
- * https://businessbloomer.com/?p=86570 * @author
- * Rodolfo Melogli * @compatible
- * WooCommerce 3.5.4 * @donate $9
- * https://businessbloomer.com/bloomer-armada/
+/**
+ * Performance & Speed Optimizations
  */
-add_action('woocommerce_before_single_product_summary', 'bbloomer_new_badge_shop_page', 3);
+function kmpr_disable_emojis() {
+    remove_action('wp_head', 'print_emoji_detection_script', 7);
+    remove_action('admin_print_scripts', 'print_emoji_detection_script');
+    remove_action('wp_print_styles', 'print_emoji_styles');
+    remove_action('admin_print_styles', 'print_emoji_styles');
+    remove_filter('the_content_feed', 'wp_staticize_emoji');
+    remove_filter('comment_text_rss', 'wp_staticize_emoji');
+    remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+}
+add_action('init', 'kmpr_disable_emojis');
+
+function kmpr_cleanup_head_scripts() {
+    wp_deregister_script('wp-embed');
+    remove_action('wp_head', 'wp_generator');
+    remove_action('wp_head', 'wlwmanifest_link');
+    remove_action('wp_head', 'rsd_link');
+    remove_action('wp_head', 'wp_shortlink_wp_head');
+}
+add_action('wp_enqueue_scripts', 'kmpr_cleanup_head_scripts', 99);
+
+/**
+ * Robust Active Menu Item Filter
+ * Correctly marks current-menu-item / active based on current page and post type archives
+ */
+function kmpr_menu_active_classes($classes, $item) {
+    if (!is_array($classes)) {
+        $classes = array();
+    }
+    
+    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    $current_url = home_url($request_uri);
+    $item_url = untrailingslashit($item->url);
+    $current_clean = untrailingslashit($current_url);
+
+    // Exact or prefix URL match
+    if ($item_url === $current_clean) {
+        $classes[] = 'current-menu-item';
+        $classes[] = 'active';
+    }
+
+    // Services
+    if ((is_post_type_archive('services') || is_singular('services') || strpos($request_uri, '/services') !== false) && (strpos($item->url, 'services') !== false)) {
+        $classes[] = 'current-menu-item';
+        $classes[] = 'active';
+    }
+
+    // Portfolio
+    if ((is_post_type_archive('portfolio') || is_singular('portfolio') || strpos($request_uri, '/portfolio') !== false) && (strpos($item->url, 'portfolio') !== false)) {
+        $classes[] = 'current-menu-item';
+        $classes[] = 'active';
+    }
+
+    // Blog / Articles
+    if ((is_home() || is_singular('post') || is_category() || is_tag() || strpos($request_uri, '/blog') !== false || strpos($request_uri, '/mag') !== false) && (strpos($item->url, 'blog') !== false || strpos($item->url, 'mag') !== false || $item->object_id == get_option('page_for_posts'))) {
+        $classes[] = 'current-menu-item';
+        $classes[] = 'active';
+    }
+
+    // Front page
+    if (is_front_page() && ($item_url === untrailingslashit(home_url('/')) || $item_url === home_url('/'))) {
+        $classes[] = 'current-menu-item';
+        $classes[] = 'active';
+    }
+
+    // About Us
+    if (strpos($request_uri, 'about') !== false && strpos($item->url, 'about') !== false) {
+        $classes[] = 'current-menu-item';
+        $classes[] = 'active';
+    }
+
+    // Contact Us
+    if (strpos($request_uri, 'contact') !== false && strpos($item->url, 'contact') !== false) {
+        $classes[] = 'current-menu-item';
+        $classes[] = 'active';
+    }
+
+    return array_unique($classes);
+}
+add_filter('nav_menu_css_class', 'kmpr_menu_active_classes', 10, 2);
 /** * Custom template tags for this theme. */
 //require get_template_directory() . '/inc/template-tags.php';
 add_action('acf/init', 'my_acf_op_init');
@@ -96,34 +169,7 @@ function wpd_get_menu_item($field, $object_id, $items)
     return false;
 }
 
-/*--Offset Pre_Get_Posts pagination fix--*///
-add_action('pre_get_posts', 'myprefix_query_offset', 1);
-function myprefix_query_offset(&$query)
-{
-    if ($query->is_home() && !$query->is_main_query()) {
-        return;
-    }
-    $offset = 3;
-    $ppp = get_option('posts_per_page');
-    if ($query->is_paged) {
-        $page_offset = $offset + (($query->query_vars['paged'] - 1) * $ppp);
-        $query->set('offset', $page_offset);
-    } else {
-        if ($query->is_home() && $query->is_main_query()) {
-            $query->set('offset', $offset);
-        }
-    }
-}
-
-add_filter('found_posts', 'myprefix_adjust_offset_pagination', 1, 2);
-function myprefix_adjust_offset_pagination($found_posts, $query)
-{
-    $offset = 3;
-    if ($query->is_home()) {
-        return $found_posts - $offset;
-    }
-    return $found_posts;
-}
+// Custom Breadcrumbs helper
 
 function the_breadcrumb()
 {
@@ -298,14 +344,17 @@ function toc_shortcode()
 }
 
 add_shortcode('TOC', 'toc_shortcode');
-//estimated reading time
-function reading_time()
+// estimated reading time
+function reading_time($post_id = null)
 {
-    ob_start();
-    the_content();
-    $content = ob_get_clean();
-    $readingtime = ceil(sizeof(explode(" ", utf8_decode($content))) / 200);
-    return $readingtime;
+    if (!$post_id) {
+        $post_id = get_the_ID();
+    }
+    $content = get_post_field('post_content', $post_id);
+    $clean_content = wp_strip_all_tags(strip_shortcodes($content));
+    $word_count = count(preg_split('/\s+/u', trim($clean_content), -1, PREG_SPLIT_NO_EMPTY));
+    $minutes = ceil($word_count / 200);
+    return max(1, (int)$minutes);
 }
 
 function track_post_views($post_id)
@@ -414,27 +463,50 @@ function gregorian_to_jalali($gy, $gm, $gd) {
 	return array($jy, $jm, $jd);
 }
 
-function shamsi_date($format, $timestamp = null) {
+function kmpr_to_persian_num($string) {
+	$persian = array('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹');
+	$english = array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+	return str_replace($english, $persian, (string)$string);
+}
+
+function shamsi_date($format = 'd F Y', $timestamp = null, $persian_digits = true) {
 	if (!$timestamp) {
 		$timestamp = time();
 	}
 
-	$g_date = date("Y-m-d", $timestamp);
+	$g_date = date("Y-m-d", (int)$timestamp);
 	list($gy, $gm, $gd) = explode('-', $g_date);
-	list($jy, $jm, $jd) = gregorian_to_jalali($gy, $gm, $gd);
+	list($jy, $jm, $jd) = gregorian_to_jalali((int)$gy, (int)$gm, (int)$gd);
 
-	$persian_months = [
+	$persian_months = array(
 		'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
 		'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
-	];
+	);
 
-	$formatted_date = str_replace('Y', $jy, $format);
-	$formatted_date = str_replace('m', str_pad($jm, 2, '0', STR_PAD_LEFT), $formatted_date);
-	$formatted_date = str_replace('d', str_pad($jd, 2, '0', STR_PAD_LEFT), $formatted_date);
+	$formatted = str_replace('Y', $jy, $format);
+	$formatted = str_replace('y', substr((string)$jy, 2), $formatted);
+	$formatted = str_replace('m', str_pad($jm, 2, '0', STR_PAD_LEFT), $formatted);
+	$formatted = str_replace('n', $jm, $formatted);
+	$formatted = str_replace('d', str_pad($jd, 2, '0', STR_PAD_LEFT), $formatted);
+	$formatted = str_replace('j', $jd, $formatted);
 
-	if (str_contains($format, 'F')) {
-		$formatted_date = str_replace('F', $persian_months[$jm - 1], $formatted_date);
+	if (strpos($formatted, 'F') !== false) {
+		$formatted = str_replace('F', $persian_months[$jm - 1], $formatted);
 	}
 
-	return $formatted_date;
-}
+	if ($persian_digits) {
+		return kmpr_to_persian_num($formatted);
+	}
+
+	return $formatted;
+}
+
+// Automatically convert get_the_date / get_the_modified_date to Persian Shamsi without plugins!
+function kmpr_filter_wp_date($the_date, $format, $post) {
+	$timestamp = get_post_time('U', false, $post);
+	if (!$timestamp) return $the_date;
+	return shamsi_date($format ?: 'd F Y', $timestamp, true);
+}
+add_filter('get_the_date', 'kmpr_filter_wp_date', 10, 3);
+add_filter('get_the_modified_date', 'kmpr_filter_wp_date', 10, 3);
+add_filter('get_comment_date', 'kmpr_filter_wp_date', 10, 3);
