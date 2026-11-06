@@ -102,40 +102,46 @@ Text Domain: kmpr
   font-family: yekanBakh;
   font-style: normal;
   font-weight: 400;
-  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN01-LIGHT.ttf') format('truetype');
+  font-display: swap;
+  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan-Bakh-FaNum-Regular.woff2') format('woff2'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan-Bakh-FaNum-Regular.woff') format('woff'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN02-REGULAR.ttf') format('truetype');
 }
 @font-face {
   font-family: yekanBakh;
   font-style: normal;
   font-weight: 500;
-  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN02-REGULAR.ttf') format('truetype');
+  font-display: swap;
+  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_05_Medium.woff2') format('woff2'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_05_Medium.woff') format('woff'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN03-MEDIUM.ttf') format('truetype');
 }
 @font-face {
   font-family: yekanBakh;
   font-style: normal;
   font-weight: 600;
-  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN03-MEDIUM.ttf') format('truetype');
+  font-display: swap;
+  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_05_Medium.woff2') format('woff2'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_05_Medium.woff') format('woff'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN03-MEDIUM.ttf') format('truetype');
 }
 @font-face {
   font-family: yekanBakh;
   font-style: normal;
   font-weight: 700;
-  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN04-BOLD.ttf') format('truetype');
+  font-display: swap;
+  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_06_Bold.woff2') format('woff2'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_06_Bold.woff') format('woff'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN04-BOLD.ttf') format('truetype');
 }
 @font-face {
   font-family: yekanBakh;
   font-style: normal;
   font-weight: 800;
-  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN05-HEAVY.ttf') format('truetype');
+  font-display: swap;
+  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_07_Heavy.woff2') format('woff2'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_07_Heavy.woff') format('woff'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN05-HEAVY.ttf') format('truetype');
 }
 @font-face {
   font-family: yekanBakh;
   font-style: normal;
   font-weight: 900;
-  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN06-FAT.ttf') format('truetype');
+  font-display: swap;
+  src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_07_Heavy.woff2') format('woff2'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/Yekan_Bakh_FaNum_07_Heavy.woff') format('woff'), url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN06-FAT.ttf') format('truetype');
 }
 .font-yekan {
-  font-family: yekanBakh, sans-serif;
+  font-family: yekanBakh, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 body .gform_wrapper {
   color: var(--color-slate-800);

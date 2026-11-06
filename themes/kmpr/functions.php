@@ -16,10 +16,10 @@ add_action('wp_enqueue_scripts', 'theme_scripts');
 
 function theme_preload_fonts() {
     $font_dir = get_template_directory_uri() . '/public/fonts/yekanBakh/';
-    echo '<link rel="preload" href="' . $font_dir . 'YEKANBAKH-EN02-REGULAR.ttf" as="font" type="font/ttf" crossorigin="anonymous">' . "\n";
-    echo '<link rel="preload" href="' . $font_dir . 'YEKANBAKH-EN04-BOLD.ttf" as="font" type="font/ttf" crossorigin="anonymous">' . "\n";
+    echo '<link rel="preload" href="' . esc_url($font_dir . 'Yekan-Bakh-FaNum-Regular.woff2') . '" as="font" type="font/woff2" crossorigin="anonymous">' . "\n";
+    echo '<link rel="preload" href="' . esc_url($font_dir . 'Yekan_Bakh_FaNum_06_Bold.woff2') . '" as="font" type="font/woff2" crossorigin="anonymous">' . "\n";
 }
-add_action('wp_head', 'theme_preload_fonts', 5);
+add_action('wp_head', 'theme_preload_fonts', 1);
 
 add_theme_support('title-tag');
 add_theme_support('post-thumbnails');
@@ -59,8 +59,20 @@ function kmpr_cleanup_head_scripts() {
     remove_action('wp_head', 'wlwmanifest_link');
     remove_action('wp_head', 'rsd_link');
     remove_action('wp_head', 'wp_shortlink_wp_head');
+    remove_action('wp_head', 'rest_output_link_wp_head');
+    remove_action('wp_head', 'wp_oembed_add_discovery_links');
+    remove_action('template_redirect', 'rest_output_link_header', 11);
+    
+    // Dequeue unused default WordPress classic styles
+    wp_dequeue_style('classic-theme-styles');
+    
+    // Remove default block SVG filters from body
+    remove_action('wp_body_open', 'wp_global_styles_render_svg_filters');
 }
 add_action('wp_enqueue_scripts', 'kmpr_cleanup_head_scripts', 99);
+add_action('after_setup_theme', function() {
+    remove_action('wp_body_open', 'wp_global_styles_render_svg_filters');
+});
 
 /**
  * Robust Active Menu Item Filter
