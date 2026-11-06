@@ -63,7 +63,7 @@ $portfolio_categories = get_terms([
 </section>
 
 <!-- Portfolio Grid Section with Category Filters -->
-<section class="py-16 lg:py-24 bg-slate-50 border-b border-slate-200/80" 
+<section class="py-16 lg:py-24 bg-slate-950 border-b border-white/10 text-white" 
          x-data="{ activeCat: 'all' }">
     <div class="container mx-auto px-4 sm:px-6">
         
@@ -71,13 +71,13 @@ $portfolio_categories = get_terms([
         <?php if (!empty($portfolio_categories) && !is_wp_error($portfolio_categories)) : ?>
             <div class="flex flex-wrap items-center justify-center gap-2.5 mb-14" data-aos="fade-up">
                 <button @click="activeCat = 'all'"
-                        :class="activeCat === 'all' ? 'bg-primary text-white shadow-md' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'"
+                        :class="activeCat === 'all' ? 'bg-secondary text-white shadow-lg shadow-secondary/25' : 'bg-white/[0.03] text-slate-300 hover:text-white hover:bg-white/[0.08] border border-white/10'"
                         class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-black transition-all cursor-pointer">
                     همه پروژه‌ها
                 </button>
                 <?php foreach ($portfolio_categories as $cat) : ?>
                     <button @click="activeCat = '<?= esc_attr($cat->slug); ?>'"
-                            :class="activeCat === '<?= esc_attr($cat->slug); ?>' ? 'bg-primary text-white shadow-md' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'"
+                            :class="activeCat === '<?= esc_attr($cat->slug); ?>' ? 'bg-secondary text-white shadow-lg shadow-secondary/25' : 'bg-white/[0.03] text-slate-300 hover:text-white hover:bg-white/[0.08] border border-white/10'"
                             class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-black transition-all cursor-pointer">
                         <?= esc_html($cat->name); ?>
                     </button>

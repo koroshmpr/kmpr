@@ -1,16 +1,19 @@
 <?php
 /**
- * Services list for homepage
+ * Services list for homepage - Personal Brand
  */
 ?>
-<section id="services" class="py-16 lg:py-24 bg-slate-50 border-b border-slate-200/60">
-    <div class="container mx-auto px-4 sm:px-6">
-        <div class="text-center max-w-xl mx-auto mb-14">
-            <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-2">تخصص و مهارت‌ها</span>
-            <h2 class="text-3xl lg:text-4xl font-black text-slate-900 mb-4">خدمات تخصصی ما</h2>
-            <div class="h-1.5 w-16 bg-secondary mx-auto rounded-full mb-3"></div>
-            <p class="text-slate-500 text-sm sm:text-base leading-relaxed">
-                ارائه برترین راهکارهای دیجیتال، طراحی وب و توسعه سیستم‌های مدرن متناسب با کسب‌وکار شما
+<section id="services" class="py-16 lg:py-24 bg-slate-950 border-b border-white/10 relative overflow-hidden">
+    <!-- Ambient subtle glow -->
+    <div class="absolute top-1/2 end-0 w-96 h-96 bg-secondary/10 rounded-full blur-[140px] pointer-events-none"></div>
+
+    <div class="container mx-auto px-4 sm:px-6 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+            <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-2">تخصص و خدمات من</span>
+            <h2 class="text-3xl lg:text-4xl font-black text-white mb-4">حوزه‌های مهندسی و توسعه اختصاصی</h2>
+            <div class="h-1.5 w-16 bg-secondary mx-auto rounded-full mb-4"></div>
+            <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+                توسعه وب‌اپلیکیشن‌ها، قالب‌های اختصاصی بدون کدهای اضافه و بهینه‌سازی سیستم‌ها با بالاترین استانداردهای معماری نرم‌افزار
             </p>
         </div>
 
@@ -37,8 +40,8 @@
         <!-- View all services CTA -->
         <div class="text-center mt-12">
             <a href="<?= esc_url(get_post_type_archive_link('services') ?: home_url('/services')); ?>" 
-               class="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-800 hover:text-secondary border border-slate-200/80 font-bold text-sm px-6 py-3 rounded-full transition-all duration-300 shadow-2xs hover:shadow-sm">
-                <span>مشاهده کلیه خدمات</span>
+               class="inline-flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white border border-white/10 font-bold text-sm px-7 py-3.5 rounded-full transition-all duration-300 shadow-lg hover:border-secondary/40">
+                <span>مشاهده کلیه حوزه‌ها و کانفیگور هوشمند پروژه</span>
                 <span>&larr;</span>
             </a>
         </div>

@@ -41,19 +41,21 @@ function kmpr_theme_setup()
 add_action('after_setup_theme', 'kmpr_theme_setup');
 
 /**
- * Register ACF Options Pages
+ * Register ACF Options Pages for Korosh Mpr Identity & Settings
  */
 function kmpr_acf_options_init()
 {
     if (function_exists('acf_add_options_page')) {
         $parent = acf_add_options_page(array(
-            'page_title' => __('Theme General Settings'),
-            'menu_title' => __('Theme Settings'),
+            'page_title' => __('هویت و تنظیمات کوروش محمدپور'),
+            'menu_title' => __('تنظیمات کوروش'),
+            'menu_slug'  => 'kmpr-theme-settings',
+            'icon_url'   => 'dashicons-admin-customizer',
             'redirect'   => false,
         ));
         acf_add_options_page(array(
-            'page_title'  => __('Contact and Social'),
-            'menu_title'  => __('Contact and Social'),
+            'page_title'  => __('شبکه‌های اجتماعی و تماس مستقیم'),
+            'menu_title'  => __('تماس و شبکه‌ها'),
             'parent_slug' => $parent['menu_slug'],
         ));
     }
