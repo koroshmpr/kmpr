@@ -9,7 +9,15 @@ $box_title         = get_field('about-box-title') ?: 'سرعت، تمیزی کد
 $box_content       = get_field('about-box-content') ?: 'من کوروش محمدپور هستم؛ معمار نرم‌افزار و توسعه‌دهنده پلتفرم‌های مدرن وب. در تمام این سال‌ها باور داشته‌ام که کیفیت ساختار کدهای یک پروژه، مهم‌ترین دارایی فنی یک کسب‌وکار است. سیستم‌ها را به صورت ماژولار، کامپوننت‌محور و اختصاصی خلق می‌کنم تا بالاترین بازدهی تجاری و رضایت کاربر حاصل شود.';
 $box_img           = get_field('about-box-img');
 
-$image_url = (!empty($box_img['url'])) ? $box_img['url'] : (get_template_directory_uri() . '/public/images/korosh-mpr.webp');
+if (is_array($box_img) && !empty($box_img['url'])) {
+    $image_url = $box_img['url'];
+} elseif (is_numeric($box_img)) {
+    $image_url = wp_get_attachment_image_url($box_img, 'full') ?: (get_template_directory_uri() . '/public/images/korosh-mpr.webp');
+} elseif (is_string($box_img) && !empty($box_img)) {
+    $image_url = $box_img;
+} else {
+    $image_url = get_template_directory_uri() . '/public/images/korosh-mpr.webp';
+}
 ?>
 <section class="py-16 lg:py-24 bg-slate-950 overflow-hidden border-b border-white/10 relative">
     <!-- Ambient subtle background glow -->

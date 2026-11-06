@@ -8,7 +8,15 @@ $hero_subtitle = get_field('hero-subtitle');
 $hero_image    = get_field('hero-image');
 
 // Default fallback photo if not set in dashboard
-$photo_url = (!empty($hero_image['url'])) ? $hero_image['url'] : (get_template_directory_uri() . '/public/images/korosh-mpr.webp');
+if (is_array($hero_image) && !empty($hero_image['url'])) {
+    $photo_url = $hero_image['url'];
+} elseif (is_numeric($hero_image)) {
+    $photo_url = wp_get_attachment_image_url($hero_image, 'full') ?: (get_template_directory_uri() . '/public/images/korosh-mpr.webp');
+} elseif (is_string($hero_image) && !empty($hero_image)) {
+    $photo_url = $hero_image;
+} else {
+    $photo_url = get_template_directory_uri() . '/public/images/korosh-mpr.webp';
+}
 
 // Slogan & Subtitle with intelligent fallbacks
 $title_text = $hero_slogan ? esc_html($hero_slogan) : 'معمار نرم‌افزار و توسعه‌دهنده پلتفرم‌های مدرن وب';

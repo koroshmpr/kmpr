@@ -8,7 +8,15 @@ get_header();
 $about_title   = get_field('aboutus-title') ?: 'مهندسی سیستم‌های وب بر پایه کد تمیز و پرفورمنس';
 $about_content = get_field('aboutus-content') ?: 'من کوروش محمدپور هستم؛ معمار نرم‌افزار و برنامه‌نویس وب با بیش از ۷ سال تجربه در طراحی و توسعه پلتفرم‌های با مقیاس بالا. باور عمیق من این است که یک وب‌سایت مدرن نباید زیر بار قالب‌های آماده، افزونه‌های حجیم و صفحه‌سازهای کند فلج شود. در هر پروژه، بالاترین اولویت را بر سرعت بارگذاری استثنایی، امنیت پایدار و ارزش‌آفرینی واقعی برای کسب‌وکار می‌گذارم.';
 $about_image   = get_field('aboutus_image');
-$photo_url     = (!empty($about_image['url'])) ? $about_image['url'] : (get_template_directory_uri() . '/public/images/korosh-mpr.webp');
+if (is_array($about_image) && !empty($about_image['url'])) {
+    $photo_url = $about_image['url'];
+} elseif (is_numeric($about_image)) {
+    $photo_url = wp_get_attachment_image_url($about_image, 'full') ?: (get_template_directory_uri() . '/public/images/korosh-mpr.webp');
+} elseif (is_string($about_image) && !empty($about_image)) {
+    $photo_url = $about_image;
+} else {
+    $photo_url = get_template_directory_uri() . '/public/images/korosh-mpr.webp';
+}
 ?>
 
 <!-- About Hero Header -->

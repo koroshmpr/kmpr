@@ -9,7 +9,17 @@
 
 get_header(); 
 
-$korosh_photo = get_template_directory_uri() . '/public/images/korosh-mpr.webp';
+// Dynamic photo resolution from dashboard fields with fallback
+$resume_photo = get_field('resume_photo', 'option') ?: get_field('hero-image', 44);
+if (is_array($resume_photo) && !empty($resume_photo['url'])) {
+    $korosh_photo = $resume_photo['url'];
+} elseif (is_numeric($resume_photo)) {
+    $korosh_photo = wp_get_attachment_image_url($resume_photo, 'full') ?: (get_template_directory_uri() . '/public/images/korosh-mpr.webp');
+} elseif (is_string($resume_photo) && !empty($resume_photo)) {
+    $korosh_photo = $resume_photo;
+} else {
+    $korosh_photo = get_template_directory_uri() . '/public/images/korosh-mpr.webp';
+}
 
 // Dynamic ACF fields with complete PDF fallbacks
 $summary = get_field('resume_summary', 'option') ?: 'توسعه‌دهنده فول‌استک و طراح سایت با سابقه گسترده در طراحی و توسعه صفر تا صد وب‌سایت‌های شرکتی و پلتفرم‌های فروشگاهی. متخصص در برنامه‌نویسی اختصاصی و بهینه‌سازی قالب‌های وردپرس (PHP) و مسلط به ساختارهای المنتور و سایر صفحه‌سازها. دارای تجربه عملی در توسعه فرانت‌اند مدرن با استفاده از React و Next.js جهت خلق تجربه‌های کاربری روان و سریع. متعهد به پیاده‌سازی دقیق اصول سئو (SEO)، ارتقای عملکرد سایت و ارائه راهکارهای پایدار فنی.';
