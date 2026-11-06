@@ -105,13 +105,13 @@ while (have_posts()) :
                             <!-- Client website -->
                             <?php $website = get_field('portfolio-website'); ?>
                             <?php if ($website) : ?>
-                                <a class="inline-flex items-center gap-2 bg-secondary text-primary font-bold px-6 py-2.5 rounded-xl hover:scale-105 hover:bg-secondary/90 transition-all duration-300 shadow-lg text-sm"
+                                <a class="inline-flex items-center gap-2 bg-secondary hover:bg-secondary-hover text-white font-black px-6 py-2.5 rounded-xl hover:scale-105 transition-all duration-300 shadow-lg shadow-secondary/25 text-sm"
                                    target="_blank"
                                    href="<?= esc_url($website['url']); ?>">
                                     <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M13.5 3a.5.5 0 0 1 .5.5V11H2V3.5a.5.5 0 0 1 .5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2zM0 12.5h16a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5"></path>
                                     </svg>
-                                    وب‌سایت
+                                    وب‌سایت پروژه
                                 </a>
                             <?php endif; ?>
                         </div>

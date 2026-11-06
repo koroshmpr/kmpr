@@ -7,6 +7,99 @@ window.Alpine = Alpine;
 window.axios = axios;
 Alpine.plugin(intersect);
 
+// Enhanced Live Search component with tabbed multi-content filtering
+window.themeSearch = function () {
+    return {
+        query: '',
+        activeTab: 'all', // 'all', 'post', 'portfolio', 'services'
+        results: {
+            all: [],
+            post: [],
+            portfolio: [],
+            services: []
+        },
+        counts: {
+            all: 0,
+            post: 0,
+            portfolio: 0,
+            services: 0
+        },
+        isLoading: false,
+        hasSearched: false,
+        debounceTimeout: null,
+
+        init() {
+            this.$watch('query', value => {
+                clearTimeout(this.debounceTimeout);
+                if (!value || value.trim().length < 2) {
+                    this.resetResults();
+                    return;
+                }
+                this.isLoading = true;
+                this.debounceTimeout = setTimeout(() => {
+                    this.fetchResults();
+                }, 280);
+            });
+        },
+
+        setTab(tab) {
+            this.activeTab = tab;
+        },
+
+        getCurrentResults() {
+            return this.results[this.activeTab] || [];
+        },
+
+        resetResults() {
+            this.results = { all: [], post: [], portfolio: [], services: [] };
+            this.counts = { all: 0, post: 0, portfolio: 0, services: 0 };
+            this.isLoading = false;
+            this.hasSearched = false;
+        },
+
+        clearQuery() {
+            this.query = '';
+            this.resetResults();
+        },
+
+        fetchResults() {
+            const trimmed = this.query.trim();
+            if (trimmed.length < 2) {
+                this.resetResults();
+                return;
+            }
+
+            this.isLoading = true;
+            const rootUrl = (typeof jsData !== 'undefined' && jsData.root_url) ? jsData.root_url : '';
+            const searchUrl = `${rootUrl}/wp-json/search/v1/search?term=${encodeURIComponent(trimmed)}`;
+
+            axios.get(searchUrl)
+                .then(response => {
+                    const data = response.data;
+                    this.results = {
+                        all: data.all || [],
+                        post: data.post || [],
+                        portfolio: data.portfolio || [],
+                        services: data.services || []
+                    };
+                    this.counts = data.counts || {
+                        all: (data.all || []).length,
+                        post: (data.post || []).length,
+                        portfolio: (data.portfolio || []).length,
+                        services: (data.services || []).length
+                    };
+                    this.hasSearched = true;
+                    this.isLoading = false;
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    this.isLoading = false;
+                    this.hasSearched = true;
+                });
+        }
+    };
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     Alpine.start();
 
@@ -18,11 +111,11 @@ document.addEventListener('DOMContentLoaded', function () {
             let perPage = slider.dataset.perpage ? parseFloat(slider.dataset.perpage) : 3;
             let perPageLapTop = slider.dataset.laptop ? parseFloat(slider.dataset.laptop) : 3;
             let perPageTablet = slider.dataset.tablet ? parseFloat(slider.dataset.tablet) : 2;
-            let perPageMobile = slider.dataset.mobile ? parseFloat(slider.dataset.mobile) : 1.1;
+            let perPageMobile = slider.dataset.mobile ? parseFloat(slider.dataset.mobile) : 1.15;
             let perfix = slider.dataset.perfix ?? 'slider';
             let direction = slider.dataset.direction ?? 'horizontal';
             let index = slider.dataset.index ?? i;
-            let space = slider.dataset.space ? parseFloat(slider.dataset.space) : 20;
+            let space = slider.dataset.space ? parseFloat(slider.dataset.space) : 24;
             let speed = slider.dataset.speed ? parseFloat(slider.dataset.speed) : 600;
             let free = slider.dataset.free === '1';
             let loop = slider.dataset.loop === '1';
@@ -122,35 +215,3 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
-// Modern Live Search Class using Axios and Alpine-style reactive data
-window.themeSearch = function () {
-    return {
-        query: '',
-        results: [],
-        isLoading: false,
-        isOpen: false,
-        init() {
-            this.$watch('query', value => {
-                if (value.length > 2) {
-                    this.fetchResults();
-                } else {
-                    this.results = [];
-                }
-            });
-        },
-        fetchResults() {
-            this.isLoading = true;
-            const searchUrl = `${jsData.root_url}/wp-json/wp/v2/posts?search=${encodeURIComponent(this.query)}&_embed`;
-            axios.get(searchUrl)
-                .then(response => {
-                    this.results = response.data;
-                    this.isLoading = false;
-                })
-                .catch(error => {
-                    console.error('Search error:', error);
-                    this.isLoading = false;
-                });
-        }
-    };
-};

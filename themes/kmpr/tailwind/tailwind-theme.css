@@ -5,14 +5,15 @@
 
 @theme {
 	/**
-	 * These theme variables use CSS variables set by WordPress using values
-	 * from your `theme.json` file.
+	 * High-contrast brand theme variables
 	 */
 	--color-background: var(--wp--preset--color--background, #ffffff);
-	--color-foreground: var(--wp--preset--color--foreground, #212529);
-	--color-primary: var(--wp--preset--color--primary, #36383c);
-	--color-secondary: var(--wp--preset--color--secondary, #e9c77b);
-	--color-tertiary: var(--wp--preset--color--tertiary, #e1e2e4);
+	--color-foreground: var(--wp--preset--color--foreground, #0f172a);
+	--color-primary: var(--wp--preset--color--primary, #1e293b);
+	--color-secondary: var(--wp--preset--color--secondary, #d97706);
+	--color-secondary-light: #fef3c7;
+	--color-secondary-hover: #b45309;
+	--color-tertiary: var(--wp--preset--color--tertiary, #0284c7);
 	--container-content: var(--wp--style--global--content-size, 80rem);
 	--container-wide: var(--wp--style--global--wide-size, 60rem);
 

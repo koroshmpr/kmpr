@@ -4,19 +4,19 @@
  */
 ?>
 <section class="bg-slate-950 text-white pt-16 pb-24 lg:pb-8 border-t border-slate-900 overflow-hidden">
-    <div class="container mx-auto px-6">
+    <div class="container mx-auto px-4 sm:px-6">
         <!-- Main Footer Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 pb-12 border-b border-slate-900 text-start items-start">
             
             <!-- Description Panel (Logo, text, social) -->
-            <div class="lg:col-span-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl flex flex-col items-center lg:items-start gap-4" 
+            <div class="lg:col-span-4 bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl flex flex-col items-center lg:items-start gap-4" 
                  data-aos="fade-left" data-aos-duration="500">
                 
                 <!-- logo -->
-                <?php get_template_part('template-parts/logo-brand', null, array('sizeLogo' => 'h-8 w-auto flex items-center justify-center')); ?>
+                <?php get_template_part('template-parts/logo-brand', null, array('sizeLogo' => 'h-9 w-auto flex items-center justify-center')); ?>
                 
                 <!-- description -->
-                <p class="text-sm text-slate-400 leading-relaxed text-center lg:text-start mt-2 font-medium">
+                <p class="text-sm text-slate-300 leading-relaxed text-center lg:text-start mt-2 font-medium">
                     <?= get_field('footer_description', 'option'); ?>
                 </p>
                 
@@ -24,7 +24,7 @@
                 <div class="mt-4 w-full flex justify-center lg:justify-start">
                     <?php
                     get_template_part('template-parts/social-media', null, array(
-                        'class' => 'gap-3 justify-center lg:justify-start',
+                        'class'    => 'gap-3 justify-center lg:justify-start',
                         'sizeSvgX' => '20',
                         'sizeSvgY' => '20',
                     ));
@@ -34,14 +34,14 @@
 
             <!-- Footer Menu 1 -->
             <div class="lg:col-span-2 flex flex-col gap-4">
-                <p class="font-bold text-base text-secondary uppercase tracking-wider"><?= esc_html(get_field('first_menu', 'option')); ?></p>
+                <span class="font-black text-sm text-secondary uppercase tracking-wider block"><?= esc_html(get_field('first_menu', 'option')); ?></span>
                 <?php
                 if (has_nav_menu('footerLocationOne')) :
                     wp_nav_menu(array(
                         'theme_location' => 'footerLocationOne',
-                        'menu_class' => 'flex flex-col gap-3 text-sm text-slate-400 hover:[&_a]:text-white [&_a]:transition-colors font-medium',
-                        'container' => false,
-                        'depth' => 1,
+                        'menu_class'     => 'flex flex-col gap-2.5 text-sm text-slate-400 [&_a]:transition-colors [&_a:hover]:text-secondary font-medium',
+                        'container'      => false,
+                        'depth'          => 1,
                     ));
                 endif;
                 ?>
@@ -49,14 +49,14 @@
 
             <!-- Footer Menu 2 -->
             <div class="lg:col-span-2 flex flex-col gap-4">
-                <p class="font-bold text-base text-secondary uppercase tracking-wider"><?= esc_html(get_field('second_menu', 'option')); ?></p>
+                <span class="font-black text-sm text-secondary uppercase tracking-wider block"><?= esc_html(get_field('second_menu', 'option')); ?></span>
                 <?php
                 if (has_nav_menu('footerLocationTwo')) :
                     wp_nav_menu(array(
                         'theme_location' => 'footerLocationTwo',
-                        'menu_class' => 'flex flex-col gap-3 text-sm text-slate-400 hover:[&_a]:text-white [&_a]:transition-colors font-medium',
-                        'container' => false,
-                        'depth' => 1,
+                        'menu_class'     => 'flex flex-col gap-2.5 text-sm text-slate-400 [&_a]:transition-colors [&_a:hover]:text-secondary font-medium',
+                        'container'      => false,
+                        'depth'          => 1,
                     ));
                 endif;
                 ?>
@@ -64,14 +64,14 @@
 
             <!-- Footer Menu 3 -->
             <div class="lg:col-span-2 flex flex-col gap-4">
-                <p class="font-bold text-base text-secondary uppercase tracking-wider"><?= esc_html(get_field('third_menu', 'option')); ?></p>
+                <span class="font-black text-sm text-secondary uppercase tracking-wider block"><?= esc_html(get_field('third_menu', 'option')); ?></span>
                 <?php
                 if (has_nav_menu('footerLocationThree')) :
                     wp_nav_menu(array(
                         'theme_location' => 'footerLocationThree',
-                        'menu_class' => 'flex flex-col gap-3 text-sm text-slate-400 hover:[&_a]:text-white [&_a]:transition-colors font-medium',
-                        'container' => false,
-                        'depth' => 1,
+                        'menu_class'     => 'flex flex-col gap-2.5 text-sm text-slate-400 [&_a]:transition-colors [&_a:hover]:text-secondary font-medium',
+                        'container'      => false,
+                        'depth'          => 1,
                     ));
                 endif;
                 ?>
@@ -79,14 +79,14 @@
 
             <!-- Consultation & Contacts -->
             <div class="lg:col-span-2 flex flex-col gap-4">
-                <p class="font-bold text-base text-secondary uppercase tracking-wider">مشاوره و پشتیبانی</p>
+                <span class="font-black text-sm text-secondary uppercase tracking-wider block">مشاوره و ارتباط</span>
                 
-                <div class="flex flex-col gap-3 mt-2">
+                <div class="flex flex-col gap-3 mt-1">
                     <!-- Phone trigger -->
                     <?php if (get_field('phone_number', 'option')) : ?>
                         <a href="tel:<?= esc_attr(get_field('phone', 'option')); ?>"
-                           class="flex items-center justify-start gap-3 p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800/80 hover:border-slate-700 rounded-xl transition-all text-slate-200">
-                            <span class="text-secondary shrink-0">
+                           class="flex items-center justify-start gap-3 p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 rounded-2xl transition-all text-slate-200 group">
+                            <span class="text-secondary shrink-0 group-hover:scale-110 transition-transform">
                                 <?php
                                 get_template_part('template-parts/svg/call-fill', null, array(
                                     'sizeSvgX' => '16',
@@ -101,8 +101,8 @@
                     <!-- Email trigger -->
                     <?php if (get_field('email', 'option')) : ?>
                         <a href="mailto:<?= esc_attr(get_field('email', 'option')); ?>"
-                           class="flex items-center justify-start gap-3 p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800/80 hover:border-slate-700 rounded-xl transition-all text-slate-200">
-                            <span class="text-secondary shrink-0">
+                           class="flex items-center justify-start gap-3 p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 rounded-2xl transition-all text-slate-200 group">
+                            <span class="text-secondary shrink-0 group-hover:scale-110 transition-transform">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
                                 </svg>

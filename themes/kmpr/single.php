@@ -50,7 +50,7 @@ while (have_posts()) :
                     <?php endif; ?>
                     
                     <!-- Floating title overlay -->
-                    <h1 class="text-lg lg:text-3xl leading-[1.7] -translate-y-1/2 mx-auto bg-white/95 p-5 shadow-lg rounded-2xl text-center backdrop-blur-md w-11/12 text-slate-800 font-black border border-slate-100 z-10 relative">
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl leading-[1.6] -mt-10 sm:-mt-14 mx-auto bg-white/95 p-5 sm:p-7 shadow-xl rounded-3xl text-center backdrop-blur-md w-[92%] sm:w-11/12 text-slate-900 font-black border border-slate-200/80 z-10 relative">
                         <?php the_title(); ?>
                     </h1>
                 </div>
@@ -115,7 +115,7 @@ while (have_posts()) :
                             <button class="star-btn p-0.5 text-secondary hover:scale-110 transition-transform cursor-pointer" 
                                     data-rating="<?= $i; ?>"
                                     aria-label="Rate <?= $i; ?> Stars">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="<?= ($i <= $rating_value) ? 'currentColor' : 'none'; ?>" class="bi bi-star-fill stroke-secondary stroke-[1.25]" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="<?= ($i <= round($average_rating)) ? 'currentColor' : 'none'; ?>" class="bi bi-star-fill stroke-secondary stroke-[1.25]" viewBox="0 0 16 16">
                                     <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
                                 </svg>
                             </button>

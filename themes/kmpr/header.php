@@ -12,6 +12,8 @@
 <body <?php body_class('font-yekan bg-white text-slate-800 antialiased'); ?>
       :class="searchOpen || menuOpen ? 'overflow-hidden' : ''"
       x-data="{ scrolled: false, lastScroll: 0, scrollingDown: false, menuOpen: false, searchOpen: false, ticking: false }"
+      @keydown.window.prevent.cmd.k="searchOpen = true"
+      @keydown.window.prevent.ctrl.k="searchOpen = true"
       x-init="
         window.addEventListener('scroll', () => {
             if (!ticking) {

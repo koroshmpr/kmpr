@@ -14,7 +14,7 @@ $kmpr_comment_count = get_comments_number();
         <h3 class="text-lg lg:text-xl font-black text-slate-900 flex items-center gap-2">
             <span>دیدگاه‌های کاربران</span>
             <?php if ($kmpr_comment_count > 0) : ?>
-                <span class="bg-secondary/20 text-primary text-xs font-extrabold px-2.5 py-1 rounded-lg">
+                <span class="bg-secondary text-white text-xs font-black px-2.5 py-1 rounded-xl shadow-xs">
                     <?= number_format_i18n($kmpr_comment_count); ?>
                 </span>
             <?php endif; ?>
@@ -54,3 +54,4 @@ $kmpr_comment_count = get_comments_number();
         </div>
     <?php endif; ?>
 </section>
+

@@ -1,8 +1,8 @@
 body {
 	.gform_wrapper {
-		@apply text-black;
+		@apply text-slate-800;
 		.gfield_label.gform-field-label {
-			@apply mb-4 lg:mb-3 lg:text-lg font-bold;
+			@apply mb-2 text-sm sm:text-base font-black text-slate-800;
 		}
 		.gform_fields {
 			@apply max-lg:!flex flex-wrap gap-4;
@@ -11,14 +11,14 @@ body {
 			}
 		}
 		input[id^="gform_submit_button_"]{
-			@apply !bg-primary !px-12 !py-4 !text-white hover:!bg-primary/90 transition-all rounded-md max-lg:!w-full cursor-pointer;
+			@apply !bg-primary hover:!bg-slate-800 !px-8 !py-3.5 !text-white transition-all rounded-2xl max-lg:!w-full cursor-pointer font-black text-sm shadow-md;
 		}
 		.gform_body {
 			input:not([type="submit"]):not([type="file"]),  textarea {
 				&::placeholder {
-					@apply text-black/55;
+					@apply text-slate-400 font-medium;
 				}
-				@apply bg-white border border-gray-300 max-lg:!w-full p-4 rounded-md outline-none focus:border-primary transition-all;
+				@apply bg-slate-50 border border-slate-200 max-lg:!w-full p-3.5 rounded-2xl outline-none focus:border-secondary focus:bg-white focus:ring-2 focus:ring-secondary/20 transition-all text-sm font-medium;
 			}
 		}
 	}
@@ -30,18 +30,18 @@ body {
 		@apply w-full flex flex-col lg:col-span-2 items-stretch;
 	}
 	p {
-		@apply flex flex-col gap-1 mt-2;
+		@apply flex flex-col gap-1.5 mt-2;
 	}
 	p.logged-in-as {
-		@apply block lg:col-span-2;
+		@apply block lg:col-span-2 text-xs text-slate-500 font-medium;
 	}
 	input, textarea {
-		@apply border border-gray-300 rounded-md w-full py-3 px-4 outline-none focus:border-primary;
+		@apply border border-slate-200 bg-slate-50 rounded-2xl w-full py-3 px-4 outline-none focus:border-secondary focus:bg-white focus:ring-2 focus:ring-secondary/20 transition-all text-sm font-medium;
 	}
 	.form-submit {
 		@apply lg:col-span-2 text-end;
 		#submit {
-			@apply !bg-primary transition-all !rounded-md hover:brightness-110 !text-white !px-8 !py-3.5 cursor-pointer font-bold;
+			@apply !bg-primary hover:!bg-slate-800 transition-all !rounded-2xl !text-white !px-8 !py-3.5 cursor-pointer font-black text-sm shadow-sm;
 		}
 	}
 }

@@ -9,9 +9,10 @@ while (have_posts()) :
              class="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-30 select-none"
              src="<?= esc_url(get_the_post_thumbnail_url()); ?>"
              alt="<?= esc_attr(get_the_title()); ?>">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent"></div>
         
-        <div class="container mx-auto px-6 relative z-10 text-center mt-12">
+        <div class="container mx-auto px-4 sm:px-6 relative z-10 text-center mt-12">
+            <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-2">خدمات تخصصی</span>
             <h1 class="text-3xl lg:text-5xl font-black text-white tracking-tight drop-shadow-lg" data-aos="zoom-in">
                 <?= get_the_title(); ?>
             </h1>
@@ -19,14 +20,14 @@ while (have_posts()) :
     </section>
 
     <!-- Content Area -->
-    <section class="container mx-auto px-6 -mt-16 relative z-20 pb-16">
+    <section class="container mx-auto px-4 sm:px-6 -mt-16 relative z-20 pb-16">
         <div class="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-12 shadow-xl max-w-4xl mx-auto text-start">
             <!-- Share buttons -->
             <div class="border-b border-slate-200/60 pb-6 mb-6">
                 <?php
                 get_template_part('template-parts/share-button', null, array(
                     'headingClass' => 'text-xs font-bold text-slate-500',
-                    'class' => 'gap-3 justify-start',
+                    'class'        => 'gap-3 justify-start',
                 ));
                 ?>
             </div>
@@ -40,11 +41,12 @@ while (have_posts()) :
 
     <!-- Proposal / Pricing Tiers -->
     <?php if (get_field('Proposal_switch') == 'yes') { ?>
-        <section class="bg-slate-50 border-y border-slate-200/60 py-16 lg:py-24">
-            <div class="container mx-auto px-6">
+        <section class="bg-slate-50 border-y border-slate-200/80 py-16 lg:py-24">
+            <div class="container mx-auto px-4 sm:px-6">
                 <div class="text-center max-w-2xl mx-auto mb-16">
-                    <h2 class="text-2xl lg:text-3xl font-black text-slate-800 mb-4">طرح‌ها و تعرفه‌ها</h2>
-                    <div class="h-1.5 w-12 bg-secondary mx-auto rounded-full"></div>
+                    <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-2">تعرفه‌ها و پلن‌ها</span>
+                    <h2 class="text-2xl lg:text-4xl font-black text-slate-900 mb-4">طرح‌ها و تعرفه‌ها</h2>
+                    <div class="h-1.5 w-16 bg-secondary mx-auto rounded-full"></div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
@@ -55,9 +57,9 @@ while (have_posts()) :
                             $offer = get_sub_field('proposal_offer'); 
                             
                             // Define highlight classes for "best offer" tier
-                            $card_bg = ($offer == 'yes') ? 'bg-slate-900 text-white scale-105 border-transparent ring-4 ring-secondary/20 shadow-xl' : 'bg-white text-slate-800 border-slate-200/80 shadow-md';
-                            $row_bg = ($offer == 'yes') ? 'bg-white/5 text-slate-100' : 'bg-slate-100 text-slate-700';
-                            $title_color = ($offer == 'yes') ? 'text-secondary' : 'text-slate-800';
+                            $card_bg = ($offer == 'yes') ? 'bg-slate-900 text-white scale-105 border-transparent ring-4 ring-secondary/30 shadow-2xl' : 'bg-white text-slate-800 border-slate-200/80 shadow-md';
+                            $row_bg = ($offer == 'yes') ? 'bg-white/10 text-slate-100' : 'bg-slate-100 text-slate-700';
+                            $title_color = ($offer == 'yes') ? 'text-secondary' : 'text-slate-900';
                             
                             $anim = '';
                             if (($rowIndex) == 1) {
@@ -70,6 +72,11 @@ while (have_posts()) :
                             ?>
                             <div <?= $anim; ?> class="rounded-3xl border p-8 flex flex-col justify-between text-start gap-6 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 <?= $card_bg; ?>">
                                 <div class="text-center border-b border-slate-200/60 pb-6">
+                                    <?php if ($offer == 'yes') : ?>
+                                        <span class="inline-block bg-secondary text-white text-[10px] font-black uppercase px-3 py-1 rounded-full mb-3 shadow-xs">
+                                            پیشنهاد ویژه
+                                        </span>
+                                    <?php endif; ?>
                                     <h3 class="text-xl lg:text-2xl font-black mb-2 <?= $title_color; ?>"><?= get_sub_field('proposal_title'); ?></h3>
                                     <?php if (get_sub_field('proposal_description')) { ?>
                                         <p class="text-xs opacity-80 mt-2 font-medium"><?= get_sub_field('proposal_description'); ?></p>
@@ -82,15 +89,15 @@ while (have_posts()) :
                                         <div class="flex justify-between items-center px-4 py-3 rounded-xl text-xs font-bold <?= $row_bg; ?>">
                                             <span class="opacity-90"><?= get_sub_field('Property_label'); ?></span>
                                             <?php if ($propertyValue) { ?>
-                                                <span class="text-secondary"><?= $propertyValue; ?></span>
+                                                <span class="text-secondary font-black"><?= $propertyValue; ?></span>
                                             <?php } ?>
                                         </div>
                                     <?php endwhile; ?>
                                 </div>
 
                                 <div class="mt-6 text-center">
-                                    <a href="#contact" class="inline-block w-full text-center py-3.5 rounded-xl font-extrabold text-xs transition-all <?= ($offer == 'yes') ? 'bg-secondary text-primary hover:bg-secondary/95 shadow-lg hover:shadow-secondary/20 hover:scale-[1.02]' : 'bg-primary text-white hover:bg-primary/95 shadow-md hover:scale-[1.02]'; ?>">
-                                        سفارش و مشاوره
+                                    <a href="#contact" class="inline-block w-full text-center py-4 rounded-2xl font-black text-xs sm:text-sm transition-all duration-300 <?= ($offer == 'yes') ? 'bg-secondary hover:bg-secondary-hover text-white shadow-lg shadow-secondary/30 hover:scale-[1.02]' : 'bg-primary hover:bg-slate-800 text-white shadow-md hover:scale-[1.02]'; ?>">
+                                        سفارش و مشاوره رایگان
                                     </a>
                                 </div>
                             </div>
@@ -102,15 +109,15 @@ while (have_posts()) :
     <?php } ?>
 
     <!-- Related Portfolios Slider -->
-    <section class="container mx-auto px-6 py-16 overflow-hidden">
+    <section class="container mx-auto px-4 sm:px-6 py-16 overflow-hidden">
         <?php
         $current_service_id = get_the_ID();
         $args = array(
-            'post_type' => 'portfolio',
+            'post_type'  => 'portfolio',
             'meta_query' => array(
                 array(
-                    'key' => 'relation-service',
-                    'value' => '"' . $current_service_id . '"',
+                    'key'     => 'relation-service',
+                    'value'   => '"' . $current_service_id . '"',
                     'compare' => 'LIKE'
                 )
             )
@@ -120,7 +127,12 @@ while (have_posts()) :
 
         if ($related_portfolios->have_posts()):
             ?>
-            <h6 class="text-2xl font-black text-slate-800 border-b border-slate-200 pb-4 mb-8 text-start">نمونه کارهای مرتبط</h6>
+            <div class="flex items-center justify-between border-b border-slate-200/80 pb-4 mb-8">
+                <div>
+                    <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-1">کارهای انجام شده</span>
+                    <h3 class="text-2xl font-black text-slate-900 text-start">نمونه کارهای مرتبط با این خدمت</h3>
+                </div>
+            </div>
             
             <div class="swiper post-slider w-full !overflow-visible cursor-grab active:cursor-grabbing"
                  data-index="related-portfolios" 
@@ -148,15 +160,15 @@ while (have_posts()) :
                 <!-- Swiper Controls -->
                 <div class="flex items-center justify-center gap-4 mt-8">
                     <!-- Prev Button (pointing right in RTL) -->
-                    <button class="relport-prev-related-portfolios p-2 text-slate-700 hover:text-secondary hover:bg-slate-100 rounded-full transition-all cursor-pointer" aria-label="Previous Slide">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                    <button class="relport-prev-related-portfolios p-2.5 text-slate-700 hover:text-white bg-white hover:bg-secondary border border-slate-200 rounded-full transition-all cursor-pointer shadow-2xs" aria-label="Previous Slide">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
                         </svg>
                     </button>
-                    <div class="swiper-pagination relport-pagination-related-portfolios flex gap-1 items-center"></div>
+                    <div class="swiper-pagination relport-pagination-related-portfolios flex gap-1.5 items-center"></div>
                     <!-- Next Button (pointing left in RTL) -->
-                    <button class="relport-next-related-portfolios p-2 text-slate-700 hover:text-secondary hover:bg-slate-100 rounded-full transition-all cursor-pointer" aria-label="Next Slide">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                    <button class="relport-next-related-portfolios p-2.5 text-slate-700 hover:text-white bg-white hover:bg-secondary border border-slate-200 rounded-full transition-all cursor-pointer shadow-2xs" aria-label="Next Slide">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
                         </svg>
                     </button>
@@ -169,8 +181,13 @@ while (have_posts()) :
     </section>
 
     <!-- Other Services Carousel -->
-    <section class="container mx-auto px-6 py-16 overflow-hidden">
-        <h6 class="text-2xl font-black text-slate-800 border-b border-slate-200 pb-4 mb-8 text-start">خدمات دیگر</h6>
+    <section class="container mx-auto px-4 sm:px-6 py-16 overflow-hidden border-t border-slate-200/80">
+        <div class="flex items-center justify-between pb-4 mb-8">
+            <div>
+                <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-1">دیگر خدمات</span>
+                <h3 class="text-2xl font-black text-slate-900 text-start">سایر خدمات مجموعه</h3>
+            </div>
+        </div>
         
         <div class="swiper post-slider w-full !overflow-visible cursor-grab active:cursor-grabbing"
              data-index="other-services" 
@@ -186,12 +203,12 @@ while (have_posts()) :
                 global $post;
                 $current_post_id = $post->ID;
                 $args = array(
-                    'post_type' => 'services',
-                    'post_status' => 'publish',
-                    'order' => 'DESC',
-                    'posts_per_page' => '-1',
+                    'post_type'           => 'services',
+                    'post_status'         => 'publish',
+                    'order'               => 'DESC',
+                    'posts_per_page'      => -1,
                     'ignore_sticky_posts' => true,
-                    'post__not_in' => array($current_post_id)
+                    'post__not_in'        => array($current_post_id)
                 );
                 $loop = new WP_Query($args);
                 if ($loop->have_posts()) :
@@ -207,15 +224,15 @@ while (have_posts()) :
             <!-- Swiper Controls -->
             <div class="flex items-center justify-center gap-4 mt-8">
                 <!-- Prev Button (pointing right in RTL) -->
-                <button class="services-prev-other-services p-2 text-slate-700 hover:text-secondary hover:bg-slate-100 rounded-full transition-all cursor-pointer" aria-label="Previous Slide">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                <button class="services-prev-other-services p-2.5 text-slate-700 hover:text-white bg-white hover:bg-secondary border border-slate-200 rounded-full transition-all cursor-pointer shadow-2xs" aria-label="Previous Slide">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
                     </svg>
                 </button>
-                <div class="swiper-pagination services-pagination-other-services flex gap-1 items-center"></div>
+                <div class="swiper-pagination services-pagination-other-services flex gap-1.5 items-center"></div>
                 <!-- Next Button (pointing left in RTL) -->
-                <button class="services-next-other-services p-2 text-slate-700 hover:text-secondary hover:bg-slate-100 rounded-full transition-all cursor-pointer" aria-label="Next Slide">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                <button class="services-next-other-services p-2.5 text-slate-700 hover:text-white bg-white hover:bg-secondary border border-slate-200 rounded-full transition-all cursor-pointer shadow-2xs" aria-label="Next Slide">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
                     </svg>
                 </button>
@@ -224,10 +241,11 @@ while (have_posts()) :
     </section>
 
     <!-- Gravity Form Contact Section -->
-    <section id="contact" class="bg-secondary/15 py-16 border-t border-slate-200/60">
-        <div class="container mx-auto px-6 max-w-xl text-start">
-            <h6 class="text-2xl font-black text-slate-900 mb-6 text-center">ارتباط با ما</h6>
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-md">
+    <section id="contact" class="bg-slate-50 py-16 lg:py-24 border-t border-slate-200/80">
+        <div class="container mx-auto px-4 sm:px-6 max-w-xl text-start">
+            <span class="text-xs font-black uppercase text-secondary tracking-widest block text-center mb-2">ثبت درخواست پروژه</span>
+            <h4 class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 text-center">مشاوره رایگان این خدمت</h4>
+            <div class="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-md">
                 <?php 
                 echo do_shortcode('[gravityform id="' . get_field('form-id', 'option') . '" title="false" description="false" ajax="true"]');
                 ?>

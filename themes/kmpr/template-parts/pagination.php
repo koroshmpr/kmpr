@@ -1,31 +1,17 @@
 <?php
 $links = paginate_links(array(
-    'type' => 'array',
-    'prev_next' => false,
-
+    'type'      => 'array',
+    'prev_text' => '&rarr; قبلی',
+    'next_text' => 'بعدی &larr;',
 ));
 if ($links) : ?>
-    <nav aria-label="age navigation example">
-        <?php echo '<ul class="pagination justify-content-center align-items-center">';
-        // get_previous_posts_link will return a string or void if no link is set.
-        if ($prev_posts_link = get_previous_posts_link(__('قبلی'))) :
-            echo '<li class="prev-list-item bg-danger py-2 px-4 image-rounded-min text-white page-item me-4">';
-            echo $prev_posts_link;
-            echo '</li>';
-        endif;
-        echo '<li class="page-item me-4">';
-        echo join('</li><li class="page-item me-4">', $links);
-        echo '</li>';
-
-        // get_next_posts_link will return a string or void if no link is set.
-        if ($next_posts_link = get_next_posts_link(__('بعدی'))) :
-            echo '<li class=" next-list-item bg-danger px-3 py-2 image-rounded-min text-white page-item me-4">';
-            echo $next_posts_link;
-            echo '</li>';
-        endif;
-        echo '</ul>';
-        ?>
+    <nav class="flex justify-center items-center gap-2 my-10" aria-label="Page Navigation">
+        <ul class="flex items-center gap-2 list-none p-0 m-0">
+            <?php foreach ($links as $link) : ?>
+                <li class="inline-flex [&_a]:px-4 [&_a]:py-2 [&_a]:rounded-xl [&_a]:bg-slate-100 [&_a:hover]:bg-slate-200 [&_a]:text-slate-800 [&_a]:font-bold [&_a]:text-xs sm:[&_a]:text-sm [&_a]:transition-colors [&_span.current]:px-4 [&_span.current]:py-2 [&_span.current]:rounded-xl [&_span.current]:bg-primary [&_span.current]:text-white [&_span.current]:font-black [&_span.current]:text-xs sm:[&_span.current]:text-sm [&_span.dots]:px-2">
+                    <?= $link; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
     </nav>
-
-<?php endif;
-?>
+<?php endif; ?>

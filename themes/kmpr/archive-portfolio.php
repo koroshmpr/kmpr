@@ -9,13 +9,13 @@ $args = array(
 );
 get_template_part('template-parts/loop/page-title', null, $args); ?>
 
-<div class="container mx-auto px-6 py-12">
+<section class="container mx-auto px-4 sm:px-6 py-12 lg:py-16">
     <?php
     $args = array(
-        'post_type' => 'portfolio',
-        'post_status' => 'publish',
-        'order' => 'DESC',
-        'posts_per_page' => '-1',
+        'post_type'           => 'portfolio',
+        'post_status'         => 'publish',
+        'order'               => 'DESC',
+        'posts_per_page'      => -1,
         'ignore_sticky_posts' => true
     );
     $loop = new WP_Query($args);
@@ -32,9 +32,13 @@ get_template_part('template-parts/loop/page-title', null, $args); ?>
             </div>
         <?php endwhile; ?>
     </div>
+    <?php else : ?>
+        <div class="py-16 text-center max-w-md mx-auto">
+            <p class="font-bold text-lg text-slate-500">هیچ نمونه‌کاری در حال حاضر ثبت نشده است.</p>
+        </div>
     <?php
     endif;
     wp_reset_postdata(); ?>
-</div>
+</section>
 
 <?php get_footer(); ?>
