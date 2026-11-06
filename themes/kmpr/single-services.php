@@ -247,18 +247,8 @@ while (have_posts()) :
         </div>
     </section>
 
-    <!-- Gravity Form Contact Section -->
-    <section id="contact" class="bg-slate-50 py-16 lg:py-24 border-t border-slate-200/80">
-        <div class="container mx-auto px-4 sm:px-6 max-w-xl text-start">
-            <span class="text-xs font-black uppercase text-secondary tracking-widest block text-center mb-2">ثبت درخواست پروژه</span>
-            <h4 class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 text-center">مشاوره رایگان این خدمت</h4>
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-md">
-                <?php 
-                echo do_shortcode('[gravityform id="' . get_field('form-id', 'option') . '" title="false" description="false" ajax="true"]');
-                ?>
-            </div>
-        </div>
-    </section>
+    <!-- Smart Interactive Project Configurator Section (Replaces Static Form) -->
+    <?php get_template_part('template-parts/services/smart-configurator'); ?>
 <?php endwhile;
 wp_reset_query();
 get_footer(); ?>

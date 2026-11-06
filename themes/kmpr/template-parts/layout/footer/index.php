@@ -39,7 +39,7 @@
                 if (has_nav_menu('footerLocationOne')) :
                     wp_nav_menu(array(
                         'theme_location' => 'footerLocationOne',
-                        'menu_class'     => 'flex flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary font-medium transition-colors',
+                        'menu_class'     => 'flex flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary [&_a]:!bg-transparent font-medium transition-colors',
                         'container'      => false,
                         'depth'          => 1,
                     ));
@@ -54,7 +54,7 @@
                 if (has_nav_menu('footerLocationTwo')) :
                     wp_nav_menu(array(
                         'theme_location' => 'footerLocationTwo',
-                        'menu_class'     => 'flex flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary font-medium transition-colors',
+                        'menu_class'     => 'flex flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary [&_a]:!bg-transparent font-medium transition-colors',
                         'container'      => false,
                         'depth'          => 1,
                     ));
@@ -69,7 +69,7 @@
                 if (has_nav_menu('footerLocationThree')) :
                     wp_nav_menu(array(
                         'theme_location' => 'footerLocationThree',
-                        'menu_class'     => 'flex flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary font-medium transition-colors',
+                        'menu_class'     => 'flex flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary [&_a]:!bg-transparent font-medium transition-colors',
                         'container'      => false,
                         'depth'          => 1,
                     ));
