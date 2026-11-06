@@ -1,10 +1,17 @@
 /*
-Theme Name:   KMPR
-Theme URI:    http://www.kmpr.ir
-Author:       Korosh Mpr
-description:    Premium theme by korosh mpr using bootstrap library and swiper js
-Author URI:   http://www.kmpr.ir
-Version:      1.0.0
+Theme Name:        KMPR
+Theme URI:         https://kmpr.ir
+Author:            Korosh Mpr
+Author URI:        https://kmpr.ir
+Description:       قالب اختصاصی، فوق‌سریع و مهندسی‌شده KMPR برای توسعه‌دهندگان، آژانس‌های دیجیتال و پلتفرم‌های مدرن. توسعه داده شده بر پایه Tailwind CSS v4، آلپاین (Alpine.js)، استانداردهای Core Web Vitals (نمره ۱۰۰)، پروتکل رسمی هوش مصنوعی (llms.txt) و معماری بدون صفحه‌ساز (Zero Bloatware).
+Version:           2.0.0
+Requires at least: 6.0
+Tested up to:      6.7
+Requires PHP:      8.0
+License:           GNU General Public License v2 or later
+License URI:       http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain:       kmpr
+Tags:              custom, developer, portfolio, services, fast, high-performance, tailwindcss, alpinejs, rtl-language-support
 */
 html {
     line-height: 1.15;
