@@ -19,8 +19,8 @@ if (is_array($hero_image) && !empty($hero_image['url'])) {
 }
 
 // Slogan & Subtitle with intelligent fallbacks
-$title_text = $hero_slogan ? esc_html($hero_slogan) : 'معمار نرم‌افزار و توسعه‌دهنده پلتفرم‌های مدرن وب';
-$desc_text  = $hero_subtitle ? esc_html($hero_subtitle) : 'طراحی و پیاده‌سازی سیستم‌های وب با نهایت سرعت و پرفورمنس، معماری استاندارد و راهکارهای پایدار متناسب با مقیاس کسب‌وکار شما.';
+$title_text = $hero_slogan ? esc_html(wp_strip_all_tags($hero_slogan)) : 'معمار نرم‌افزار و توسعه‌دهنده پلتفرم‌های مدرن وب';
+$desc_text  = $hero_subtitle ? esc_html(wp_strip_all_tags($hero_subtitle)) : 'طراحی و پیاده‌سازی سیستم‌های وب با نهایت سرعت و پرفورمنس، معماری استاندارد و راهکارهای پایدار متناسب با مقیاس کسب‌وکار شما.';
 ?>
 <section class="relative min-h-[85vh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-950 text-white select-none py-16 lg:py-24 border-b border-white/10">
     <!-- Subtle Grid Overlay -->

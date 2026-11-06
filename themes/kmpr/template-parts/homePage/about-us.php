@@ -27,10 +27,10 @@ if (is_array($box_img) && !empty($box_img['url'])) {
         <!-- Section Header -->
         <div class="text-center max-w-2xl mx-auto mb-14">
             <span class="text-secondary text-xs sm:text-sm font-black tracking-widest uppercase block mb-2">
-                <?= esc_html($about_title); ?>
+                <?= esc_html(wp_strip_all_tags($about_title)); ?>
             </span>
             <h2 class="text-3xl lg:text-4xl font-black text-white leading-tight">
-                <?= esc_html($about_description); ?>
+                <?= esc_html(wp_strip_all_tags($about_description)); ?>
             </h2>
             <div class="h-1.5 w-16 bg-secondary mx-auto rounded-full mt-4"></div>
         </div>
@@ -73,7 +73,7 @@ if (is_array($box_img) && !empty($box_img['url'])) {
                 </div>
 
                 <h3 class="text-2xl sm:text-3xl font-black text-white mb-6 leading-tight">
-                    <?= esc_html($box_title); ?>
+                    <?= esc_html(wp_strip_all_tags($box_title)); ?>
                 </h3>
 
                 <div class="text-slate-300 text-sm sm:text-base leading-loose font-medium space-y-3">
