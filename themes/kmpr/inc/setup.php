@@ -58,6 +58,11 @@ function kmpr_acf_options_init()
             'menu_title'  => __('تماس و شبکه‌ها'),
             'parent_slug' => $parent['menu_slug'],
         ));
+        acf_add_options_page(array(
+            'page_title'  => __('مدیریت رزومه آنلاین'),
+            'menu_title'  => __('رزومه من'),
+            'parent_slug' => $parent['menu_slug'],
+        ));
     }
 }
 add_action('acf/init', 'kmpr_acf_options_init');
