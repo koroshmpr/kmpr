@@ -144,12 +144,13 @@ $desc_text  = $hero_subtitle ? esc_html($hero_subtitle) : 'طراحی و پیا�
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
 
                         <!-- Bottom Nameplate inside image -->
-                        <div class="absolute bottom-4 inset-x-4 flex items-center justify-between p-3 rounded-2xl bg-slate-950/80 backdrop-blur-md border border-white/10">
-                            <div>
+                        <div class="absolute bottom-4 end-4 flex gap-3 items-center justify-between p-3 rounded-2xl bg-slate-950/80 backdrop-blur-md border border-white/10">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>    
+                        <div>
                                 <span class="block text-xs font-black text-white">کوروش محمدپور</span>
                                 <span class="text-[10px] text-slate-400 font-mono">Senior Software Architect</span>
                             </div>
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                            
                         </div>
                     </div>
 

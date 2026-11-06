@@ -6,7 +6,7 @@ $posters = get_field('cta');
 if ($posters):
     foreach ($posters as $poster):
         ?>
-        <section class="relative py-20 lg:py-28 my-6 bg-slate-950 overflow-hidden select-none border-y border-white/10">
+        <section class="relative my-6 bg-slate-950 overflow-hidden select-none">
             <!-- Ambient Glow -->
             <div class="absolute -top-24 start-1/4 w-96 h-96 bg-secondary/15 rounded-full blur-[120px] pointer-events-none"></div>
             <div class="absolute -bottom-24 end-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] pointer-events-none"></div>

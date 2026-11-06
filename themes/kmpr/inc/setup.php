@@ -113,3 +113,29 @@ function wpd_get_menu_item($field, $object_id, $items)
     }
     return false;
 }
+
+/**
+ * SEO Category Slugs Normalizer
+ * Automatically converts Persian and percent-encoded category slugs
+ * into clean, standard English slugs for maximum Google SEO rankings.
+ */
+function kmpr_normalize_category_slugs()
+{
+    $slug_map = array(
+        'معماری نرم‌افزار'               => 'software-architecture',
+        'پرفورمنس و سئو تکنیکال'        => 'performance-and-technical-seo',
+        'وردپرس اختصاصی و بدون پلاگین'   => 'custom-wordpress-development',
+        'فرانت‌اند مدرن و ری‌اکت'         => 'modern-frontend-react-nextjs',
+        'کسب و کار'                     => 'business',
+        'آموزش'                         => 'tutorials',
+        'اخبار'                         => 'news',
+    );
+
+    foreach ($slug_map as $name => $target_slug) {
+        $term = get_term_by('name', $name, 'category');
+        if ($term && $term->slug !== $target_slug) {
+            wp_update_term($term->term_id, 'category', array('slug' => $target_slug));
+        }
+    }
+}
+add_action('init', 'kmpr_normalize_category_slugs');

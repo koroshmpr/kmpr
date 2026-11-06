@@ -1,6 +1,6 @@
 <?php
 /**
- * The template for displaying comments
+ * The template for displaying comments - Dark Obsidian Theme
  */
 if (post_password_required()) {
     return;
@@ -9,9 +9,9 @@ if (post_password_required()) {
 $kmpr_comment_count = get_comments_number();
 ?>
 
-<section class="bg-slate-50 border border-slate-200/80 rounded-3xl p-6 lg:p-8 flex flex-col gap-8 text-start">
-    <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-        <h3 class="text-lg lg:text-xl font-black text-slate-900 flex items-center gap-2">
+<section class="bg-slate-900/80 border border-white/10 rounded-3xl p-6 lg:p-8 flex flex-col gap-8 text-start backdrop-blur-xl shadow-xl">
+    <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <h3 class="text-lg lg:text-xl font-black text-white flex items-center gap-2">
             <span>دیدگاه‌های کاربران</span>
             <?php if ($kmpr_comment_count > 0) : ?>
                 <span class="bg-secondary text-white text-xs font-black px-2.5 py-1 rounded-xl shadow-xs">
@@ -35,23 +35,23 @@ $kmpr_comment_count = get_comments_number();
 
         <?php the_comments_navigation(); ?>
     <?php else : ?>
-        <div class="bg-white border border-dashed border-slate-200 rounded-2xl p-6 text-center text-slate-500 text-sm font-medium">
-            هنوز دیدگاهی برای این مطلب ثبت نشده است. اولین نفری باشید که دیدگاه خود را ثبت می‌کند!
+        <div class="bg-slate-950/60 border border-dashed border-white/10 rounded-2xl p-6 text-center text-slate-400 text-xs sm:text-sm font-medium">
+            هنوز دیدگاهی برای این مطلب ثبت نشده است. اولین نفری باشید که دیدگاه یا تجربه خود را به اشتراک می‌گذارد!
         </div>
     <?php endif; ?>
 
     <?php if (comments_open()) : ?>
-        <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs">
+        <div class="bg-slate-950/70 border border-white/10 rounded-2xl p-6 shadow-md">
             <?php
             comment_form(array(
-                'title_reply'          => 'ثبت دیدگاه جدید',
-                'title_reply_before'   => '<h4 id="reply-title" class="comment-reply-title text-base font-extrabold text-slate-800 mb-4">',
+                'title_reply'          => 'ثبت دیدگاه یا پرسش فنی',
+                'title_reply_before'   => '<h4 id="reply-title" class="comment-reply-title text-base font-black text-white mb-4">',
                 'title_reply_after'    => '</h4>',
                 'label_submit'         => 'ارسال دیدگاه',
-                'comment_notes_before' => '<p class="comment-notes text-xs text-slate-400 mb-2">نشانی ایمیل شما منتشر نخواهد شد.</p>',
+                'class_submit'         => 'bg-secondary hover:bg-secondary-hover text-white text-xs sm:text-sm font-black px-6 py-2.5 rounded-xl transition-all cursor-pointer shadow-lg shadow-secondary/25 hover:scale-105 active:scale-95',
+                'comment_notes_before' => '<p class="comment-notes text-xs text-slate-400 mb-4">نشانی ایمیل شما منتشر نخواهد شد. بخش‌های موردنیاز علامت‌گذاری شده‌اند.</p>',
             ));
             ?>
         </div>
     <?php endif; ?>
 </section>
-
