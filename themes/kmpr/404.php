@@ -14,8 +14,8 @@ get_header();
         </p>
         <div class="mt-8">
             <a href="<?= esc_url(home_url('/')); ?>" class="inline-flex items-center justify-center gap-2 bg-secondary hover:bg-secondary-hover text-white font-black text-sm px-8 py-3.5 rounded-2xl shadow-lg shadow-secondary/25 hover:scale-105 transition-all duration-300">
+                <span>&rarr;</span>
                 <span>بازگشت به صفحه اصلی</span>
-                <span>&larr;</span>
             </a>
         </div>
     </article>

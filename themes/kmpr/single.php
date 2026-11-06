@@ -206,14 +206,15 @@ while (have_posts()) :
                     </div>
                 </div>
 
-                <!-- Adjacent Articles Switcher (Previous / Next) -->
+                <!-- Adjacent Articles Switcher (Previous / Next - RTL Corrected) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-2">
                     <?php if (!empty($prev_post)) : ?>
                         <a href="<?= esc_url(get_permalink($prev_post->ID)); ?>" 
                            class="p-5 rounded-2xl bg-slate-900/60 hover:bg-slate-900 border border-white/10 hover:border-secondary/40 transition-all flex items-center gap-3.5 text-start group">
-                            <span class="size-9 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0 group-hover:-translate-x-1 transition-transform">
+                            <span class="size-9 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0 group-hover:translate-x-1 transition-transform">
+                                <!-- Right-pointing arrow for Previous in RTL -->
                                 <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                    <polyline points="9 18 15 12 9 6"></polyline>
                                 </svg>
                             </span>
                             <div class="overflow-hidden">
@@ -227,14 +228,15 @@ while (have_posts()) :
 
                     <?php if (!empty($next_post)) : ?>
                         <a href="<?= esc_url(get_permalink($next_post->ID)); ?>" 
-                           class="p-5 rounded-2xl bg-slate-900/60 hover:bg-slate-900 border border-white/10 hover:border-secondary/40 transition-all flex items-center justify-between gap-3.5 text-end group">
+                           class="p-5 rounded-2xl bg-slate-900/60 hover:bg-slate-900 border border-white/10 hover:border-secondary/40 transition-all flex items-center justify-between gap-3.5 text-start group">
                             <div class="overflow-hidden">
                                 <span class="text-[10px] font-mono text-slate-400 block">مقاله بعدی</span>
                                 <h4 class="text-xs sm:text-sm font-black text-white group-hover:text-secondary transition-colors truncate"><?= esc_html(get_the_title($next_post->ID)); ?></h4>
                             </div>
-                            <span class="size-9 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0 group-hover:translate-x-1 transition-transform">
+                            <span class="size-9 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0 group-hover:-translate-x-1 transition-transform">
+                                <!-- Left-pointing arrow for Next in RTL -->
                                 <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                    <polyline points="15 18 9 12 15 6"></polyline>
                                 </svg>
                             </span>
                         </a>

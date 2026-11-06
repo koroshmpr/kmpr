@@ -270,84 +270,189 @@ while (have_posts()) :
     </div>
 
     <!-- Interactive Mockup Showcase Section -->
-    <?php if (have_rows('screenshot')) : ?>
-        <section class="mt-20 py-16 bg-slate-900/40 border-y border-white/10 relative">
-            <div class="container mx-auto px-4 sm:px-6 max-w-6xl">
-                <div class="text-center max-w-xl mx-auto mb-12">
-                    <span class="text-xs font-mono text-secondary uppercase font-bold tracking-widest block mb-2">پیش‌نمایش تعاملی</span>
+    <?php if (have_rows('screenshot')) : 
+        // Collect screenshots into associative list
+        $mockups = array();
+        while (have_rows('screenshot')) : the_row();
+            $sz  = get_sub_field('screen-size') ?: 'laptop';
+            $img = get_sub_field('screenshot-image');
+            if ($img) {
+                $mockups[$sz] = $img;
+            }
+        endwhile;
+    ?>
+    <?php if (!empty($mockups)) : ?>
+        <section x-data="{ activeDevice: 'all', autoScroll: false }" 
+                 class="mt-20 py-16 bg-slate-900/40 border-y border-white/10 relative overflow-hidden">
+            <!-- Glow background -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-secondary/5 rounded-full blur-[140px] pointer-events-none"></div>
+
+            <div class="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
+                <div class="text-center max-w-xl mx-auto mb-8">
+                    <span class="text-xs font-mono text-secondary uppercase font-bold tracking-widest block mb-2">پیش‌نمایش تعاملی زنده</span>
                     <h3 class="text-2xl sm:text-3xl font-black text-white">رابط کاربری و ساختار ریسپانسیو</h3>
-                    <p class="text-xs sm:text-sm text-slate-400 mt-2">ماوس را روی هر تصویر ببرید تا صفحه را به صورت اسکرول کامل مشاهده کنید.</p>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-2">ماوس را روی هر دستگاه ببرید یا از دکمه پیمایش خودکار استفاده کنید تا صفحه به صورت کامل اسکرول شود.</p>
                 </div>
 
-                <div class="flex flex-wrap lg:flex-nowrap justify-center gap-8 items-start">
-                    <?php while (have_rows('screenshot')) : the_row();
-                        $screen_size    = get_sub_field('screen-size');
-                        $screenshot_img = get_sub_field('screenshot-image');
-                        if ($screen_size == 'laptop') {
-                            $col_width    = 'lg:w-2/3';
-                            $aspect_ratio = 'aspect-[16/10]';
-                            $label        = 'نسخه دسکتاپ و مانیتور';
-                        } elseif ($screen_size == 'tablet') {
-                            $col_width    = 'lg:w-1/3';
-                            $aspect_ratio = 'aspect-[3/4]';
-                            $label        = 'نسخه تبلت';
-                        } elseif ($screen_size == 'mobile') {
-                            $col_width    = 'lg:w-1/4';
-                            $aspect_ratio = 'aspect-[9/19]';
-                            $label        = 'نسخه موبایل';
-                        } else {
-                            $col_width    = 'lg:w-1/2';
-                            $aspect_ratio = 'aspect-video';
-                            $label        = 'پیش‌نمایش';
-                        }
+                <!-- Responsive Device Controls (Tabs on Mobile/Tablet + AutoScroll Button) -->
+                <div class="flex items-center justify-center gap-3 mb-10 flex-wrap">
+                    <!-- Device Filter Tabs -->
+                    <div class="flex items-center p-1 bg-slate-950/80 rounded-2xl border border-white/10 text-xs font-bold text-slate-400">
+                        <button type="button" 
+                                @click="activeDevice = 'all'" 
+                                :class="activeDevice === 'all' ? 'bg-secondary text-white shadow-sm' : 'hover:text-white'"
+                                class="px-3.5 py-1.5 rounded-xl transition-all cursor-pointer">
+                            نمایش استودیو
+                        </button>
+                        <?php if (isset($mockups['laptop'])) : ?>
+                        <button type="button" 
+                                @click="activeDevice = 'laptop'" 
+                                :class="activeDevice === 'laptop' ? 'bg-secondary text-white shadow-sm' : 'hover:text-white'"
+                                class="px-3.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5">
+                            <span>مانیتور</span>
+                        </button>
+                        <?php endif; ?>
+                        <?php if (isset($mockups['tablet'])) : ?>
+                        <button type="button" 
+                                @click="activeDevice = 'tablet'" 
+                                :class="activeDevice === 'tablet' ? 'bg-secondary text-white shadow-sm' : 'hover:text-white'"
+                                class="px-3.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5">
+                            <span>تبلت</span>
+                        </button>
+                        <?php endif; ?>
+                        <?php if (isset($mockups['mobile'])) : ?>
+                        <button type="button" 
+                                @click="activeDevice = 'mobile'" 
+                                :class="activeDevice === 'mobile' ? 'bg-secondary text-white shadow-sm' : 'hover:text-white'"
+                                class="px-3.5 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5">
+                            <span>موبایل</span>
+                        </button>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Auto-scroll Toggle Button -->
+                    <button type="button" 
+                            @click="autoScroll = !autoScroll"
+                            :class="autoScroll ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/25' : 'bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 border border-white/10'"
+                            class="px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer">
+                        <svg x-show="!autoScroll" class="size-3.5 text-secondary" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg x-show="autoScroll" class="size-3.5" viewBox="0 0 24 24" fill="currentColor" x-cloak>
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                        <span x-text="autoScroll ? 'توقف اسکرول' : 'پیمایش خودکار تصاویر'"></span>
+                    </button>
+                </div>
+
+                <!-- Showcase Frame Grid (RTL Order: Desktop -> Tablet -> Mobile) -->
+                <div class="flex flex-wrap lg:flex-nowrap justify-center items-end gap-6 lg:gap-8">
+                    
+                    <!-- 1. Desktop / Monitor (Dominant View) -->
+                    <?php if (isset($mockups['laptop'])) : 
+                        $img = $mockups['laptop'];
                     ?>
-                        <div class="w-full <?= $col_width; ?> flex flex-col gap-3">
-                            <div class="bg-slate-900 rounded-3xl shadow-2xl border border-white/10 overflow-hidden flex flex-col p-2.5">
-                                <!-- macOS Header Toolbar -->
-                                <div class="flex items-center justify-between px-4 py-2.5 border-b border-white/10 text-slate-400">
+                        <div x-show="activeDevice === 'all' || activeDevice === 'laptop'"
+                             x-transition
+                             class="w-full lg:w-[54%] max-w-3xl flex flex-col gap-3">
+                            <div class="bg-slate-900 rounded-3xl shadow-2xl border border-white/15 overflow-hidden flex flex-col p-3">
+                                <!-- macOS Header Toolbar (dir=ltr for standard window dots) -->
+                                <div class="flex items-center justify-between px-3 py-2 border-b border-white/10 text-slate-400 dir-ltr">
                                     <div class="flex items-center gap-1.5">
                                         <div class="size-2.5 rounded-full bg-rose-500/80"></div>
                                         <div class="size-2.5 rounded-full bg-amber-500/80"></div>
                                         <div class="size-2.5 rounded-full bg-emerald-500/80"></div>
                                     </div>
-                                    <span class="text-[11px] font-mono text-slate-400"><?= esc_html($label); ?></span>
-                                    <div class="scale-100 opacity-60">
-                                        <?php
-                                        get_template_part('template-parts/svg/portfolio/' . $screen_size, null, array(
-                                            'sizeSvgX' => '20',
-                                            'sizeSvgY' => '20',
-                                            'color'    => '#94a3b8'
-                                        ));
-                                        ?>
+                                    <div class="bg-slate-950/70 border border-white/5 rounded-full px-3 py-0.5 text-[10px] font-mono text-slate-400 flex items-center gap-1.5 max-w-[220px] truncate">
+                                        <svg class="size-2.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        <span class="truncate"><?= esc_html(home_url('/portfolios/' . $post->post_name)); ?></span>
+                                    </div>
+                                    <span class="text-[11px] font-sans font-bold text-slate-300">نسخه دسکتاپ</span>
+                                </div>
+
+                                <!-- Screen view with smooth scroll -->
+                                <div class="overflow-hidden w-full h-[320px] sm:h-[380px] lg:h-[420px] bg-slate-950 rounded-2xl relative group/screen mt-1.5">
+                                    <div class="screenshot absolute inset-0 pointer-events-auto transition-[background-position] ease-in-out bg-top bg-cover w-full h-full group-hover/screen:bg-bottom"
+                                         :class="autoScroll ? 'bg-bottom' : ''"
+                                         style="background-image: url('<?= esc_url($img['url']); ?>');
+                                                 transition-duration: 4500ms;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- 2. Tablet View (Middle View) -->
+                    <?php if (isset($mockups['tablet'])) : 
+                        $img = $mockups['tablet'];
+                    ?>
+                        <div x-show="activeDevice === 'all' || activeDevice === 'tablet'"
+                             x-transition
+                             class="w-full sm:w-[60%] lg:w-[26%] max-w-sm flex flex-col gap-3 mx-auto lg:mx-0">
+                            <div class="bg-slate-900 rounded-3xl shadow-2xl border border-white/15 overflow-hidden flex flex-col p-3">
+                                <!-- Tablet Toolbar -->
+                                <div class="flex items-center justify-between px-3 py-2 border-b border-white/10 text-slate-400 dir-ltr">
+                                    <div class="size-2 rounded-full bg-slate-700"></div>
+                                    <span class="text-[11px] font-sans font-bold text-slate-300">نسخه تبلت</span>
+                                    <div class="size-2 rounded-full bg-slate-700"></div>
+                                </div>
+
+                                <!-- Screen view with smooth scroll -->
+                                <div class="overflow-hidden w-full h-[320px] sm:h-[380px] lg:h-[420px] bg-slate-950 rounded-2xl relative group/screen mt-1.5">
+                                    <div class="screenshot absolute inset-0 pointer-events-auto transition-[background-position] ease-in-out bg-top bg-cover w-full h-full group-hover/screen:bg-bottom"
+                                         :class="autoScroll ? 'bg-bottom' : ''"
+                                         style="background-image: url('<?= esc_url($img['url']); ?>');
+                                                 transition-duration: 4500ms;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- 3. Mobile View (Phone View) -->
+                    <?php if (isset($mockups['mobile'])) : 
+                        $img = $mockups['mobile'];
+                    ?>
+                        <div x-show="activeDevice === 'all' || activeDevice === 'mobile'"
+                             x-transition
+                             class="w-full sm:w-[50%] lg:w-[20%] max-w-[230px] flex flex-col gap-3 mx-auto lg:mx-0">
+                            <div class="bg-slate-900 rounded-[2.5rem] shadow-2xl border-2 border-white/20 overflow-hidden flex flex-col p-2.5">
+                                <!-- Dynamic Island / Speaker Pill -->
+                                <div class="flex items-center justify-center py-1">
+                                    <div class="w-16 h-3 bg-black rounded-full flex items-center justify-end px-1.5 gap-1 border border-white/10">
+                                        <div class="size-1.5 rounded-full bg-slate-800"></div>
                                     </div>
                                 </div>
 
-                                <!-- Screen view with auto smooth scroll on hover -->
-                                <?php if ($screenshot_img) : ?>
-                                    <div class="overflow-hidden w-full <?= $aspect_ratio; ?> bg-slate-950 rounded-2xl relative group/screen">
-                                        <div class="screenshot absolute inset-0 pointer-events-auto transition-[background-position] ease-in-out bg-top bg-cover w-full h-full group-hover/screen:bg-bottom"
-                                             style="background-image: url('<?= esc_url($screenshot_img['url']); ?>');
-                                                     transition-duration: <?= esc_attr(max(1500, ($screenshot_img['height'] ?? 1000) * 1.5)); ?>ms">
-                                        </div>
+                                <!-- Screen view with smooth scroll -->
+                                <div class="overflow-hidden w-full h-[320px] sm:h-[380px] lg:h-[420px] bg-slate-950 rounded-[2rem] relative group/screen mt-1">
+                                    <div class="screenshot absolute inset-0 pointer-events-auto transition-[background-position] ease-in-out bg-top bg-cover w-full h-full group-hover/screen:bg-bottom"
+                                         :class="autoScroll ? 'bg-bottom' : ''"
+                                         style="background-image: url('<?= esc_url($img['url']); ?>');
+                                                 transition-duration: 4500ms;">
                                     </div>
-                                <?php endif; ?>
+                                </div>
                             </div>
                         </div>
-                    <?php endwhile; ?>
+                    <?php endif; ?>
+
                 </div>
             </div>
         </section>
     <?php endif; ?>
+    <?php endif; ?>
 
-    <!-- Adjacent Case Studies Switcher (Next / Previous) -->
+    <!-- Adjacent Case Studies Switcher (Next / Previous - RTL Corrected) -->
     <section class="container mx-auto px-4 sm:px-6 max-w-6xl my-16">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <?php if (!empty($prev_post)) : ?>
                 <a href="<?= esc_url(get_permalink($prev_post->ID)); ?>" 
                    class="p-6 rounded-3xl bg-slate-900/60 hover:bg-slate-900 border border-white/10 hover:border-secondary/40 transition-all flex items-center gap-4 text-start group">
-                    <span class="size-10 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0 group-hover:-translate-x-1 transition-transform">
+                    <span class="size-10 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0 group-hover:translate-x-1 transition-transform">
+                        <!-- Right-pointing arrow for Previous in RTL -->
                         <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <polyline points="15 18 9 12 15 6"></polyline>
+                            <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
                     </span>
                     <div>
@@ -361,14 +466,15 @@ while (have_posts()) :
 
             <?php if (!empty($next_post)) : ?>
                 <a href="<?= esc_url(get_permalink($next_post->ID)); ?>" 
-                   class="p-6 rounded-3xl bg-slate-900/60 hover:bg-slate-900 border border-white/10 hover:border-secondary/40 transition-all flex items-center justify-between gap-4 text-end group">
+                   class="p-6 rounded-3xl bg-slate-900/60 hover:bg-slate-900 border border-white/10 hover:border-secondary/40 transition-all flex items-center justify-between gap-4 text-start group">
                     <div>
                         <span class="text-[11px] font-mono text-slate-400 block">پروژه بعدی</span>
                         <h4 class="text-sm sm:text-base font-black text-white group-hover:text-secondary transition-colors"><?= esc_html(get_the_title($next_post->ID)); ?></h4>
                     </div>
-                    <span class="size-10 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0 group-hover:translate-x-1 transition-transform">
+                    <span class="size-10 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0 group-hover:-translate-x-1 transition-transform">
+                        <!-- Left-pointing arrow for Next in RTL -->
                         <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <polyline points="9 18 15 12 9 6"></polyline>
+                            <polyline points="15 18 9 12 15 6"></polyline>
                         </svg>
                     </span>
                 </a>
