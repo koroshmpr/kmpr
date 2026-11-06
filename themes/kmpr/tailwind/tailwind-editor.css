@@ -1,0 +1,6 @@
+/**
+ * This file outputs to `style-editor.css`, your main block editor style sheet.
+ */
+@import "./partials/header.css";
+@import "./custom/base.css";
+@import "./partials/footer.css";

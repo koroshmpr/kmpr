@@ -1,0 +1,18 @@
+@plugin "@_tw/typography";
+@config "../tailwind-typography.config.js";
+
+/**
+ * Add the WordPress file header.
+ */
+@import "../custom/file-header.css";
+
+/**
+ * Add both the default Tailwind theme and your custom theme.
+ */
+@import "../tailwind-theme.css";
+
+/**
+ * Add custom `@font-face` rules.
+ */
+@import "../custom/fonts.css";
+@import "../custom/form.css";

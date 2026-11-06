@@ -1,0 +1,40 @@
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 400;
+    src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN01-LIGHT.ttf') format('truetype');
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 500;
+    src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN02-REGULAR.ttf') format('truetype');
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 600;
+    src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN03-MEDIUM.ttf') format('truetype');
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 700;
+    src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN04-BOLD.ttf') format('truetype');
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 800;
+    src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN05-HEAVY.ttf') format('truetype');
+}
+@font-face {
+    font-family: yekanBakh;
+    font-style: normal;
+    font-weight: 900;
+    src: url('/wp-content/themes/kmpr/public/fonts/yekanBakh/YEKANBAKH-EN06-FAT.ttf') format('truetype');
+}
+
+.font-yekan {
+    font-family: yekanBakh, sans-serif;
+}

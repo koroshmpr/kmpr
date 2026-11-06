@@ -1,0 +1,25 @@
+/**
+ * Import Tailwind’s default theme.
+ */
+@import "tailwindcss/theme";
+
+@theme {
+	/**
+	 * These theme variables use CSS variables set by WordPress using values
+	 * from your `theme.json` file.
+	 */
+	--color-background: var(--wp--preset--color--background, #ffffff);
+	--color-foreground: var(--wp--preset--color--foreground, #212529);
+	--color-primary: var(--wp--preset--color--primary, #36383c);
+	--color-secondary: var(--wp--preset--color--secondary, #e9c77b);
+	--color-tertiary: var(--wp--preset--color--tertiary, #e1e2e4);
+	--container-content: var(--wp--style--global--content-size, 80rem);
+	--container-wide: var(--wp--style--global--wide-size, 60rem);
+
+	/**
+	 * Default sans font family setting yekanBakh as priority.
+	 */
+	--font-sans: yekanBakh, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	--font-serif: yekanBakh, Georgia, Cambria, "Times New Roman", Times, serif;
+	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}

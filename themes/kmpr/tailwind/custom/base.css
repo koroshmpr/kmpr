@@ -1,0 +1,102 @@
+@import 'swiper/swiper-bundle.css';
+
+[x-cloak] {
+	display: none !important;
+}
+
+/* Balanced line breaks for headings and pretty wrapping for body copy */
+h1, h2, h3, h4, h5, h6 {
+	text-wrap: balance;
+}
+
+p, blockquote, li {
+	text-wrap: pretty;
+}
+
+/* Define the style for the scrollbar thumb */
+::-webkit-scrollbar {
+	width: 7px;
+	height: 7px;
+}
+::-webkit-scrollbar-thumb {
+	@apply bg-primary rounded;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.ltr {
+	direction: ltr;
+}
+
+.page-item,
+.page-numbers {
+	&.next a,
+	&.prev a,
+	&.next,
+	&.prev,
+	.page-numbers,
+	& {
+		@apply inline-flex;
+	}
+}
+
+a.page-numbers,
+span.page-numbers,
+.page-item a,
+.page-item span {
+	@apply bg-slate-100 hover:bg-primary hover:text-white rounded-xl min-w-10 h-10 px-3 flex items-center justify-center text-slate-700 font-bold text-sm transition-all duration-300 cursor-pointer;
+	&.current {
+		@apply bg-secondary text-primary cursor-default shadow-sm;
+	}
+}
+
+a {
+	@apply no-underline transition-all duration-300;
+}
+
+* {
+	scroll-margin-top: 120px;
+	scroll-behavior: smooth;
+}
+
+.swiper-pagination-vertical {
+	@apply flex flex-col !w-4 !h-fit gap-1.5;
+	.swiper-pagination-bullet {
+		@apply bg-slate-300 !h-2 !w-full transform !scale-100 !rounded-full !m-0 opacity-100 !static !transition-all !duration-500;
+		&.swiper-pagination-bullet-active {
+			@apply bg-secondary !h-6;
+		}
+	}
+}
+
+.swiper-pagination-horizontal,
+.hero-pagination {
+	@apply !h-4 !w-fit flex items-center gap-1.5 !static !transform-none;
+	.swiper-pagination-bullet {
+		@apply bg-slate-300 !w-2.5 !h-2.5 transform !scale-100 !rounded-full !m-0 opacity-100 !static !transition-all !duration-500 cursor-pointer;
+		&.swiper-pagination-bullet-active {
+			@apply bg-secondary !w-7;
+		}
+	}
+}
+
+.table-of-contents {
+	ul {
+		@apply flex flex-col gap-2 list-none ps-0 my-0;
+		ul {
+			@apply ps-4 mt-1.5 border-s border-slate-200;
+		}
+	}
+	li {
+		@apply text-xs md:text-sm leading-relaxed;
+	}
+	a {
+		@apply text-slate-600 hover:text-secondary transition-colors block py-0.5;
+	}
+}
+
+blockquote {
+	@apply border-s-4 border !border-s-secondary !border-slate-200 rounded-2xl bg-slate-50 p-5 my-6 text-slate-700 font-medium;
+}
+

@@ -1,0 +1,25 @@
+@utility container {
+	margin-inline: auto;
+	padding-inline: 1.5rem;
+}
+.text-stroke-3 {
+	-webkit-text-stroke: 1px rgba(255, 255, 255, 0.30);
+}
+.swiper-button-disabled {
+	@apply opacity-0;
+}
+.animate-duration-4000::after {
+	animation-duration: 4000ms!important;
+	animation-timing-function: linear!important;
+}
+.screenshot {
+    background-position: top center;
+    transition-property: background-position;
+    transition-timing-function: ease-in-out;
+    background-size: cover;
+    width: 100%;
+}
+.screenshot:hover {
+    background-position: bottom center;
+}
+

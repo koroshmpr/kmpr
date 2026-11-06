@@ -1,0 +1,47 @@
+body {
+	.gform_wrapper {
+		@apply text-black;
+		.gfield_label.gform-field-label {
+			@apply mb-4 lg:mb-3 lg:text-lg font-bold;
+		}
+		.gform_fields {
+			@apply max-lg:!flex flex-wrap gap-4;
+			.gfield {
+				@apply max-lg:w-full;
+			}
+		}
+		input[id^="gform_submit_button_"]{
+			@apply !bg-primary !px-12 !py-4 !text-white hover:!bg-primary/90 transition-all rounded-md max-lg:!w-full cursor-pointer;
+		}
+		.gform_body {
+			input:not([type="submit"]):not([type="file"]),  textarea {
+				&::placeholder {
+					@apply text-black/55;
+				}
+				@apply bg-white border border-gray-300 max-lg:!w-full p-4 rounded-md outline-none focus:border-primary transition-all;
+			}
+		}
+	}
+}
+
+.comment-form {
+	@apply grid lg:grid-cols-2 gap-4;
+	.comment-form-comment, .comment-notes {
+		@apply w-full flex flex-col lg:col-span-2 items-stretch;
+	}
+	p {
+		@apply flex flex-col gap-1 mt-2;
+	}
+	p.logged-in-as {
+		@apply block lg:col-span-2;
+	}
+	input, textarea {
+		@apply border border-gray-300 rounded-md w-full py-3 px-4 outline-none focus:border-primary;
+	}
+	.form-submit {
+		@apply lg:col-span-2 text-end;
+		#submit {
+			@apply !bg-primary transition-all !rounded-md hover:brightness-110 !text-white !px-8 !py-3.5 cursor-pointer font-bold;
+		}
+	}
+}

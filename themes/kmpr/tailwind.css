@@ -1,0 +1,7 @@
+/**
+ * This file outputs to `public/css/style.css`, your main front-end style sheet.
+ */
+@import "./tailwind/partials/header.css";
+@import "tailwindcss/preflight";
+@import "./tailwind/custom/base.css";
+@import "./tailwind/partials/footer.css";

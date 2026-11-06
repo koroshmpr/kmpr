@@ -1,0 +1,9 @@
+/**
+ * Additional styles applied only to the WordPress editor
+ */
+@reference "./tailwind-theme.css";
+
+.entry-header,
+.entry-content {
+	@apply px-8;
+}
