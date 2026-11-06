@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 /**
  * Sets up theme defaults and registers support for various WordPress features.
  */
-function kmpr_theme_setup()
+function theme_setup()
 {
     // Add default title tag support
     add_theme_support('title-tag');
@@ -38,24 +38,22 @@ function kmpr_theme_setup()
     // Enable WooCommerce support
     add_theme_support('woocommerce');
 }
-add_action('after_setup_theme', 'kmpr_theme_setup');
+add_action('after_setup_theme', 'theme_setup');
 
 /**
- * Register ACF Options Pages for Korosh Mpr Identity & Settings
+ * Register ACF Options Pages (Exact original configuration to preserve all data)
  */
-function kmpr_acf_options_init()
+function my_acf_op_init()
 {
     if (function_exists('acf_add_options_page')) {
         $parent = acf_add_options_page(array(
-            'page_title' => __('هویت و تنظیمات کوروش محمدپور'),
-            'menu_title' => __('تنظیمات کوروش'),
-            'menu_slug'  => 'kmpr-theme-settings',
-            'icon_url'   => 'dashicons-admin-customizer',
+            'page_title' => __('Theme General Settings'),
+            'menu_title' => __('Theme Settings'),
             'redirect'   => false,
         ));
         acf_add_options_page(array(
-            'page_title'  => __('شبکه‌های اجتماعی و تماس مستقیم'),
-            'menu_title'  => __('تماس و شبکه‌ها'),
+            'page_title'  => __('Contact and Social'),
+            'menu_title'  => __('Contact and Social'),
             'parent_slug' => $parent['menu_slug'],
         ));
         acf_add_options_page(array(
@@ -65,12 +63,12 @@ function kmpr_acf_options_init()
         ));
     }
 }
-add_action('acf/init', 'kmpr_acf_options_init');
+add_action('acf/init', 'my_acf_op_init');
 
 /**
  * Populate ACF select field options with Gravity Forms
  */
-function kmpr_acf_populate_gf_forms_ids($field)
+function acf_populate_gf_forms_ids($field)
 {
     if (class_exists('GFFormsModel')) {
         $choices = [];
@@ -81,19 +79,19 @@ function kmpr_acf_populate_gf_forms_ids($field)
     }
     return $field;
 }
-add_filter('acf/load_field/name=gravity_choices', 'kmpr_acf_populate_gf_forms_ids');
+add_filter('acf/load_field/name=gravity_choices', 'acf_populate_gf_forms_ids');
 
 /**
  * Helper to add custom CSS classes to nav menu link attributes
  */
-function kmpr_add_menu_link_class($classes, $item, $args)
+function add_menu_link_class($classes, $item, $args)
 {
     if (isset($args->link_class)) {
         $classes['class'] = $args->link_class;
     }
     return $classes;
 }
-add_filter('nav_menu_link_attributes', 'kmpr_add_menu_link_class', 1, 3);
+add_filter('nav_menu_link_attributes', 'add_menu_link_class', 1, 3);
 
 /**
  * Helper function to find a menu item in an array of items
