@@ -75,6 +75,7 @@ Text Domain: kmpr
   --text-9xl: 8rem;
   --text-9xl--line-height: 1;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
   --font-weight-black: 900;
@@ -1979,9 +1980,6 @@ blockquote {
 .block {
   display: block;
 }
-.contents {
-  display: contents;
-}
 .flex {
   display: flex;
 }
@@ -1999,9 +1997,6 @@ blockquote {
 }
 .inline-flex {
   display: inline-flex;
-}
-.table {
-  display: table;
 }
 .aspect-\[3\/4\] {
   aspect-ratio: 3/4;
@@ -3585,6 +3580,10 @@ blockquote {
 .font-medium {
   --tw-font-weight: var(--font-weight-medium);
   font-weight: var(--font-weight-medium);
+}
+.font-semibold {
+  --tw-font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
 }
 .tracking-tight {
   --tw-tracking: var(--tracking-tight);
