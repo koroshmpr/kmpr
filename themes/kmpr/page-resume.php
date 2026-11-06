@@ -9,8 +9,10 @@
 
 get_header(); 
 
+$pid = get_the_ID();
+
 // Dynamic photo resolution from dashboard fields with fallback
-$resume_photo = get_field('resume_photo', 'option') ?: get_field('hero-image', 44);
+$resume_photo = get_field('resume_photo', $pid) ?: get_field('resume_photo', 'option') ?: get_field('hero-image', 44);
 if (is_array($resume_photo) && !empty($resume_photo['url'])) {
     $korosh_photo = $resume_photo['url'];
 } elseif (is_numeric($resume_photo)) {
@@ -22,20 +24,23 @@ if (is_array($resume_photo) && !empty($resume_photo['url'])) {
 }
 
 // Dynamic ACF fields with complete PDF fallbacks
-$summary = get_field('resume_summary', 'option') ?: 'توسعه‌دهنده فول‌استک و طراح سایت با سابقه گسترده در طراحی و توسعه صفر تا صد وب‌سایت‌های شرکتی و پلتفرم‌های فروشگاهی. متخصص در برنامه‌نویسی اختصاصی و بهینه‌سازی قالب‌های وردپرس (PHP) و مسلط به ساختارهای المنتور و سایر صفحه‌سازها. دارای تجربه عملی در توسعه فرانت‌اند مدرن با استفاده از React و Next.js جهت خلق تجربه‌های کاربری روان و سریع. متعهد به پیاده‌سازی دقیق اصول سئو (SEO)، ارتقای عملکرد سایت و ارائه راهکارهای پایدار فنی.';
+$summary = get_field('resume_summary', $pid) ?: get_field('resume_summary', 'option') ?: 'توسعه‌دهنده فول‌استک و طراح سایت با سابقه گسترده در طراحی و توسعه صفر تا صد وب‌سایت‌های شرکتی و پلتفرم‌های فروشگاهی. متخصص در برنامه‌نویسی اختصاصی و بهینه‌سازی قالب‌های وردپرس (PHP) و مسلط به ساختارهای المنتور و سایر صفحه‌سازها. دارای تجربه عملی در توسعه فرانت‌اند مدرن با استفاده از React و Next.js جهت خلق تجربه‌های کاربری روان و سریع. متعهد به پیاده‌سازی دقیق اصول سئو (SEO)، ارتقای عملکرد سایت و ارائه راهکارهای پایدار فنی.';
 
 $phone    = get_field('phone', 'option') ?: '09358088118';
 $email    = get_field('email', 'option') ?: 'korosh.mpr@gmail.com';
 $github   = get_field('github', 'option') ?: 'https://github.com/koroshmpr';
 $linkedin = get_field('linkedin', 'option') ?: 'https://linkedin.com/in/korosh-mpr-475739205';
-$location = get_field('resume_location', 'option') ?: 'تهران، نارمک';
+$location = get_field('resume_location', $pid) ?: get_field('resume_location', 'option') ?: 'تهران، نارمک';
 $website  = 'kmpr.ir';
-$full_name = get_field('resume_full_name', 'option') ?: 'کوروش محمدپور';
-$job_title = get_field('resume_job_title', 'option') ?: 'توسعه‌دهنده ارشد وب و معمار نرم‌افزار';
-$pdf_file  = get_field('resume_pdf_file', 'option');
-$skills_frontend = get_field('resume_skills_frontend', 'option') ?: 'React JS, Next.js, JavaScript (ESNext), Tailwind CSS v4, Alpine.js, Bootstrap, Responsive Design';
-$skills_backend  = get_field('resume_skills_backend', 'option') ?: 'WordPress (Custom Theme & Plugin Development), PHP, Laravel, REST API, MySQL Optimization';
-$skills_tools    = get_field('resume_skills_tools', 'option') ?: 'SEO & Performance (Core Web Vitals), Git / GitHub, Elementor, WooCommerce, AI & llms.txt';
+$full_name = get_field('resume_full_name', $pid) ?: get_field('resume_full_name', 'option') ?: 'کوروش محمدپور';
+$job_title = get_field('resume_job_title', $pid) ?: get_field('resume_job_title', 'option') ?: 'توسعه‌دهنده ارشد وب و معمار نرم‌افزار';
+$pdf_file  = get_field('resume_pdf_file', $pid) ?: get_field('resume_pdf_file', 'option');
+$skills_frontend = get_field('resume_skills_frontend', $pid) ?: get_field('resume_skills_frontend', 'option') ?: 'React JS, Next.js, JavaScript (ESNext), Tailwind CSS v4, Alpine.js, Bootstrap, Responsive Design';
+$skills_backend  = get_field('resume_skills_backend', $pid) ?: get_field('resume_skills_backend', 'option') ?: 'WordPress (Custom Theme & Plugin Development), PHP, Laravel, REST API, MySQL Optimization';
+$skills_tools    = get_field('resume_skills_tools', $pid) ?: get_field('resume_skills_tools', 'option') ?: 'SEO & Performance (Core Web Vitals), Git / GitHub, Elementor, WooCommerce, AI & llms.txt';
+
+$exp_source = have_rows('resume_experiences', $pid) ? $pid : (have_rows('resume_experiences', 'option') ? 'option' : null);
+$edu_source = have_rows('resume_education', $pid) ? $pid : (have_rows('resume_education', 'option') ? 'option' : null);
 ?>
 
 <div class="resume-wrapper min-h-screen bg-slate-950 text-slate-100 py-10 lg:py-16 selection:bg-secondary/30 selection:text-secondary">
@@ -248,9 +253,9 @@ $skills_tools    = get_field('resume_skills_tools', 'option') ?: 'SEO & Performa
                 </div>
 
                 <div class="space-y-6 relative border-s-2 border-white/10 ps-5 sm:ps-7 ms-2">
-                <?php if (have_rows("resume_experiences", "option")) : ?>
+                <?php if ($exp_source && have_rows("resume_experiences", $exp_source)) : ?>
                     <?php $exp_idx = 0; ?>
-                    <?php while (have_rows("resume_experiences", "option")) : the_row(); $exp_idx++; ?>
+                    <?php while (have_rows("resume_experiences", $exp_source)) : the_row(); $exp_idx++; ?>
                         <div class="relative group">
                             <span class="absolute -start-[27px] sm:-start-[35px] top-1.5 w-3.5 h-3.5 rounded-full <?= $exp_idx === 1 ? "bg-secondary" : "bg-slate-600"; ?> border-2 border-slate-900 group-hover:scale-125 transition-transform"></span>
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
@@ -412,9 +417,9 @@ $skills_tools    = get_field('resume_skills_tools', 'option') ?: 'SEO & Performa
                     <h2 class="text-lg sm:text-xl font-black text-white">تحصیلات و دوره‌های تخصصی</h2>
                 </div>
 
-                <?php if (have_rows("resume_education", "option")) : ?>
+                <?php if ($edu_source && have_rows("resume_education", $edu_source)) : ?>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <?php while (have_rows("resume_education", "option")) : the_row(); ?>
+                        <?php while (have_rows("resume_education", $edu_source)) : the_row(); ?>
                             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1">
                                 <span class="text-xs font-mono text-secondary font-bold"><?= esc_html(get_sub_field("period")); ?></span>
                                 <h4 class="text-xs sm:text-sm font-black text-white"><?= esc_html(get_sub_field("degree")); ?></h4>

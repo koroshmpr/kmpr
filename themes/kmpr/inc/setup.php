@@ -64,8 +64,8 @@ function my_acf_op_init()
         ));
 
         acf_add_options_sub_page(array(
-            'page_title'  => __('Online Resume Settings'),
-            'menu_title'  => __('تنظیمات رزومه'),
+            'page_title'  => __('تنظیمات و مدیریت رزومه آنلاین'),
+            'menu_title'  => __('تنظیمات رزومه آنلاین'),
             'menu_slug'   => 'acf-options-resume-settings',
             'parent_slug' => 'acf-options-theme-settings',
         ));
