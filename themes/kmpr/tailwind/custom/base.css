@@ -135,11 +135,11 @@ blockquote {
    WordPress Admin Bar Compatibility
    Prevents admin bar from overlapping sticky/fixed header and elements
    ========================================================================= */
-@media screen and (min-width: 1024px) {
-	body.admin-bar #header {
-		top: 32px !important;
-	}
+body.admin-bar #header {
+	top: 32px !important;
+}
 
+@media screen and (min-width: 1024px) {
 	body.admin-bar aside.lg\:sticky {
 		top: calc(6rem + 32px) !important;
 	}
@@ -154,6 +154,10 @@ blockquote {
 }
 
 @media screen and (max-width: 782px) {
+	body.admin-bar #header {
+		top: 46px !important;
+	}
+
 	body.admin-bar a.fixed.top-4 {
 		top: calc(1rem + 46px) !important;
 	}

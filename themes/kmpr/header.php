@@ -37,4 +37,4 @@
         }, { passive: true });">
     <?php get_template_part('template-parts/global/preloader'); ?>
     <?php get_template_part('template-parts/layout/header/header-content'); ?>
-    <main class="min-h-screen lg:pt-20 overflow-x-clip bg-slate-950 text-slate-100">
+    <main class="min-h-screen pt-16 lg:pt-20 overflow-x-clip bg-slate-950 text-slate-100">

@@ -327,7 +327,7 @@ function projectConfigurator() {
 
         getTelegramLink() {
             const text = encodeURIComponent(this.getFormattedSummary());
-            return `https://t.me/korosh_mpr?text=${text}`;
+            return `https://t.me/koroshmpr?text=${text}`;
         }
     };
 }
