@@ -2156,6 +2156,10 @@ body.admin-bar #header {
   width: calc(var(--spacing) * 20);
   height: calc(var(--spacing) * 20);
 }
+.size-36 {
+  width: calc(var(--spacing) * 36);
+  height: calc(var(--spacing) * 36);
+}
 .h-0\.5 {
   height: calc(var(--spacing) * 0.5);
 }
@@ -2344,6 +2348,9 @@ body.admin-bar #header {
 }
 .w-full {
   width: 100%;
+}
+.max-w-1\/2 {
+  max-width: calc(1 / 2 * 100%);
 }
 .max-w-\[200px\] {
   max-width: 200px;
@@ -3512,6 +3519,18 @@ body.admin-bar #header {
   --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-via-stops);
 }
+.via-slate-900\/90 {
+  --tw-gradient-via: color-mix(in srgb, oklch(20.8% 0.042 265.755) 90%, transparent);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .via-slate-900\/90 {
+    --tw-gradient-via: color-mix(in oklab, var(--color-slate-900) 90%, transparent);
+  }
+}
+.via-slate-900\/90 {
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-via-stops);
+}
 .via-slate-950\/40 {
   --tw-gradient-via: color-mix(in srgb, oklch(12.9% 0.042 264.695) 40%, transparent);
 }
@@ -3832,6 +3851,9 @@ body.admin-bar #header {
 }
 .pb-3 {
   padding-bottom: calc(var(--spacing) * 3);
+}
+.pb-3\.5 {
+  padding-bottom: calc(var(--spacing) * 3.5);
 }
 .pb-4 {
   padding-bottom: calc(var(--spacing) * 4);
@@ -4438,9 +4460,6 @@ body.admin-bar #header {
 .group-focus-within\:text-secondary:is(:where(.group):focus-within *) {
   color: var(--color-secondary);
 }
-.group-focus-within\:text-slate-900:is(:where(.group):focus-within *) {
-  color: var(--color-slate-900);
-}
 @media (hover: hover) {
   .group-hover\:-translate-x-1:is(:where(.group):hover *) {
     --tw-translate-x: calc(var(--spacing) * -1);
@@ -4577,20 +4596,27 @@ body.admin-bar #header {
 .selection\:text-secondary::selection {
   color: var(--color-secondary);
 }
-.placeholder\:text-slate-300::placeholder {
-  color: var(--color-slate-300);
-}
 .placeholder\:text-slate-400::placeholder {
-  color: var(--color-slate-400);
-}
-.group-focus-within\:placeholder\:text-slate-400:is(:where(.group):focus-within *)::placeholder {
   color: var(--color-slate-400);
 }
 .focus-within\:border-secondary:focus-within {
   border-color: var(--color-secondary);
 }
-.focus-within\:bg-white:focus-within {
-  background-color: var(--color-white);
+.focus-within\:border-secondary\/60:focus-within {
+  border-color: var(--color-secondary);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .focus-within\:border-secondary\/60:focus-within {
+    border-color: color-mix(in oklab, var(--color-secondary) 60%, transparent);
+  }
+}
+.focus-within\:bg-slate-900\/90:focus-within {
+  background-color: color-mix(in srgb, oklch(20.8% 0.042 265.755) 90%, transparent);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .focus-within\:bg-slate-900\/90:focus-within {
+    background-color: color-mix(in oklab, var(--color-slate-900) 90%, transparent);
+  }
 }
 .focus-within\:ring-2:focus-within {
   --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
@@ -4657,6 +4683,9 @@ body.admin-bar #header {
     .hover\:border-purple-500\/50:hover {
       border-color: color-mix(in oklab, var(--color-purple-500) 50%, transparent);
     }
+  }
+  .hover\:border-secondary:hover {
+    border-color: var(--color-secondary);
   }
   .hover\:border-secondary\/30:hover {
     border-color: var(--color-secondary);
@@ -4817,6 +4846,14 @@ body.admin-bar #header {
   @supports (color: color-mix(in lab, red, red)) {
     .hover\:bg-white\/\[0\.06\]:hover {
       background-color: color-mix(in oklab, var(--color-white) 6%, transparent);
+    }
+  }
+  .hover\:bg-white\/\[0\.07\]:hover {
+    background-color: color-mix(in srgb, #fff 7.000000000000001%, transparent);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .hover\:bg-white\/\[0\.07\]:hover {
+      background-color: color-mix(in oklab, var(--color-white) 7.000000000000001%, transparent);
     }
   }
   .hover\:bg-white\/\[0\.08\]:hover {
@@ -5168,6 +5205,9 @@ body.admin-bar #header {
   }
   .lg\:top-24 {
     top: calc(var(--spacing) * 24);
+  }
+  .lg\:top-28 {
+    top: calc(var(--spacing) * 28);
   }
   .lg\:bottom-8 {
     bottom: calc(var(--spacing) * 8);
