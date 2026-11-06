@@ -81,6 +81,17 @@ $desc_text  = $hero_subtitle ? esc_html($hero_subtitle) : 'طراحی و پیا�
                        class="w-full sm:w-auto text-center whitespace-nowrap bg-white/[0.06] hover:bg-white/[0.12] backdrop-blur-xl text-white font-bold text-sm sm:text-base px-8 py-3.5 rounded-full transition-all duration-300 border border-white/15 hover:scale-105 active:scale-95 shadow-md">
                         شروع همکاری و مشاوره اختصاصی
                     </a>
+
+                    <a href="<?= esc_url(home_url('/resume/')); ?>" 
+                       class="w-full sm:w-auto text-center whitespace-nowrap bg-secondary/15 hover:bg-secondary/25 text-secondary hover:text-amber-300 font-bold text-sm sm:text-base px-6 py-3.5 rounded-full transition-all duration-300 border border-secondary/30 hover:scale-105 active:scale-95 shadow-md flex items-center justify-center gap-2">
+                        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        <span>رزومه آنلاین (CV)</span>
+                    </a>
                 </div>
 
                 <!-- Business-impact Quality Badges -->

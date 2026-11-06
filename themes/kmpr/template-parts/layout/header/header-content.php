@@ -41,6 +41,18 @@
                 <kbd class="text-[10px] bg-white/10 border border-white/15 px-1.5 py-0.5 rounded text-slate-400 font-mono shadow-2xs">⌘K</kbd>
             </button>
 
+            <!-- Online Resume Pill (Desktop) -->
+            <a href="<?= esc_url(home_url('/resume/')); ?>" 
+               class="flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-secondary/40 text-slate-300 hover:text-white rounded-full px-4 py-2 text-xs font-bold transition-all group">
+                <svg class="size-3.5 text-secondary group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <span>رزومه آنلاین</span>
+            </a>
+
             <!-- Direct Contact Button -->
             <a href="<?= esc_url(home_url('/contact-us') ?: home_url('/contact')); ?>" 
                class="bg-secondary hover:bg-secondary-hover text-white text-xs font-black px-4 py-2.5 rounded-full transition-all duration-300 shadow-lg shadow-secondary/25 hover:scale-105 active:scale-95 flex items-center gap-2">
@@ -120,6 +132,18 @@
             ));
         endif;
         ?>
+
+        <!-- Mobile Online Resume Button -->
+        <a href="<?= esc_url(home_url('/resume/')); ?>" 
+           class="bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-slate-200 text-center py-2.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+            <svg class="size-3.5 text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span>مشاهده رزومه آنلاین (CV)</span>
+        </a>
 
         <!-- Mobile Direct Contact Button -->
         <a href="<?= esc_url(home_url('/contact-us') ?: home_url('/contact')); ?>" 

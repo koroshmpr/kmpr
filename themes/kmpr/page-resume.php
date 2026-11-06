@@ -28,8 +28,14 @@ $phone    = get_field('phone', 'option') ?: '09358088118';
 $email    = get_field('email', 'option') ?: 'korosh.mpr@gmail.com';
 $github   = get_field('github', 'option') ?: 'https://github.com/koroshmpr';
 $linkedin = get_field('linkedin', 'option') ?: 'https://linkedin.com/in/korosh-mpr-475739205';
-$location = 'تهران، نارمک';
+$location = get_field('resume_location', 'option') ?: 'تهران، نارمک';
 $website  = 'kmpr.ir';
+$full_name = get_field('resume_full_name', 'option') ?: 'کوروش محمدپور';
+$job_title = get_field('resume_job_title', 'option') ?: 'توسعه‌دهنده ارشد وب و معمار نرم‌افزار';
+$pdf_file  = get_field('resume_pdf_file', 'option');
+$skills_frontend = get_field('resume_skills_frontend', 'option') ?: 'React JS, Next.js, JavaScript (ESNext), Tailwind CSS v4, Alpine.js, Bootstrap, Responsive Design';
+$skills_backend  = get_field('resume_skills_backend', 'option') ?: 'WordPress (Custom Theme & Plugin Development), PHP, Laravel, REST API, MySQL Optimization';
+$skills_tools    = get_field('resume_skills_tools', 'option') ?: 'SEO & Performance (Core Web Vitals), Git / GitHub, Elementor, WooCommerce, AI & llms.txt';
 ?>
 
 <div class="resume-wrapper min-h-screen bg-slate-950 text-slate-100 py-10 lg:py-16 selection:bg-secondary/30 selection:text-secondary">
@@ -47,6 +53,17 @@ $website  = 'kmpr.ir';
 
             <!-- Action Buttons: Print PDF & Direct Chat -->
             <div class="flex items-center gap-3 flex-wrap">
+                <?php if (!empty($pdf_file["url"])) : ?>
+                <a href="<?= esc_url($pdf_file["url"]); ?>" 
+                   download
+                   target="_blank"
+                   class="inline-flex items-center gap-2 bg-secondary hover:bg-secondary-hover text-white text-xs sm:text-sm font-black px-5 py-2.5 rounded-2xl transition-all shadow-lg shadow-secondary/25 hover:scale-105 active:scale-95 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>دانلود فایل PDF رزومه</span>
+                </a>
+                <?php else : ?>
                 <button type="button" 
                         onclick="window.print()" 
                         class="inline-flex items-center gap-2 bg-secondary hover:bg-secondary-hover text-white text-xs sm:text-sm font-black px-5 py-2.5 rounded-2xl transition-all shadow-lg shadow-secondary/25 hover:scale-105 active:scale-95 cursor-pointer">
@@ -55,6 +72,7 @@ $website  = 'kmpr.ir';
                     </svg>
                     <span>دانلود رزومه (PDF / Print)</span>
                 </button>
+                <?php endif; ?>
 
                 <a href="https://wa.me/989358088118?text=<?= urlencode('سلام کوروش عزیز، رزومه شما را در سایت بررسی کردم.'); ?>"
                    target="_blank"
@@ -92,11 +110,11 @@ $website  = 'kmpr.ir';
                     <!-- Names & Title -->
                     <div class="space-y-2">
                         <div class="flex items-center justify-center md:justify-start gap-3 flex-wrap">
-                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">کوروش محمدپور</h1>
+                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight"><?= esc_html($full_name); ?></h1>
                             <span class="no-print text-xs font-mono px-3 py-1 rounded-full bg-secondary/15 text-secondary border border-secondary/30 font-bold">Korosh Mpr</span>
                         </div>
                         <p class="text-sm sm:text-base font-bold text-slate-300">
-                            توسعه‌دهنده فول‌استک | طراح سایت <span class="text-secondary font-mono">(WordPress / React / Next.js)</span>
+                            <?= esc_html($job_title); ?>
                         </p>
                         <p class="text-xs text-slate-400 font-medium">
                             متخصص معماری کدهای اختصاصی، پرفورمنس ۱۰۰/۱۰۰ و سئو تکنیکال
@@ -184,7 +202,7 @@ $website  = 'kmpr.ir';
                             <span>توسعه فرانت‌اند (Frontend)</span>
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed font-mono">
-                            React JS, Next.js, JavaScript (ESNext), Tailwind CSS v4, Alpine.js, Bootstrap, Responsive Design
+                            <?= esc_html($skills_frontend); ?>
                         </p>
                     </div>
 
@@ -198,7 +216,7 @@ $website  = 'kmpr.ir';
                             <span>بک‌اند و سیستم‌های محتوا</span>
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed font-mono">
-                            WordPress (Custom Theme & Plugin Development), PHP, Laravel, REST API, MySQL Optimization
+                            <?= esc_html($skills_backend); ?>
                         </p>
                     </div>
 
@@ -211,7 +229,7 @@ $website  = 'kmpr.ir';
                             <span>ابزارها و مفاهیم کلیدی</span>
                         </div>
                         <p class="text-xs text-slate-300 leading-relaxed font-mono">
-                            SEO & Performance (Core Web Vitals), Git / GitHub, Elementor, WooCommerce, AI & llms.txt
+                            <?= esc_html($skills_tools); ?>
                         </p>
                     </div>
                 </div>
@@ -230,7 +248,25 @@ $website  = 'kmpr.ir';
                 </div>
 
                 <div class="space-y-6 relative border-s-2 border-white/10 ps-5 sm:ps-7 ms-2">
-                    
+                <?php if (have_rows("resume_experiences", "option")) : ?>
+                    <?php $exp_idx = 0; ?>
+                    <?php while (have_rows("resume_experiences", "option")) : the_row(); $exp_idx++; ?>
+                        <div class="relative group">
+                            <span class="absolute -start-[27px] sm:-start-[35px] top-1.5 w-3.5 h-3.5 rounded-full <?= $exp_idx === 1 ? "bg-secondary" : "bg-slate-600"; ?> border-2 border-slate-900 group-hover:scale-125 transition-transform"></span>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                                <h3 class="text-sm sm:text-base font-black text-white"><?= esc_html(get_sub_field("job_title")); ?></h3>
+                                <span class="text-xs font-mono <?= $exp_idx === 1 ? "text-secondary font-bold" : "text-slate-400"; ?>"><?= esc_html(get_sub_field("period")); ?></span>
+                            </div>
+                            <?php if (get_sub_field("company")) : ?>
+                                <div class="text-xs font-bold text-slate-400 mb-2"><?= esc_html(get_sub_field("company")); ?></div>
+                            <?php endif; ?>
+                            <div class="space-y-1.5 text-xs text-slate-300 leading-relaxed [&_ul]:list-disc [&_ul]:list-inside [&_li]:mb-1">
+                                <?= wp_kses_post(get_sub_field("description")); ?>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else : ?>
+                    <!-- Fallback Default Experiences -->
                     <!-- Job 1 -->
                     <div class="relative group">
                         <span class="absolute -start-[27px] sm:-start-[35px] top-1.5 w-3.5 h-3.5 rounded-full bg-secondary border-2 border-slate-900 group-hover:scale-125 transition-transform"></span>
@@ -298,7 +334,7 @@ $website  = 'kmpr.ir';
                             <li>مدیریت زیرساخت‌های IT سازمان و طراحی و پشتیبانی پلتفرم تحت وب شرکت.</li>
                         </ul>
                     </div>
-
+                <?php endif; ?>
                 </div>
             </section>
 
@@ -376,25 +412,37 @@ $website  = 'kmpr.ir';
                     <h2 class="text-lg sm:text-xl font-black text-white">تحصیلات و دوره‌های تخصصی</h2>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1">
-                        <span class="text-xs font-mono text-secondary font-bold">۱۳۸۹ – ۱۳۹۳</span>
-                        <h4 class="text-xs sm:text-sm font-black text-white">کارشناسی مهندسی صنایع</h4>
-                        <p class="text-[11px] text-slate-400">دانشگاه آزاد اسلامی واحد فیروزکوه</p>
+                <?php if (have_rows("resume_education", "option")) : ?>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <?php while (have_rows("resume_education", "option")) : the_row(); ?>
+                            <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1">
+                                <span class="text-xs font-mono text-secondary font-bold"><?= esc_html(get_sub_field("period")); ?></span>
+                                <h4 class="text-xs sm:text-sm font-black text-white"><?= esc_html(get_sub_field("degree")); ?></h4>
+                                <p class="text-[11px] text-slate-400"><?= esc_html(get_sub_field("institution")); ?></p>
+                            </div>
+                        <?php endwhile; ?>
                     </div>
+                <?php else : ?>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1">
+                            <span class="text-xs font-mono text-secondary font-bold">۱۳۸۹ – ۱۳۹۳</span>
+                            <h4 class="text-xs sm:text-sm font-black text-white">کارشناسی مهندسی صنایع</h4>
+                            <p class="text-[11px] text-slate-400">دانشگاه آزاد اسلامی واحد فیروزکوه</p>
+                        </div>
 
-                    <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1">
-                        <span class="text-xs font-mono text-secondary font-bold">مهر ۱۴۰۰</span>
-                        <h4 class="text-xs sm:text-sm font-black text-white">دوره تخصصی React.js</h4>
-                        <p class="text-[11px] text-slate-400">مجتمع فنی تهران</p>
-                    </div>
+                        <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1">
+                            <span class="text-xs font-mono text-secondary font-bold">مهر ۱۴۰۰</span>
+                            <h4 class="text-xs sm:text-sm font-black text-white">دوره تخصصی React.js</h4>
+                            <p class="text-[11px] text-slate-400">مجتمع فنی تهران</p>
+                        </div>
 
-                    <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1">
-                        <span class="text-xs font-mono text-secondary font-bold">اسفند ۱۳۹۸</span>
-                        <h4 class="text-xs sm:text-sm font-black text-white">دوره تخصصی Web Design</h4>
-                        <p class="text-[11px] text-slate-400">مجتمع فنی تهران</p>
+                        <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-1">
+                            <span class="text-xs font-mono text-secondary font-bold">اسفند ۱۳۹۸</span>
+                            <h4 class="text-xs sm:text-sm font-black text-white">دوره تخصصی Web Design</h4>
+                            <p class="text-[11px] text-slate-400">مجتمع فنی تهران</p>
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
             </section>
 
         </div>

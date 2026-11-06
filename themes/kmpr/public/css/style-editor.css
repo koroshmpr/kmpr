@@ -17,6 +17,7 @@ Text Domain: kmpr
   --color-red-500: oklch(63.7% 0.237 25.331);
   --color-amber-50: oklch(98.7% 0.022 95.277);
   --color-amber-200: oklch(92.4% 0.12 95.746);
+  --color-amber-300: oklch(87.9% 0.169 91.605);
   --color-amber-400: oklch(82.8% 0.189 84.429);
   --color-amber-500: oklch(76.9% 0.188 70.08);
   --color-yellow-500: oklch(79.5% 0.184 86.047);
@@ -2034,6 +2035,9 @@ blockquote {
 .inline-flex {
   display: inline-flex;
 }
+.table {
+  display: table;
+}
 .aspect-\[3\/4\] {
   aspect-ratio: 3/4;
 }
@@ -3315,6 +3319,14 @@ blockquote {
     background-color: color-mix(in oklab, var(--color-white) 4%, transparent);
   }
 }
+.bg-white\/\[0\.05\] {
+  background-color: color-mix(in srgb, #fff 5%, transparent);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .bg-white\/\[0\.05\] {
+    background-color: color-mix(in oklab, var(--color-white) 5%, transparent);
+  }
+}
 .bg-white\/\[0\.06\] {
   background-color: color-mix(in srgb, #fff 6%, transparent);
 }
@@ -3986,6 +3998,9 @@ blockquote {
 .underline {
   text-decoration-line: underline;
 }
+.underline-offset-4 {
+  text-underline-offset: 4px;
+}
 .antialiased {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -4637,6 +4652,14 @@ blockquote {
       background-color: color-mix(in oklab, var(--color-white) 15%, transparent);
     }
   }
+  .hover\:bg-white\/\[0\.1\]:hover {
+    background-color: color-mix(in srgb, #fff 10%, transparent);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .hover\:bg-white\/\[0\.1\]:hover {
+      background-color: color-mix(in oklab, var(--color-white) 10%, transparent);
+    }
+  }
   .hover\:bg-white\/\[0\.04\]:hover {
     background-color: color-mix(in srgb, #fff 4%, transparent);
   }
@@ -4669,6 +4692,14 @@ blockquote {
       background-color: color-mix(in oklab, var(--color-white) 8%, transparent);
     }
   }
+  .hover\:bg-white\/\[0\.09\]:hover {
+    background-color: color-mix(in srgb, #fff 9%, transparent);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .hover\:bg-white\/\[0\.09\]:hover {
+      background-color: color-mix(in oklab, var(--color-white) 9%, transparent);
+    }
+  }
   .hover\:bg-white\/\[0\.12\]:hover {
     background-color: color-mix(in srgb, #fff 12%, transparent);
   }
@@ -4676,6 +4707,9 @@ blockquote {
     .hover\:bg-white\/\[0\.12\]:hover {
       background-color: color-mix(in oklab, var(--color-white) 12%, transparent);
     }
+  }
+  .hover\:text-amber-300:hover {
+    color: var(--color-amber-300);
   }
   .hover\:text-secondary:hover {
     color: var(--color-secondary);
@@ -5371,6 +5405,9 @@ blockquote {
 .\[\&_img\]\:object-contain img {
   object-fit: contain;
 }
+.\[\&_li\]\:mb-1 li {
+  margin-bottom: var(--spacing);
+}
 .\[\&_p\]\:\!text-slate-100 p {
   color: var(--color-slate-100) !important;
 }
@@ -5420,6 +5457,12 @@ blockquote {
 }
 .\[\&_svg\]\:w-auto svg {
   width: auto;
+}
+.\[\&_ul\]\:list-inside ul {
+  list-style-position: inside;
+}
+.\[\&_ul\]\:list-disc ul {
+  list-style-type: disc;
 }
 .text-stroke-3 {
   -webkit-text-stroke: 1px rgba(255, 255, 255, 0.30);

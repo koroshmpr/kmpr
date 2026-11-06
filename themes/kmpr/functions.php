@@ -77,3 +77,8 @@ require_once KMPR_INC . 'schema-manager.php';
  * LLMs & AI Engine: Automated llms.txt & llms-full.txt generator with WP admin dashboard
  */
 require_once KMPR_INC . 'llms-manager.php';
+
+/**
+ * Online Resume Manager: ACF field groups, dynamic data, and PDF sync for /resume/
+ */
+require_once KMPR_INC . 'resume-manager.php';
