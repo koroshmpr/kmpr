@@ -48,4 +48,8 @@ jobs:
             eslint.config.mjs
             package.json
             package-lock.json
+            **/IranSansFaNum/**
+            **/IranSansFaNum
+            public/fonts/IranSansFaNum/**
+            public/fonts/IranSansFaNum
 

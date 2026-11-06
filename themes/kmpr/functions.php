@@ -521,4 +521,4 @@ function kmpr_filter_wp_date($the_date, $format, $post) {
 }
 add_filter('get_the_date', 'kmpr_filter_wp_date', 10, 3);
 add_filter('get_the_modified_date', 'kmpr_filter_wp_date', 10, 3);
-add_filter('get_comment_date', 'kmpr_filter_wp_date', 10, 3);
+add_filter('get_comment_date', 'kmpr_filter_wp_date', 10, 3);

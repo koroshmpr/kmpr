@@ -4,16 +4,23 @@ while (have_posts()) :
     the_post();
     ?>
     <!-- Hero Header -->
-    <section class="relative h-[40vh] lg:h-[50vh] flex items-center overflow-hidden bg-slate-950 text-white select-none">
+    <section class="relative min-h-[42vh] lg:min-h-[52vh] flex items-center overflow-hidden bg-slate-950 text-white select-none">
+        <!-- Ambient Glow -->
+        <div class="absolute top-1/3 -start-10 w-80 h-80 bg-secondary/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-10 end-10 w-80 h-80 bg-blue-600/15 rounded-full blur-[100px] pointer-events-none"></div>
+
         <img data-aos="fade-down" data-aos-duration="1000" 
-             class="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-30 select-none"
+             class="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-25 select-none scale-105"
              src="<?= esc_url(get_the_post_thumbnail_url()); ?>"
              alt="<?= esc_attr(get_the_title()); ?>">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/40"></div>
         
-        <div class="container mx-auto px-4 sm:px-6 relative z-10 text-center mt-12">
-            <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-2">خدمات تخصصی</span>
-            <h1 class="text-3xl lg:text-5xl font-black text-white tracking-tight drop-shadow-lg" data-aos="zoom-in">
+        <div class="container mx-auto px-4 sm:px-6 relative z-10 text-center mt-10">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md mb-4">
+                <span class="size-2 rounded-full bg-secondary animate-pulse"></span>
+                <span class="text-xs font-black uppercase text-slate-200 tracking-wider">خدمات تخصصی</span>
+            </div>
+            <h1 class="text-3xl lg:text-5xl font-black text-white tracking-tight drop-shadow-lg max-w-3xl mx-auto leading-tight" data-aos="zoom-in">
                 <?= get_the_title(); ?>
             </h1>
         </div>
