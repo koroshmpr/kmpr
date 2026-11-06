@@ -34,12 +34,12 @@
 
             <!-- Footer Menu 1 -->
             <div class="lg:col-span-2 flex flex-col gap-4">
-                <span class="font-black text-sm text-secondary uppercase tracking-wider block"><?= esc_html(get_field('first_menu', 'option')); ?></span>
+                <span class="font-black text-center lg:text-start text-sm text-secondary uppercase tracking-wider block"><?= esc_html(get_field('first_menu', 'option')); ?></span>
                 <?php
                 if (has_nav_menu('footerLocationOne')) :
                     wp_nav_menu(array(
                         'theme_location' => 'footerLocationOne',
-                        'menu_class'     => 'flex flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary [&_a]:!bg-transparent font-medium transition-colors',
+                        'menu_class'     => 'flex max-lg:flex-wrap justify-center lg:flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary [&_a]:!bg-transparent font-medium transition-colors',
                         'container'      => false,
                         'depth'          => 1,
                     ));
@@ -49,12 +49,12 @@
 
             <!-- Footer Menu 2 -->
             <div class="lg:col-span-2 flex flex-col gap-4">
-                <span class="font-black text-sm text-secondary uppercase tracking-wider block"><?= esc_html(get_field('second_menu', 'option')); ?></span>
+                <span class="font-black text-center lg:text-start text-sm text-secondary uppercase tracking-wider block"><?= esc_html(get_field('second_menu', 'option')); ?></span>
                 <?php
                 if (has_nav_menu('footerLocationTwo')) :
                     wp_nav_menu(array(
                         'theme_location' => 'footerLocationTwo',
-                        'menu_class'     => 'flex flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary [&_a]:!bg-transparent font-medium transition-colors',
+                        'menu_class'     => 'flex max-lg:flex-wrap justify-center lg:flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary [&_a]:!bg-transparent font-medium transition-colors',
                         'container'      => false,
                         'depth'          => 1,
                     ));
@@ -64,12 +64,12 @@
 
             <!-- Footer Menu 3 -->
             <div class="lg:col-span-2 flex flex-col gap-4">
-                <span class="font-black text-sm text-secondary uppercase tracking-wider block"><?= esc_html(get_field('third_menu', 'option')); ?></span>
+                <span class="font-black text-center lg:text-start text-sm text-secondary uppercase tracking-wider block"><?= esc_html(get_field('third_menu', 'option')); ?></span>
                 <?php
                 if (has_nav_menu('footerLocationThree')) :
                     wp_nav_menu(array(
                         'theme_location' => 'footerLocationThree',
-                        'menu_class'     => 'flex flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary [&_a]:!bg-transparent font-medium transition-colors',
+                        'menu_class'     => 'flex max-lg:flex-wrap justify-center lg:flex-col gap-2.5 text-sm [&_a]:!text-slate-300 [&_a:hover]:!text-secondary [&_a]:!bg-transparent font-medium transition-colors',
                         'container'      => false,
                         'depth'          => 1,
                     ));
@@ -79,9 +79,9 @@
 
             <!-- Consultation & Contacts -->
             <div class="lg:col-span-2 flex flex-col gap-4">
-                <span class="font-black text-sm text-secondary uppercase tracking-wider block">مشاوره و ارتباط</span>
+                <span class="font-black text-center lg:text-start text-sm text-secondary uppercase tracking-wider block">مشاوره و ارتباط</span>
                 
-                <div class="flex flex-col gap-3 mt-1">
+                <div class="flex lg:flex-col justify-center gap-3 mt-1">
                     <!-- Phone trigger -->
                     <?php if (get_field('phone_number', 'option')) : ?>
                         <a href="tel:<?= esc_attr(get_field('phone', 'option')); ?>"

@@ -148,23 +148,6 @@ $cat_desc = category_description();
                     </div>
                 </div>
 
-                <!-- Widget 3: Popular Tags -->
-                <div class="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
-                    <h3 class="text-base font-black text-white border-b border-white/10 pb-3.5 mb-4">برچسب‌های پرکاربرد</h3>
-                    <div class="flex flex-wrap gap-2">
-                        <?php
-                        $tags = get_tags(array('orderby' => 'count', 'order' => 'DESC', 'number' => 14));
-                        if ($tags) :
-                            foreach ($tags as $tag) :
-                        ?>
-                            <a href="<?= esc_url(get_tag_link($tag->term_id)); ?>" 
-                               class="text-xs bg-white/[0.04] hover:bg-secondary hover:text-white border border-white/10 hover:border-secondary text-slate-300 px-3 py-1.5 rounded-xl font-bold transition-all shadow-2xs">
-                                <?= esc_html($tag->name); ?>
-                            </a>
-                        <?php endforeach; endif; ?>
-                    </div>
-                </div>
-
             </aside>
 
         </div>

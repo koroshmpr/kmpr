@@ -25,7 +25,7 @@ get_header(); ?>
 
         <!-- In-Archive Search Form -->
         <form method="get" action="<?php echo esc_url(home_url('/')); ?>" 
-              class="flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-md border border-white/15 rounded-2xl p-2 shadow-xl max-w-1/2 mx-auto focus-within:border-secondary/60 focus-within:bg-slate-900/90 transition-all group">
+              class="flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-md border border-white/15 rounded-2xl p-2 shadow-xl lg:max-w-1/2 mx-auto focus-within:border-secondary/60 focus-within:bg-slate-900/90 transition-all group">
             <input type="hidden" name="post_type" value="post">
             <div class="flex items-center gap-2 flex-1 px-3">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" class="text-slate-400 group-focus-within:text-secondary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -173,32 +173,6 @@ get_header(); ?>
                             endwhile;
                         endif;
                         wp_reset_postdata();
-                        ?>
-                    </div>
-                </div>
-
-                <!-- Widget 3: Popular Tags Cloud -->
-                <div class="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
-                    <h3 class="text-base font-black text-white border-b border-white/10 pb-3.5 mb-4 flex items-center justify-between">
-                        <span>برچسب‌های پرکاربرد</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="text-secondary" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1H2zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-                        </svg>
-                    </h3>
-
-                    <div class="flex flex-wrap gap-2">
-                        <?php
-                        $tags = get_tags(array('orderby' => 'count', 'order' => 'DESC', 'number' => 14));
-                        if ($tags) :
-                            foreach ($tags as $tag) :
-                        ?>
-                            <a href="<?= esc_url(get_tag_link($tag->term_id)); ?>" 
-                               class="text-xs bg-white/[0.04] hover:bg-secondary hover:text-white border border-white/10 hover:border-secondary text-slate-300 px-3 py-1.5 rounded-xl font-bold transition-all shadow-2xs">
-                                <?= esc_html($tag->name); ?>
-                            </a>
-                        <?php
-                            endforeach;
-                        endif;
                         ?>
                     </div>
                 </div>

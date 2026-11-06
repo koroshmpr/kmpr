@@ -275,28 +275,30 @@ while (have_posts()) :
                         </div>
                     <?php endif; ?>
 
-                    <!-- Author -->
-                    <div class="flex items-center justify-between pb-2.5 border-b border-white/5">
-                        <span class="text-slate-400">نویسنده:</span>
+                    <div class="grid grid-cols-4 gap-3">
+                        <!-- Author -->
+                    <div class="flex flex-col gap-2 items-center justify-between">
+                        <span class="text-xs text-slate-400">نویسنده:</span>
                         <span class="font-black text-white"><?= esc_html(get_the_author_meta('display_name')); ?></span>
                     </div>
 
                     <!-- Reading Time -->
-                    <div class="flex items-center justify-between pb-2.5 border-b border-white/5">
-                        <span class="text-slate-400">زمان تخمینی مطالعه:</span>
+                    <div class="flex flex-col gap-2 items-center justify-between">
+                        <span class="text-xs text-slate-400">زمان تخمینی مطالعه:</span>
                         <span class="font-bold text-white font-mono"><?= reading_time(); ?> دقیقه</span>
                     </div>
 
                     <!-- Views -->
-                    <div class="flex items-center justify-between pb-2.5 border-b border-white/5">
-                        <span class="text-slate-400">تعداد بازدید:</span>
+                    <div class="flex flex-col gap-2 items-center justify-between">
+                        <span class="text-xs text-slate-400">تعداد بازدید:</span>
                         <span class="font-bold text-white font-mono"><?= get_post_meta($post_id, 'post_views', true) ?: '1'; ?></span>
                     </div>
 
                     <!-- Comments count -->
-                    <div class="flex items-center justify-between">
-                        <span class="text-slate-400">دیدگاه‌های ثبت‌شده:</span>
+                    <div class="flex flex-col gap-2 items-center justify-between">
+                        <span class="text-xs text-slate-400">دیدگاه‌های ثبت‌شده:</span>
                         <span class="font-bold text-secondary font-mono"><?= $comment_count; ?> دیدگاه</span>
+                    </div>
                     </div>
                 </div>
 
