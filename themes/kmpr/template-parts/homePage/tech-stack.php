@@ -1,13 +1,13 @@
 <?php
 /**
- * Developer Tech Stack & Arsenal Showcase
- * Modern, High-Tech, Minimalist Tech Badges - Korosh Mpr
+ * Developer Tech Arsenal & Core Capabilities Showcase
+ * High-Tech, Minimalist, Engineering-Focused
  */
 $tech_stacks = [
     [
         'name' => 'Next.js & React',
-        'badge' => 'Frontend',
-        'desc' => 'توسعه وب‌اپلیکیشن‌های فوق‌سریع و مدرن',
+        'badge' => 'Frontend Architecture',
+        'desc' => 'توسعه وب‌اپلیکیشن‌های پیشرفته با رندرینگ بهینه',
         'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 19.5h20L12 2zm0 4.5l6.5 11.5h-13L12 6.5z"/></svg>'
     ],
     [
@@ -18,26 +18,26 @@ $tech_stacks = [
     ],
     [
         'name' => 'Custom WordPress',
-        'badge' => 'Architecture',
-        'desc' => 'توسعه قالب‌های کاملاً اختصاصی بدون Bloatware',
+        'badge' => 'High Performance',
+        'desc' => 'توسعه قالب‌های اختصاصی، سریع و بدون سربار',
         'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-8.2 10a8.2 8.2 0 0 1 2.2-5.6l3.8 10.4A8.3 8.3 0 0 1 3.8 12zm8.2 8.2a8.1 8.1 0 0 1-2.6-.4l2.8-8.2 2.9 8.2a8.1 8.1 0 0 1-3.1.4zm1.1-11.7l3.2 8.9a8.2 8.2 0 0 0 1.9-5.4 8.2 8.2 0 0 0-5.1-3.5z"/></svg>'
     ],
     [
-        'name' => 'Tailwind CSS v4',
-        'badge' => 'Modern UI',
-        'desc' => 'دیزاین سیستم ماژولار و بهینه با کمترین حجم CSS',
+        'name' => 'Design Systems & UI',
+        'badge' => 'Modern UI/UX',
+        'desc' => 'دیزاین سیستم ماژولار با تجربه کاربری روان',
         'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6c-3.3 0-5.4 1.7-6.2 5 1.2-1.7 2.7-2.3 4.4-1.8.9.3 1.6 1 2.3 1.7C13.8 12.1 15.3 13 18 13c3.3 0 5.4-1.7 6.2-5-1.2 1.7-2.7 2.3-4.4 1.8-.9-.3-1.6-1-2.3-1.7C16.2 6.9 14.7 6 12 6zm-6 7c-3.3 0-5.4 1.7-6.2 5 1.2-1.7 2.7-2.3 4.4-1.8.9.3 1.6 1 2.3 1.7 1.3 1.2 2.8 2.1 5.5 2.1 3.3 0 5.4-1.7 6.2-5-1.2 1.7-2.7 2.3-4.4 1.8-.9-.3-1.6-1-2.3-1.7C10.2 13.9 8.7 13 6 13z"/></svg>'
     ],
     [
         'name' => 'REST & GraphQL APIs',
-        'badge' => 'Integration',
-        'desc' => 'معماری مایکروسرویس و اتصال اندپوینت‌های پرسرعت',
+        'badge' => 'API Integration',
+        'desc' => 'معماری امن و اتصال سرویس‌ها و درگاه‌های خارجی',
         'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9l3 3-3 3m5 0h3M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>'
     ],
     [
         'name' => 'AI & llms.txt Ready',
         'badge' => 'Next-Gen SEO',
-        'desc' => 'سازگاری کامل با هوش مصنوعی و مدل‌های زبانی',
+        'desc' => 'معماری سازگار با مدل‌های زبانی هوش مصنوعی',
         'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>'
     ]
 ];
@@ -54,12 +54,12 @@ $tech_stacks = [
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                 </span>
-                <span class="text-xs font-black tracking-widest text-slate-300 uppercase">تکنولوژی‌ها و ابزارهای من (Tech Arsenal)</span>
+                <span class="text-xs font-black tracking-widest text-slate-300 uppercase">تخصص‌ها و حوزه‌های فنی (Core Capabilities)</span>
             </div>
             <div class="text-xs text-slate-400 font-bold flex items-center gap-2">
                 <span>توسعه کامپوننت‌محور و بهینه</span>
                 <span class="text-secondary">•</span>
-                <span class="text-slate-200 font-mono">100% Handcrafted Code</span>
+                <span class="text-slate-200 font-mono">100% Handcrafted</span>
             </div>
         </div>
 

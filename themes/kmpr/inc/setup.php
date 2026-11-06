@@ -41,25 +41,33 @@ function theme_setup()
 add_action('after_setup_theme', 'theme_setup');
 
 /**
- * Register ACF Options Pages (Exact original configuration to preserve all data)
+ * Register ACF Options Pages
+ * Uses exact English slugs matching database location rules to ensure zero errors
  */
 function my_acf_op_init()
 {
     if (function_exists('acf_add_options_page')) {
         $parent = acf_add_options_page(array(
-            'page_title' => __('Theme General Settings'),
-            'menu_title' => __('Theme Settings'),
+            'page_title' => __('تنظیمات سایت'),
+            'menu_title' => __('تنظیمات سایت'),
+            'menu_slug'  => 'acf-options-theme-settings',
+            'capability' => 'edit_posts',
             'redirect'   => false,
+            'icon_url'   => 'dashicons-admin-generic',
         ));
-        acf_add_options_page(array(
+
+        acf_add_options_sub_page(array(
             'page_title'  => __('Contact and Social'),
-            'menu_title'  => __('Contact and Social'),
-            'parent_slug' => $parent['menu_slug'],
+            'menu_title'  => __('تماس و شبکه‌های اجتماعی'),
+            'menu_slug'   => 'acf-options-contact-and-social',
+            'parent_slug' => 'acf-options-theme-settings',
         ));
-        acf_add_options_page(array(
-            'page_title'  => __('مدیریت رزومه آنلاین'),
-            'menu_title'  => __('رزومه من'),
-            'parent_slug' => $parent['menu_slug'],
+
+        acf_add_options_sub_page(array(
+            'page_title'  => __('Online Resume Settings'),
+            'menu_title'  => __('تنظیمات رزومه'),
+            'menu_slug'   => 'acf-options-resume-settings',
+            'parent_slug' => 'acf-options-theme-settings',
         ));
     }
 }

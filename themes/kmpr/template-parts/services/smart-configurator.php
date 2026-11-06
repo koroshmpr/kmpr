@@ -138,7 +138,7 @@
                     <div class="flex flex-col gap-1.5 border-b md:border-b-0 md:border-e border-slate-800/80 pb-4 md:pb-0 md:pe-4">
                         <span class="text-xs text-slate-400 font-bold">پشته فناوری (Tech Stack):</span>
                         <div class="flex flex-wrap gap-1.5 mt-1">
-                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Tailwind CSS v4</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Zero Bloatware</span>
                             <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Custom WP Core</span>
                             <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Alpine.js</span>
                             <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">llms.txt AI</span>
@@ -228,7 +228,7 @@ function projectConfigurator() {
             }
         ],
         featureList: [
-            { id: 'speed', title: 'تضمین لود زیر ۱ ثانیه (Core Web Vitals)', desc: 'کدهای بهینه Tailwind v4 بدون پلاگین‌های زائد' },
+            { id: 'speed', title: 'تضمین لود زیر ۱ ثانیه (Core Web Vitals)', desc: 'کدهای اختصاصی، تمیز و بدون پلاگین‌های زائد' },
             { id: 'ai', title: 'بهینه‌سازی برای هوش مصنوعی (llms.txt)', desc: 'ایندکسینگ خودکار توسط مدل‌های ChatGPT و Claude' },
             { id: 'seo', title: 'سئو تکنیکال و معماری عمیق اسکیما', desc: 'داده‌های ساختاریافته برای بیشترین رتبه در نتایج جستجو' },
             { id: 'pwa', title: 'طراحی واکنش‌گرا و تجربه شبیه اپ (PWA)', desc: 'نویگیشن روان و کارکرد بی‌نقص روی موبایل و تبلت' },
