@@ -1,6 +1,11 @@
 /**
  * This file outputs to `public/css/style.css`, your main front-end style sheet.
  */
+@source "./*.php";
+@source "./template-parts/**/*.php";
+@source "./inc/**/*.php";
+@source "./javascript/**/*.js";
+
 @import "./tailwind/partials/header.css";
 @import "tailwindcss/preflight";
 @import "./tailwind/custom/base.css";

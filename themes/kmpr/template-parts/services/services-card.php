@@ -15,14 +15,14 @@
     <!-- Floating Service Icon (Top-Start) -->
     <?php $icon = get_field('service-icon'); ?>
     <?php if ($icon) : ?>
-        <div class="absolute top-5 start-5 bg-slate-900/80 backdrop-blur-md border border-white/15 p-3.5 rounded-2xl text-secondary shadow-xl z-10 transition-transform duration-500 group-hover:scale-110 [&_svg]:size-6">
+        <div class="absolute top-5 start-5 bg-slate-900/80 backdrop-blur-md border border-white/15 p-3 rounded-2xl text-secondary shadow-xl z-10 transition-transform duration-500 group-hover:scale-110 [&_svg]:w-6 [&_svg]:h-6">
             <?= $icon; ?>
         </div>
     <?php endif; ?>
 
     <!-- Action Arrow (Top-End) -->
-    <div class="absolute top-5 end-5 size-9 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 group-hover:text-white group-hover:bg-secondary group-hover:border-secondary transition-all duration-300 z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 -rotate-45 group-hover:rotate-0 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+    <div class="absolute top-5 end-5 w-9 h-9 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 group-hover:text-white group-hover:bg-secondary group-hover:border-secondary transition-all duration-300 z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="w-4 h-4 shrink-0 -rotate-45 group-hover:rotate-0 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
         </svg>
     </div>

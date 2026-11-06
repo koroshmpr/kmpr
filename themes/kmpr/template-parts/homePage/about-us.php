@@ -31,14 +31,14 @@
 
                 <!-- Floating Achievement Badge -->
                 <div class="absolute -bottom-4 -end-4 bg-white/95 backdrop-blur-md border border-slate-200 p-3.5 rounded-2xl shadow-xl z-20 flex items-center gap-3">
-                    <span class="size-10 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <span class="w-10 h-10 rounded-xl bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </span>
                     <div class="text-start">
-                        <span class="text-xs font-black text-slate-900 block">کیفیت تضمین‌شده</span>
-                        <span class="text-[11px] text-slate-500 font-bold">استاندارد روز بین‌المللی</span>
+                        <span class="text-xs font-black text-slate-900 block whitespace-nowrap">کیفیت تضمین‌شده</span>
+                        <span class="text-[11px] text-slate-500 font-bold whitespace-nowrap">استاندارد بین‌المللی</span>
                     </div>
                 </div>
             </div>
@@ -48,10 +48,10 @@
                  data-aos="fade-right" data-aos-duration="800" data-aos-delay="200">
                 
                 <!-- Ambient corner glow inside card -->
-                <div class="absolute -top-12 -end-12 size-40 bg-secondary/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute -top-12 -end-12 w-40 h-40 bg-secondary/20 rounded-full blur-2xl pointer-events-none"></div>
 
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/15 border border-secondary/30 mb-3 w-fit">
-                    <span class="size-2 rounded-full bg-secondary animate-pulse"></span>
+                    <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
                     <span class="text-xs font-black uppercase text-secondary tracking-wider">داستان ما</span>
                 </div>
 
@@ -65,11 +65,9 @@
 
                 <div class="mt-8 pt-6 border-t border-slate-800">
                     <a href="<?= esc_url(home_url('/about-us') ?: home_url('/about')); ?>" 
-                       class="group inline-flex items-center gap-2 text-secondary hover:text-white font-black text-sm transition-colors">
+                       class="inline-flex items-center gap-2 text-secondary hover:text-white font-black text-sm transition-colors">
                         <span>اطلاعات بیشتر درباره ما</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 transition-transform duration-300 group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                        </svg>
+                        <span>&larr;</span>
                     </a>
                 </div>
             </div>

@@ -17,7 +17,7 @@ while (have_posts()) :
         
         <div class="container mx-auto px-4 sm:px-6 relative z-10 text-center mt-10">
             <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md mb-4">
-                <span class="size-2 rounded-full bg-secondary animate-pulse"></span>
+                <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
                 <span class="text-xs font-black uppercase text-slate-200 tracking-wider">خدمات تخصصی</span>
             </div>
             <h1 class="text-3xl lg:text-5xl font-black text-white tracking-tight drop-shadow-lg max-w-3xl mx-auto leading-tight" data-aos="zoom-in">
