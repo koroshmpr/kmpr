@@ -1170,6 +1170,36 @@ blockquote {
   font-weight: var(--font-weight-medium);
   color: var(--color-slate-700);
 }
+@media screen and (min-width: 1024px) {
+  body.admin-bar #header {
+    top: 32px !important;
+  }
+  body.admin-bar aside.lg\:sticky {
+    top: calc(6rem + 32px) !important;
+  }
+  body.admin-bar .single-article-wrapper > div.fixed.top-0 {
+    top: 32px !important;
+  }
+  body.admin-bar div[x-show="searchOpen"] {
+    padding-top: calc(2.5rem + 32px) !important;
+  }
+}
+@media screen and (max-width: 782px) {
+  body.admin-bar a.fixed.top-4 {
+    top: calc(1rem + 46px) !important;
+  }
+  body.admin-bar div[x-show="searchOpen"] {
+    padding-top: calc(1.5rem + 46px) !important;
+  }
+}
+@media screen and (min-width: 783px) and (max-width: 1023px) {
+  body.admin-bar a.fixed.top-4 {
+    top: calc(1rem + 32px) !important;
+  }
+  body.admin-bar div[x-show="searchOpen"] {
+    padding-top: calc(2rem + 32px) !important;
+  }
+}
 .pointer-events-auto {
   pointer-events: auto;
 }

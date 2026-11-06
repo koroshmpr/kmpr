@@ -131,3 +131,46 @@ blockquote {
 	@apply border-s-4 border !border-s-secondary !border-slate-200 rounded-2xl bg-slate-50 p-5 my-6 text-slate-700 font-medium;
 }
 
+/* =========================================================================
+   WordPress Admin Bar Compatibility
+   Prevents admin bar from overlapping sticky/fixed header and elements
+   ========================================================================= */
+@media screen and (min-width: 1024px) {
+	body.admin-bar #header {
+		top: 32px !important;
+	}
+
+	body.admin-bar aside.lg\:sticky {
+		top: calc(6rem + 32px) !important;
+	}
+
+	body.admin-bar .single-article-wrapper > div.fixed.top-0 {
+		top: 32px !important;
+	}
+
+	body.admin-bar div[x-show="searchOpen"] {
+		padding-top: calc(2.5rem + 32px) !important;
+	}
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar a.fixed.top-4 {
+		top: calc(1rem + 46px) !important;
+	}
+
+	body.admin-bar div[x-show="searchOpen"] {
+		padding-top: calc(1.5rem + 46px) !important;
+	}
+}
+
+@media screen and (min-width: 783px) and (max-width: 1023px) {
+	body.admin-bar a.fixed.top-4 {
+		top: calc(1rem + 32px) !important;
+	}
+
+	body.admin-bar div[x-show="searchOpen"] {
+		padding-top: calc(2rem + 32px) !important;
+	}
+}
+
+
