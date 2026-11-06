@@ -2,6 +2,8 @@
 /** * Enqueue scripts and styles. */
 //require get_theme_file_path('/inc/filter-route.php');
 require get_theme_file_path('/inc/search-route.php');
+require get_theme_file_path('/inc/schema-manager.php');
+require get_theme_file_path('/inc/llms-manager.php');
 function theme_scripts()
 {
     wp_enqueue_style('style', get_stylesheet_directory_uri() . '/public/css/style.css', array(), '2.0.0');
@@ -505,6 +507,10 @@ function shamsi_date($format = 'd F Y', $timestamp = null, $persian_digits = tru
 	if (strpos($formatted, 'F') !== false) {
 		$formatted = str_replace('F', $persian_months[$jm - 1], $formatted);
 	}
+
+	$formatted = str_replace('H', date('H', (int)$timestamp), $formatted);
+	$formatted = str_replace('i', date('i', (int)$timestamp), $formatted);
+	$formatted = str_replace('s', date('s', (int)$timestamp), $formatted);
 
 	if ($persian_digits) {
 		return kmpr_to_persian_num($formatted);

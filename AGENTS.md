@@ -26,3 +26,4 @@ Before pushing any commit to `main`, `master`, or deploying to the server, the a
 - Verify mobile layouts (360px to 480px), tablet (768px), and desktop (1024px to 1440px+).
 - Prevent horizontal scrollbars (`overflow-x-hidden` or `overflow-x-clip`).
 - Mobile touch targets must be comfortably clickable (minimum 40-44px).
+
