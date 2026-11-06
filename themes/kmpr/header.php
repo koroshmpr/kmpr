@@ -6,6 +6,14 @@
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <?php
+    $fav_id = get_option('site_icon') ?: get_field('favicon', 'option');
+    $fav_url = $fav_id ? (is_numeric($fav_id) ? wp_get_attachment_image_url($fav_id, 'full') : (is_array($fav_id) ? ($fav_id['url'] ?? '') : $fav_id)) : (get_template_directory_uri() . '/public/images/kmpr-favicon.png');
+    $fav_svg = get_template_directory_uri() . '/public/images/kmpr-favicon.svg';
+    ?>
+    <link rel="icon" type="image/svg+xml" href="<?= esc_url($fav_svg); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= esc_url($fav_url); ?>">
+    <link rel="apple-touch-icon" href="<?= esc_url($fav_url); ?>">
     <?php wp_head(); ?>
 </head>
 

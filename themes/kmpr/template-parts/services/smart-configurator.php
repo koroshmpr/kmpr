@@ -30,13 +30,13 @@
         <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden text-start" data-aos="zoom-in">
             
             <!-- Step Indicators -->
-            <div class="flex items-center justify-between border-b border-slate-800 pb-6 mb-8 text-xs font-bold">
+            <div class="flex w-fit mx-auto items-center justify-between border-b border-slate-800 pb-6 mb-8 text-xs font-bold">
                 <div @click="goToStep(1)" class="flex items-center gap-2 cursor-pointer transition-colors" :class="step >= 1 ? 'text-secondary' : 'text-slate-500'">
                     <span class="size-6 rounded-full flex items-center justify-center text-xs font-mono font-black"
                           :class="step >= 1 ? 'bg-secondary text-primary' : 'bg-slate-800 text-slate-400'">۱</span>
                     <span class="hidden sm:inline">نوع پروژه</span>
                 </div>
-                <div class="h-0.5 flex-1 mx-3" :class="step >= 2 ? 'bg-secondary/60' : 'bg-slate-800'"></div>
+                <div class="h-0.5 flex-1 w-10 mx-3" :class="step >= 2 ? 'bg-secondary/60' : 'bg-slate-800'"></div>
                 <div @click="goToStep(2)" class="flex items-center gap-2 cursor-pointer transition-colors" :class="step >= 2 ? 'text-secondary' : 'text-slate-500'">
                     <span class="size-6 rounded-full flex items-center justify-center text-xs font-mono font-black"
                           :class="step >= 2 ? 'bg-secondary text-primary' : 'bg-slate-800 text-slate-400'">۲</span>
@@ -68,7 +68,7 @@
                     </div>
                     <p class="text-xs sm:text-sm text-slate-400 mb-6">هدف اصلی خود را برای راه‌اندازی یا توسعه سیستم انتخاب کنید.</p>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 lg:gap-5">
                         <template x-for="p in projectTypes" :key="p.id">
                             <div @click="selectedType = p.id; goToStep(2)"
                                  :class="selectedType === p.id 

@@ -13,15 +13,7 @@
         
         <!-- Brand & Main Navigation (Desktop) -->
         <div class="flex items-center gap-8 max-lg:hidden">
-            <a href="<?= esc_url(home_url('/')); ?>" class="flex items-center gap-3 group text-decoration-none">
-                <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-secondary/20 to-white/5 border border-secondary/30 flex items-center justify-center text-secondary font-black text-base shadow-sm group-hover:scale-105 group-hover:border-secondary transition-all">
-                    K
-                </span>
-                <div class="flex flex-col text-start">
-                    <span class="font-black text-sm text-white tracking-wide group-hover:text-secondary transition-colors">کوروش محمدپور</span>
-                    <span class="text-[10px] font-mono text-slate-400">Software Architect</span>
-                </div>
-            </a>
+            <?php get_template_part('template-parts/logo-brand'); ?>
             
             <?php
             if (has_nav_menu('headerMenuLocation')) :
@@ -70,8 +62,16 @@
             </button>
 
             <!-- Brand Monogram (Centered) -->
-            <a href="<?= esc_url(home_url('/')); ?>" class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-secondary/20 border border-secondary/40 text-secondary font-black flex items-center justify-center text-sm">K</span>
+            <a href="<?= esc_url(home_url('/')); ?>" class="flex items-center gap-2.5">
+                <span class="size-8 rounded-lg bg-slate-900 border border-secondary/40 flex items-center justify-center shadow-sm">
+                    <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 8L3 12L7 16" stroke="#38bdf8" />
+                        <path d="M12 4V20" stroke="#f59e0b" />
+                        <path d="M12 12L17 7" stroke="#f59e0b" />
+                        <path d="M14 10.5L18 17" stroke="#f59e0b" />
+                        <path d="M19 9L22 12L19 15" stroke="#38bdf8" stroke-opacity="0.7" />
+                    </svg>
+                </span>
                 <span class="font-black text-sm text-white">کوروش محمدپور</span>
             </a>
 
