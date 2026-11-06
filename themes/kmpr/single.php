@@ -63,14 +63,19 @@ while (have_posts()) :
 
                 <!-- Live TOC component on mobile/main body top -->
                 <div class="lg:hidden mb-2">
-                    <div class="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl shadow-sm">
+                    <div class="bg-slate-50 border border-slate-200/80 p-4 sm:p-5 rounded-2xl shadow-sm">
                         <button @click="toc = !toc" class="text-sm font-bold flex justify-between items-center cursor-pointer w-full text-slate-800">
-                            <span>فهرست مطالب این مقاله</span>
-                            <svg :class="toc ? 'rotate-180' : ''" width="16" height="16" fill="currentColor" class="bi bi-chevron-up transition-transform duration-300" viewBox="0 0 16 16">
+                            <span class="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-secondary shrink-0" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4.172a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                                </svg>
+                                <span>فهرست مطالب این مقاله</span>
+                            </span>
+                            <svg :class="toc ? 'rotate-180' : ''" width="16" height="16" fill="currentColor" class="bi bi-chevron-up transition-transform duration-300 text-slate-400" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
                             </svg>
                         </button>
-                        <div x-show="toc" x-collapse class="mt-4 pt-4 border-t border-dashed border-slate-200 prose prose-sm text-slate-600 leading-relaxed max-h-48 overflow-y-auto">
+                        <div x-show="toc" x-collapse class="mt-4 pt-4 border-t border-dashed border-slate-200 text-slate-600 leading-relaxed max-h-60 overflow-y-auto pe-1.5 scroll-smooth">
                             <?php echo do_shortcode('[TOC levels="2,3"]'); ?>
                         </div>
                     </div>
@@ -236,10 +241,18 @@ while (have_posts()) :
                     </div>
                 </div>
 
-                <!-- Desktop TOC Widget -->
+                <!-- Desktop TOC Widget (Sticky Sidebar with Live Active Spy & Auto-Center Scroll) -->
                 <div class="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm">
-                    <h4 class="font-extrabold text-slate-800 text-sm border-b border-slate-200 pb-3 mb-4">فهرست مطالب این مقاله</h4>
-                    <div class="prose prose-sm text-slate-600 leading-relaxed max-h-48 overflow-y-auto">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                        <h4 class="font-black text-slate-900 text-sm flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-secondary shrink-0" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4.172a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                            </svg>
+                            <span>فهرست مطالب این مقاله</span>
+                        </h4>
+                        <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">سریع</span>
+                    </div>
+                    <div class="text-slate-600 leading-relaxed max-h-72 lg:max-h-80 overflow-y-auto pe-1.5 scroll-smooth">
                         <?php echo do_shortcode('[TOC levels="2,3"]'); ?>
                     </div>
                 </div>
@@ -308,6 +321,33 @@ while (have_posts()) :
                 <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
             </svg>
         </button>
+
+        <!-- Mobile TOC Drawer Modal (modeled after Gilllda) -->
+        <div @keydown.escape.window="toc = false"
+             :class="toc ? '!z-50 !opacity-100 pointer-events-auto' : 'pointer-events-none opacity-0'"
+             class="fixed inset-0 flex justify-center z-[-1] bg-slate-950/60 items-end lg:hidden backdrop-blur-sm transition-all duration-300"
+             @click.self="toc = false"
+             x-cloak>
+            <div class="bg-white text-slate-800 w-full py-5 px-6 rounded-t-3xl flex flex-col gap-y-3 shadow-2xl transition-transform duration-300 max-h-[75vh]"
+                 :class="toc ? '!translate-y-0' : 'translate-y-full'">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <h5 class="font-black text-sm text-slate-900 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-secondary shrink-0" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4.172a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                        </svg>
+                        <span>فهرست مطالب مقاله</span>
+                    </h5>
+                    <button @click="toc = false" aria-label="بستن فهرست مطالب" class="p-1.5 text-slate-400 hover:text-slate-700 bg-slate-100 rounded-xl transition-colors cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708-.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="bg-slate-50/80 rounded-2xl max-h-[50vh] border border-slate-200/80 overflow-y-auto p-4 scroll-smooth">
+                    <?php echo do_shortcode('[TOC levels="2,3"]'); ?>
+                </div>
+            </div>
+        </div>
 
         <!-- Services Section bottom -->
         <div class="border-t border-slate-200 mt-16 pt-16">
