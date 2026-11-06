@@ -73,7 +73,7 @@ function get_toc($content, $levels = [2, 3])
 
     ob_start();
     ?>
-    <ul class="list-none space-y-1.5 border-s-2 border-slate-200 ps-0 my-0 select-none text-start"
+    <ul class="list-none space-y-1.5 border-s-2 border-white/10 ps-0 my-0 select-none text-start"
         x-effect="if (active) {
             $nextTick(() => {
                 let activeLi = null;
@@ -106,7 +106,7 @@ function get_toc($content, $levels = [2, 3])
                 <button type="button"
                         aria-label="<?= esc_attr($heading['name']); ?>"
                         class="w-full text-start flex items-center py-1.5 px-2.5 rounded-xl cursor-pointer transition-all duration-300 leading-snug"
-                        :class="active === '<?= esc_attr($heading['id']); ?>' ? '!text-secondary !font-black bg-secondary/15 shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 font-medium'"
+                        :class="active === '<?= esc_attr($heading['id']); ?>' ? '!text-secondary !font-black bg-secondary/15 shadow-2xs' : 'text-slate-300 hover:text-white hover:bg-white/[0.05] font-medium'"
                         @click.prevent="document.getElementById('<?= esc_attr($heading['id']); ?>').scrollIntoView({ behavior: 'smooth' }); toc = false">
                     <?= esc_html($heading['name']); ?>
                 </button>

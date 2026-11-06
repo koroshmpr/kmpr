@@ -37,7 +37,7 @@ while (have_posts()) :
         }
      }" 
      @scroll.window="updateProgress()"
-     class="single-article-wrapper min-h-screen bg-slate-950 text-slate-100 py-8 lg:py-14 selection:bg-secondary/30 selection:text-secondary relative overflow-hidden">
+     class="single-article-wrapper min-h-screen bg-slate-950 text-slate-100 py-8 lg:py-14 selection:bg-secondary/30 selection:text-secondary relative overflow-x-clip">
     
     <!-- Top Reading Progress Indicator -->
     <div class="fixed top-0 start-0 h-1 bg-gradient-to-r from-secondary to-amber-400 z-50 transition-all duration-150 pointer-events-none"
@@ -49,7 +49,7 @@ while (have_posts()) :
 
     <div class="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10 text-start">
         
-        <!-- Breadcrumbs Navigation -->
+        <!-- Breadcrumbs Navigation (Clean Category Hierarchy) -->
         <nav class="flex flex-wrap items-center text-xs font-bold text-slate-400 gap-2 mb-8 pb-4 border-b border-white/10" aria-label="breadcrumb">
             <a href="<?= esc_url(home_url('/')); ?>" class="hover:text-secondary transition-colors">صفحه اصلی</a>
             <span class="text-slate-600">&gt;</span>
@@ -58,8 +58,6 @@ while (have_posts()) :
                 <span class="text-slate-600">&gt;</span>
                 <a href="<?= esc_url(get_category_link($primary_cat->term_id)); ?>" class="text-secondary hover:underline"><?= esc_html($primary_cat->name); ?></a>
             <?php endif; ?>
-            <span class="text-slate-600">&gt;</span>
-            <span class="text-slate-300 truncate max-w-xs sm:max-w-md"><?= esc_html(get_the_title()); ?></span>
         </nav>
 
         <!-- Main Layout Grid -->
@@ -69,7 +67,7 @@ while (have_posts()) :
             <main class="lg:col-span-8 flex flex-col gap-6">
                 
                 <!-- Hero Featured Image & Title Box -->
-                <div class="relative w-full">
+                <div class="relative w-full aspect-[16/9]">
                     <?php if (has_post_thumbnail()) : ?>
                         <div class="relative overflow-hidden aspect-[16/9] rounded-3xl bg-slate-900 border border-white/10 shadow-2xl">
                             <img src="<?php the_post_thumbnail_url('large'); ?>" 
@@ -93,6 +91,14 @@ while (have_posts()) :
                             <span class="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.04] text-slate-300 border border-white/10">
                                 زمان مطالعه: <?= reading_time(); ?> دقیقه
                             </span>
+                            <?php
+                            $published_date = get_the_time('Y-m-d');
+                            $modified_date  = get_the_modified_time('Y-m-d');
+                            if ($modified_date > $published_date) : ?>
+                                <span class="text-xs font-medium px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    بروزرسانی: <?= shamsi_date('d F Y', get_the_modified_time('U')); ?>
+                                </span>
+                            <?php endif; ?>
                         </div>
 
                         <!-- Post Title -->
@@ -110,6 +116,8 @@ while (have_posts()) :
                                 <span>انتشار: <?= shamsi_date('d F Y', get_the_time('U')); ?></span>
                                 <span class="text-slate-600">•</span>
                                 <span>بازدید: <?= get_post_meta($post_id, 'post_views', true) ?: '1'; ?></span>
+                                <span class="text-slate-600">•</span>
+                                <span><?= $comment_count; ?> دیدگاه</span>
                             </div>
                         </div>
                     </div>
@@ -243,8 +251,74 @@ while (have_posts()) :
                     <?php endif; ?>
                 </div>
 
+                <!-- Related Articles Section (Under Post) -->
+                <?php
+                $cat_ids = wp_get_post_categories($post_id);
+                $related_args = array(
+                    'post_type'           => 'post',
+                    'post_status'         => 'publish',
+                    'category__in'        => $cat_ids,
+                    'post__not_in'        => array($post_id),
+                    'posts_per_page'      => 2,
+                    'ignore_sticky_posts' => true
+                );
+                $related_query = new WP_Query($related_args);
+
+                // Fallback if fewer than 2 posts in category
+                if ($related_query->post_count < 2) {
+                    $needed = 2 - $related_query->post_count;
+                    $exclude = array_merge(array($post_id), wp_list_pluck($related_query->posts, 'ID'));
+                    $fallback_args = array(
+                        'post_type'           => 'post',
+                        'post_status'         => 'publish',
+                        'post__not_in'        => $exclude,
+                        'posts_per_page'      => $needed,
+                        'ignore_sticky_posts' => true
+                    );
+                    $fallback_query = new WP_Query($fallback_args);
+                }
+
+                if ($related_query->have_posts() || (isset($fallback_query) && $fallback_query->have_posts())) :
+                ?>
+                <section class="mt-8 pt-8 border-t border-white/10 text-start">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-1">پیشنهاد مطالعه بعدی</span>
+                            <h3 class="text-lg sm:text-xl font-black text-white">مقالات مرتبط و پیشنهادی</h3>
+                        </div>
+                        <?php if ($primary_cat) : ?>
+                            <a href="<?= esc_url(get_category_link($primary_cat->term_id)); ?>" 
+                               class="text-xs font-bold text-slate-400 hover:text-secondary flex items-center gap-1 transition-colors">
+                                <span>مشاهده همه مقالات این دسته</span>
+                                <span>&larr;</span>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <?php
+                        while ($related_query->have_posts()) : $related_query->the_post();
+                            echo '<div class="h-full">';
+                            get_template_part('template-parts/cards/title-under-image');
+                            echo '</div>';
+                        endwhile;
+                        wp_reset_postdata();
+
+                        if (isset($fallback_query) && $fallback_query->have_posts()) :
+                            while ($fallback_query->have_posts()) : $fallback_query->the_post();
+                                echo '<div class="h-full">';
+                                get_template_part('template-parts/cards/title-under-image');
+                                echo '</div>';
+                            endwhile;
+                            wp_reset_postdata();
+                        endif;
+                        ?>
+                    </div>
+                </section>
+                <?php endif; ?>
+
                 <!-- Comments Section -->
-                <div id="comments" class="mt-4">
+                <div id="comments" class="mt-8 pt-8 border-t border-white/10">
                     <?php
                     if (comments_open() || get_comments_number()) :
                         comments_template();
@@ -254,54 +328,9 @@ while (have_posts()) :
 
             </main>
 
-            <!-- Col 4: Sticky Sidebar (Desktop) -->
-            <aside class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24 max-lg:hidden text-start">
+            <!-- Col 4: Sticky Clean Sidebar (Desktop TOC + CTA) -->
+            <aside class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-28 max-lg:hidden text-start">
                 
-                <!-- Article Meta Details Card -->
-                <div class="bg-slate-900/80 border border-white/10 rounded-3xl p-6 flex flex-col gap-4 text-xs text-slate-300 backdrop-blur-xl shadow-xl">
-                    <h3 class="font-black text-white text-sm border-b border-white/10 pb-3 flex items-center gap-2">
-                        <span class="size-2 rounded-full bg-secondary"></span>
-                        <span>شناسنامه و آمار مقاله</span>
-                    </h3>
-                    
-                    <!-- Modified Date -->
-                    <?php
-                    $published_date = get_the_time('Y-m-d');
-                    $modified_date  = get_the_modified_time('Y-m-d');
-                    if ($modified_date > $published_date) : ?>
-                        <div class="flex items-center gap-3 pb-3 border-b border-white/5 text-emerald-400 font-bold">
-                            <span class="size-2 rounded-full bg-emerald-400"></span>
-                            <span>آخرین بازبینی فنی: <?= shamsi_date('d F Y', get_the_modified_time('U')); ?></span>
-                        </div>
-                    <?php endif; ?>
-
-                    <div class="grid grid-cols-4 gap-3">
-                        <!-- Author -->
-                    <div class="flex flex-col gap-2 items-center justify-between">
-                        <span class="text-xs text-slate-400">نویسنده:</span>
-                        <span class="font-black text-white"><?= esc_html(get_the_author_meta('display_name')); ?></span>
-                    </div>
-
-                    <!-- Reading Time -->
-                    <div class="flex flex-col gap-2 items-center justify-between">
-                        <span class="text-xs text-slate-400">زمان تخمینی مطالعه:</span>
-                        <span class="font-bold text-white font-mono"><?= reading_time(); ?> دقیقه</span>
-                    </div>
-
-                    <!-- Views -->
-                    <div class="flex flex-col gap-2 items-center justify-between">
-                        <span class="text-xs text-slate-400">تعداد بازدید:</span>
-                        <span class="font-bold text-white font-mono"><?= get_post_meta($post_id, 'post_views', true) ?: '1'; ?></span>
-                    </div>
-
-                    <!-- Comments count -->
-                    <div class="flex flex-col gap-2 items-center justify-between">
-                        <span class="text-xs text-slate-400">دیدگاه‌های ثبت‌شده:</span>
-                        <span class="font-bold text-secondary font-mono"><?= $comment_count; ?> دیدگاه</span>
-                    </div>
-                    </div>
-                </div>
-
                 <!-- Sticky Table of Contents (Desktop) -->
                 <div class="bg-slate-900/80 border border-white/10 p-6 rounded-3xl shadow-xl backdrop-blur-xl">
                     <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
@@ -318,7 +347,7 @@ while (have_posts()) :
                         </h4>
                         <span class="text-[10px] font-mono font-bold text-secondary bg-secondary/15 px-2 py-0.5 rounded-full">TOC</span>
                     </div>
-                    <div class="text-slate-300 text-xs leading-relaxed max-h-72 overflow-y-auto pe-1.5 scroll-smooth [&_a]:text-slate-300 [&_a:hover]:text-secondary [&_ul]:space-y-2 [&_li]:leading-normal">
+                    <div class="text-slate-300 text-xs leading-relaxed max-h-[calc(100vh-16rem)] overflow-y-auto pe-1.5 scroll-smooth [&_a]:text-slate-300 [&_a:hover]:text-secondary [&_ul]:space-y-2 [&_li]:leading-normal">
                         <?php echo do_shortcode('[TOC levels="2,3"]'); ?>
                     </div>
                 </div>
@@ -339,9 +368,6 @@ while (have_posts()) :
                         ارتباط مستقیم
                     </a>
                 </div>
-
-                <!-- Loop Sidebar (Recent & Recommended) -->
-                <?php get_template_part('template-parts/loop/post-sidebar'); ?>
 
             </aside>
 
