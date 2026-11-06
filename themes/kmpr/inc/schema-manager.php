@@ -235,3 +235,4 @@ class KMPR_Schema_Manager {
 }
 
 new KMPR_Schema_Manager();
+

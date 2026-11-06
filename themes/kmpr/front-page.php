@@ -9,22 +9,34 @@
 
 get_header();
 
-
 if (have_posts())
     the_post();
 
-/// hero
+/// Hero Section (Modern High-Tech Developer Intro)
 get_template_part('template-parts/homePage/hero');
-/// services list
+
+/// Developer Tech Arsenal & Tooling
+get_template_part('template-parts/homePage/tech-stack');
+
+/// Services List
 get_template_part('template-parts/services/services-home');
-/// cta
-get_template_part('template-parts/homePage/callToAction');
-// portfolios-slider
+
+/// Developer Bento Grid (Why Choose Custom Engineering)
+get_template_part('template-parts/homePage/developer-bento');
+
+/// Portfolios Slider
 get_template_part('template-parts/homePage/portfolios-slider');
-/// about
+
+/// Call To Action
+get_template_part('template-parts/homePage/callToAction');
+
+/// About Us
 get_template_part('template-parts/homePage/about-us');
-/// most visited post
+
+/// Most Visited Posts / Blog Slider
 get_template_part('template-parts/homePage/blog-slider');
-/// portfolio last posts
+
+/// Portfolio Last Posts
 get_template_part('template-parts/portfolio/recently-portfolios');
+
 get_footer();

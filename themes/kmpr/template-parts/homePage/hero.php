@@ -3,33 +3,36 @@ $heroImage = get_field('hero-image');
 $slogan = get_field('hero-slogan');
 $subtitle = get_field('hero-subtitle');
 ?>
-<section class="relative min-h-[72vh] lg:min-h-[82vh] flex items-center justify-center overflow-hidden bg-slate-950 text-white select-none py-16 lg:py-24">
+<section class="relative min-h-[75vh] lg:min-h-[85vh] flex items-center justify-center overflow-hidden bg-slate-950 text-white select-none py-16 lg:py-24">
+    <!-- Cyber Subtle Dot Grid Overlay -->
+    <div class="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none -z-0"></div>
+
     <!-- Ambient Modern Glow Spheres -->
-    <div class="absolute top-1/4 start-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-[120px] pointer-events-none -z-0"></div>
-    <div class="absolute bottom-10 end-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-[120px] pointer-events-none -z-0"></div>
+    <div class="absolute top-1/4 start-1/4 w-96 h-96 bg-secondary/15 rounded-full blur-[140px] pointer-events-none -z-0"></div>
+    <div class="absolute bottom-10 end-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-[140px] pointer-events-none -z-0"></div>
 
     <?php if ($heroImage) : ?>
         <img data-aos="zoom-out" data-aos-duration="1500" 
-             class="absolute inset-0 w-full h-full object-cover object-center opacity-30 scale-105 pointer-events-none transition-transform duration-1000 -z-0" 
+             class="absolute inset-0 w-full h-full object-cover object-center opacity-20 scale-105 pointer-events-none transition-transform duration-1000 -z-0" 
              src="<?= esc_url($heroImage['url']); ?>" 
              alt="<?= esc_attr($slogan); ?>">
     <?php endif; ?>
 
     <!-- Deep cinematic gradient overlay for 100% contrast & legibility -->
-    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/50 -z-0"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/60 -z-0"></div>
 
     <!-- Content Container (Balanced & Centered) -->
     <div class="container mx-auto px-4 sm:px-6 relative z-10">
         <div class="max-w-3xl mx-auto flex flex-col items-center text-center gap-6">
             
-            <!-- Modern Glow Pill Badge -->
+            <!-- Modern Live Availability Glow Pill Badge -->
             <div data-aos="fade-down" data-aos-duration="700"
-                 class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.12] border border-white/15 backdrop-blur-xl shadow-lg shadow-black/20 transition-all duration-300">
+                 class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 backdrop-blur-xl shadow-lg shadow-black/20 transition-all duration-300">
                 <span class="relative flex w-2.5 h-2.5 shrink-0">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                    <span class="relative inline-flex rounded-full w-2.5 h-2.5 bg-secondary"></span>
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full w-2.5 h-2.5 bg-emerald-500"></span>
                 </span>
-                <span class="text-xs font-black text-slate-200 tracking-wide">خلاقیت، تکنولوژی، توسعه سیستم‌های مدرن</span>
+                <span class="text-xs font-black text-slate-200 tracking-wide">در دسترس برای پروژه‌های نرم‌افزاری و توسعه اختصاصی (۲۰۲۶)</span>
             </div>
 
             <!-- Main Slogan -->
@@ -56,6 +59,25 @@ $subtitle = get_field('hero-subtitle');
                    class="w-full sm:w-auto text-center whitespace-nowrap bg-white/10 hover:bg-white/15 backdrop-blur-xl text-white font-bold text-sm sm:text-base px-8 py-3.5 rounded-full transition-all duration-300 border border-white/20 hover:scale-105 active:scale-95 shadow-md">
                     نمونه‌کارها و پروژه‌ها
                 </a>
+            </div>
+
+            <!-- Developer Trust & Speed Pills -->
+            <div data-aos="fade-up" data-aos-duration="800" data-aos-delay="600"
+                 class="mt-6 pt-6 border-t border-white/10 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-slate-400 font-bold">
+                <span class="flex items-center gap-1.5">
+                    <span class="text-emerald-400">⚡</span>
+                    <span>سرعت لود زیر ۱ ثانیه</span>
+                </span>
+                <span class="text-slate-600 hidden sm:inline">•</span>
+                <span class="flex items-center gap-1.5">
+                    <span class="text-secondary">🛡️</span>
+                    <span>بدون صفحه‌ساز و کدهای زائد</span>
+                </span>
+                <span class="text-slate-600 hidden sm:inline">•</span>
+                <span class="flex items-center gap-1.5">
+                    <span class="text-sky-400">🤖</span>
+                    <span>آماده برای موتورهای هوش مصنوعی</span>
+                </span>
             </div>
 
         </div>
