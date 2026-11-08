@@ -27,6 +27,11 @@ function kmpr_panel_route()
     }
     $path = (string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
     $base = kmpr_panel_base();
+    if (strpos($path, rtrim($base, '/')) === 0 && !kmpr_panel_can()) {
+        // Not an admin (or logged out): behave exactly like a non-existent URL (theme 404).
+        // Never redirect to the login page — that would reveal the hidden login URL.
+        return;
+    }
     if ($path === rtrim($base, '/')) {
         wp_safe_redirect($base, 301);
         exit;
@@ -82,12 +87,6 @@ function kmpr_panel_route()
         exit;
     }
 
-    if (!is_user_logged_in()) {
-        $home_path = rtrim((string) wp_parse_url(home_url('/'), PHP_URL_PATH), '/');
-        $back      = home_url(substr($path, strlen($home_path)));
-        wp_safe_redirect(wp_login_url($back));
-        exit;
-    }
     if (!kmpr_panel_can()) {
         status_header(403);
         header('Content-Type: text/html; charset=utf-8');
