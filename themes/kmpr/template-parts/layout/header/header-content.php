@@ -13,9 +13,9 @@
     <nav class="container mx-auto flex items-center h-14 sm:h-16 lg:h-20 px-4 sm:px-6 justify-between gap-2 lg:gap-4 flex-nowrap">
         
         <!-- Brand & Main Navigation (Desktop / Laptop) -->
-        <div class="flex items-center gap-3 lg:gap-5 xl:gap-8 shrink-0 min-w-0">
+        <div class="flex items-center self-stretch gap-3 lg:gap-5 xl:gap-8 shrink-0 min-w-0">
             <!-- Brand Logo -->
-            <div class="shrink-0">
+            <div class="shrink-0 flex items-center">
                 <?php get_template_part('template-parts/logo-brand', null, array('sizeLogo' => 'h-9 lg:h-10 flex items-center')); ?>
             </div>
             

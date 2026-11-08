@@ -35,10 +35,10 @@ if ($logo_type === 'image' && ($logo_img = get_field('brand_logo_img', 'option')
             <path d="M19.5 11v18" fill="none" stroke="url(#kmpr-mark-amber)" stroke-width="2.8" stroke-linecap="round"/>
             <path d="m29.5 11.5-8 8.5 8 8.5" fill="none" stroke="url(#kmpr-mark-amber)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span class="flex flex-col leading-none">
-            <span class="text-base lg:text-[1.15rem] font-black tracking-[0.12em] text-white group-hover:text-secondary transition-colors"><?= esc_html($name); ?><span class="text-secondary">.</span></span>
+        <span class="flex flex-col justify-center gap-1.5 leading-none">
+            <span class="block text-[15px] lg:text-[1.15rem] leading-none font-black tracking-[0.12em] text-white group-hover:text-secondary transition-colors"><?= esc_html($name); ?><span class="text-secondary">.</span></span>
             <?php if (!$compact) : ?>
-                <span class="mt-1 text-[10px] font-bold text-slate-400 leading-none whitespace-nowrap" dir="rtl"><?= esc_html($subline); ?></span>
+                <span class="block text-[10px] lg:text-[11px] font-bold text-slate-400 leading-none whitespace-nowrap" dir="rtl"><?= esc_html($subline); ?></span>
             <?php endif; ?>
         </span>
     </a>

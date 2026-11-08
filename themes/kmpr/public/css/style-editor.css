@@ -14609,6 +14609,9 @@ body.admin-bar #kmpr-sheet {
   .lg\:text-\[3\.4rem\] {
     font-size: 3.4rem;
   }
+  .lg\:text-\[11px\] {
+    font-size: 11px;
+  }
   .lg\:leading-\[1\.35\] {
     --tw-leading: 1.35;
     line-height: 1.35;
