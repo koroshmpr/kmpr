@@ -1,0 +1,78 @@
+/* ==========================================================================
+   Site footer (template-parts/layout/footer/index.php)
+   ========================================================================== */
+.kf__glow {
+	position: absolute;
+	inset-inline: 0;
+	top: 0;
+	height: 22rem;
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(40rem 14rem at 85% 0%, rgb(217 119 6 / 0.10), transparent 70%),
+		radial-gradient(30rem 12rem at 10% 30%, rgb(192 38 211 / 0.06), transparent 70%);
+}
+
+/* CTA card: soft amber edge + grid texture */
+.kf-cta__card {
+	background-image:
+		linear-gradient(120deg, rgb(217 119 6 / 0.14), transparent 45%),
+		radial-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1px);
+	background-size: auto, 18px 18px;
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 30px 60px -30px rgb(0 0 0 / 0.6);
+}
+.kf-cta__card::before {
+	content: '';
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-start: 2rem;
+	width: 9rem;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+}
+
+/* Contact chips */
+.kf-chip {
+	display: flex;
+	align-items: center;
+	gap: 0.625rem;
+	min-height: 2.75rem;
+	padding: 0.25rem 0.5rem 0.25rem 0.875rem;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.08);
+	background: rgb(255 255 255 / 0.03);
+	font-size: 0.8125rem;
+	white-space: nowrap;
+	transition: border-color 0.2s, background-color 0.2s;
+}
+a.kf-chip:hover { border-color: rgb(217 119 6 / 0.4); background: rgb(255 255 255 / 0.06); }
+.kf-chip__ico {
+	display: grid;
+	place-items: center;
+	width: 2rem;
+	height: 2rem;
+	flex-shrink: 0;
+	border-radius: 9999px;
+}
+
+/* Game center card: idle gamepad */
+.kf-game::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: radial-gradient(14rem 8rem at 100% 0%, rgb(217 70 239 / 0.16), transparent 70%);
+	opacity: 0.7;
+	transition: opacity 0.3s;
+}
+.kf-game:hover::after { opacity: 1; }
+.kf-game__pad svg { animation: kf-pad 3.2s ease-in-out infinite; transform-origin: 50% 60%; }
+.kf-game:hover .kf-game__pad svg { animation-duration: 1.1s; }
+.kf-game__btn { animation: kf-btn 1.6s steps(1) infinite; }
+.kf-game__btn--2 { animation-delay: 0.8s; }
+@keyframes kf-pad { 0%, 100% { transform: rotate(0) translateY(0); } 30% { transform: rotate(-7deg) translateY(-2px); } 60% { transform: rotate(5deg) translateY(1px); } }
+@keyframes kf-btn { 50% { opacity: 0.35; } }
+
+@media (prefers-reduced-motion: reduce) {
+	.kf-game__pad svg, .kf-game__btn { animation: none; }
+}
