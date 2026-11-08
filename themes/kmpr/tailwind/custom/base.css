@@ -187,3 +187,8 @@ body.admin-bar #kmpr-sheet { max-height: calc(88svh - 46px); }
 }
 
 
+
+/* English blocks inside Persian pages (e.g. the bilingual privacy policy): Latin digits + LTR-friendly font */
+[lang="en"] {
+	font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}

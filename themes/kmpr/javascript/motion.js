@@ -127,11 +127,13 @@ function initReveal() {
 			(entries) => {
 				entries.forEach((entry) => {
 					if (!entry.isIntersecting) return;
+					// 12% visible — or, for elements taller than the screen (long articles), a quarter of the viewport.
+					if (entry.intersectionRatio < 0.12 && entry.intersectionRect.height < window.innerHeight * 0.25) return;
 					reveal(entry.target);
 					io.unobserve(entry.target);
 				});
 			},
-			{ rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+			{ rootMargin: '0px 0px -8% 0px', threshold: [0, 0.02, 0.06, 0.12] }
 		);
 	}
 	scan();
