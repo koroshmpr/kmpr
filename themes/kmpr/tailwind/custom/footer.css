@@ -76,3 +76,9 @@ a.kf-chip:hover { border-color: rgb(217 119 6 / 0.4); background: rgb(255 255 25
 @media (prefers-reduced-motion: reduce) {
 	.kf-game__pad svg, .kf-game__btn { animation: none; }
 }
+
+/* Game card artwork: fade into the card from the text side */
+.kf-game__art {
+	-webkit-mask-image: linear-gradient(to right, #000 55%, transparent 100%);
+	mask-image: linear-gradient(to right, #000 55%, transparent 100%);
+}

@@ -4,8 +4,6 @@
  */
 $kf_links = array_filter(array(
     array(home_url('/resume/'), 'رزومه آنلاین', ''),
-    array(home_url('/llms.txt'), 'برای هوش مصنوعی', 'llms.txt'),
-    array(defined('WPSEO_VERSION') ? home_url('/sitemap_index.xml') : home_url('/wp-sitemap.xml'), 'نقشه سایت', ''),
     array(get_privacy_policy_url(), 'حریم خصوصی', ''),
 ), fn($l) => !empty($l[0]));
 $kf_badges = array();

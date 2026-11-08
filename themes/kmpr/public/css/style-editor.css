@@ -1307,6 +1307,10 @@ a.kf-chip:hover {
     animation: none;
   }
 }
+.kf-game__art {
+  -webkit-mask-image: linear-gradient(to right, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 55%, transparent 100%);
+}
 .lesson-prose {
   color: #cbd5e1;
   font-size: 1.0625rem;
@@ -7759,6 +7763,9 @@ body.admin-bar #kmpr-sheet {
 .inset-x-6 {
   inset-inline: calc(var(--spacing) * 6);
 }
+.inset-y-0 {
+  inset-block: 0px;
+}
 .-start-8 {
   inset-inline-start: calc(var(--spacing) * -8);
 }
@@ -7996,6 +8003,9 @@ body.admin-bar #kmpr-sheet {
 .bottom-20 {
   bottom: calc(var(--spacing) * 20);
 }
+.left-0 {
+  left: 0px;
+}
 .left-1\/2 {
   left: calc(1 / 2 * 100%);
 }
@@ -8132,6 +8142,9 @@ body.admin-bar #kmpr-sheet {
 }
 .me-1 {
   margin-inline-end: var(--spacing);
+}
+.me-28 {
+  margin-inline-end: calc(var(--spacing) * 28);
 }
 .prose {
   color: var(--tw-prose-body);
@@ -9205,6 +9218,9 @@ body.admin-bar #kmpr-sheet {
 .min-h-\[5\.75rem\] {
   min-height: 5.75rem;
 }
+.min-h-\[7\.5rem\] {
+  min-height: 7.5rem;
+}
 .min-h-\[17rem\] {
   min-height: 17rem;
 }
@@ -9277,6 +9293,9 @@ body.admin-bar #kmpr-sheet {
 .w-28 {
   width: calc(var(--spacing) * 28);
 }
+.w-32 {
+  width: calc(var(--spacing) * 32);
+}
 .w-72 {
   width: calc(var(--spacing) * 72);
 }
@@ -9345,6 +9364,9 @@ body.admin-bar #kmpr-sheet {
 }
 .w-\[96\%\] {
   width: 96%;
+}
+.w-auto {
+  width: auto;
 }
 .w-full {
   width: 100%;
@@ -9432,6 +9454,9 @@ body.admin-bar #kmpr-sheet {
 }
 .grow {
   flex-grow: 1;
+}
+.origin-left {
+  transform-origin: 0;
 }
 .origin-right {
   transform-origin: 100%;
@@ -9731,11 +9756,6 @@ body.admin-bar #kmpr-sheet {
 }
 .gap-x-8 {
   column-gap: calc(var(--spacing) * 8);
-}
-:where(.-space-x-3 > :not(:last-child)) {
-  --tw-space-x-reverse: 0;
-  margin-inline-start: calc(calc(var(--spacing) * -3) * var(--tw-space-x-reverse));
-  margin-inline-end: calc(calc(var(--spacing) * -3) * calc(1 - var(--tw-space-x-reverse)));
 }
 .gap-y-0 {
   row-gap: 0px;
@@ -12140,6 +12160,9 @@ body.admin-bar #kmpr-sheet {
 .opacity-80 {
   opacity: 80%;
 }
+.opacity-85 {
+  opacity: 85%;
+}
 .opacity-100 {
   opacity: 100%;
 }
@@ -12715,10 +12738,6 @@ body.admin-bar #kmpr-sheet {
   }
   .group-hover\:-translate-x-1\.5:is(:where(.group):hover *) {
     --tw-translate-x: calc(var(--spacing) * -1.5);
-    translate: var(--tw-translate-x) var(--tw-translate-y);
-  }
-  .group-hover\:-translate-y-0\.5:is(:where(.group):hover *) {
-    --tw-translate-y: calc(var(--spacing) * -0.5);
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .group-hover\:-translate-y-2:is(:where(.group):hover *) {
@@ -13478,11 +13497,6 @@ body.admin-bar #kmpr-sheet {
     display: none;
   }
 }
-@media (width >= 400px) {
-  .min-\[400px\]\:flex {
-    display: flex;
-  }
-}
 @media (width >= 420px) {
   .min-\[420px\]\:col-span-1 {
     grid-column: span 1 / span 1;
@@ -13536,6 +13550,9 @@ body.admin-bar #kmpr-sheet {
   }
   .sm\:ms-2 {
     margin-inline-start: calc(var(--spacing) * 2);
+  }
+  .sm\:me-32 {
+    margin-inline-end: calc(var(--spacing) * 32);
   }
   .sm\:mb-10 {
     margin-bottom: calc(var(--spacing) * 10);
@@ -13901,15 +13918,6 @@ body.admin-bar #kmpr-sheet {
   }
 }
 @media (width >= 48rem) {
-  .md\:absolute {
-    position: absolute;
-  }
-  .md\:end-6 {
-    inset-inline-end: calc(var(--spacing) * 6);
-  }
-  .md\:top-6 {
-    top: calc(var(--spacing) * 6);
-  }
   .md\:col-span-1 {
     grid-column: span 1 / span 1;
   }
@@ -13934,9 +13942,6 @@ body.admin-bar #kmpr-sheet {
   .md\:inline {
     display: inline;
   }
-  .md\:inline-flex {
-    display: inline-flex;
-  }
   .md\:aspect-auto {
     aspect-ratio: auto;
   }
@@ -13958,9 +13963,6 @@ body.admin-bar #kmpr-sheet {
   .md\:grid-cols-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
-  .md\:flex-col {
-    flex-direction: column;
-  }
   .md\:flex-row {
     flex-direction: row;
   }
@@ -13978,9 +13980,6 @@ body.admin-bar #kmpr-sheet {
   }
   .md\:justify-between {
     justify-content: space-between;
-  }
-  .md\:justify-center {
-    justify-content: center;
   }
   .md\:justify-end {
     justify-content: flex-end;
@@ -14007,9 +14006,6 @@ body.admin-bar #kmpr-sheet {
 @media (width >= 64rem) {
   .lg\:absolute {
     position: absolute;
-  }
-  .lg\:static {
-    position: static;
   }
   .lg\:sticky {
     position: sticky;
@@ -14455,8 +14451,8 @@ body.admin-bar #kmpr-sheet {
     border-style: var(--tw-border-style);
     border-width: 0px;
   }
-  .lg\:p-4 {
-    padding: calc(var(--spacing) * 4);
+  .lg\:p-5 {
+    padding: calc(var(--spacing) * 5);
   }
   .lg\:p-8 {
     padding: calc(var(--spacing) * 8);
@@ -14619,9 +14615,6 @@ body.admin-bar #kmpr-sheet {
   .xl\:block {
     display: block;
   }
-  .xl\:flex {
-    display: flex;
-  }
   .xl\:hidden {
     display: none;
   }
@@ -14674,9 +14667,6 @@ body.admin-bar #kmpr-sheet {
 .rtl\:translate-x-1\/2:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
   --tw-translate-x: calc(1 / 2 * 100%);
   translate: var(--tw-translate-x) var(--tw-translate-y);
-}
-:where(.rtl\:space-x-reverse:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) > :not(:last-child)) {
-  --tw-space-x-reverse: 1;
 }
 .prose-headings\:text-white :is(:where(h1, h2, h3, h4, h5, h6, th):not(:where([class~="not-prose"], [class~="not-prose"] *, [class~="acf-block-body"]:not([class~="acf-block-preview"]) *))) {
   color: var(--color-white);
@@ -15276,11 +15266,6 @@ body.admin-bar #kmpr-sheet {
   inherits: false;
   initial-value: 0;
 }
-@property --tw-space-x-reverse {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0;
-}
 @property --tw-divide-y-reverse {
   syntax: "*";
   inherits: false;
@@ -15501,7 +15486,6 @@ body.admin-bar #kmpr-sheet {
       --tw-translate-y: 0;
       --tw-translate-z: 0;
       --tw-space-y-reverse: 0;
-      --tw-space-x-reverse: 0;
       --tw-divide-y-reverse: 0;
       --tw-gradient-position: initial;
       --tw-gradient-from: #0000;

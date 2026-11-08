@@ -84,7 +84,7 @@ $kf_games_url = post_type_exists('game') ? (get_post_type_archive_link('game') ?
 $kf_game_covers = array();
 if ($kf_games_url) {
     foreach (get_posts(array('post_type' => 'game', 'post_status' => 'publish', 'posts_per_page' => 3, 'fields' => 'ids', 'no_found_rows' => true, 'orderby' => array('menu_order' => 'ASC', 'date' => 'DESC'), 'meta_key' => '_thumbnail_id')) as $gid) {
-        $src = wp_get_attachment_image_src(get_post_thumbnail_id($gid), 'thumbnail');
+        $src = wp_get_attachment_image_src(get_post_thumbnail_id($gid), 'medium_large');
         if ($src) {
             $kf_game_covers[] = array('src' => $src[0], 'alt' => get_the_title($gid));
         }
@@ -138,7 +138,22 @@ $kf_wa_svg = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" f
             <!-- Brand -->
             <section class="md:col-span-2 lg:col-span-4 lg:col-start-1 lg:row-start-1 flex flex-col gap-5 md:flex-row md:items-start md:justify-between lg:flex-col lg:justify-start" aria-label="درباره کوروش محمدپور">
                 <div class="flex flex-col gap-4 md:max-w-sm lg:max-w-none">
-                    <?php get_template_part('template-parts/logo-brand', null, array('sizeLogo' => 'h-10')); ?>
+                    <a href="<?= esc_url(home_url('/')); ?>" class="group inline-flex items-center gap-3 self-start" aria-label="<?= esc_attr(get_bloginfo('name')); ?> — صفحه اصلی">
+                        <svg width="48" height="48" viewBox="0 0 40 40" class="shrink-0 size-12 transition-transform duration-500 group-hover:-rotate-6 motion-reduce:transition-none" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="kf-mark-amber" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#d97706"/></linearGradient>
+                                <linearGradient id="kf-mark-edge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f59e0b" stop-opacity=".9"/><stop offset=".5" stop-color="#334155"/><stop offset="1" stop-color="#38bdf8" stop-opacity=".8"/></linearGradient>
+                            </defs>
+                            <rect x="1" y="1" width="38" height="38" rx="11" fill="#0b1224" stroke="url(#kf-mark-edge)" stroke-width="1.5"/>
+                            <path d="M14.5 13.5 9 20l5.5 6.5" fill="none" stroke="#38bdf8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19.5 11v18" fill="none" stroke="url(#kf-mark-amber)" stroke-width="2.8" stroke-linecap="round"/>
+                            <path d="m29.5 11.5-8 8.5 8 8.5" fill="none" stroke="url(#kf-mark-amber)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="flex flex-col gap-1 leading-none">
+                            <span class="text-lg font-black text-white group-hover:text-secondary transition-colors"><?= esc_html(get_bloginfo('name')); ?></span>
+                            <span class="text-xs font-bold text-slate-400"><span dir="ltr" class="text-secondary">KMPR</span> · <?= esc_html(kmpr_field('job_title', 'طراح و توسعه‌دهنده وب', 'option')); ?></span>
+                        </span>
+                    </a>
                     <p class="text-sm leading-7 text-slate-300"><?= esc_html($kf_bio); ?></p>
                 </div>
                 <div class="flex flex-col gap-5 lg:items-stretch">
@@ -215,9 +230,7 @@ $kf_wa_svg = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" f
                                 ?>
                                 <li class="<?= $kf_i > 1 ? 'max-md:hidden' : ''; ?>">
                                     <a href="<?= esc_url(get_permalink($p)); ?>" class="group flex items-center gap-3 rounded-2xl p-1.5 -mx-1.5 hover:bg-white/[.04] transition-colors">
-                                        <span class="relative size-12 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-slate-800">
-                                            <?= $thumb ?: '<span class="grid size-full place-items-center text-slate-500">' . kmpr_nav_svg('blog', 18) . '</span>'; // phpcs:ignore ?>
-                                        </span>
+                                        <span class="grid place-items-center size-10 shrink-0 rounded-xl border border-secondary/25 bg-secondary/10 text-sm font-black text-secondary tabular-nums group-hover:bg-secondary group-hover:text-slate-950 transition-colors" aria-hidden="true"><?= esc_html(kmpr_fa_num($kf_i + 1)); ?></span>
                                         <span class="min-w-0 flex flex-col gap-1">
                                             <span class="text-[13px] font-bold leading-6 text-slate-200 group-hover:text-secondary transition-colors line-clamp-2"><?= esc_html(get_the_title($p)); ?></span>
                                             <time class="text-[11px] text-slate-400" datetime="<?= esc_attr(get_the_date('c', $p)); ?>"><?= esc_html(shamsi_date('j F Y', get_post_time('U', true, $p))); ?></time>
@@ -232,7 +245,7 @@ $kf_wa_svg = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" f
                 <?php endif; ?>
 
                 <?php if ($kf_games_url && $kf_games_n) : ?>
-                    <a href="<?= esc_url($kf_games_url); ?>" class="kf-game group relative isolate flex items-center md:flex-col md:items-start md:justify-center lg:flex-row lg:items-center gap-4 overflow-hidden rounded-3xl border border-fuchsia-400/20 bg-slate-900 p-4 md:p-6 lg:p-4 self-start md:self-stretch lg:self-start lg:col-span-4 lg:col-start-1 lg:row-start-2 hover:border-fuchsia-400/45 transition-colors" aria-label="<?= esc_attr(kmpr_field('footer_games_title', null, 'option') . ' — ورود به گیم‌سنتر (' . kmpr_fa_num($kf_games_n) . ' بازی)'); ?>">
+                    <a href="<?= esc_url($kf_games_url); ?>" class="kf-game group relative isolate flex items-center gap-4 min-h-[7.5rem] overflow-hidden rounded-3xl border border-fuchsia-400/20 bg-slate-900 p-4 md:p-6 lg:p-5 self-start md:self-stretch lg:self-start lg:col-span-4 lg:col-start-1 lg:row-start-2 hover:border-fuchsia-400/45 transition-colors" aria-label="<?= esc_attr(kmpr_field('footer_games_title', null, 'option') . ' — ورود به گیم‌سنتر (' . kmpr_fa_num($kf_games_n) . ' بازی)'); ?>">
                         <span class="kf-game__pad relative grid place-items-center size-16 shrink-0 rounded-2xl bg-fuchsia-500/10 text-fuchsia-300" aria-hidden="true">
                             <svg width="44" height="44" class="shrink-0" viewBox="0 0 48 48" fill="none">
                                 <path d="M15 14h18a10 10 0 0 1 9.8 12l-1.5 7.4a4.6 4.6 0 0 1-8 2.1L30 32H18l-3.3 3.5a4.6 4.6 0 0 1-8-2.1L5.2 26A10 10 0 0 1 15 14Z" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="2"/>
@@ -241,17 +254,16 @@ $kf_wa_svg = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" f
                                 <circle class="kf-game__btn kf-game__btn--2" cx="36.5" cy="26" r="2.2" fill="#f0abfc"/>
                             </svg>
                         </span>
-                        <span class="min-w-0 flex-1 flex flex-col gap-1">
+                        <span class="min-w-0 flex-1 flex flex-col gap-1 me-28 sm:me-32">
                             <span class="text-[11px] font-black text-fuchsia-300">گیم‌سنتر · <?= esc_html(kmpr_fa_num($kf_games_n)); ?> بازی</span>
                             <span class="text-base font-black text-white"><?= esc_html(kmpr_field('footer_games_title', null, 'option')); ?></span>
                             <span class="text-xs leading-5 text-slate-300"><?= esc_html(kmpr_field('footer_games_text', null, 'option')); ?></span>
-                            <span class="hidden md:inline-flex lg:hidden items-center gap-1.5 mt-2 text-xs font-bold text-fuchsia-300">ورود به گیم‌سنتر<?= $kf_arrow; // phpcs:ignore ?></span>
+                            <span class="inline-flex items-center gap-1.5 mt-1.5 text-xs font-bold text-fuchsia-300">ورود به گیم‌سنتر<?= $kf_arrow; // phpcs:ignore ?></span>
                         </span>
                         <?php if ($kf_game_covers) : ?>
-                            <span class="hidden min-[400px]:flex md:absolute md:top-6 md:end-6 lg:static lg:hidden xl:flex -space-x-3 rtl:space-x-reverse shrink-0" aria-hidden="true">
-                                <?php foreach (array_slice($kf_game_covers, 0, 2) as $gc) : ?>
-                                    <img src="<?= esc_url($gc['src']); ?>" alt="" width="36" height="36" loading="lazy" decoding="async" class="size-9 rounded-xl border-2 border-slate-900 object-cover transition-transform duration-300 group-hover:-translate-y-0.5 motion-reduce:transition-none">
-                                <?php endforeach; ?>
+                            <span class="kf-game__art pointer-events-none absolute inset-y-0 end-0 -z-10 w-32 sm:w-36 overflow-hidden" aria-hidden="true">
+                                <img src="<?= esc_url($kf_game_covers[0]['src']); ?>" alt="" width="768" height="432" loading="lazy" decoding="async"
+                                     class="absolute top-0 left-0 h-full w-auto max-w-none opacity-85 transition duration-500 group-hover:scale-105 group-hover:opacity-100 motion-reduce:transition-none origin-left">
                             </span>
                         <?php endif; ?>
                     </a>
