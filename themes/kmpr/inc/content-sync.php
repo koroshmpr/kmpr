@@ -145,6 +145,8 @@ function kmpr_sync_process_site()
     }
     $data = is_array($raw) ? $raw : json_decode(wp_unslash((string) $raw), true);
     if (!is_array($data)) {
+        // Never fail silently: leave a readable result (wsp_acf_get_option_value field_name=kmpr_sync_result).
+        update_option('options_kmpr_sync_result', wp_json_encode(array('ok' => false, 'error' => 'json: ' . json_last_error_msg(), 'at' => gmdate('c'), 'len' => strlen((string) $raw))), false);
         delete_option('options_kmpr_sync_site');
         return;
     }
@@ -231,6 +233,7 @@ function kmpr_sync_process_site()
     foreach ((array) ($data['menus'] ?? array()) as $m) {
         $log[] = kmpr_sync_menu((array) $m);
     }
+    update_option('options_kmpr_sync_result', wp_json_encode(array('ok' => true, 'batch' => $data['batch'] ?? '', 'at' => gmdate('c'), 'log' => array_slice($log, 0, 60)), JSON_UNESCAPED_UNICODE), false);
     if (!empty($data['batch'])) {
         $done = (array) get_option('kmpr_sync_log', array());
         $done[sanitize_key($data['batch'])] = array('at' => gmdate('c'), 'log' => array_slice($log ?? array(), 0, 200));

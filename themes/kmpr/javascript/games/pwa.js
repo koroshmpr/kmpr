@@ -245,6 +245,16 @@ export function initPwa() {
 	if (html.dataset.pwaReady) return;
 	html.dataset.pwaReady = '1';
 	html.classList.toggle('is-standalone', isStandalone());
+	// Refresh (installed app has no browser reload button): check for a new SW version, then reload.
+	document.querySelectorAll('[data-gh-reload]').forEach((btn) => btn.addEventListener('click', async () => {
+		btn.classList.add('is-spinning');
+		btn.disabled = true;
+		try {
+			const reg = 'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration('/games/') : null;
+			if (reg) await Promise.race([reg.update(), new Promise((r) => setTimeout(r, 1500))]);
+		} catch (e) { /* offline or no SW: just reload */ }
+		location.reload();
+	}));
 	const d = read();
 	if (isStandalone() && !d.installed) {
 		d.installed = true;

@@ -414,6 +414,7 @@ function kmpr_room_record_result($room)
         kmpr_game_profile_add($p['pid'], array('win' => 60, 'draw' => 25, 'loss' => 10)[$result], $result);
         kmpr_game_count_play((int) $room['game_id'], $p['pid'], '');
     }
+    do_action('kmpr_game_room_finished', $room); // owner panel: daily online-match counter
 }
 
 function kmpr_room_new_code()

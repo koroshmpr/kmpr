@@ -129,3 +129,8 @@ require_once KMPR_INC . 'nav-icons.php';
  * Technical SEO on top of Yoast: titles, descriptions, robots, OG image fallback, sitemaps, robots.txt, manifest
  */
 require_once KMPR_INC . 'seo.php';
+
+/**
+ * Owner panel: mobile-first app-like control panel at /panel/ (REST kmpr/v1/panel/*, own PWA)
+ */
+require_once KMPR_INC . 'owner-panel.php';

@@ -1069,6 +1069,11 @@ html.is-standalone .gdock__site {
 html.is-standalone .gh__more {
 	display: block;
 }
+/* installed app has no browser chrome → show a refresh button */
+.gh__reload { display: none; }
+html.is-standalone .gh__reload { display: grid; }
+.gh__reload.is-spinning svg { animation: gh-spin 0.7s linear infinite; }
+@keyframes gh-spin { to { transform: rotate(360deg); } }
 html.is-standalone .gh:not(.is-hub) .gh__appback {
 	display: grid;
 }
@@ -1337,4 +1342,9 @@ html.is-standalone .gh {
 	.gh__install {
 		position: relative;
 	}
+}
+
+/* Installed app on narrow phones: the extra refresh button needs the room — keep only the logo mark */
+@media (max-width: 479.98px) {
+	html.is-standalone .gh__word { display: none; }
 }
