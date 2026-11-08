@@ -416,6 +416,9 @@ while (have_posts()) :
                     </span>
                 </button>
             <?php endif; ?>
+            <button type="button" @click="menuOpen = true" class="shrink-0 inline-flex flex-col items-center justify-center gap-0.5 size-11 rounded-xl bg-white/[0.05] text-slate-200 cursor-pointer" aria-label="منوی سایت" aria-controls="kmpr-sheet">
+                <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg>
+            </button>
             <?php if ($has_toc) : ?>
                 <button type="button" @click="sheet = 'toc'" class="shrink-0 inline-flex items-center justify-center size-11 rounded-xl bg-white/[0.05] text-slate-200 cursor-pointer" aria-label="فهرست مطالب" aria-haspopup="dialog">
                     <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>

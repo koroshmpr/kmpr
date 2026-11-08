@@ -192,3 +192,12 @@ body.admin-bar #kmpr-sheet { max-height: calc(88svh - 46px); }
 [lang="en"] {
 	font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
+
+/* Phones: hide the WP admin bar for logged-in admins (a compact «پنل مدیریت» icon sits in the header instead) */
+@media screen and (max-width: 782px) {
+	#wpadminbar { display: none !important; }
+	html { margin-top: 0 !important; }
+	body.admin-bar #header,
+	body.admin-bar .gh { top: 0 !important; }
+	body.admin-bar #kmpr-sheet { max-height: 88svh; }
+}

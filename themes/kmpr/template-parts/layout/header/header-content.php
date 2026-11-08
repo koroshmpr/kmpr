@@ -56,6 +56,11 @@
                     <?= kmpr_nav_svg('resume', 18); ?>
                     <span class="pointer-events-none absolute top-full mt-2.5 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-lg bg-slate-800 border border-white/10 text-[11px] font-bold text-slate-100 whitespace-nowrap opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 transition duration-200 max-lg:hidden" role="tooltip">رزومه آنلاین</span>
                 </a>
+                <?php if (current_user_can('manage_options')) : ?>
+                    <a href="<?= esc_url(home_url('/panel/')); ?>" class="admin-panel-link min-[783px]:hidden relative group size-9 shrink-0 rounded-full flex items-center justify-center text-amber-300 hover:text-white hover:bg-white/[0.08] transition-colors" aria-label="پنل مدیریت">
+                        <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+                    </a>
+                <?php endif; ?>
                 <?php if (post_type_exists('game')) : ?>
                     <span class="w-px h-5 bg-white/10 mx-0.5" aria-hidden="true"></span>
                     <!-- Game center: animated gamepad (idle wiggle; hover = buttons blink, d-pad moves) -->

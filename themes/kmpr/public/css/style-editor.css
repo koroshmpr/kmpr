@@ -7704,6 +7704,20 @@ body.admin-bar #kmpr-sheet {
 [lang="en"] {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
+@media screen and (max-width: 782px) {
+  #wpadminbar {
+    display: none !important;
+  }
+  html {
+    margin-top: 0 !important;
+  }
+  body.admin-bar #header,	body.admin-bar .gh {
+    top: 0 !important;
+  }
+  body.admin-bar #kmpr-sheet {
+    max-height: 88svh;
+  }
+}
 .pointer-events-auto {
   pointer-events: auto;
 }
@@ -13506,6 +13520,11 @@ body.admin-bar #kmpr-sheet {
   }
   .min-\[420px\]\:flex-row {
     flex-direction: row;
+  }
+}
+@media (width >= 783px) {
+  .min-\[783px\]\:hidden {
+    display: none;
   }
 }
 @media (width >= 40rem) {

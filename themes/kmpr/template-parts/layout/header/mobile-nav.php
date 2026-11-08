@@ -38,7 +38,7 @@ $kmpr_quick = array_filter(array(
 ?>
 
 <!-- ===== Bottom tab bar (mobile / tablet) — hidden while playing a game ===== -->
-<?php if (!is_singular('game')) : ?>
+<?php if (!is_singular(array('game', 'post'))) : // articles have their own lesson bar (with a menu button) ?>
 <nav class="kmpr-tabbar lg:hidden fixed inset-x-3 z-50 mx-auto max-w-md" aria-label="ناوبری اصلی موبایل"
      :class="menuOpen || searchOpen ? 'translate-y-[140%] opacity-0' : ''">
     <div class="relative grid grid-cols-5 items-end h-16 px-1.5 rounded-[1.75rem] border border-white/10 bg-slate-900/85 backdrop-blur-xl shadow-[0_18px_50px_-12px_rgb(0_0_0/0.85)]">
