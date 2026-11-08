@@ -1,0 +1,48 @@
+/* games: chess */
+.chess { display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; height: 100%; }
+.chess.is-side { flex-direction: row; }
+.chess:not(.is-side) .chess__side { display: none; }
+.chess__main { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.chess__cap { display: flex; align-items: center; gap: 1px; min-height: 24px; width: var(--board, 320px); direction: ltr; }
+.chess__adv { margin-inline-start: 6px; font-size: 12px; font-weight: 800; color: #cbd5e1; }
+.chess__board {
+	position: relative; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);
+	border-radius: 14px; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none;
+	box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 24px 60px -20px rgb(0 0 0 / 0.8); direction: ltr;
+}
+.chess__sq { position: relative; display: flex; align-items: center; justify-content: center; }
+.chess__sq.is-light { background: #e7dcc4; }
+.chess__sq.is-dark { background: #8a6845; }
+.chess__sq.is-last.is-light { background: #f3d58a; }
+.chess__sq.is-last.is-dark { background: #c39a43; }
+.chess__sq.is-sel { box-shadow: inset 0 0 0 4px rgb(217 119 6 / 0.95); }
+.chess__sq.is-check { background: radial-gradient(circle, #f43f5e 0%, #be123c 55%, transparent 80%), #8a6845; }
+.chess__sq.has-dot::after { content: ''; position: absolute; width: 28%; height: 28%; border-radius: 9999px; background: rgb(15 23 42 / 0.35); pointer-events: none; }
+.chess__sq.has-ring::after { content: ''; position: absolute; inset: 6%; border-radius: 9999px; box-shadow: inset 0 0 0 4px rgb(15 23 42 / 0.4); pointer-events: none; }
+.chess__pc { position: relative; z-index: 1; width: 88%; height: 88%; display: flex; pointer-events: none; transition: opacity 0.15s; }
+.chess__pc.is-dragging { opacity: 0.25; }
+.chess__ghost { position: absolute; left: 0; top: 0; width: 12.5%; height: 12.5%; z-index: 5; pointer-events: none; filter: drop-shadow(0 10px 12px rgb(0 0 0 / 0.5)); }
+.chess__ghost svg { width: 115%; height: 115%; margin: -7%; }
+.chess-pc path, .chess-pc circle { stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+.chess-pc--w path, .chess-pc--w circle { fill: #f8fafc; stroke: #0f172a; }
+.chess-pc--b path, .chess-pc--b circle { fill: #1e1b2e; stroke: #e2e8f0; }
+.chess-pc path[fill='none'] { fill: none !important; }
+.chess-pc--w .pc-eye { fill: #0f172a; }
+.chess-pc--b .pc-eye { fill: #e2e8f0; }
+.chess__coord { position: absolute; z-index: 2; font-size: 10px; font-weight: 800; line-height: 1; pointer-events: none; opacity: 0.85; font-family: ui-sans-serif, system-ui, sans-serif; }
+.chess__sq.is-light .chess__coord { color: #8a6845; }
+.chess__sq.is-dark .chess__coord { color: #e7dcc4; }
+.chess__coord--r { top: 3px; left: 3px; }
+.chess__coord--f { bottom: 2px; right: 3px; }
+.chess__promo {
+	position: absolute; inset: 0; z-index: 6; display: flex; flex-direction: column; align-items: center; justify-content: center;
+	background: rgb(2 6 23 / 0.82); backdrop-filter: blur(4px);
+}
+.chess__promo[hidden] { display: none; }
+.chess__promo-btn { width: 56px; height: 56px; border-radius: 16px; background: rgb(255 255 255 / 0.08); border: 1px solid rgb(255 255 255 / 0.15); display: flex; align-items: center; justify-content: center; }
+.chess__promo-btn:hover, .chess__promo-btn:focus-visible { border-color: #d97706; background: rgb(217 119 6 / 0.2); }
+.chess__side { width: 210px; height: var(--board, 320px); display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: 20px; background: rgb(255 255 255 / 0.03); border: 1px solid rgb(255 255 255 / 0.1); }
+.chess__moves { flex: 1; min-height: 0; overflow-y: auto; font-size: 13px; color: #e2e8f0; display: flex; flex-direction: column; gap: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.chess__moves li { display: grid; grid-template-columns: 2.2em 1fr 1fr; gap: 4px; padding: 2px 4px; border-radius: 6px; }
+.chess__moves li:nth-child(odd) { background: rgb(255 255 255 / 0.03); }
+.chess__mn { color: #94a3b8; }

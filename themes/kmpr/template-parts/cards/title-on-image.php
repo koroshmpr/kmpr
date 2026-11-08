@@ -7,7 +7,7 @@
     <!-- Image -->
     <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none opacity-80" 
          src="<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large'); ?>" 
-         alt="<?= esc_attr(get_the_title()); ?>">
+         width="768" height="432" alt="<?= esc_attr(get_the_title()); ?>">
     
     <!-- Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>

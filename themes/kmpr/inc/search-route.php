@@ -1,139 +1,114 @@
 <?php
 /**
- * Register custom REST API route for real-time live search across posts, portfolio, and services
+ * Live search REST route: GET /wp-json/search/v1/search?term=…
+ * Searches articles, services, portfolio, games and key pages; returns one normalised item shape:
+ * { id, type, typeName, title, url, img, excerpt, meta }
  */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * Searchable types → Persian label. Only types that exist on this install are used.
+ */
+function kmpr_search_types()
+{
+    $types = array(
+        'post'      => 'مقاله',
+        'services'  => 'خدمت',
+        'portfolio' => 'نمونه‌کار',
+        'game'      => 'بازی',
+        'page'      => 'صفحه',
+    );
+    return array_filter($types, function ($t) {
+        return post_type_exists($t);
+    }, ARRAY_FILTER_USE_KEY);
+}
 
 function register_new_search()
 {
     register_rest_route('search/v1', 'search', array(
-        'methods'  => WP_REST_Server::READABLE,
-        'callback' => 'GoldSearchResults',
-        'permission_callback' => '__return_true'
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => 'GoldSearchResults',
+        'permission_callback' => '__return_true',
+        'args'                => array('term' => array('type' => 'string', 'required' => false)),
     ));
 }
 add_action('rest_api_init', 'register_new_search');
 
 function GoldSearchResults($data)
 {
-    $term = isset($data['term']) ? sanitize_text_field($data['term']) : '';
+    $term  = isset($data['term']) ? sanitize_text_field($data['term']) : '';
+    $types = kmpr_search_types();
 
-    $empty_response = array(
-        'all'       => array(),
-        'post'      => array(),
-        'portfolio' => array(),
-        'services'  => array(),
-        'counts'    => array(
-            'all'       => 0,
-            'post'      => 0,
-            'portfolio' => 0,
-            'services'  => 0,
-        )
-    );
-
-    if (empty($term) || mb_strlen($term) < 2) {
-        return $empty_response;
+    $results = array('all' => array());
+    $counts  = array('all' => 0);
+    foreach ($types as $t => $label) {
+        $results[$t] = array();
+        $counts[$t]  = 0;
     }
 
-    $mainQuery = new WP_Query(array(
-        'post_type'      => array('post', 'portfolio', 'services'),
-        'post_status'    => 'publish',
-        'posts_per_page' => 50,
-        's'              => $term,
+    if ($term === '' || mb_strlen($term) < 2) {
+        $results['counts'] = $counts;
+        return $results;
+    }
+
+    $excluded = array_filter(array((int) get_option('wp_page_for_privacy_policy')));
+    $query    = new WP_Query(array(
+        'post_type'           => array_keys($types),
+        'post_status'         => 'publish',
+        'posts_per_page'      => 60,
+        's'                   => $term,
+        'post__not_in'        => $excluded,
+        'no_found_rows'       => true,
+        'ignore_sticky_posts' => true,
     ));
 
-    $results = array(
-        'all'       => array(),
-        'post'      => array(),
-        'portfolio' => array(),
-        'services'  => array(),
-    );
-
-    while ($mainQuery->have_posts()) {
-        $mainQuery->the_post();
-        $id = get_the_ID();
-        $type = get_post_type();
-        $title = html_entity_decode(get_the_title());
-        $url = get_the_permalink();
-        $img = get_the_post_thumbnail_url($id, 'medium_large') ?: (get_the_post_thumbnail_url($id, 'large') ?: '');
+    foreach ($query->posts as $p) {
+        $id   = $p->ID;
+        $type = $p->post_type;
+        $raw  = has_excerpt($id) ? get_the_excerpt($id) : strip_shortcodes($p->post_content);
+        $meta = '';
 
         if ($type === 'post') {
-            $cat = get_the_category();
-            $category_name = !empty($cat) ? $cat[0]->name : 'مقاله';
-            $views = get_post_meta($id, 'post_views', true) ?: '0';
-            $raw_content = get_the_excerpt() ?: get_the_content();
-            $excerpt = wp_strip_all_tags(wp_trim_words($raw_content, 18, '...'));
-
-            $item = array(
-                'id'       => $id,
-                'type'     => 'post',
-                'typeName' => 'مقاله',
-                'title'    => $title,
-                'url'      => $url,
-                'img'      => $img,
-                'excerpt'  => $excerpt,
-                'category' => $category_name,
-                'date'     => get_the_date(),
-                'views'    => $views,
-            );
-
-            $results['post'][] = $item;
-            $results['all'][] = $item;
-
-        } elseif ($type === 'portfolio') {
-            $brand_logo = function_exists('get_field') ? get_field('brand-logo', $id) : null;
-            $logo_bg = function_exists('get_field') ? get_field('logo_background', $id) : '';
-            $raw_content = get_the_excerpt() ?: get_the_content();
-            $excerpt = wp_strip_all_tags(wp_trim_words($raw_content, 16, '...'));
-
-            $item = array(
-                'id'          => $id,
-                'type'        => 'portfolio',
-                'typeName'    => 'نمونه کار',
-                'title'       => $title,
-                'url'         => $url,
-                'img'         => $img,
-                'excerpt'     => $excerpt,
-                'brand_logo'  => (!empty($brand_logo) && is_array($brand_logo)) ? ($brand_logo['url'] ?? '') : '',
-                'brand_title' => (!empty($brand_logo) && is_array($brand_logo)) ? ($brand_logo['title'] ?? '') : '',
-                'logo_bg'     => $logo_bg ?: '',
-            );
-
-            $results['portfolio'][] = $item;
-            $results['all'][] = $item;
-
+            $cat  = get_the_category($id);
+            $meta = !empty($cat) ? $cat[0]->name : '';
         } elseif ($type === 'services') {
-            $badge = function_exists('get_field') ? get_field('services_badge', $id) : '';
-            $desc = function_exists('get_field') ? get_field('services_description', $id) : '';
-            $icon = function_exists('get_field') ? get_field('service-icon', $id) : '';
-            if (empty($desc)) {
-                $raw_content = get_the_excerpt() ?: get_the_content();
-                $desc = wp_strip_all_tags(wp_trim_words($raw_content, 14, '...'));
-            }
-
-            $item = array(
-                'id'          => $id,
-                'type'        => 'services',
-                'typeName'    => 'خدمات',
-                'title'       => $title,
-                'url'         => $url,
-                'img'         => $img,
-                'badge'       => $badge ?: '',
-                'description' => $desc,
-                'icon'        => $icon ?: '',
-            );
-
-            $results['services'][] = $item;
-            $results['all'][] = $item;
+            $meta = function_exists('get_field') ? (string) (get_field('duration', $id) ?: get_field('services_badge', $id)) : '';
+        } elseif ($type === 'portfolio') {
+            $term_obj = function_exists('kmpr_primary_term') ? kmpr_primary_term($id, 'portfolio_categories') : null;
+            $meta     = $term_obj ? $term_obj->name : '';
+        } elseif ($type === 'game') {
+            $terms = get_the_terms($id, 'game_category');
+            $meta  = ($terms && !is_wp_error($terms)) ? $terms[0]->name : '';
         }
+
+        $item = array(
+            'id'       => $id,
+            'type'     => $type,
+            'typeName' => $types[$type],
+            'title'    => html_entity_decode(get_the_title($id), ENT_QUOTES, 'UTF-8'),
+            'url'      => get_permalink($id),
+            'img'      => get_the_post_thumbnail_url($id, 'thumbnail') ?: '',
+            'excerpt'  => html_entity_decode(wp_strip_all_tags(wp_trim_words($raw, 22, '…')), ENT_QUOTES, 'UTF-8'),
+            'meta'     => html_entity_decode((string) $meta, ENT_QUOTES, 'UTF-8'),
+        );
+        $results[$type][] = $item;
+        $results['all'][] = $item;
     }
-    wp_reset_postdata();
 
-    $results['counts'] = array(
-        'all'       => count($results['all']),
-        'post'      => count($results['post']),
-        'portfolio' => count($results['portfolio']),
-        'services'  => count($results['services']),
-    );
+    // Titles that contain the term first, then the type order above.
+    $order = array_flip(array_keys($types));
+    usort($results['all'], function ($a, $b) use ($term, $order) {
+        $ta = mb_stripos($a['title'], $term) !== false ? 0 : 1;
+        $tb = mb_stripos($b['title'], $term) !== false ? 0 : 1;
+        return $ta <=> $tb ?: $order[$a['type']] <=> $order[$b['type']];
+    });
 
+    foreach ($results as $k => $list) {
+        $counts[$k] = count($list);
+    }
+    $results['counts'] = $counts;
     return $results;
 }

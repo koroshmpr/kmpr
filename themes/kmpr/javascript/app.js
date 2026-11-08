@@ -1,58 +1,63 @@
-import Swiper from 'swiper/bundle';
 import Alpine from 'alpinejs';
 import intersect from '@alpinejs/intersect';
-import axios from 'axios';
+import projectRequest from './project-request';
+import initHeroPortrait from './hero-portrait';
+import initBlog from './blog';
+import initPlayNudge from './play-nudge';
 
 window.Alpine = Alpine;
-window.axios = axios;
 Alpine.plugin(intersect);
+window.projectRequest = projectRequest;
+initBlog(Alpine);
 
-// Enhanced Live Search component with tabbed multi-content filtering
-window.themeSearch = function () {
+// Live search (command-palette style): tabs per content type, keyboard navigation, recent searches.
+const SEARCH_RECENT_KEY = 'kmpr_recent_searches';
+const escHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+window.themeSearch = function (types = {}) {
+    const empty = () => Object.fromEntries(['all', ...Object.keys(types)].map((k) => [k, []]));
     return {
+        types,
         query: '',
-        activeTab: 'all', // 'all', 'post', 'portfolio', 'services'
-        results: {
-            all: [],
-            post: [],
-            portfolio: [],
-            services: []
-        },
-        counts: {
-            all: 0,
-            post: 0,
-            portfolio: 0,
-            services: 0
-        },
+        activeTab: 'all',
+        results: empty(),
+        counts: {},
         isLoading: false,
         hasSearched: false,
-        debounceTimeout: null,
+        cursor: -1,
+        recent: [],
+        _timer: null,
+        _ctrl: null,
 
         init() {
-            this.$watch('query', value => {
-                clearTimeout(this.debounceTimeout);
+            try { this.recent = JSON.parse(localStorage.getItem(SEARCH_RECENT_KEY) || '[]').slice(0, 6); } catch (e) { this.recent = []; }
+            this.$watch('query', (value) => {
+                clearTimeout(this._timer);
+                this.cursor = -1;
                 if (!value || value.trim().length < 2) {
                     this.resetResults();
                     return;
                 }
                 this.isLoading = true;
-                this.debounceTimeout = setTimeout(() => {
-                    this.fetchResults();
-                }, 280);
+                this._timer = setTimeout(() => this.fetchResults(), 260);
             });
+            this.$watch('searchOpen', (open) => {
+                if (open) this.$nextTick(() => setTimeout(() => this.$refs.searchInput?.focus(), 60));
+            });
+        },
+
+        get list() {
+            return this.results[this.activeTab] || [];
         },
 
         setTab(tab) {
             this.activeTab = tab;
-        },
-
-        getCurrentResults() {
-            return this.results[this.activeTab] || [];
+            this.cursor = -1;
         },
 
         resetResults() {
-            this.results = { all: [], post: [], portfolio: [], services: [] };
-            this.counts = { all: 0, post: 0, portfolio: 0, services: 0 };
+            this.results = empty();
+            this.counts = {};
             this.isLoading = false;
             this.hasSearched = false;
         },
@@ -60,151 +65,96 @@ window.themeSearch = function () {
         clearQuery() {
             this.query = '';
             this.resetResults();
+            this.$refs.searchInput?.focus();
+        },
+
+        use(term) {
+            this.query = term;
+            this.$refs.searchInput?.focus();
+        },
+
+        remember() {
+            const q = this.query.trim();
+            if (q.length < 2) return;
+            this.recent = [q, ...this.recent.filter((r) => r !== q)].slice(0, 6);
+            try { localStorage.setItem(SEARCH_RECENT_KEY, JSON.stringify(this.recent)); } catch (e) { /* private mode */ }
+        },
+
+        forget() {
+            this.recent = [];
+            try { localStorage.removeItem(SEARCH_RECENT_KEY); } catch (e) { /* noop */ }
+        },
+
+        highlight(text) {
+            const safe = escHtml(text || '');
+            const q = this.query.trim();
+            if (q.length < 2) return safe;
+            const re = new RegExp(escHtml(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            return safe.replace(re, (m) => `<mark class="bg-secondary/25 text-amber-200 rounded px-0.5">${m}</mark>`);
+        },
+
+        move(step) {
+            const n = this.list.length;
+            if (!n) return;
+            this.cursor = (this.cursor + step + n) % n;
+            this.$nextTick(() => this.$root.querySelector(`[data-sr="${this.cursor}"]`)?.scrollIntoView({ block: 'nearest' }));
+        },
+
+        open() {
+            const item = this.list[this.cursor] || this.list[0];
+            if (item) {
+                this.remember();
+                window.location.href = item.url;
+            } else if (this.query.trim().length >= 2) {
+                this.remember();
+                window.location.href = this.fullUrl();
+            }
+        },
+
+        fullUrl() {
+            const root = (typeof jsData !== 'undefined' && jsData.root_url) ? jsData.root_url : '';
+            return `${root}/?s=${encodeURIComponent(this.query.trim())}${this.activeTab !== 'all' ? `&post_type=${this.activeTab}` : ''}`;
         },
 
         fetchResults() {
-            const trimmed = this.query.trim();
-            if (trimmed.length < 2) {
-                this.resetResults();
-                return;
-            }
-
-            this.isLoading = true;
-            const rootUrl = (typeof jsData !== 'undefined' && jsData.root_url) ? jsData.root_url : '';
-            const searchUrl = `${rootUrl}/wp-json/search/v1/search?term=${encodeURIComponent(trimmed)}`;
-
-            axios.get(searchUrl)
-                .then(response => {
-                    const data = response.data;
-                    this.results = {
-                        all: data.all || [],
-                        post: data.post || [],
-                        portfolio: data.portfolio || [],
-                        services: data.services || []
-                    };
-                    this.counts = data.counts || {
-                        all: (data.all || []).length,
-                        post: (data.post || []).length,
-                        portfolio: (data.portfolio || []).length,
-                        services: (data.services || []).length
-                    };
+            const term = this.query.trim();
+            if (term.length < 2) return this.resetResults();
+            this._ctrl?.abort();
+            this._ctrl = new AbortController();
+            const root = (typeof jsData !== 'undefined' && jsData.root_url) ? jsData.root_url : '';
+            fetch(`${root}/wp-json/search/v1/search?term=${encodeURIComponent(term)}`, { headers: { Accept: 'application/json' }, signal: this._ctrl.signal })
+                .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+                .then((data) => {
+                    const res = empty();
+                    Object.keys(res).forEach((k) => (res[k] = data[k] || []));
+                    this.results = res;
+                    this.counts = data.counts || {};
                     this.hasSearched = true;
                     this.isLoading = false;
+                    if (this.activeTab !== 'all' && !res[this.activeTab].length) this.activeTab = 'all';
                 })
-                .catch(error => {
-                    console.error('Search error:', error);
+                .catch((e) => {
+                    if (e.name === 'AbortError') return;
                     this.isLoading = false;
                     this.hasSearched = true;
                 });
-        }
+        },
     };
 };
 
 document.addEventListener('DOMContentLoaded', function () {
+    performance.mark('kmpr:alpine:start');
     Alpine.start();
+    performance.mark('kmpr:alpine:end');
+    window.kmprMotion?.scan(); // bind reveal targets rendered by Alpine
+    performance.mark('kmpr:motion:end');
+    initHeroPortrait();
+    initPlayNudge();
+    performance.mark('kmpr:portrait:end');
 
-    // Universal slider initialiser using data-attributes
-    const initPageSliders = () => {
-        document.querySelectorAll('.post-slider').forEach((slider, i) => {
-            if (slider.classList.contains('swiper-initialized')) return;
-            let autoplaySpeed = slider.dataset.autoplay ? parseFloat(slider.dataset.autoplay) : 0;
-            let perPage = slider.dataset.perpage ? parseFloat(slider.dataset.perpage) : 3;
-            let perPageLapTop = slider.dataset.laptop ? parseFloat(slider.dataset.laptop) : 3;
-            let perPageTablet = slider.dataset.tablet ? parseFloat(slider.dataset.tablet) : 2;
-            let perPageMobile = slider.dataset.mobile ? parseFloat(slider.dataset.mobile) : 1.15;
-            let perfix = slider.dataset.perfix ?? 'slider';
-            let direction = slider.dataset.direction ?? 'horizontal';
-            let index = slider.dataset.index ?? i;
-            let space = slider.dataset.space ? parseFloat(slider.dataset.space) : 24;
-            let speed = slider.dataset.speed ? parseFloat(slider.dataset.speed) : 600;
-            let free = slider.dataset.free === '1';
-            let loop = slider.dataset.loop === '1';
-            let effect = slider.dataset.effect ?? 'slide';
-
-            new Swiper(slider, {
-                direction: direction,
-                grabCursor: true,
-                speed: speed,
-                loop: loop,
-                effect: effect,
-                freeMode: free,
-                spaceBetween: space,
-                slidesPerView: perPageMobile,
-                centeredSlides: false,
-                breakpoints: {
-                    1440: {
-                        slidesPerView: perPage,
-                    },
-                    1224: {
-                        slidesPerView: perPageLapTop,
-                    },
-                    768: {
-                        slidesPerView: perPageTablet,
-                    }
-                },
-                pagination: {
-                    el: slider.querySelector('.swiper-pagination') || `.${perfix}-pagination-${index}`,
-                    clickable: true,
-                    dynamicBullets: true,
-                },
-                navigation: {
-                    nextEl: slider.querySelector('.swiper-button-next') || `.${perfix}-next-${index}`,
-                    prevEl: slider.querySelector('.swiper-button-prev') || `.${perfix}-prev-${index}`,
-                },
-                autoplay: autoplaySpeed > 0 ? {
-                    delay: autoplaySpeed,
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: true,
-                } : false,
-            });
-        });
-    };
-
-    initPageSliders();
-
-    // Specific Slider Handler: Hero Slider with Background Changing
-    const heroSwiperElement = document.querySelector('.hero_swiper');
-    if (heroSwiperElement) {
-        const heroSection = document.querySelector('#hero-section');
-        const firstSlide = heroSwiperElement.querySelector('.swiper-slide');
-        if (heroSection && firstSlide) {
-            const firstImg = firstSlide.dataset.image;
-            if (firstImg) {
-                heroSection.style.backgroundImage = `url(${firstImg})`;
-            }
-        }
-
-        const heroSwiper = new Swiper(heroSwiperElement, {
-            loop: false,
-            effect: 'slide',
-            speed: 600,
-            slidesPerView: 1,
-            spaceBetween: 30,
-            direction: 'horizontal',
-            pagination: {
-                el: '.hero-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.hero-next',
-                prevEl: '.hero-prev',
-            },
-            autoplay: {
-                delay: 10000,
-                disableOnInteraction: false,
-            },
-            on: {
-                slideChange: function () {
-                    const activeSlide = this.slides[this.activeIndex];
-                    if (activeSlide && heroSection) {
-                        const imageUrl = activeSlide.getAttribute('data-image');
-                        if (imageUrl) {
-                            heroSection.style.backgroundImage = `url(${imageUrl})`;
-                        }
-                    }
-                }
-            }
-        });
+    // Sliders: load Swiper (≈150KB) only on pages that actually contain one.
+    if (document.querySelector('.post-slider, .hero_swiper')) {
+        import('./sliders').then(m => m.default());
     }
 
     // Back to top button handler

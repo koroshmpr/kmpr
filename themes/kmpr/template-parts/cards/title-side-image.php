@@ -15,7 +15,7 @@
         
         <!-- Meta Details -->
         <div class="flex flex-col gap-1 flex-1 overflow-hidden">
-            <div class="flex items-center gap-2 text-[11px]">
+            <div class="flex items-center gap-2 text-xs">
                 <!-- Categories -->
                 <span class="font-black text-secondary">
                     <?php

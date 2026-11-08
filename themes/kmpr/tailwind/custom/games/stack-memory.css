@@ -1,0 +1,36 @@
+/* games: stack-memory */
+.sm-card { perspective: 900px; touch-action: manipulation; outline: none; }
+.sm-card:focus-visible .sm-back, .sm-card:focus-visible .sm-front { box-shadow: 0 0 0 3px #f59e0b; }
+.sm-inner { transform-style: preserve-3d; transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
+.sm-card.is-open .sm-inner { transform: rotateY(180deg); }
+.sm-back, .sm-front { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.sm-back {
+	background:
+		radial-gradient(circle at 30% 20%, rgba(99, 102, 241, .22), transparent 60%),
+		repeating-linear-gradient(45deg, rgba(255, 255, 255, .025) 0 6px, transparent 6px 12px),
+		#0f172a;
+	transition: border-color .2s ease, transform .2s ease;
+}
+.sm-card:hover .sm-back { border-color: rgba(217, 119, 6, .45); }
+.sm-front {
+	transform: rotateY(180deg);
+	background: linear-gradient(160deg, color-mix(in srgb, var(--c) 16%, #0f172a), #0b1222 70%);
+	border-color: color-mix(in srgb, var(--c) 40%, transparent);
+}
+.sm-mono { width: 2.6rem; height: 2.6rem; }
+.sm-grid.is-dense .sm-mono { width: 2rem; height: 2rem; font-size: .8rem; }
+.sm-card.is-done .sm-front { box-shadow: 0 0 0 2px #34d399, 0 0 24px -6px #34d399; animation: sm-done .5s ease; }
+.sm-card.is-done { pointer-events: none; }
+.sm-card.is-wrong .sm-front { box-shadow: 0 0 0 2px #fb7185; animation: sm-wrong .3s linear; }
+.sm-ext { line-height: 1.3; }
+@keyframes sm-done { 50% { transform: rotateY(180deg) scale(1.08); } }
+@keyframes sm-wrong { 25% { transform: rotateY(180deg) translateX(-4px); } 75% { transform: rotateY(180deg) translateX(4px); } }
+/* Reduced motion: no 3D, faces swap with a fade */
+.sm-reduced .sm-inner, .sm-reduced .sm-card.is-open .sm-inner { transform: none; transition: none; }
+.sm-reduced .sm-front { transform: none; opacity: 0; transition: opacity .15s; }
+.sm-reduced .sm-card.is-open .sm-front { opacity: 1; }
+.sm-reduced .sm-card.is-open .sm-back { opacity: 0; }
+.sm-reduced .sm-card.is-done .sm-front, .sm-reduced .sm-card.is-wrong .sm-front { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+	.sm-inner { transition: none; }
+}

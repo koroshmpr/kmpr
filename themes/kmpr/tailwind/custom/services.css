@@ -1,0 +1,43 @@
+/* services page styles */
+
+/* FAQ accordion: hide native disclosure marker */
+.srv-faq > summary::-webkit-details-marker {
+	display: none;
+}
+.srv-faq > summary::marker {
+	content: '';
+}
+
+/* Long-form service content */
+.srv-prose {
+	--tw-prose-invert-body: #cbd5e1;
+	--tw-prose-invert-headings: #fff;
+	--tw-prose-invert-bold: #fff;
+	--tw-prose-invert-links: #f59e0b;
+	--tw-prose-invert-bullets: #d97706;
+	--tw-prose-invert-counters: #d97706;
+	line-height: 2.1;
+}
+.srv-prose.prose h2 {
+	font-weight: 900;
+	line-height: 1.6;
+	margin-top: 2.4em;
+}
+.srv-prose :where(h2):first-child {
+	margin-top: 0;
+}
+.srv-prose.prose h3 {
+	font-weight: 900;
+	color: #fbbf24;
+}
+.srv-prose :where(li) {
+	margin-block: 0.4em;
+}
+.srv-prose :where(blockquote) {
+	border-inline-start-color: #d97706;
+	background: rgb(255 255 255 / 0.03);
+	border-radius: 1rem;
+	padding: 1rem 1.25rem;
+	font-style: normal;
+	quotes: none;
+}

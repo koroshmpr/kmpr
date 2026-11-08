@@ -1,146 +1,181 @@
 <?php
-/** 
+/**
  * Template Name: Services Archive - Personal Brand: Korosh Mpr
+ *
+ * Renders /services/ (post type archive). The legacy page "خدمات" (slug services) also points at this
+ * template, so the layout is identical whichever one WordPress resolves. All copy: «تنظیمات سایت › صفحه خدمات».
  */
-get_header(); ?>
+get_header();
 
-<!-- Services Hero Header -->
-<section class="relative min-h-[45vh] lg:min-h-[55vh] flex items-center justify-center overflow-hidden bg-slate-950 text-white select-none py-16 lg:py-24 border-b border-white/10">
-    <!-- Subtle Grid Overlay -->
-    <div class="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none"></div>
+$services = new WP_Query(array(
+    'post_type'           => 'services',
+    'post_status'         => 'publish',
+    'posts_per_page'      => -1,
+    'orderby'             => array('menu_order' => 'ASC', 'date' => 'ASC'),
+    'ignore_sticky_posts' => true,
+    'no_found_rows'       => true,
+));
+$service_ids = wp_list_pluck($services->posts, 'ID');
 
-    <!-- Ambient Glow Spheres -->
-    <div class="absolute top-1/4 start-1/4 w-96 h-96 bg-secondary/15 rounded-full blur-[140px] pointer-events-none"></div>
-    <div class="absolute bottom-10 end-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+$trust = kmpr_lines(kmpr_srv_opt('srvp_trust'));
 
-    <div class="container mx-auto px-4 sm:px-6 relative z-10 text-center">
-        <!-- Live Availability Pill -->
-        <div data-aos="fade-down" data-aos-duration="600"
-             class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl mb-6">
-            <span class="relative flex w-2.5 h-2.5 shrink-0">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full w-2.5 h-2.5 bg-emerald-500"></span>
-            </span>
-            <span class="text-xs font-black text-slate-200 tracking-wide">پذیرش پروژه‌های نرم‌افزاری و طراحی اختصاصی (۲۰۲۶)</span>
-        </div>
+$steps = array_values(array_filter((array) get_field('srvp_process_steps', 'option'), function ($r) {
+    return is_array($r) && !empty($r['t']);
+}));
+$steps = $steps ?: array(
+    array('t' => 'گفت‌وگوی اولیه', 'd' => 'در یک تماس کوتاه و رایگان، هدف، مخاطب و اولویت‌های شما را می‌شنوم و می‌گویم کدام خدمت واقعاً به کارتان می‌آید.', 'm' => 'روز ۱'),
+    array('t' => 'پیشنهاد مکتوب', 'd' => 'دامنه کار، خروجی‌ها، زمان‌بندی مرحله‌ای و هزینه را مکتوب دریافت می‌کنید؛ بدون هزینه پنهان.', 'm' => 'روز ۲ تا ۳'),
+    array('t' => 'اجرا با گزارش هفتگی', 'd' => 'کار را مرحله‌به‌مرحله جلو می‌برم و هر هفته لینک پیش‌نمایش و گزارش پیشرفت برایتان می‌فرستم.', 'm' => 'طبق برنامه'),
+    array('t' => 'تحویل و همراهی', 'd' => 'تست نهایی، آموزش پنل، تحویل کامل دسترسی‌ها و پشتیبانی بعد از تحویل تا خیالتان راحت باشد.', 'm' => 'بعد از تحویل'),
+);
 
-        <h1 data-aos="fade-up" data-aos-duration="800"
-            class="text-3xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-4 tracking-tight">
-            خدمات مهندسی نرم‌افزار، معماری وب و توسعه اختصاصی
-        </h1>
+$faq = array_values(array_filter((array) get_field('srvp_faq', 'option'), function ($r) {
+    return is_array($r) && !empty($r['question']);
+}));
+if (!$faq) {
+    foreach ($service_ids as $sid) {
+        $faq = array_merge($faq, array_slice(kmpr_srv_rows('service_faq', $sid, 'question'), 0, 2));
+    }
+}
 
-        <p data-aos="fade-up" data-aos-duration="800" data-aos-delay="150"
-           class="text-sm sm:text-base lg:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            قالب‌های آماده یا افزونه‌های مخرب سرعت در کارهای من جایی ندارند؛ تخصص من پیاده‌سازی سیستم‌های فوق‌سریع، ایمن و متناسب با رشد واقعی کسب‌وکار شماست.
-        </p>
+$proof_ids = kmpr_srv_portfolio_ids($service_ids, 6);
+?>
 
-        <div data-aos="fade-up" data-aos-duration="800" data-aos-delay="300"
-             class="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <a href="#smart-configurator" 
-               class="bg-secondary hover:bg-secondary-hover text-white font-black text-xs sm:text-sm px-7 py-3.5 rounded-full transition-all duration-300 shadow-xl shadow-secondary/30 hover:scale-105 active:scale-95">
-                شروع پیکربندی هوشمند پروژه
-            </a>
-            <a href="#services-list" 
-               class="bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm px-7 py-3.5 rounded-full transition-all duration-300 border border-white/20">
-                مشاهده لیست کامل تخصص‌ها
-            </a>
+<!-- Hero -->
+<section class="relative isolate overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-28" aria-labelledby="services-hero-title">
+    <div class="absolute inset-0 hero-grid -z-10" aria-hidden="true"></div>
+    <div class="aurora w-[34rem] h-[34rem] -top-40 -start-40 bg-secondary/20 -z-10" aria-hidden="true"></div>
+    <div class="aurora w-[28rem] h-[28rem] -bottom-40 end-0 bg-indigo-600/20 -z-10 [animation-delay:-6s]" aria-hidden="true"></div>
+
+    <div class="container mx-auto px-4 sm:px-6">
+        <nav aria-label="مسیر صفحه" class="mb-10" data-aos="fade-down">
+            <ol class="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-400">
+                <li><a href="<?= esc_url(home_url('/')); ?>" class="hover:text-secondary transition-colors">خانه</a></li>
+                <li aria-hidden="true">/</li>
+                <li class="text-slate-200" aria-current="page">خدمات</li>
+            </ol>
+        </nav>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7">
+                <span class="inline-flex items-center gap-2.5 ps-2 pe-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl mb-7" data-aos="fade-up">
+                    <span class="relative flex size-2.5 shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full size-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-xs font-bold text-slate-200"><?= esc_html(kmpr_srv_opt('srvp_badge')); ?></span>
+                </span>
+                <h1 id="services-hero-title" class="text-[2rem] leading-[1.4] sm:text-5xl sm:leading-[1.3] xl:text-6xl xl:leading-[1.25] font-black text-white tracking-tight" data-split>
+                    <?= esc_html(kmpr_srv_opt('srvp_title')); ?>
+                </h1>
+                <p class="mt-6 max-w-[42rem] text-sm sm:text-base lg:text-lg text-slate-300 leading-loose" data-aos="fade-up" data-aos-delay="300">
+                    <?= esc_html(kmpr_srv_opt('srvp_text')); ?>
+                </p>
+                <div class="mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-3" data-aos="fade-up" data-aos-delay="450">
+                    <a href="#smart-configurator" data-magnetic
+                       class="group inline-flex items-center justify-center gap-2.5 min-h-11 px-8 py-3.5 rounded-full bg-secondary hover:bg-amber-500 text-slate-950 font-black text-sm sm:text-base whitespace-nowrap shadow-[0_10px_40px_-10px] shadow-secondary/60 transition-colors">
+                        <?= esc_html(kmpr_srv_opt('srvp_btn_primary')); ?>
+                        <svg width="18" height="18" class="shrink-0 group-hover:-translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.61l4.16 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.61 9.25h10.64A.75.75 0 0 1 17 10Z" clip-rule="evenodd"/></svg>
+                    </a>
+                    <a href="#services-list"
+                       class="inline-flex items-center justify-center min-h-11 px-8 py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/15 hover:border-white/30 text-slate-100 font-bold text-sm sm:text-base whitespace-nowrap transition-colors">
+                        <?= esc_html(kmpr_srv_opt('srvp_btn_secondary')); ?>
+                    </a>
+                </div>
+                <?php if ($trust) : ?>
+                    <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-3" data-aos="fade-up" data-aos-delay="550">
+                        <?php foreach ($trust as $line) : ?>
+                            <li class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-300">
+                                <svg width="16" height="16" class="shrink-0 text-emerald-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 4.15a.75.75 0 0 1 .15 1.05l-8 10.5a.75.75 0 0 1-1.13.08l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.9 3.9 7.47-9.82a.75.75 0 0 1 1.05-.15Z" clip-rule="evenodd"/></svg>
+                                <?= esc_html($line); ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+
+            <!-- Quick index of services -->
+            <div class="lg:col-span-5" data-aos="fade-left" data-aos-delay="300">
+                <div class="border-glow rounded-3xl">
+                    <div class="rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl p-3 sm:p-4">
+                        <p class="px-3 pt-2 pb-3 text-xs font-black text-slate-400">دسترسی سریع به خدمات</p>
+                        <ul class="grid grid-cols-3 gap-1.5 sm:gap-2">
+                            <?php foreach ($services->posts as $i => $srv) : ?>
+                                <li class="min-w-0">
+                                    <a href="<?= esc_url(get_permalink($srv)); ?>" class="group h-full flex flex-col items-center justify-center gap-2 sm:gap-2.5 min-h-[5.75rem] sm:min-h-[6.5rem] px-1.5 sm:px-2 py-3 sm:py-3.5 rounded-2xl border border-white/[0.06] bg-white/[0.02] hover:bg-secondary/[0.08] hover:border-secondary/30 text-center transition-colors">
+                                        <span class="size-10 shrink-0 rounded-xl bg-secondary/10 border border-secondary/25 text-secondary flex items-center justify-center group-hover:scale-105 transition-transform"><?= kmpr_service_icon($srv->ID, 20); ?></span>
+                                        <span class="text-[11px] sm:text-[13px] font-black leading-[1.45] sm:leading-5 text-slate-100 group-hover:text-secondary transition-colors line-clamp-2"><?= esc_html(get_the_title($srv)); ?></span>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <div class="mt-3 grid grid-cols-3 gap-2 border-t border-white/10 pt-4 px-2 pb-1 text-center">
+                            <div>
+                                <span class="block text-2xl font-black text-white tabular-nums" data-count="<?= (int) kmpr_years_experience(); ?>" data-suffix="+"><?= esc_html(kmpr_fa_num(kmpr_years_experience())); ?>+</span>
+                                <span class="block text-xs font-bold text-slate-400">سال تجربه</span>
+                            </div>
+                            <div>
+                                <span class="block text-2xl font-black text-white tabular-nums" data-count="<?= (int) wp_count_posts('portfolio')->publish; ?>" data-suffix="+"><?= esc_html(kmpr_fa_num(wp_count_posts('portfolio')->publish)); ?>+</span>
+                                <span class="block text-xs font-bold text-slate-400">پروژه تحویل‌شده</span>
+                            </div>
+                            <div>
+                                <span class="block text-2xl font-black text-white">۱ نفر</span>
+                                <span class="block text-xs font-bold text-slate-400">بدون واسطه</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Smart Interactive Project Configurator -->
-<?php get_template_part('template-parts/services/smart-configurator'); ?>
-
-<!-- Services Catalog Grid -->
-<section id="services-list" class="py-16 lg:py-24 bg-slate-950 border-b border-white/10 text-white">
+<!-- Services -->
+<section id="services-list" class="relative py-20 lg:py-28 border-t border-white/10 scroll-mt-24" aria-labelledby="services-list-title">
     <div class="container mx-auto px-4 sm:px-6">
-        <div class="text-center max-w-2xl mx-auto mb-14" data-aos="fade-up">
-            <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-2">لیست تخصص‌ها</span>
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-3">حوزه‌های تخصصی فعالیت من</h2>
-            <div class="h-1.5 w-16 bg-secondary mx-auto rounded-full mb-3"></div>
-            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
-                هر پروژه با بالاترین استانداردهای مهندسی، معماری ماژولار و تضمین عملکرد ارائه می‌شود.
-            </p>
-        </div>
-
-        <?php
-        $args = array(
-            'post_type'           => 'services',
-            'post_status'         => 'publish',
-            'order'               => 'DESC',
-            'posts_per_page'      => -1,
-            'ignore_sticky_posts' => true
-        );
-        $loop = new WP_Query($args);
-        if ($loop->have_posts()) :
-        ?>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <?php while ($loop->have_posts()) : $loop->the_post(); ?>
-                    <div data-aos="fade-up" class="h-full">
-                        <?php get_template_part('template-parts/services/services-card'); ?>
+        <?php kmpr_srv_head(kmpr_srv_opt('srvp_list_kicker'), kmpr_srv_opt('srvp_list_title'), kmpr_srv_opt('srvp_list_text'), 'services-list-title'); ?>
+        <?php if ($services->have_posts()) : ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6" data-stagger="90">
+                <?php $i = 0;
+                while ($services->have_posts()) : $services->the_post(); ?>
+                    <div data-aos="fade-up">
+                        <?php get_template_part('template-parts/services/services-card', null, array('index' => $i, 'request' => true)); ?>
                     </div>
-                <?php endwhile; ?>
+                <?php $i++;
+                endwhile; ?>
             </div>
         <?php else : ?>
-            <div class="py-16 text-center max-w-md mx-auto">
-                <p class="font-bold text-lg text-slate-500">هیچ خدمتی در حال حاضر ثبت نشده است.</p>
-            </div>
+            <p class="py-16 text-center font-bold text-slate-300">هنوز خدمتی ثبت نشده است.</p>
         <?php endif;
         wp_reset_postdata(); ?>
     </div>
 </section>
 
-<!-- Engineering Guarantees Banner -->
-<section class="py-16 bg-slate-950 border-b border-white/10 text-start text-white">
-    <div class="container mx-auto px-4 sm:px-6 max-w-5xl">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="p-6 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-4">
-                <span class="size-12 rounded-2xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 flex items-center justify-center">
-                    <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                    </svg>
-                </span>
-                <div>
-                    <h4 class="text-base font-black text-white mb-1">گارانتی عملکرد فوق‌سریع</h4>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        تضمین نمره بالای ۹۵ در تست‌های رسمی گوگل و لودینگ زیر یک ثانیه در تمامی صفحات.
-                    </p>
-                </div>
-            </div>
+<?php
+get_template_part('template-parts/services/steps', null, array(
+    'steps'  => $steps,
+    'kicker' => kmpr_srv_opt('srvp_process_kicker'),
+    'title'  => kmpr_srv_opt('srvp_process_title'),
+    'text'   => kmpr_srv_opt('srvp_process_text'),
+    'id'     => 'services-process-title',
+));
 
-            <div class="p-6 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-4">
-                <span class="size-12 rounded-2xl bg-secondary/15 text-secondary border border-secondary/25 flex items-center justify-center">
-                    <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        <path d="m9 12 2 2 4-4"/>
-                    </svg>
-                </span>
-                <div>
-                    <h4 class="text-base font-black text-white mb-1">مالکیت کامل سورس‌کد</h4>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        سورس‌کد تمیز و بدون وابستگی، بدون لایسنس‌های پولی اجباری و آماده برای توسعه تیم شما.
-                    </p>
-                </div>
-            </div>
+get_template_part('template-parts/services/proof', null, array(
+    'ids'    => $proof_ids,
+    'kicker' => kmpr_srv_opt('srvp_proof_kicker'),
+    'title'  => kmpr_srv_opt('srvp_proof_title'),
+    'id'     => 'services-proof-title',
+));
 
-            <div class="p-6 rounded-3xl bg-white/[0.02] border border-white/10 flex flex-col gap-4">
-                <span class="size-12 rounded-2xl bg-sky-500/15 text-sky-400 border border-sky-500/25 flex items-center justify-center">
-                    <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                </span>
-                <div>
-                    <h4 class="text-base font-black text-white mb-1">همکاری مستقیم با دولوپر</h4>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        جلسات فنی و پیگیری مستقیم با خود من، بدون اتلاف وقت در لایه‌های بازاریابی و فروش.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+get_template_part('template-parts/services/faq', null, array(
+    'items'  => $faq,
+    'kicker' => kmpr_srv_opt('srvp_faq_kicker'),
+    'title'  => kmpr_srv_opt('srvp_faq_title'),
+    'id'     => 'services-faq-title',
+    'schema' => true,
+));
 
-<?php get_footer(); ?>
+get_template_part('template-parts/services/smart-configurator');
+get_template_part('template-parts/services/pick-script');
+
+get_footer();

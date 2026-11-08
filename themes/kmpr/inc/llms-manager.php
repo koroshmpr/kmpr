@@ -1,557 +1,628 @@
 <?php
 /**
- * Comprehensive LLMs.txt & AI Discovery Management System
- * 
- * Generates and maintains /llms.txt and /llms-full.txt conforming to the llmstxt.org specification.
- * Auto-updates upon any content change and provides a management dashboard in wp-admin.
+ * AI & LLMs module: /llms.txt, /llms-full.txt, per-page Markdown (<url>.md) and AI-crawler policy.
+ *
+ * Front-end cost on a normal page view: one parse_url() + a couple of string compares (wp_loaded)
+ * and a cheap check in wp_head for the <link rel="alternate" type="text/markdown">.
+ * Everything heavy (builders, HTML→Markdown, admin UI) lives in inc/llms/ and is loaded lazily.
+ *
+ * - Files are built by a single debounced cron event (60 s after the last content change) and stored in
+ *   uploads/kmpr-llms/ (not the web root, so they always go through PHP with correct headers).
+ * - Served with Content-Type text/plain; charset=utf-8, Last-Modified/ETag (+304), X-Robots-Tag: noindex.
+ * - robots.txt groups for AI crawlers are emitted by inc/seo.php's single robots_txt filter via kmpr_llms_robots_block().
+ *
+ * @package KMPR
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class KMPR_LLMs_Manager {
+class KMPR_LLMs_Manager
+{
+    const VERSION      = '3.0.0';
+    const OPT_SETTINGS = 'kmpr_llms_settings';
+    const OPT_STATE    = 'kmpr_llms_state';
+    const OPT_VERSION  = 'kmpr_llms_version';
+    const OPT_LOCK     = 'kmpr_llms_lock';
+    const HOOK         = 'kmpr_llms_rebuild';
+    const DELAY        = 60;
 
-    private $last_run_transient = 'kmpr_llms_last_regenerated';
+    /** @var bool Current request asked for Markdown. */
+    private $md_request = false;
 
-    public function __construct() {
-        // Direct early intercept for llms.txt & llms-full.txt
-        add_action('init', array($this, 'handle_early_request'), 1);
+    /** @var bool Rebuild already scheduled during this request. */
+    private $scheduled = false;
 
-        // Auto-initialize files if not on disk
-        add_action('init', array($this, 'ensure_files_exist'), 99);
+    /** @var array|null */
+    private static $settings = null;
 
-        // Rewrite rules for serving llms.txt & llms-full.txt dynamically if needed
-        add_action('init', array($this, 'add_rewrite_rules'));
-        add_filter('query_vars', array($this, 'register_query_vars'));
-        add_action('template_redirect', array($this, 'handle_dynamic_request'));
+    public function __construct()
+    {
+        add_action('wp_loaded', array($this, 'route'), 0);
+        add_action('template_redirect', array($this, 'serve_markdown'), 1);
+        add_action('wp_head', array($this, 'head_link'), 4);
+        add_action('init', array($this, 'maybe_upgrade'), 99);
 
-        // Auto-update hooks on any content change
-        add_action('save_post', array($this, 'trigger_auto_regenerate'), 20, 2);
-        add_action('delete_post', array($this, 'trigger_auto_regenerate'));
-        add_action('trash_post', array($this, 'trigger_auto_regenerate'));
-        add_action('untrash_post', array($this, 'trigger_auto_regenerate'));
-        add_action('acf/save_post', array($this, 'trigger_auto_regenerate'), 20);
-
-        // Robots.txt AI directives
-        add_filter('robots_txt', array($this, 'enhance_robots_txt'), 99, 2);
-
-        // Admin Dashboard Menu
-        add_action('admin_menu', array($this, 'register_admin_menu'));
-        add_action('admin_init', array($this, 'handle_manual_regenerate'));
-    }
-
-    /**
-     * Early request intercept to serve llms.txt & llms-full.txt immediately
-     */
-    public function handle_early_request() {
-        $uri = $_SERVER['REQUEST_URI'] ?? '';
-        $path = parse_url($uri, PHP_URL_PATH);
-
-        if ($path === '/llms.txt') {
-            header('Content-Type: text/plain; charset=utf-8');
-            header('X-Robots-Tag: index, follow');
-            echo $this->build_llms_txt();
-            exit;
+        // Debounced rebuild on content changes.
+        add_action(self::HOOK, array($this, 'rebuild'));
+        add_action('transition_post_status', array($this, 'on_status'), 10, 3);
+        add_action('before_delete_post', array($this, 'on_delete'));
+        add_action('acf/save_post', array($this, 'on_acf_save'), 30);
+        foreach (array('created_term', 'edited_term', 'delete_term') as $hook) {
+            add_action($hook, array($this, 'on_term'), 10, 3);
         }
 
-        if ($path === '/llms-full.txt') {
-            header('Content-Type: text/plain; charset=utf-8');
-            header('X-Robots-Tag: index, follow');
-            echo $this->build_llms_full_txt();
-            exit;
+        if (is_admin()) {
+            require_once __DIR__ . '/llms/admin.php';
+            new KMPR_LLMs_Admin($this);
         }
     }
 
-    /**
-     * Ensure files exist on disk and are updated
-     */
-    public function ensure_files_exist() {
-        $llms_path = ABSPATH . 'llms.txt';
-        $full_path = ABSPATH . 'llms-full.txt';
-        if (!file_exists($llms_path) || !file_exists($full_path) || (time() - @filemtime($llms_path) > 86400)) {
-            $this->save_files_to_disk();
-            flush_rewrite_rules(false);
-        }
-    }
+    /* =====================================================================
+     * Settings
+     * ================================================================== */
 
-    /**
-     * Add rewrite rules for virtual fallback serving
-     */
-    public function add_rewrite_rules() {
-        add_rewrite_rule('^llms\.txt$', 'index.php?kmpr_llms=1', 'top');
-        add_rewrite_rule('^llms-full\.txt$', 'index.php?kmpr_llms_full=1', 'top');
-    }
-
-    public function register_query_vars($vars) {
-        $vars[] = 'kmpr_llms';
-        $vars[] = 'kmpr_llms_full';
-        return $vars;
-    }
-
-    /**
-     * Handle dynamic requests for llms.txt and llms-full.txt
-     */
-    public function handle_dynamic_request() {
-        if (get_query_var('kmpr_llms')) {
-            header('Content-Type: text/plain; charset=utf-8');
-            header('X-Robots-Tag: index, follow');
-            echo $this->build_llms_txt();
-            exit;
-        }
-
-        if (get_query_var('kmpr_llms_full')) {
-            header('Content-Type: text/plain; charset=utf-8');
-            header('X-Robots-Tag: index, follow');
-            echo $this->build_llms_full_txt();
-            exit;
-        }
-    }
-
-    /**
-     * Add AI Crawler directives to robots.txt
-     */
-    public function enhance_robots_txt($output, $public) {
-        $site_url = untrailingslashit(home_url('/'));
-        
-        $ai_rules  = "\n# --------------------------------------------------\n";
-        $ai_rules .= "# AI Search Engines & LLM Discovery (llmstxt.org)\n";
-        $ai_rules .= "# --------------------------------------------------\n";
-        $ai_rules .= "User-agent: GPTBot\nAllow: /\n\n";
-        $ai_rules .= "User-agent: ClaudeBot\nAllow: /\n\n";
-        $ai_rules .= "User-agent: PerplexityBot\nAllow: /\n\n";
-        $ai_rules .= "User-agent: Google-Extended\nAllow: /\n\n";
-        $ai_rules .= "User-agent: Applebot-Extended\nAllow: /\n\n";
-        $ai_rules .= "User-agent: CCBot\nAllow: /\n\n";
-        $ai_rules .= "llms-txt: " . $site_url . "/llms.txt\n";
-        $ai_rules .= "llms-full-txt: " . $site_url . "/llms-full.txt\n";
-
-        return $output . $ai_rules;
-    }
-
-    /**
-     * Auto-regenerate files on content save
-     */
-    public function trigger_auto_regenerate($post_id = 0, $post = null) {
-        // Skip revisions, autosaves, or nav_menu_items
-        if (wp_is_post_revision($post_id) || wp_is_post_autosave($post_id)) {
-            return;
-        }
-
-        if ($post && in_array($post->post_type, array('revision', 'nav_menu_item', 'acf-field', 'acf-field-group'))) {
-            return;
-        }
-
-        // Throttle regeneration to prevent redundant writes within 3 seconds
-        $last_run = get_transient($this->last_run_transient);
-        if ($last_run) {
-            return;
-        }
-
-        set_transient($this->last_run_transient, time(), 3);
-        $this->save_files_to_disk();
-    }
-
-    /**
-     * Build the standard llms.txt content
-     */
-    public function build_llms_txt() {
-        $site_name = get_bloginfo('name');
-        $site_desc = get_bloginfo('description');
-        $site_url  = untrailingslashit(home_url('/'));
-        $date_now  = function_exists('shamsi_date') ? shamsi_date('Y/m/d - H:i', time()) : date('Y-m-d');
-
-        $out = "# {$site_name} | کوروش محمدپور (Korosh Mpr)\n\n";
-        $out .= "> کوروش محمدپور - معمار نرم‌افزار، توسعه‌دهنده وب و متخصص پرفورمنس، وب‌اپلیکیشن‌ها و سیستم‌های هوش مصنوعی (AI-Native).\n\n";
-        $out .= "این مستند با استاندارد رسمی [llmstxt.org](https://llmstxt.org/) برای معرفی جامع تخصص‌ها، پروژه‌ها، مقالات و راهکارهای مهندسی نرم‌افزار کوروش محمدپور به مدل‌های زبانی هوش مصنوعی (LLMs) و موتورهای هوشمند ایجاد شده است.\n\n";
-        $out .= "- **آدرس وب‌سایت:** {$site_url}\n";
-        $out .= "- **تاریخ آخرین به‌روزرسانی:** {$date_now}\n";
-        $out .= "- **زبان اصلی:** فارسی (fa-IR)\n";
-        $out .= "- **مستند تفصیلی و کامل:** [{$site_url}/llms-full.txt]({$site_url}/llms-full.txt)\n\n";
-
-        // 1. Services Section
-        $out .= "## خدمات تخصصی (Services)\n\n";
-        $services_query = new WP_Query(array(
-            'post_type'      => 'services',
-            'post_status'    => 'publish',
-            'posts_per_page' => -1,
-            'order'          => 'DESC'
-        ));
-
-        if ($services_query->have_posts()) {
-            while ($services_query->have_posts()) {
-                $services_query->the_post();
-                $title = get_the_title();
-                $link  = get_permalink();
-                $excerpt = wp_strip_all_tags(get_the_excerpt() ?: wp_trim_words(get_the_content(), 20));
-                $badge   = get_field('services_badge') ? ' (' . get_field('services_badge') . ')' : '';
-                $out .= "- [{$title}{$badge}]({$link}): {$excerpt}\n";
-            }
-            wp_reset_postdata();
-        } else {
-            $out .= "- خدمات طراحی سایت اختصاصی، بهینه‌سازی موتورهای جستجو (سئو)، پشتیبانی فنی و امنیتی.\n";
-        }
-        $out .= "\n";
-
-        // 2. Portfolios Section
-        $out .= "## نمونه‌کارها و پروژه‌ها (Portfolio)\n\n";
-        $portfolio_query = new WP_Query(array(
-            'post_type'      => 'portfolio',
-            'post_status'    => 'publish',
-            'posts_per_page' => 12,
-            'order'          => 'DESC'
-        ));
-
-        if ($portfolio_query->have_posts()) {
-            while ($portfolio_query->have_posts()) {
-                $portfolio_query->the_post();
-                $title = get_the_title();
-                $link  = get_permalink();
-                $excerpt = wp_strip_all_tags(get_the_excerpt() ?: wp_trim_words(get_the_content(), 18));
-                $out .= "- [{$title}]({$link}): {$excerpt}\n";
-            }
-            wp_reset_postdata();
-        }
-        $out .= "\n";
-
-        // 3. Articles & Insights
-        $out .= "## مقالات و راهنماهای آموزشی (Articles & Blog)\n\n";
-        $posts_query = new WP_Query(array(
-            'post_type'      => 'post',
-            'post_status'    => 'publish',
-            'posts_per_page' => 10,
-            'order'          => 'DESC'
-        ));
-
-        if ($posts_query->have_posts()) {
-            while ($posts_query->have_posts()) {
-                $posts_query->the_post();
-                $title = get_the_title();
-                $link  = get_permalink();
-                $excerpt = wp_strip_all_tags(get_the_excerpt() ?: wp_trim_words(get_the_content(), 18));
-                $out .= "- [{$title}]({$link}): {$excerpt}\n";
-            }
-            wp_reset_postdata();
-        }
-        $out .= "\n";
-
-        // 4. Contact & Identity
-        $phone = get_field('phone', 'option') ?: 'تماس از طریق وب‌سایت';
-        $email = get_field('email', 'option') ?: 'info@kmpr.ir';
-        
-        $out .= "## راه‌های ارتباطی و مشاوره (Contact & Support)\n\n";
-        $out .= "- **تلفن تماس:** {$phone}\n";
-        $out .= "- **پست الکترونیک:** {$email}\n";
-        $out .= "- **صفحه درباره ما:** [{$site_url}/about-us/]({$site_url}/about-us/)\n";
-        $out .= "- **صفحه ارتباط با ما:** [{$site_url}/contact-us/]({$site_url}/contact-us/)\n";
-
-        return $out;
-    }
-
-    /**
-     * Build the comprehensive llms-full.txt content
-     */
-    public function build_llms_full_txt() {
-        $site_name = get_bloginfo('name');
-        $site_desc = get_bloginfo('description');
-        $site_url  = untrailingslashit(home_url('/'));
-        $date_now  = function_exists('shamsi_date') ? shamsi_date('Y/m/d - H:i', time()) : date('Y-m-d');
-
-        $out = "# {$site_name} - دانشنامه و راهنمای کامل هوش مصنوعی (Full Knowledge Base)\n\n";
-        $out .= "> {$site_desc}\n\n";
-        $out .= "این فایل نسخه کامل و تفصیلی تمام اطلاعات ساختاریافته، توضیحات خدمات و مهارت‌ها، پروژه‌ها و مقالات تخصصی کوروش محمدپور است که به منظور درک کامل و دقیق تخصص‌ها و نمونه‌کارها برای مدل‌های هوش مصنوعی ایجاد شده است.\n\n";
-        $out .= "تاریخ آخرین به‌روزرسانی: {$date_now}\n\n";
-        $out .= "---\n\n";
-
-        // Detailed Services with Proposals/Pricing
-        $out .= "# ۱. خدمات تخصصی و تعرفه‌ها (Detailed Services & Plans)\n\n";
-        $services_query = new WP_Query(array(
-            'post_type'      => 'services',
-            'post_status'    => 'publish',
-            'posts_per_page' => -1,
-            'order'          => 'DESC'
-        ));
-
-        if ($services_query->have_posts()) {
-            while ($services_query->have_posts()) {
-                $services_query->the_post();
-                $service_id = get_the_ID();
-                $out .= "## " . get_the_title() . "\n";
-                $out .= "- **آدرس صفحه:** " . get_permalink() . "\n";
-                $badge = get_field('services_badge', $service_id);
-                if ($badge) {
-                    $out .= "- **برچسب خدمت:** " . $badge . "\n";
-                }
-                $content = wp_strip_all_tags(get_the_content());
-                $out .= "\n### توضیحات کامل:\n" . $content . "\n\n";
-
-                // If Proposal rows exist, output all plan tiers
-                if (have_rows('proposal', $service_id)) {
-                    $out .= "### پلن‌ها و تعرفه‌ها:\n";
-                    while (have_rows('proposal', $service_id)) {
-                        the_row();
-                        $tier_title = get_sub_field('proposal_title');
-                        $tier_desc  = get_sub_field('proposal_description');
-                        $out .= "#### پلن: {$tier_title}\n";
-                        if ($tier_desc) {
-                            $out .= "- توضیحات: {$tier_desc}\n";
-                        }
-                        if (have_rows('proposal_row')) {
-                            while (have_rows('proposal_row')) {
-                                the_row();
-                                $label = get_sub_field('Property_label');
-                                $val   = get_sub_field('Property_value');
-                                if ($label) {
-                                    $out .= "  * {$label}: {$val}\n";
-                                }
-                            }
-                        }
-                    }
-                    $out .= "\n";
-                }
-                $out .= "---\n\n";
-            }
-            wp_reset_postdata();
-        }
-
-        // Detailed Portfolios
-        $out .= "# ۲. پروژه‌ها و نمونه‌کارهای اجرا شده (Portfolio Cases)\n\n";
-        $portfolio_query = new WP_Query(array(
-            'post_type'      => 'portfolio',
-            'post_status'    => 'publish',
-            'posts_per_page' => 20,
-            'order'          => 'DESC'
-        ));
-
-        if ($portfolio_query->have_posts()) {
-            while ($portfolio_query->have_posts()) {
-                $portfolio_query->the_post();
-                $out .= "## " . get_the_title() . "\n";
-                $out .= "- **آدرس پروژه:** " . get_permalink() . "\n";
-                $out .= "### شرح پروژه:\n" . wp_strip_all_tags(get_the_content()) . "\n\n";
-            }
-            wp_reset_postdata();
-        }
-
-        // Key Articles
-        $out .= "# ۳. مقالات آموزشی و تحلیل‌های تخصصی (Articles)\n\n";
-        $posts_query = new WP_Query(array(
-            'post_type'      => 'post',
-            'post_status'    => 'publish',
-            'posts_per_page' => 15,
-            'order'          => 'DESC'
-        ));
-
-        if ($posts_query->have_posts()) {
-            while ($posts_query->have_posts()) {
-                $posts_query->the_post();
-                $out .= "## " . get_the_title() . "\n";
-                $out .= "- **آدرس مقاله:** " . get_permalink() . "\n";
-                $out .= "- **خلاصه مطلب:** " . wp_strip_all_tags(get_the_excerpt() ?: wp_trim_words(get_the_content(), 40)) . "\n\n";
-            }
-            wp_reset_postdata();
-        }
-
-        return $out;
-    }
-
-    /**
-     * Write llms.txt and llms-full.txt to web root directory
-     */
-    public function save_files_to_disk() {
-        $root_path = ABSPATH;
-        $llms_path = $root_path . 'llms.txt';
-        $full_path = $root_path . 'llms-full.txt';
-
-        $llms_content = $this->build_llms_txt();
-        $full_content = $this->build_llms_full_txt();
-
-        @file_put_contents($llms_path, $llms_content);
-        @file_put_contents($full_path, $full_content);
-
-        update_option('kmpr_llms_last_generated', time());
-        update_option('kmpr_llms_file_size', @filesize($llms_path) ?: strlen($llms_content));
-        update_option('kmpr_llms_full_file_size', @filesize($full_path) ?: strlen($full_content));
-        update_option('kmpr_llms_word_count', str_word_count($llms_content));
-        update_option('kmpr_llms_full_word_count', str_word_count($full_content));
-    }
-
-    /**
-     * Register Admin Dashboard Menu
-     */
-    public function register_admin_menu() {
-        add_menu_page(
-            'مدیریت هوش مصنوعی و LLMs',
-            'هوش مصنوعی و LLMs',
-            'manage_options',
-            'kmpr-ai-llms',
-            array($this, 'render_admin_page'),
-            'dashicons-rest-api',
-            65
+    /** AI crawler user-agents: token => [operator, purpose label, kind]. */
+    public static function bots()
+    {
+        return array(
+            'GPTBot'            => array('OpenAI', 'جمع‌آوری داده برای آموزش مدل', 'training'),
+            'OAI-SearchBot'     => array('OpenAI', 'جستجوی ChatGPT (نمایش در نتایج)', 'search'),
+            'ChatGPT-User'      => array('OpenAI', 'باز کردن صفحه به درخواست کاربر', 'user'),
+            'ClaudeBot'         => array('Anthropic', 'جمع‌آوری داده برای آموزش مدل', 'training'),
+            'Claude-SearchBot'  => array('Anthropic', 'جستجوی Claude (نمایش در نتایج)', 'search'),
+            'PerplexityBot'     => array('Perplexity', 'موتور پاسخ Perplexity', 'search'),
+            'Google-Extended'   => array('Google', 'استفاده در Gemini / آموزش (روی ایندکس گوگل اثری ندارد)', 'training'),
+            'Applebot-Extended' => array('Apple', 'آموزش مدل‌های Apple (روی Siri/Spotlight اثری ندارد)', 'training'),
+            'CCBot'             => array('Common Crawl', 'دیتاست عمومی که در آموزش بیشتر مدل‌ها استفاده می‌شود', 'training'),
+            'Bytespider'        => array('ByteDance', 'جمع‌آوری داده برای آموزش مدل', 'training'),
         );
     }
 
-    /**
-     * Handle manual regenerate action from admin button
-     */
-    public function handle_manual_regenerate() {
-        if (isset($_POST['kmpr_regenerate_llms']) && check_admin_referer('kmpr_regenerate_llms_action', 'kmpr_regenerate_llms_nonce')) {
-            $this->save_files_to_disk();
-            wp_safe_redirect(add_query_arg(array('page' => 'kmpr-ai-llms', 'updated' => 'true'), admin_url('admin.php')));
-            exit;
+    public static function defaults()
+    {
+        return array(
+            'summary'  => '',
+            'intro'    => '',
+            'txt'      => array('about' => 1, 'services' => 1, 'courses' => 1, 'portfolio' => 1, 'games' => 1, 'optional' => 1),
+            'full'     => array('about' => 1, 'services' => 1, 'courses' => 1, 'portfolio' => 1, 'games' => 1, 'faq' => 1),
+            'archived' => 1,
+            'md'       => 1,
+            'link_md'  => 0,
+            'bots'     => array_fill_keys(array_keys(self::bots()), 'allow'),
+        );
+    }
+
+    public static function settings()
+    {
+        if (self::$settings === null) {
+            $saved = get_option(self::OPT_SETTINGS, array());
+            $saved = is_array($saved) ? $saved : array();
+            $d     = self::defaults();
+            $s     = array_merge($d, $saved);
+            foreach (array('txt', 'full', 'bots') as $k) {
+                $s[$k] = array_merge($d[$k], is_array($saved[$k] ?? null) ? $saved[$k] : array());
+            }
+            self::$settings = $s;
+        }
+        return self::$settings;
+    }
+
+    public static function save_settings($s)
+    {
+        update_option(self::OPT_SETTINGS, $s, true);
+        self::$settings = null;
+    }
+
+    public static function state()
+    {
+        $s = get_option(self::OPT_STATE, array());
+        return is_array($s) ? $s : array();
+    }
+
+    /* =====================================================================
+     * Shared helpers
+     * ================================================================== */
+
+    /** Post types that have a Markdown twin and appear in the files. */
+    public static function md_types()
+    {
+        return array('post', 'page', 'services', 'portfolio', 'game');
+    }
+
+    /** Published, not password-protected, not noindex (Yoast per-post / per-type), not the untranslated privacy page. */
+    public static function is_public($p)
+    {
+        static $titles = null;
+        $p = $p instanceof WP_Post ? $p : get_post($p);
+        if (!$p || $p->post_status !== 'publish' || $p->post_password !== '' || !in_array($p->post_type, self::md_types(), true)) {
+            return false;
+        }
+        $flag = get_post_meta($p->ID, '_yoast_wpseo_meta-robots-noindex', true);
+        if ($flag === '1') {
+            return false;
+        }
+        if ($flag !== '2') {
+            $titles = $titles ?? (array) get_option('wpseo_titles', array());
+            if (!empty($titles['noindex-' . $p->post_type])) {
+                return false;
+            }
+        }
+        if ($p->post_type === 'page' && (int) $p->ID === (int) get_option('wp_page_for_privacy_policy') && !preg_match('/\p{Arabic}/u', $p->post_content)) {
+            return false;
+        }
+        return true;
+    }
+
+    /** Markdown URL for a page URL: /blog/foo/ → /blog/foo.md, home → /index.md. */
+    public static function md_url($url)
+    {
+        $url  = preg_replace('/[?#].*$/', '', (string) $url);
+        $home = trailingslashit(home_url('/'));
+        if (trailingslashit($url) === $home) {
+            return $home . 'index.md';
+        }
+        return untrailingslashit($url) . '.md';
+    }
+
+    /** Public URLs (untrailingslashed) used by the link validator. */
+    public static function known_urls()
+    {
+        $urls = array(untrailingslashit(home_url('/')) => 1, untrailingslashit(home_url('/llms.txt')) => 1, untrailingslashit(home_url('/llms-full.txt')) => 1);
+        $ids  = get_posts(array('post_type' => self::md_types(), 'post_status' => 'publish', 'posts_per_page' => 1000, 'fields' => 'ids', 'no_found_rows' => true));
+        foreach ($ids as $id) {
+            if (self::is_public($id)) {
+                $u = untrailingslashit(get_permalink($id));
+                $urls[$u] = 1;
+                $urls[untrailingslashit(self::md_url($u . '/'))] = 1;
+            }
+        }
+        foreach (array('services', 'portfolio', 'game') as $pt) {
+            if (post_type_exists($pt) && ($l = get_post_type_archive_link($pt))) {
+                $urls[untrailingslashit($l)] = 1;
+                $urls[untrailingslashit(self::md_url($l))] = 1;
+            }
+        }
+        foreach (array('category', 'portfolio_categories', 'game_category') as $tax) {
+            if (!taxonomy_exists($tax)) {
+                continue;
+            }
+            foreach (get_terms(array('taxonomy' => $tax, 'hide_empty' => true)) as $t) {
+                $l = get_term_link($t);
+                if (!is_wp_error($l)) {
+                    $urls[untrailingslashit($l)] = 1;
+                    $urls[untrailingslashit(self::md_url($l))] = 1;
+                }
+            }
+        }
+        $urls[untrailingslashit(self::md_url(home_url('/')))] = 1;
+        return $urls;
+    }
+
+    /** Storage directory (outside the web root's direct path so the web server never serves stale copies). */
+    public static function dir()
+    {
+        $up = wp_upload_dir(null, false);
+        return trailingslashit($up['basedir']) . 'kmpr-llms';
+    }
+
+    public static function path($file)
+    {
+        return self::dir() . '/' . $file;
+    }
+
+    public static function builder()
+    {
+        require_once __DIR__ . '/llms/builder.php';
+        return new KMPR_LLMs_Builder(self::settings());
+    }
+
+    /* =====================================================================
+     * Routing (cheap check on every front-end request)
+     * ================================================================== */
+
+    private static function base_path()
+    {
+        $p = (string) wp_parse_url(home_url('/'), PHP_URL_PATH);
+        return rtrim($p, '/');
+    }
+
+    public function route()
+    {
+        if (is_admin() || wp_doing_ajax() || wp_doing_cron() || (defined('REST_REQUEST') && REST_REQUEST)) {
+            return;
+        }
+        $uri  = (string) ($_SERVER['REQUEST_URI'] ?? '');
+        $path = (string) wp_parse_url($uri, PHP_URL_PATH);
+        if ($path === '') {
+            return;
+        }
+        $base = self::base_path();
+        $rel  = ($base !== '' && strpos($path, $base) === 0) ? substr($path, strlen($base)) : $path;
+
+        if ($rel === '/llms.txt' || $rel === '/llms-full.txt') {
+            $this->serve_file(ltrim($rel, '/'));
+        }
+
+        $s = self::settings();
+        if (empty($s['md'])) {
+            return;
+        }
+        if (substr($rel, -3) === '.md') {
+            $new   = preg_replace('#(/index(\.html)?)?\.md$#', '', $rel);
+            $query = (string) wp_parse_url($uri, PHP_URL_QUERY);
+            $_SERVER['REQUEST_URI'] = $base . ($new === '' ? '/' : $new) . ($query !== '' ? '?' . $query : '');
+            $this->md_request       = true;
+        } elseif (isset($_GET['format']) && $_GET['format'] === 'md') { // phpcs:ignore WordPress.Security.NonceVerification
+            $this->md_request = true;
+        }
+        if ($this->md_request) {
+            add_filter('redirect_canonical', '__return_false', 99);
         }
     }
 
-    /**
-     * Render the Admin Dashboard Interface
-     */
-    public function render_admin_page() {
-        $root_path = ABSPATH;
-        $llms_file = $root_path . 'llms.txt';
-        $full_file = $root_path . 'llms-full.txt';
+    /** True when the client already has this version. */
+    private static function not_modified($etag, $mtime)
+    {
+        $inm = trim(wp_unslash((string) ($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''))); // WP adds magic quotes to $_SERVER
+        if ($inm !== '') {
+            return in_array($etag, array_map('trim', explode(',', str_replace('W/', '', $inm))), true);
+        }
+        $ims = (string) ($_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? '');
+        return $mtime && $ims !== '' && strtotime($ims) >= $mtime;
+    }
 
-        $llms_exists = file_exists($llms_file);
-        $full_exists = file_exists($full_file);
+    /** Send a text response with validators and exit. */
+    private function send($body, $type, $mtime, $etag, $canonical = '', $is_file = false)
+    {
+        if (function_exists('header_remove')) {
+            header_remove('Expires');
+            header_remove('Pragma');
+            header_remove('X-Pingback');
+        }
+        status_header(200);
+        header('Content-Type: ' . $type . '; charset=utf-8');
+        header('X-Robots-Tag: noindex');
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: public, max-age=3600');
+        header('ETag: ' . $etag);
+        if ($mtime) {
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
+        }
+        if ($canonical) {
+            header('Link: <' . esc_url_raw($canonical) . '>; rel="canonical"', false);
+        }
+        if (self::not_modified($etag, $mtime)) {
+            status_header(304);
+            exit;
+        }
+        if (!$is_file) {
+            header('Content-Length: ' . strlen($body));
+            if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') {
+                echo $body; // phpcs:ignore WordPress.Security.EscapeOutput -- plain text / markdown response
+            }
+        } else {
+            // $body = file path.
+            header('Content-Length: ' . filesize($body));
+            if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') {
+                readfile($body);
+            }
+        }
+        exit;
+    }
 
-        $last_generated = get_option('kmpr_llms_last_generated', $llms_exists ? filemtime($llms_file) : 0);
-        $formatted_date = ($last_generated && function_exists('shamsi_date')) ? shamsi_date('d F Y - ساعت H:i', $last_generated) : 'هنوز ایجاد نشده';
+    private function serve_file($name)
+    {
+        $path  = self::path($name);
+        $stale = !is_readable($path);
+        if (!$stale) {
+            // Cron not running (DISABLE_WP_CRON without a real cron): rebuild lazily once the event is 5 min overdue.
+            $next  = wp_next_scheduled(self::HOOK);
+            $stale = $next && $next < time() - 300;
+        }
+        if ($stale) {
+            $this->rebuild();
+            clearstatcache(true, $path);
+        }
+        if (is_readable($path)) {
+            $mtime = (int) filemtime($path);
+            $this->send($path, 'text/plain', $mtime, sprintf('"%x-%x"', $mtime, filesize($path)), '', true);
+        }
+        // Storage not writable: build in memory.
+        $b    = self::builder();
+        $body = $name === 'llms.txt' ? $b->llms_txt() : $b->llms_full();
+        $this->send($body, 'text/plain', 0, '"' . md5($body) . '"');
+    }
 
-        $llms_size = $llms_exists ? size_format(filesize($llms_file), 2) : '0 KB';
-        $full_size = $full_exists ? size_format(filesize($full_file), 2) : '0 KB';
+    /** Markdown twin of the current page (template_redirect, after WP resolved the query). */
+    public function serve_markdown()
+    {
+        if (!$this->md_request) {
+            return;
+        }
+        $doc = is_404() ? null : self::builder()->current_md();
+        if (!$doc) {
+            status_header(404);
+            nocache_headers();
+            header('Content-Type: text/markdown; charset=utf-8');
+            header('X-Robots-Tag: noindex');
+            echo "# ۴۰۴\n\nاین آدرس نسخه Markdown ندارد یا منتشر نشده است. فهرست صفحه‌ها: " . esc_url_raw(home_url('/llms.txt')) . "\n";
+            exit;
+        }
+        $this->send($doc['body'], 'text/markdown', (int) $doc['modified'], '"' . md5($doc['body']) . '"', $doc['canonical']);
+    }
 
-        $llms_words = get_option('kmpr_llms_word_count', $llms_exists ? str_word_count(file_get_contents($llms_file)) : 0);
-        $full_words = get_option('kmpr_llms_full_word_count', $full_exists ? str_word_count(file_get_contents($full_file)) : 0);
+    /** <link rel="alternate" type="text/markdown"> on pages that have a Markdown twin. */
+    public function head_link()
+    {
+        $s = self::settings();
+        if (empty($s['md']) || is_paged() || is_404() || is_search()) {
+            return;
+        }
+        $url = '';
+        if (is_front_page()) {
+            $url = home_url('/');
+        } elseif (is_singular(self::md_types())) {
+            $p   = get_queried_object();
+            $url = self::is_public($p) ? get_permalink($p) : '';
+        } elseif (is_post_type_archive(array('services', 'portfolio', 'game'))) {
+            $pt  = get_query_var('post_type');
+            $url = get_post_type_archive_link(is_array($pt) ? reset($pt) : $pt);
+        } elseif (is_category()) {
+            $t   = get_queried_object();
+            $url = ($t instanceof WP_Term && $t->count && (int) $t->term_id !== (int) get_option('default_category')) ? get_term_link($t) : '';
+        } elseif (is_home() && get_option('page_for_posts')) {
+            $url = get_permalink((int) get_option('page_for_posts'));
+        }
+        if ($url && !is_wp_error($url)) {
+            echo '<link rel="alternate" type="text/markdown" title="Markdown" href="' . esc_url(self::md_url($url)) . '">' . "\n";
+        }
+    }
 
-        $est_tokens = round($full_words * 1.35); // Persian token multiplier approximation
+    /* =====================================================================
+     * Rebuild scheduling (debounced)
+     * ================================================================== */
 
-        // Content counts
-        $services_count  = wp_count_posts('services')->publish ?? 0;
-        $portfolio_count = wp_count_posts('portfolio')->publish ?? 0;
-        $posts_count     = wp_count_posts('post')->publish ?? 0;
-        $pages_count     = wp_count_posts('page')->publish ?? 0;
+    public function schedule()
+    {
+        if ($this->scheduled) {
+            return;
+        }
+        $this->scheduled = true;
+        $when = time() + self::DELAY;
+        $next = wp_next_scheduled(self::HOOK);
+        if ($next && $next >= $when - 5) {
+            return;
+        }
+        if ($next) {
+            wp_unschedule_event($next, self::HOOK);
+        }
+        wp_schedule_single_event($when, self::HOOK);
+    }
 
-        $site_url = untrailingslashit(home_url('/'));
-        ?>
-        <div class="wrap" style="direction: rtl; text-align: right; font-family: inherit; max-width: 1100px; margin-top: 20px;">
-            
-            <!-- Page Header -->
-            <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; padding: 28px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-                    <div>
-                        <span style="background: rgba(217, 119, 6, 0.2); color: #f59e0b; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 800; border: 1px solid rgba(217,119,6,0.3); display: inline-block; margin-bottom: 8px;">
-                            استاندارد رسمی LLMs.txt
-                        </span>
-                        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 900;">مدیریت هوش مصنوعی و ایندکس محتوا (AI & LLMs)</h1>
-                        <p style="color: #94a3b8; margin: 8px 0 0; font-size: 13px;">
-                            تولید، همگام‌سازی و مدیریت فایل‌های <code>llms.txt</code> و <code>llms-full.txt</code> جهت شناسایی جامع سایت توسط ChatGPT، Claude، Perplexity و Gemini.
-                        </p>
-                    </div>
+    public function on_status($new, $old, $post)
+    {
+        if (($new === 'publish' || $old === 'publish') && $post instanceof WP_Post && in_array($post->post_type, self::md_types(), true)
+            && !wp_is_post_revision($post) && !wp_is_post_autosave($post)) {
+            $this->schedule();
+        }
+    }
 
-                    <form method="post" action="">
-                        <?php wp_nonce_field('kmpr_regenerate_llms_action', 'kmpr_regenerate_llms_nonce'); ?>
-                        <button type="submit" name="kmpr_regenerate_llms" class="button button-primary" 
-                                style="background: #d97706; border-color: #b45309; padding: 8px 24px; height: auto; font-size: 14px; font-weight: 800; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(217,119,6,0.3);">
-                            بازسازی و به‌روزرسانی فایل‌های هوش مصنوعی
-                        </button>
-                    </form>
-                </div>
-            </div>
+    public function on_delete($post_id)
+    {
+        $p = get_post($post_id);
+        if ($p && $p->post_status === 'publish' && in_array($p->post_type, self::md_types(), true)) {
+            $this->schedule();
+        }
+    }
 
-            <?php if (isset($_GET['updated']) && $_GET['updated'] === 'true') : ?>
-                <div class="notice notice-success is-dismissible" style="border-radius: 8px; border-right-color: #10b981; padding: 12px 16px;">
-                    <p style="font-weight: 800; color: #065f46; margin: 0;">فایل‌های llms.txt و llms-full.txt با موفقیت بازسازی و بر روی ریشه سایت ذخیره شدند!</p>
-                </div>
-            <?php endif; ?>
+    public function on_acf_save($post_id)
+    {
+        if (is_numeric($post_id)) {
+            $p = get_post((int) $post_id);
+            if ($p && $p->post_status === 'publish' && in_array($p->post_type, self::md_types(), true)) {
+                $this->schedule();
+            }
+            return;
+        }
+        // Options pages (contact, resume, games…) and term fields (course intro/title).
+        if (is_string($post_id) && preg_match('/^(options?|term_|category_)/', $post_id)) {
+            $this->schedule();
+        }
+    }
 
-            <!-- Status Cards Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                
-                <!-- Card 1: llms.txt -->
-                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <strong style="font-size: 15px; color: #1e293b;">فایل اصلی llms.txt</strong>
-                        <?php if ($llms_exists) : ?>
-                            <span style="background: #ecfdf5; color: #059669; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">فعال و آماده</span>
-                        <?php else: ?>
-                            <span style="background: #fef2f2; color: #dc2626; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">ایجاد نشده</span>
-                        <?php endif; ?>
-                    </div>
-                    <p style="font-size: 12px; color: #64748b; margin: 4px 0;">حجم فایل: <strong style="color: #0f172a;"><?= $llms_size; ?></strong></p>
-                    <p style="font-size: 12px; color: #64748b; margin: 4px 0;">تعداد کلمات: <strong style="color: #0f172a;"><?= number_format($llms_words); ?> کلمه</strong></p>
-                    <div style="margin-top: 14px;">
-                        <a href="<?= esc_url($site_url . '/llms.txt'); ?>" target="_blank" class="button" style="width: 100%; text-align: center; border-radius: 8px; font-weight: 700;">
-                            مشاهده مستقیم /llms.txt &larr;
-                        </a>
-                    </div>
-                </div>
+    public function on_term($term_id, $tt_id, $taxonomy)
+    {
+        if (in_array($taxonomy, array('category', 'portfolio_categories', 'game_category'), true)) {
+            $this->schedule();
+        }
+    }
 
-                <!-- Card 2: llms-full.txt -->
-                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <strong style="font-size: 15px; color: #1e293b;">دانشنامه کامل llms-full.txt</strong>
-                        <?php if ($full_exists) : ?>
-                            <span style="background: #ecfdf5; color: #059669; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">فعال و آماده</span>
-                        <?php else: ?>
-                            <span style="background: #fef2f2; color: #dc2626; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">ایجاد نشده</span>
-                        <?php endif; ?>
-                    </div>
-                    <p style="font-size: 12px; color: #64748b; margin: 4px 0;">حجم فایل: <strong style="color: #0f172a;"><?= $full_size; ?></strong></p>
-                    <p style="font-size: 12px; color: #64748b; margin: 4px 0;">تخمین توکن کانتکس: <strong style="color: #0f172a;">~<?= number_format($est_tokens); ?> Token</strong></p>
-                    <div style="margin-top: 14px;">
-                        <a href="<?= esc_url($site_url . '/llms-full.txt'); ?>" target="_blank" class="button" style="width: 100%; text-align: center; border-radius: 8px; font-weight: 700;">
-                            مشاهده مستقیم /llms-full.txt &larr;
-                        </a>
-                    </div>
-                </div>
+    /** Build both files; write only when content changed (keeps Last-Modified/ETag stable for crawlers). */
+    public function rebuild()
+    {
+        if (!add_option(self::OPT_LOCK, time(), '', false)) {
+            if (time() - (int) get_option(self::OPT_LOCK) < 120) {
+                return false;
+            }
+            update_option(self::OPT_LOCK, time(), false);
+        }
+        $t0 = microtime(true);
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(120); // phpcs:ignore
+        }
+        $error = '';
+        $b     = null;
+        try {
+            $b    = self::builder();
+            $txt  = $b->llms_txt();
+            $full = $b->llms_full();
+        } catch (Throwable $e) {
+            $error = $e->getMessage();
+            $txt   = $full = '';
+        }
 
-                <!-- Card 3: Auto Update Status -->
-                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <strong style="font-size: 15px; color: #1e293b;">سیستم به‌روزرسانی خودکار</strong>
-                        <span style="background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">خودکار (Auto-Sync)</span>
-                    </div>
-                    <p style="font-size: 12px; color: #64748b; margin: 4px 0;">وضعیت هوک: <strong style="color: #10b981;">متصل به save_post و acf/save</strong></p>
-                    <p style="font-size: 12px; color: #64748b; margin: 4px 0;">آخرین سینک: <strong style="color: #0f172a;"><?= $formatted_date; ?></strong></p>
-                    <p style="font-size: 11px; color: #94a3b8; margin-top: 10px;">با هر ایجاد، ویرایش یا حذف خدمات، پروژه‌ها و نوشته‌ها، فایل‌ها در لحظه بازسازی می‌شوند.</p>
-                </div>
+        $written = false;
+        if ($error === '') {
+            $dir = self::dir();
+            if (!is_dir($dir)) {
+                wp_mkdir_p($dir);
+            }
+            if (!file_exists($dir . '/index.php')) {
+                @file_put_contents($dir . '/index.php', "<?php\n// Silence is golden.\n"); // phpcs:ignore
+                @file_put_contents($dir . '/.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n"); // phpcs:ignore
+            }
+            $written = self::write($dir . '/llms.txt', $txt) && self::write($dir . '/llms-full.txt', $full);
+            if (!$written) {
+                $error = 'پوشه ' . $dir . ' قابل نوشتن نیست؛ فایل‌ها هنگام درخواست در حافظه ساخته می‌شوند.';
+            }
+        }
 
-            </div>
+        $words = function ($t) {
+            return (int) preg_match_all('/[\p{L}\p{N}]+/u', $t);
+        };
+        update_option(self::OPT_STATE, array(
+            'generated'   => time(),
+            'duration'    => (int) round((microtime(true) - $t0) * 1000),
+            'error'       => $error,
+            'txt'         => array('bytes' => strlen($txt), 'words' => $words($txt), 'chars' => mb_strlen($txt)),
+            'full'        => array('bytes' => strlen($full), 'words' => $words($full), 'chars' => mb_strlen($full)),
+            'txt_counts'  => $b ? ($b->stats['txt_counts'] ?? array()) : array(),
+            'full_counts' => $b ? ($b->stats['full_counts'] ?? array()) : array(),
+            'full_sizes'  => $b ? ($b->stats['full_sizes'] ?? array()) : array(),
+            'truncated'   => $b ? (int) ($b->stats['truncated'] ?? 0) : 0,
+            'version'     => self::VERSION,
+        ), false);
 
-            <!-- Indexed Content Breakdown -->
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 16px; font-weight: 800; color: #1e293b;">محتوای استخراج شده و معرفی‌شده به مدل‌های هوش مصنوعی</h3>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center;">
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
-                        <span style="font-size: 24px; font-weight: 900; color: #d97706; display: block;"><?= $services_count; ?></span>
-                        <span style="font-size: 12px; font-weight: 700; color: #64748b;">خدمات تخصصی با پلن‌ها</span>
-                    </div>
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
-                        <span style="font-size: 24px; font-weight: 900; color: #2563eb; display: block;"><?= $portfolio_count; ?></span>
-                        <span style="font-size: 12px; font-weight: 700; color: #64748b;">نمونه‌کارها و پروژه‌ها</span>
-                    </div>
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
-                        <span style="font-size: 24px; font-weight: 900; color: #10b981; display: block;"><?= $posts_count; ?></span>
-                        <span style="font-size: 12px; font-weight: 700; color: #64748b;">مقالات و آموزش‌ها</span>
-                    </div>
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;">
-                        <span style="font-size: 24px; font-weight: 900; color: #8b5cf6; display: block;"><?= $pages_count; ?></span>
-                        <span style="font-size: 12px; font-weight: 700; color: #64748b;">صفحات اصلی وب‌سایت</span>
-                    </div>
-                </div>
-            </div>
+        wp_clear_scheduled_hook(self::HOOK);
+        delete_option(self::OPT_LOCK);
+        return $written;
+    }
 
-            <!-- Preview Box -->
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #1e293b;">پیش‌نمایش زنده محتوای llms.txt</h3>
-                    <span style="font-size: 11px; color: #64748b;">فرمت استاندارد Markdown</span>
-                </div>
-                <textarea readonly style="width: 100%; height: 260px; direction: ltr; font-family: monospace; font-size: 12px; padding: 14px; background: #0f172a; color: #e2e8f0; border-radius: 10px; border: 1px solid #334155; line-height: 1.6; resize: vertical;"><?= esc_textarea($llms_exists ? file_get_contents($llms_file) : $this->build_llms_txt()); ?></textarea>
-            </div>
+    private static function write($file, $content)
+    {
+        if (is_readable($file) && md5_file($file) === md5($content)) {
+            return true;
+        }
+        $tmp = $file . '.' . wp_generate_password(6, false) . '.tmp';
+        if (@file_put_contents($tmp, $content, LOCK_EX) === false) { // phpcs:ignore
+            return false;
+        }
+        if (!@rename($tmp, $file)) { // phpcs:ignore
+            @unlink($tmp); // phpcs:ignore
+            return false;
+        }
+        return true;
+    }
 
-        </div>
-        <?php
+    /* =====================================================================
+     * One-time upgrade (runs once per VERSION bump)
+     * ================================================================== */
+
+    public function maybe_upgrade()
+    {
+        if (get_option(self::OPT_VERSION) === self::VERSION) {
+            return;
+        }
+        // v2 stats options → state.
+        $state = self::state();
+        if (!$state && ($t = (int) get_option('kmpr_llms_last_generated'))) {
+            update_option(self::OPT_STATE, array('generated' => $t), false);
+        }
+        foreach (array('kmpr_llms_last_generated', 'kmpr_llms_file_size', 'kmpr_llms_full_file_size', 'kmpr_llms_word_count', 'kmpr_llms_full_word_count') as $old) {
+            delete_option($old);
+        }
+        delete_transient('kmpr_llms_last_regenerated');
+        if (get_option(self::OPT_SETTINGS) === false) {
+            add_option(self::OPT_SETTINGS, self::defaults(), '', true);
+        }
+        // v2 wrote the files into the web root, where the web server serves them statically
+        // (no charset, no X-Robots-Tag, never refreshed by PHP). Remove our copies only.
+        foreach (array('llms.txt', 'llms-full.txt') as $f) {
+            $p = ABSPATH . $f;
+            if (is_file($p) && is_writable($p)) {
+                $head = (string) file_get_contents($p, false, null, 0, 400);
+                if (strpos($head, 'Korosh Mpr') !== false) {
+                    @unlink($p); // phpcs:ignore
+                }
+            }
+        }
+        // v2 registered ^llms\.txt$ rewrite rules; drop them once.
+        flush_rewrite_rules(false);
+        update_option(self::OPT_VERSION, self::VERSION, true);
+        $this->schedule();
+    }
+
+    /* =====================================================================
+     * robots.txt (called from inc/seo.php — the single robots_txt filter)
+     * ================================================================== */
+
+    /** Allow/Disallow rules of the `User-agent: *` group (mirrored for allowed AI bots, since a named group replaces `*`). */
+    private static function star_rules($robots)
+    {
+        $rules   = array();
+        $in_star = false;
+        $seen    = false;
+        foreach (preg_split('/\r\n|\r|\n/', (string) $robots) as $line) {
+            $l = trim(preg_replace('/#.*$/', '', $line));
+            if ($l === '') {
+                continue;
+            }
+            if (preg_match('/^user-agent\s*:\s*(.+)$/i', $l, $m)) {
+                if ($seen) {
+                    $in_star = false;
+                    $seen    = false;
+                }
+                $in_star = $in_star || trim($m[1]) === '*';
+                continue;
+            }
+            if (preg_match('/^(allow|disallow)\s*:\s*(.*)$/i', $l, $m)) {
+                $seen = true;
+                if ($in_star) {
+                    $rules[] = ucfirst(strtolower($m[1])) . ': ' . trim($m[2]);
+                }
+            }
+        }
+        return $rules ?: array('Allow: /');
+    }
+
+    public static function robots_block($robots)
+    {
+        $s     = self::settings();
+        $site  = untrailingslashit(home_url('/'));
+        $allow = array();
+        $deny  = array();
+        foreach (array_keys(self::bots()) as $ua) {
+            if (($s['bots'][$ua] ?? 'allow') === 'deny') {
+                $deny[] = $ua;
+            } else {
+                $allow[] = $ua;
+            }
+        }
+        $out  = "\n# AI crawlers (policy: WordPress admin > AI & LLMs)\n";
+        $out .= '# LLM-friendly summary (llmstxt.org): ' . $site . "/llms.txt\n";
+        $out .= '# Full content for LLMs: ' . $site . "/llms-full.txt\n";
+        if ($allow) {
+            foreach ($allow as $ua) {
+                $out .= 'User-agent: ' . $ua . "\n";
+            }
+            $out .= implode("\n", self::star_rules($robots)) . "\n\n";
+        }
+        if ($deny) {
+            foreach ($deny as $ua) {
+                $out .= 'User-agent: ' . $ua . "\n";
+            }
+            $out .= "Disallow: /\n";
+        }
+        return rtrim($out) . "\n";
     }
 }
 
-new KMPR_LLMs_Manager();
+/** robots.txt block for AI crawlers (used by inc/seo.php). */
+function kmpr_llms_robots_block($robots = '')
+{
+    return KMPR_LLMs_Manager::robots_block($robots);
+}
+
+$GLOBALS['kmpr_llms'] = new KMPR_LLMs_Manager();

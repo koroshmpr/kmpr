@@ -1,8 +1,9 @@
-<button id="backToTop" 
-        aria-label="Back to Top"
-        :class="scrolled ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none translate-y-4'"
-        class="fixed bottom-24 lg:bottom-8 end-6 z-40 size-11 lg:size-12 bg-secondary hover:bg-secondary-hover text-white rounded-full flex items-center justify-center shadow-lg shadow-secondary/25 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+<button id="backToTop" type="button" aria-label="بازگشت به بالای صفحه" data-scroll-ring
+        :class="scrolled && !menuOpen ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-75'"
+        class="kmpr-totop fixed end-4 lg:end-6 z-40 size-11 lg:size-12 rounded-full flex items-center justify-center bg-slate-900/90 backdrop-blur-md text-slate-100 border border-white/10 shadow-lg shadow-black/50 transition-[opacity,transform] duration-300 cursor-pointer active:scale-90 hover:text-secondary">
+    <svg class="absolute inset-0 size-full -rotate-90" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-opacity=".12" stroke-width="2.5"/>
+        <circle class="kmpr-totop-ring" cx="24" cy="24" r="21" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" pathLength="100" stroke-dasharray="100"/>
     </svg>
+    <svg width="18" height="18" class="shrink-0 relative" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
 </button>

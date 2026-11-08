@@ -138,4 +138,4 @@ function kmpr_normalize_category_slugs()
         }
     }
 }
-add_action('init', 'kmpr_normalize_category_slugs');
+add_action('admin_init', 'kmpr_normalize_category_slugs'); // admin only: no term queries on every front-end request

@@ -1,0 +1,101 @@
+/* games: snake («مار نئونی») */
+.snk-choose {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	padding: 1rem;
+	background: rgba(2, 6, 23, 0.72);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	text-align: center;
+}
+.snk-choose[hidden] {
+	display: none;
+}
+.snk-choose__title {
+	font-size: clamp(17px, 2.4vw, 24px);
+	font-weight: 900;
+	color: #fff;
+}
+.snk-choose__row {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+	width: min(520px, 100%);
+}
+.snk-chip {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	align-items: center;
+	justify-content: center;
+	min-height: 96px;
+	padding: 1rem 0.75rem;
+	border-radius: 1.25rem;
+	background: rgba(15, 23, 42, 0.9);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	color: #f1f5f9;
+	cursor: pointer;
+	transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+	touch-action: manipulation;
+}
+.snk-chip b {
+	font-size: 17px;
+	font-weight: 900;
+}
+.snk-chip small {
+	font-size: 12px;
+	color: #cbd5e1;
+	line-height: 1.7;
+}
+.snk-chip:hover,
+.snk-chip:focus-visible,
+.snk-chip[aria-pressed='true'] {
+	border-color: rgba(52, 211, 153, 0.65);
+	box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.18), 0 10px 30px -12px rgba(52, 211, 153, 0.5);
+	outline: none;
+}
+.snk-chip:hover {
+	transform: translateY(-2px);
+}
+.snk-choose__hint {
+	font-size: 12px;
+	color: #94a3b8;
+}
+.snk-pad {
+	position: absolute;
+	z-index: 1;
+	inset-inline-end: max(10px, env(safe-area-inset-right));
+	bottom: max(10px, env(safe-area-inset-bottom));
+	display: grid;
+	grid-template-columns: repeat(3, 48px);
+	grid-template-rows: repeat(3, 48px);
+	gap: 4px;
+	opacity: 0.85;
+	direction: ltr;
+}
+.snk-pad[hidden] {
+	display: none;
+}
+.snk-pad button {
+	display: grid;
+	place-items: center;
+	border-radius: 14px;
+	background: rgba(15, 23, 42, 0.75);
+	border: 1px solid rgba(52, 211, 153, 0.35);
+	color: #6ee7b7;
+	touch-action: none;
+	-webkit-tap-highlight-color: transparent;
+}
+.snk-pad button:active {
+	background: rgba(52, 211, 153, 0.25);
+}
+.snk-pad [data-dir='up'] { grid-column: 2; grid-row: 1; }
+.snk-pad [data-dir='left'] { grid-column: 1; grid-row: 2; }
+.snk-pad [data-dir='right'] { grid-column: 3; grid-row: 2; }
+.snk-pad [data-dir='down'] { grid-column: 2; grid-row: 3; }

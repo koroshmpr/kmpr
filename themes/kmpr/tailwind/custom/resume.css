@@ -1,0 +1,162 @@
+/* ==========================================================================
+   Resume page (page-resume.php) — IDE accents, meters, timeline, print
+   ========================================================================== */
+
+/* Blinking terminal caret */
+.rz-caret {
+	display: inline-block;
+	width: 0.55em;
+	height: 1.1em;
+	margin-inline-start: 0.2em;
+	vertical-align: -0.2em;
+	background: #f59e0b;
+	animation: rz-blink 1.1s steps(1) infinite;
+}
+@keyframes rz-blink {
+	50% { opacity: 0; }
+}
+
+/* Animated meters: full by default, grow from 0 when motion is on */
+.rz-meter__fill {
+	transform-origin: right;
+	transform: scaleX(var(--lvl, 1));
+	transition: transform 1.4s var(--ease-out-expo, ease-out) 0.2s;
+}
+.motion-ready:not(.motion-fallback) .rz-meter:not(.is-in) .rz-meter__fill {
+	transform: scaleX(0);
+}
+
+/* Timeline line draws with scroll (--p from data-progress) */
+.rz-timeline__line {
+	transform-origin: top;
+	transform: scaleY(var(--p, 1));
+}
+.motion-ready .rz-timeline__line {
+	transform: scaleY(var(--p, 0));
+}
+.rz-step__dot {
+	transition: transform 0.6s var(--ease-out-expo, ease-out), box-shadow 0.6s;
+}
+.rz-step.is-in .rz-step__dot {
+	box-shadow: 0 0 0 6px rgb(217 119 6 / 0.08);
+}
+.rz-step:hover .rz-step__dot {
+	transform: scale(1.15);
+}
+
+/* WYSIWYG descriptions → bullet list look */
+.rz-prose p,
+.rz-prose li {
+	position: relative;
+	padding-inline-start: 1.1rem;
+	margin-bottom: 0.4rem;
+}
+.rz-prose p::before,
+.rz-prose li::before {
+	content: '';
+	position: absolute;
+	inset-inline-start: 0;
+	top: 0.85em;
+	width: 0.4rem;
+	height: 2px;
+	border-radius: 2px;
+	background: #d97706;
+}
+.rz-prose ul {
+	list-style: none;
+	padding: 0;
+}
+
+.rz-token {
+	direction: ltr;
+}
+
+/* ---------- Print: clean white A4 ---------- */
+@media print {
+	@page {
+		size: A4 portrait;
+		margin: 1.2cm;
+	}
+	header, footer, nav, .no-print, #header, .footer-panel, .fixed, .modal-search, [data-scroll-progress] {
+		display: none !important;
+	}
+	html, body, main, .rz {
+		background: #fff !important;
+		color: #0f172a !important;
+	}
+	.rz section {
+		padding-block: 0.6cm !important;
+	}
+	.rz *,
+	.rz *::before,
+	.rz *::after {
+		animation: none !important;
+		transition: none !important;
+		box-shadow: none !important;
+		text-shadow: none !important;
+		backdrop-filter: none !important;
+	}
+	.rz [data-aos],
+	.rz [data-split] .split-word > span {
+		opacity: 1 !important;
+		transform: none !important;
+		filter: none !important;
+	}
+	.rz .rz-pane {
+		display: grid !important;
+	}
+	.rz .rz-card {
+		background: #fff !important;
+		border-color: #e2e8f0 !important;
+		break-inside: avoid;
+	}
+	.rz .rz-meter__fill {
+		transform: scaleX(var(--lvl, 1)) !important;
+		print-color-adjust: exact;
+		-webkit-print-color-adjust: exact;
+	}
+	.rz h1, .rz h2, .rz h3, .rz strong, .rz dd, .rz .text-white {
+		color: #0f172a !important;
+	}
+	.rz p, .rz li, .rz span, .rz dt, .rz a {
+		color: #334155 !important;
+	}
+	.rz .text-secondary {
+		color: #b45309 !important;
+	}
+	.rz .rz-token,
+	.rz [class*='bg-white/'] {
+		background: #f8fafc !important;
+		border-color: #e2e8f0 !important;
+	}
+	.rz .rz-photo {
+		max-width: 4.5cm !important;
+	}
+	.rz .rz-photo::after {
+		display: none !important;
+	}
+	.rz a {
+		text-decoration: none !important;
+	}
+}
+
+/* ---------- 404 ---------- */
+.nf-digit {
+	animation: nf-bob 3.2s ease-in-out infinite;
+	text-shadow: 0 20px 60px rgb(217 119 6 / 0.25);
+}
+.nf-digit:nth-child(2) { animation-delay: -0.4s; }
+.nf-digit:nth-child(3) { animation-delay: -0.8s; }
+@keyframes nf-bob {
+	50% { transform: translateY(-14px) rotate(-3deg); }
+}
+.nf-zero {
+	position: relative;
+	animation: nf-bob 3.2s ease-in-out infinite, nf-glitch 4s steps(1) infinite;
+}
+@keyframes nf-glitch {
+	0%, 92%, 100% { text-shadow: 0 20px 60px rgb(217 119 6 / 0.25); clip-path: none; }
+	93% { text-shadow: -4px 0 #38bdf8, 4px 0 #f43f5e; clip-path: inset(10% 0 55% 0); }
+	95% { text-shadow: 4px 0 #38bdf8, -4px 0 #f43f5e; clip-path: inset(50% 0 10% 0); }
+	97% { text-shadow: -2px 0 #38bdf8, 2px 0 #f43f5e; clip-path: none; }
+}

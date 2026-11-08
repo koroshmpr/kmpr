@@ -52,4 +52,11 @@ jobs:
             **/IranSansFaNum
             public/fonts/IranSansFaNum/**
             public/fonts/IranSansFaNum
+            # Removed directories (keep excluded so FTP-Deploy-Action never tries to cd into them)
+            template-parts/homePage/**
+            template-parts/homePage
+            template-parts/global/**
+            template-parts/global
+            assets/**
+            assets
 

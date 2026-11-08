@@ -1,0 +1,14 @@
+/* games styles */
+@import "./games/shell.css";
+@import "./games/hub.css";
+@import "./games/bug-hunter.css";
+@import "./games/type-code.css";
+@import "./games/stack-memory.css";
+@import "./games/pixel-runner.css";
+@import "./games/hex-hunter.css";
+@import "./games/snake.css";
+@import "./games/sky-shooter.css";
+@import "./games/xo.css";
+@import "./games/rps15.css";
+@import "./games/chess.css";
+@import "./games/color-race.css";
