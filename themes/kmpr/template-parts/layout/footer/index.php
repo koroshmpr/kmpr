@@ -69,11 +69,6 @@ $kf_columns = array(
         'items' => $kf_menu_items('footerLocationTwo', $kf_posts_fallback('services')),
         'all'   => post_type_exists('services') ? array(get_post_type_archive_link('services'), 'همه خدمات') : null,
     ),
-    array(
-        'title' => kmpr_field('third_menu', 'نمونه‌کارها', 'option'),
-        'items' => $kf_menu_items('footerLocationThree', $kf_posts_fallback('portfolio')),
-        'all'   => post_type_exists('portfolio') ? array(get_post_type_archive_link('portfolio'), 'همه نمونه‌کارها') : null,
-    ),
 );
 
 $kf_latest = get_posts(array(
@@ -146,7 +141,7 @@ $kf_wa_svg = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" f
                     <?php get_template_part('template-parts/logo-brand', null, array('sizeLogo' => 'h-10')); ?>
                     <p class="text-sm leading-7 text-slate-300"><?= esc_html($kf_bio); ?></p>
                 </div>
-                <div class="flex flex-col gap-5 md:items-end lg:items-stretch">
+                <div class="flex flex-col gap-5 lg:items-stretch">
                     <?php if ($kf_stats) : ?>
                         <dl class="grid grid-cols-3 gap-2 w-full md:w-auto md:min-w-[19rem] lg:min-w-0">
                             <?php foreach ($kf_stats as $s) : ?>
@@ -158,7 +153,7 @@ $kf_wa_svg = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" f
                         </dl>
                     <?php endif; ?>
                     <?php get_template_part('template-parts/social-media', null, array(
-                        'class'    => 'flex-wrap gap-2 justify-start md:justify-end lg:justify-start',
+                        'class'    => 'flex-wrap gap-2 justify-start',
                         'size'     => 'size-11',
                         'brand'    => true,
                         'sizeSvgX' => '18',
@@ -168,7 +163,7 @@ $kf_wa_svg = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" f
             </section>
 
             <!-- Link columns (menu-driven) -->
-            <div class="md:col-span-2 lg:col-span-5 lg:row-start-1 lg:row-span-2 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-8">
+            <div class="md:col-span-1 lg:col-span-4 lg:row-start-1 lg:row-span-2 grid grid-cols-2 gap-x-6 gap-y-8">
                 <?php foreach ($kf_columns as $ci => $col) :
                     if (!$col['items']) {
                         continue;
@@ -209,16 +204,16 @@ $kf_wa_svg = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" f
 
             <!-- Latest posts (+ game center below / beside) -->
                 <?php if ($kf_latest) : ?>
-                    <section class="min-w-0 lg:col-span-3 lg:row-start-1 lg:row-span-2" aria-labelledby="kf-latest-title">
+                    <section class="min-w-0 md:col-span-1 lg:col-span-4 lg:row-start-1 lg:row-span-2" aria-labelledby="kf-latest-title">
                         <h2 id="kf-latest-title" class="flex items-center gap-2 text-sm font-black text-white">
                             <span class="grid place-items-center size-7 rounded-lg bg-secondary/10 text-secondary"><?= kmpr_nav_svg('blog', 15); // phpcs:ignore ?></span>
                             <?= esc_html(kmpr_field('footer_posts_title', null, 'option')); ?>
                         </h2>
                         <ul class="mt-3 flex flex-col gap-1">
-                            <?php foreach ($kf_latest as $p) :
+                            <?php foreach ($kf_latest as $kf_i => $p) :
                                 $thumb = get_the_post_thumbnail($p, 'thumbnail', array('class' => 'size-full object-cover', 'loading' => 'lazy', 'decoding' => 'async', 'alt' => esc_attr(get_the_title($p)), 'width' => 48, 'height' => 48));
                                 ?>
-                                <li>
+                                <li class="<?= $kf_i > 1 ? 'max-md:hidden' : ''; ?>">
                                     <a href="<?= esc_url(get_permalink($p)); ?>" class="group flex items-center gap-3 rounded-2xl p-1.5 -mx-1.5 hover:bg-white/[.04] transition-colors">
                                         <span class="relative size-12 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-slate-800">
                                             <?= $thumb ?: '<span class="grid size-full place-items-center text-slate-500">' . kmpr_nav_svg('blog', 18) . '</span>'; // phpcs:ignore ?>

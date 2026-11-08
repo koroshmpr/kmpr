@@ -8109,6 +8109,9 @@ body.admin-bar #kmpr-sheet {
 .my-auto {
   margin-block: auto;
 }
+.-ms-2\.5 {
+  margin-inline-start: calc(var(--spacing) * -2.5);
+}
 .-ms-\[2px\] {
   margin-inline-start: calc(2px * -1);
 }
@@ -13465,6 +13468,11 @@ body.admin-bar #kmpr-sheet {
     display: none;
   }
 }
+@media (width < 48rem) {
+  .max-md\:hidden {
+    display: none;
+  }
+}
 @media (width < 40rem) {
   .max-sm\:hidden {
     display: none;
@@ -13661,9 +13669,6 @@ body.admin-bar #kmpr-sheet {
   }
   .sm\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .sm\:grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .sm\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -13905,6 +13910,9 @@ body.admin-bar #kmpr-sheet {
   .md\:top-6 {
     top: calc(var(--spacing) * 6);
   }
+  .md\:col-span-1 {
+    grid-column: span 1 / span 1;
+  }
   .md\:col-span-2 {
     grid-column: span 2 / span 2;
   }
@@ -13964,9 +13972,6 @@ body.admin-bar #kmpr-sheet {
   }
   .md\:items-center {
     align-items: center;
-  }
-  .md\:items-end {
-    align-items: flex-end;
   }
   .md\:items-start {
     align-items: flex-start;
