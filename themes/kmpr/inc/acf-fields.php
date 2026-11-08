@@ -231,8 +231,10 @@ function kmpr_register_acf_schema()
             kmpr_acf('field_66b909465398f', 'about-description', 'متن بیانیه', 'textarea', array('rows' => 4, 'instructions' => 'کلمات داخل *ستاره* با رنگ برند و داخل **دو ستاره** سفید نمایش داده می‌شوند. {years} = سال‌های تجربه.', 'default_value' => '**من کوروش هستم؛** بیش از **{years} سال** است که وب می‌سازم. باور دارم یک سایت خوب باید *سریع*، *قابل اعتماد* و *ساده برای مدیریت* باشد؛ نه فقط زیبا.')),
 
             kmpr_acf_tab('field_kmpr_tab_articles', 'مقالات'),
-            kmpr_acf('field_kmpr_art_kicker', 'articles_kicker', 'برچسب', 'text', array('default_value' => 'نوشته‌ها')),
-            kmpr_acf('field_kmpr_art_title', 'articles_title', 'تیتر', 'text', array('default_value' => 'آنچه از ساختن یاد گرفته‌ام')),
+            kmpr_acf('field_kmpr_art_kicker', 'articles_kicker', 'برچسب', 'text', array('default_value' => 'آکادمی رایگان')),
+            kmpr_acf('field_kmpr_art_title', 'articles_title', 'تیتر', 'text', array('default_value' => 'دوره‌های آموزشی، درس به درس')),
+            kmpr_acf('field_kmpr_art_text', 'articles_text', 'توضیح', 'textarea', array('rows' => 2, 'default_value' => 'مقاله‌ها را مثل یک دوره بخوان: از راهنمای جامع شروع کن و قدم‌به‌قدم جلو برو. پیشرفتت روی همین مرورگر ذخیره می‌شود.')),
+            kmpr_acf('field_kmpr_art_btn', 'articles_btn', 'متن دکمه همه دوره‌ها', 'text', array('default_value' => 'همه دوره‌ها')),
 
             kmpr_acf_tab('field_kmpr_tab_home_games', 'بازی‌ها'),
             kmpr_acf('field_kmpr_home_games_hide', 'home_games_hide', 'مخفی کردن بخش بازی‌ها', 'true_false', array('ui' => 1)),

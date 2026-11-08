@@ -3,12 +3,14 @@ import intersect from '@alpinejs/intersect';
 import projectRequest from './project-request';
 import initHeroPortrait from './hero-portrait';
 import initBlog from './blog';
+import initHomeCourses from './home-courses';
 import initPlayNudge from './play-nudge';
 
 window.Alpine = Alpine;
 Alpine.plugin(intersect);
 window.projectRequest = projectRequest;
 initBlog(Alpine);
+initHomeCourses(Alpine);
 
 // Live search (command-palette style): tabs per content type, keyboard navigation, recent searches.
 const SEARCH_RECENT_KEY = 'kmpr_recent_searches';

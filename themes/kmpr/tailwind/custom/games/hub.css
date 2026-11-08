@@ -1348,3 +1348,111 @@ html.is-standalone .gh {
 @media (max-width: 479.98px) {
 	html.is-standalone .gh__word { display: none; }
 }
+
+/* ---------- home teaser cards (tile.php 'context' => 'home') ----------
+ * Phones: horizontal snap rail of wide cards (next card peeks). ≥768: 2-col grid, ≥1024: 4-col grid.
+ * Card = art on top (one chip) + full title below; the play bubble sits beside the title, never over it. */
+.hg-rail {
+	display: flex;
+	gap: 0.85rem;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-padding-inline: 1.25rem;
+	padding: 0.5rem 1.25rem 0.75rem;
+	margin: -0.5rem -1.25rem -0.75rem;
+	overscroll-behavior-x: contain;
+	scrollbar-width: none;
+	-webkit-overflow-scrolling: touch;
+}
+.hg-rail::-webkit-scrollbar {
+	display: none;
+}
+.hg-rail__item {
+	flex: 0 0 76%;
+	max-width: 20rem;
+	min-width: 0;
+	scroll-snap-align: start;
+}
+@media (min-width: 640px) {
+	.hg-rail {
+		scroll-padding-inline: 2.5rem;
+		padding-inline: 2.5rem;
+		margin-inline: -2.5rem;
+	}
+	.hg-rail__item {
+		flex-basis: 46%;
+	}
+}
+@media (min-width: 768px) {
+	.hg-rail {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+		overflow: visible;
+		padding: 0;
+		margin: 0;
+	}
+	.hg-rail__item {
+		max-width: none;
+	}
+}
+@media (min-width: 1024px) {
+	.hg-rail {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+.gc-tile--home {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	aspect-ratio: auto;
+	background: rgb(15 23 42 / 0.85);
+}
+.gc-tile--home .gc-tile__art {
+	position: relative;
+	display: block;
+	aspect-ratio: 16 / 10;
+	overflow: hidden;
+}
+.gc-tile--home .gc-tile__shade {
+	background: linear-gradient(0deg, rgb(15 23 42) 0%, rgb(15 23 42 / 0.4) 30%, transparent 60%);
+}
+.gc-tile__chip {
+	position: absolute;
+	top: 0.65rem;
+	inset-inline-start: 0.65rem;
+	max-width: calc(100% - 1.3rem);
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.gc-tile__info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	flex: 1;
+	padding: 0.75rem 1rem 0.95rem;
+	padding-inline-end: 3.75rem;
+}
+.gc-tile--home .gc-tile__title {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	white-space: normal;
+	font-size: 1rem;
+	line-height: 1.7;
+}
+.gc-tile--home .gc-tile__genre {
+	color: #94a3b8;
+}
+.gc-tile--home .gc-tile__play {
+	top: auto;
+	bottom: 0.9rem;
+	inset-inline-end: 0.85rem;
+	width: 2.5rem;
+	height: 2.5rem;
+}
+@media (min-width: 768px) and (max-width: 1023.98px) {
+	.gc-tile--home .gc-tile__art {
+		aspect-ratio: 2 / 1;
+	}
+}

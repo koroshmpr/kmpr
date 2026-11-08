@@ -36,9 +36,9 @@ $count     = (int) wp_count_posts('game')->publish;
                     <span class="text-sm text-slate-300 text-center lg:text-end"><?= esc_html(kmpr_fa_num($count)); ?> بازی رایگان · بدون نصب · آنلاین با دوستان</span>
                 </div>
             </div>
-            <ul class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" data-stagger="90">
+            <ul class="hg-rail" aria-label="بازی‌های منتخب">
                 <?php foreach ($ids as $id) {
-                    get_template_part('template-parts/games/tile', null, array('id' => $id, 'class' => 'min-w-0', 'best' => false));
+                    get_template_part('template-parts/games/tile', null, array('id' => $id, 'class' => 'hg-rail__item', 'best' => false, 'context' => 'home'));
                 } ?>
             </ul>
         </div>

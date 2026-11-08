@@ -29,7 +29,7 @@ $stack    = array_slice(kmpr_lines(kmpr_field('hero_stack')), 0, 8);
 $btn1     = kmpr_link(get_field('hero_primary_btn'), kmpr_request_url(), 'شروع پروژه با من');
 $btn2     = kmpr_link(get_field('hero_secondary_btn'), get_post_type_archive_link('portfolio') ?: home_url('/portfolios/'), 'مشاهده نمونه‌کارها');
 ?>
-<section class="relative isolate min-h-[calc(100svh-4rem)] lg:min-h-[calc(100svh-5rem)] flex items-center overflow-hidden py-16 lg:py-20" aria-labelledby="hero-title">
+<section class="relative isolate lg:min-h-[calc(100svh-5rem)] flex items-center overflow-hidden pt-6 pb-14 sm:py-16 lg:py-20" aria-labelledby="hero-title">
     <!-- Ambience -->
     <div class="absolute inset-0 hero-grid -z-10" aria-hidden="true"></div>
     <div class="aurora w-[38rem] h-[38rem] -top-40 -start-40 bg-secondary/25 -z-10" aria-hidden="true"></div>
@@ -37,12 +37,12 @@ $btn2     = kmpr_link(get_field('hero_secondary_btn'), get_post_type_archive_lin
     <div class="cursor-glow -z-10" data-cursor-glow aria-hidden="true"></div>
 
     <div class="container mx-auto px-4 sm:px-6">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-10 items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 lg:gap-10 items-center">
 
             <!-- Pitch -->
             <div class="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-start">
                 <a href="<?= esc_url(kmpr_request_url()); ?>" data-hero-rise
-                   class="group inline-flex items-center gap-2.5 ps-2 pe-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-400/40 backdrop-blur-xl transition-colors mb-7">
+                   class="group hidden sm:inline-flex items-center gap-2.5 ps-2 pe-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-400/40 backdrop-blur-xl transition-colors mb-7">
                     <span class="relative flex size-2.5 shrink-0">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full size-2.5 bg-emerald-500"></span>
@@ -94,8 +94,8 @@ $btn2     = kmpr_link(get_field('hero_secondary_btn'), get_post_type_archive_lin
             </div>
 
             <!-- Portrait: layered depth (code rain → cut-out portrait breaking out of the frame) -->
-            <div class="lg:col-span-5 flex justify-center pt-20 sm:pt-14 lg:pt-0" data-hero-rise>
-                <div class="hero-portrait relative w-[16.5rem] sm:w-[21rem] xl:w-[24rem] aspect-[4/5]" data-hero-portrait>
+            <div class="order-first lg:order-none lg:col-span-5 flex justify-center pt-12 sm:pt-14 lg:pt-0" data-hero-rise>
+                <div class="hero-portrait relative w-[13.5rem] min-[400px]:w-[15rem] sm:w-[21rem] xl:w-[24rem] aspect-[4/5]" data-hero-portrait>
                     <!-- Orbit ring -->
                     <div class="absolute -inset-10 sm:-inset-14 rounded-full border border-dashed border-white/10 orbit hidden sm:block" style="--orbit-speed:40s" aria-hidden="true">
                         <?php foreach ($stack as $i => $tech) :
