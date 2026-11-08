@@ -714,6 +714,11 @@ export async function createShell(root) {
 			if (inst && inst.noAutoPause && currentMode && currentMode.type !== 'online') play({ mode: currentMode });
 			else play();
 		} else if (act === 'mode') {
+			// Match engines: open the chooser over the running game (it asks before replacing it).
+			if (api._matchUI) {
+				api._matchUI.open();
+				return;
+			}
 			snapWrite(engine, null);
 			currentMode = null;
 			play();

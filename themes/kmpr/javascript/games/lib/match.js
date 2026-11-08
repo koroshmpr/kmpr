@@ -55,8 +55,8 @@ export function createMatchUI(stage, api, cfg) {
 	let lastOver = false;
 	let mode = null;
 
-	const showLayer = (html) => {
-		layer.innerHTML = `<div class="w-full max-w-md my-auto">${html}</div>`;
+	const showLayer = (html, size = '') => {
+		layer.innerHTML = `<div class="w-full ${size === 'wide' ? 'max-w-5xl' : 'max-w-md'} my-auto">${html}</div>`;
 		layer.hidden = false;
 		const f = layer.querySelector('[data-autofocus]');
 		if (f && !api.touch) f.focus({ preventScroll: true });
@@ -84,55 +84,186 @@ export function createMatchUI(stage, api, cfg) {
 			.join('');
 
 	/* ---------------- menu ---------------- */
-	const menu = () => {
+	/* ---------------- mode chooser (step-by-step cards) ---------------- */
+	const ICONS = {
+		ai: '<svg width="28" height="28" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9.5 16h5M2 12v3M22 12v3"/></svg>',
+		local: '<svg width="28" height="28" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2.5 20a5.5 5.5 0 0 1 11 0M13.5 20a4.5 4.5 0 0 1 8.5-2"/></svg>',
+		online: '<svg width="28" height="28" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+		chev: '<svg width="20" height="20" class="shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.2 7.2a.75.75 0 0 1 1.06 0L10 10.94l3.74-3.74a.75.75 0 1 1 1.06 1.06l-4.27 4.27a.75.75 0 0 1-1.06 0L5.2 8.26a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>',
+		play: '<svg width="20" height="20" class="shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 7 5.5Z"/></svg>',
+		dice: '<svg width="22" height="22" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 8h.01M16 8h.01M12 12h.01M8 16h.01M16 16h.01"/></svg>',
+		link: '<svg width="22" height="22" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+	};
+	const HINTS = { easy: 'برای گرم کردن', medium: 'چالشی ولی شکست‌پذیر', hard: 'تقریباً بی‌نقص', learn: 'الگوی شما را یاد می‌گیرد', slow: 'آرام و صبور', normal: 'سرعت معمولی', fast: 'خیلی سریع' };
+	const LAST = `kmpr_mx_last_${api.engine}`;
+	const lastRead = () => {
+		try {
+			return JSON.parse(localStorage.getItem(LAST) || '{}') || {};
+		} catch (e) {
+			return {};
+		}
+	};
+	const lastWrite = (v) => {
+		try {
+			localStorage.setItem(LAST, JSON.stringify({ ...lastRead(), ...v }));
+		} catch (e) {
+			/* ignore */
+		}
+	};
+	let pending = null; // action waiting for "replace current game?" confirmation
+
+	const modeLabel = (m) => (m.type === 'ai' ? 'مقابل هوش مصنوعی' : m.type === 'local' ? 'دو نفره روی همین گوشی' : 'آنلاین با دوستان');
+	const hasCurrent = () => !!mode;
+
+	const card = (id, title, desc, color, body, extra = '') => `
+		<section class="mxm-card" data-card="${id}" data-open="false" style="--c:${color}">
+			<button type="button" class="mxm-card__head" data-mx-card="${id}" aria-expanded="false" aria-controls="mxm-${id}-${api.gameId}">
+				<span class="mxm-card__icon">${ICONS[id]}</span>
+				<span class="mxm-card__text"><span class="mxm-card__title">${title}</span><span class="mxm-card__desc">${desc}</span>${extra}</span>
+				<span class="mxm-card__chev">${ICONS.chev}</span>
+			</button>
+			<div class="mxm-card__body" id="mxm-${id}-${api.gameId}" role="region" inert><div class="mxm-card__inner">${body}</div></div>
+		</section>`;
+
+	const chooser = () => {
+		const p = store.player;
+		const last = lastRead();
+		const levels = cfg.ai || [];
+		const lvl = levels.find((l) => l.id === last.level) ? last.level : levels[0] && levels[0].id;
+		const cur = mode;
+		const curSummary = cur ? [modeLabel(cur), cfg.summary ? cfg.summary() : (statusEl.textContent || '').trim()].filter(Boolean).join(' · ') : '';
+		const cards = [];
+		if (cfg.ai) {
+			cards.push(
+				card(
+					'ai',
+					'بازی با هوش مصنوعی',
+					'مقابل ماشین؛ سختی را خودتان انتخاب کنید',
+					'#38bdf8',
+					`<div class="mxm-seg" role="radiogroup" aria-label="سختی هوش مصنوعی">
+						${levels.map((l) => `<button type="button" role="radio" class="mxm-seg__opt" data-mx-level="${esc(l.id)}" aria-checked="${String(l.id === lvl)}">${esc(l.label)}</button>`).join('')}
+					</div>
+					<p class="mxm-hint" data-mx-hint>${esc((levels.find((l) => l.id === lvl) || {}).hint || HINTS[lvl] || '')}</p>
+					<button type="button" class="mxm-go" data-mx="ai" data-level="${esc(lvl)}">${ICONS.play}<span>شروع بازی</span></button>`
+				)
+			);
+		}
+		if (cfg.local) {
+			cards.push(card('local', 'دو نفره روی همین گوشی', 'نوبتی، روی یک دستگاه با دوستتان', '#f59e0b', `<button type="button" class="mxm-go" data-mx="local">${ICONS.play}<span>شروع بازی دو نفره</span></button>`));
+		}
+		if (cfg.online) {
+			cards.push(
+				card(
+					'online',
+					'آنلاین با دوستان',
+					'حریف تصادفی یا دعوت دوست با لینک',
+					'#34d399',
+					`<label class="mxm-label" for="mx-nick-${api.gameId}">نام شما</label>
+					<input id="mx-nick-${api.gameId}" data-mx-nick maxlength="24" value="${esc(p.nickname || rest.userName || '')}" placeholder="یک نام مستعار بنویسید" class="game-nick__input mxm-input" autocomplete="nickname">
+					<div class="mxm-actions">
+						<button type="button" class="mxm-action" data-mx="quick">${ICONS.dice}<span><b>پیدا کردن حریف تصادفی</b><small>با اولین بازیکن منتظر جفت می‌شوید</small></span></button>
+						<button type="button" class="mxm-action mxm-action--alt" data-mx="create">${ICONS.link}<span><b>ساخت اتاق و دعوت دوست</b><small>یک لینک و کد اختصاصی می‌گیرید</small></span></button>
+					</div>
+					<details class="mxm-code">
+						<summary>کد دعوت داری؟</summary>
+						<form class="mxm-code__form" data-mx-joinform>
+							<label class="sr-only" for="mx-code-${api.gameId}">کد اتاق</label>
+							<input id="mx-code-${api.gameId}" name="code" dir="ltr" maxlength="6" placeholder="کد ۶ حرفی" autocomplete="off" autocapitalize="characters" spellcheck="false" class="game-nick__input mx-code">
+							<button type="submit" class="mxm-small">ورود</button>
+						</form>
+					</details>
+					<p class="mxm-err" data-mx-err aria-live="polite"></p>`,
+					`<span class="mxm-live" data-mx-live><span class="mxm-live__dot"></span><span data-mx-live-text>بازیکن‌ها را بررسی می‌کنم…</span></span>`
+				)
+			);
+		}
+		showLayer(
+			`<div class="mxm">
+				${
+					cur
+						? `<div class="mxm-current">
+						<button type="button" class="mxm-continue" data-mx="continue" data-autofocus>${ICONS.play}<span><b>ادامه بازی فعلی</b><small>${esc(curSummary)}</small></span></button>
+						${cur.type === 'online' ? '<button type="button" class="mxm-small mxm-small--danger" data-mx="leave-room">ترک اتاق</button>' : ''}
+					</div>`
+						: ''
+				}
+				<div class="mxm-head">
+					<p class="mxm-kicker">${cur ? 'یا یک بازی تازه' : 'انتخاب حالت بازی'}</p>
+					<p class="mxm-title">چطور بازی می‌کنید؟</p>
+				</div>
+				${cfg.options && cfg.options.length ? `<div class="mxm-opts">${optionChips()}</div>` : ''}
+				<div class="mxm-cards">${cards.join('')}</div>
+				<div class="mxm-confirm" data-mx-confirm hidden role="alertdialog" aria-label="تأیید">
+					<p>بازی فعلی تمام می‌شود. بازی جدید شروع شود؟</p>
+					<div><button type="button" class="mxm-small" data-mx="confirm-no">برگشت</button><button type="button" class="mxm-small mxm-small--primary" data-mx="confirm-yes">بله، بازی جدید</button></div>
+				</div>
+			</div>`,
+			'wide'
+		);
+		statusEl.dataset.keep = '1';
+		// Preselect the last used mode (or the only one).
+		const pre = last.card && layer.querySelector(`[data-card="${last.card}"]`) ? last.card : !cur && cards.length === 1 ? (cfg.ai ? 'ai' : cfg.local ? 'local' : 'online') : null;
+		if (pre && !cur) openCard(pre, false);
+		if (cfg.online) {
+			online
+				.lobby(api.gameId)
+				.then((res) => {
+					const t = layer.querySelector('[data-mx-live-text]');
+					if (!t || !res || !res.ok) return;
+					const n = (res.rooms || []).length;
+					t.textContent = n ? `${fa(n)} نفر منتظر حریف` : 'اولین نفر باش؛ حریف خودکار پیدا می‌شود';
+					layer.querySelector('[data-mx-live]')?.classList.toggle('is-on', n > 0);
+				})
+				.catch(() => {});
+		}
+	};
+
+	const openCard = (id, focus = true) => {
+		layer.querySelectorAll('.mxm-card').forEach((c) => {
+			const on = c.dataset.card === id && c.dataset.open !== 'true';
+			c.dataset.open = String(on);
+			c.querySelector('.mxm-card__head').setAttribute('aria-expanded', String(on));
+			const body = c.querySelector('.mxm-card__body');
+			if (on) body.removeAttribute('inert');
+			else body.setAttribute('inert', '');
+		});
+		const open = layer.querySelector('.mxm-card[data-open="true"]');
+		if (open) {
+			lastWrite({ card: id });
+			if (focus && !api.touch) setTimeout(() => open.querySelector('.mxm-card__body button, .mxm-card__body input')?.focus({ preventScroll: true }), 260);
+			setTimeout(() => open.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }), 120);
+		}
+	};
+
+	/** Run a mode-changing action, asking first when a game is in progress. */
+	const guard = (fn) => {
+		if (!hasCurrent()) return fn();
+		pending = fn;
+		const c = layer.querySelector('[data-mx-confirm]');
+		if (c) {
+			c.hidden = false;
+			c.querySelector('[data-mx="confirm-yes"]').focus({ preventScroll: true });
+			c.scrollIntoView({ block: 'nearest' });
+		}
+	};
+	const resetCurrent = () => {
 		if (room) {
 			room.leave();
 			room.destroy();
 			room = null;
 		}
 		started = false;
+		lastOver = false;
 		mode = null;
-		menuBtn.hidden = true;
 		cfg.onMenu && cfg.onMenu();
 		api.setMode && api.setMode(null);
-		const p = store.player;
-		showLayer(`<div class="rounded-3xl bg-slate-900/90 border border-white/10 p-5 sm:p-6 flex flex-col gap-5 shadow-2xl">
-			<div class="text-center">
-				<p class="text-xs font-black text-secondary mb-1">انتخاب حالت بازی</p>
-				<p class="text-xl sm:text-2xl font-black text-white">با چه کسی بازی می‌کنید؟</p>
-			</div>
-			${optionChips()}
-			${
-				cfg.ai
-					? `<div class="flex flex-col gap-2">
-					<p class="text-sm font-bold text-slate-300">مقابل هوش مصنوعی</p>
-					<div class="grid grid-cols-${Math.min(3, cfg.ai.length)} gap-2">
-						${cfg.ai.map((l, i) => `<button type="button" class="${i === 0 ? BTN_PRIMARY : BTN_GHOST} !px-3" data-mx="ai" data-level="${esc(l.id)}"${i === 0 ? ' data-autofocus' : ''}>${esc(l.label)}</button>`).join('')}
-					</div>
-				</div>`
-					: ''
-			}
-			${cfg.local ? `<button type="button" class="${BTN_GHOST} w-full" data-mx="local"><svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20a6 6 0 0 1 12 0M10 20a6 6 0 0 1 12 0"/></svg> دو نفره روی همین دستگاه</button>` : ''}
-			${
-				cfg.online
-					? `<div class="flex flex-col gap-2 pt-4 border-t border-white/10">
-					<p class="flex items-center gap-2 text-sm font-bold text-slate-300"><span class="size-2 rounded-full bg-emerald-400 shrink-0"></span> بازی آنلاین با دوستان</p>
-					<label class="sr-only" for="mx-nick-${api.gameId}">نام مستعار</label>
-					<input id="mx-nick-${api.gameId}" data-mx-nick maxlength="24" value="${esc(p.nickname || rest.userName || '')}" placeholder="نام مستعار شما" class="game-nick__input w-full" autocomplete="nickname">
-					<div class="grid grid-cols-2 gap-2">
-						<button type="button" class="${BTN_PRIMARY}" data-mx="quick">حریف تصادفی</button>
-						<button type="button" class="${BTN_GHOST}" data-mx="create">ساخت اتاق خصوصی</button>
-					</div>
-					<form class="flex gap-2" data-mx-joinform>
-						<label class="sr-only" for="mx-code-${api.gameId}">کد اتاق</label>
-						<input id="mx-code-${api.gameId}" name="code" dir="ltr" maxlength="6" placeholder="کد اتاق" autocomplete="off" autocapitalize="characters" class="game-nick__input flex-1 min-w-0 text-center font-mono tracking-[0.3em] uppercase">
-						<button type="submit" class="${BTN_GHOST}">ورود</button>
-					</form>
-					<p class="text-xs text-slate-400 min-h-4" data-mx-err aria-live="polite"></p>
-				</div>`
-					: ''
-			}
-		</div>`);
+	};
+
+	/** Fresh menu: ends whatever was running (used at start, after a finished game, «ترک اتاق»). */
+	const menu = () => {
+		resetCurrent();
+		menuBtn.hidden = true;
+		chooser();
 		statusEl.textContent = '';
 	};
 
@@ -279,7 +410,7 @@ export function createMatchUI(stage, api, cfg) {
 				${oppWants && !waitingRematch ? '<p class="text-sm font-bold text-emerald-300">حریف درخواست بازی دوباره دارد!</p>' : ''}
 				<div class="grid grid-cols-2 gap-2 pt-2">
 					<button type="button" class="${BTN_PRIMARY}" data-mx="rematch" ${waitingRematch || (opp && opp.left) ? 'disabled' : ''} data-autofocus>${waitingRematch ? 'منتظر حریف…' : 'بازی دوباره'}</button>
-					<button type="button" class="${BTN_GHOST}" data-mx="menu">خروج از اتاق</button>
+					<button type="button" class="${BTN_GHOST}" data-mx="leave">خروج از اتاق</button>
 				</div>
 				${oppLeft ? '<p class="text-xs text-slate-400">حریف آفلاین است.</p>' : ''}
 			</div>`);
@@ -375,21 +506,67 @@ export function createMatchUI(stage, api, cfg) {
 			api.sfx('click');
 			return;
 		}
+		const cardBtn = e.target.closest('[data-mx-card]');
+		if (cardBtn) {
+			api.sfx('click');
+			openCard(cardBtn.dataset.mxCard);
+			return;
+		}
+		const lv = e.target.closest('[data-mx-level]');
+		if (lv) {
+			api.sfx('click');
+			const id = lv.dataset.mxLevel;
+			layer.querySelectorAll('[data-mx-level]').forEach((x) => x.setAttribute('aria-checked', String(x === lv)));
+			const l = (cfg.ai || []).find((x) => x.id === id) || {};
+			const hint = layer.querySelector('[data-mx-hint]');
+			if (hint) hint.textContent = l.hint || HINTS[id] || '';
+			const go = layer.querySelector('[data-mx="ai"]');
+			if (go) go.dataset.level = id;
+			lastWrite({ level: id });
+			return;
+		}
+		if (e.target === layer && hasCurrent() && layer.querySelector('.mxm')) {
+			hideLayer(); // tap outside = continue the current game
+			return;
+		}
 		const b = e.target.closest('[data-mx]');
 		if (!b) return;
 		const act = b.dataset.mx;
 		api.sfx('click');
 		if (act === 'ai') {
-			hideLayer();
-			menuBtn.hidden = false;
-			enter({ type: 'ai', level: b.dataset.level, options: { ...options } });
+			const level = b.dataset.level;
+			guard(() => {
+				hideLayer();
+				menuBtn.hidden = false;
+				enter({ type: 'ai', level, options: { ...options } });
+			});
 		} else if (act === 'local') {
-			hideLayer();
-			menuBtn.hidden = false;
-			api.unlock('local');
-			enter({ type: 'local', options: { ...options } });
-		} else if (act === 'quick' || act === 'create') startOnline(act);
-		else if (act === 'cancel' || act === 'menu') menu();
+			guard(() => {
+				hideLayer();
+				menuBtn.hidden = false;
+				api.unlock('local');
+				enter({ type: 'local', options: { ...options } });
+			});
+		} else if (act === 'quick' || act === 'create') {
+			if (!saveNick()) return;
+			guard(() => startOnline(act));
+		} else if (act === 'continue') hideLayer();
+		else if (act === 'confirm-yes') {
+			const fn = pending;
+			pending = null;
+			const keepNick = layer.querySelector('[data-mx-nick]')?.value;
+			resetCurrent();
+			if (fn) fn(keepNick);
+		} else if (act === 'confirm-no') {
+			pending = null;
+			const c = layer.querySelector('[data-mx-confirm]');
+			if (c) c.hidden = true;
+		} else if (act === 'leave-room') guard(() => menu());
+		else if (act === 'menu') {
+			// In-game «منوی بازی»: never destroys the running match.
+			if (hasCurrent()) chooser();
+			else menu();
+		} else if (act === 'cancel' || act === 'leave') menu();
 		else if (act === 'copy') {
 			try {
 				await navigator.clipboard.writeText(b.dataset.url);
@@ -420,12 +597,21 @@ export function createMatchUI(stage, api, cfg) {
 			setErr('کد اتاق ۶ حرفی است.');
 			return;
 		}
-		startOnline('join', code);
+		guard(() => startOnline('join', code));
 	});
+	// Esc on the chooser = continue the current game (before the shell's focus-exit handler).
+	const onEsc = (e) => {
+		if (e.key !== 'Escape' || layer.hidden || !hasCurrent() || !layer.querySelector('.mxm') || !root.isConnected) return;
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		hideLayer();
+	};
+	window.addEventListener('keydown', onEsc, true); // capture: runs before the shell's Esc = exit focus
 	const onHide = () => {
 		if (room && room.view && room.view.status === 'waiting') room.leave();
 	};
 	window.addEventListener('pagehide', onHide);
+	api._matchUI = { open: () => (hasCurrent() ? chooser() : menu()) };
 
 	return {
 		root,
@@ -473,6 +659,7 @@ export function createMatchUI(stage, api, cfg) {
 		},
 		destroy() {
 			window.removeEventListener('pagehide', onHide);
+			window.removeEventListener('keydown', onEsc, true);
 			if (room) {
 				room.leave();
 				room.destroy();

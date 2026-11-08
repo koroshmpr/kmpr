@@ -81,6 +81,12 @@ export function mount(stage, api) {
 		local: true,
 		online: true,
 		seatLabel: (seat) => (seat === 0 ? 'ایکس (X)' : 'او (O)'),
+		// Shown on «ادامه بازی فعلی» in the chooser.
+		summary: () => {
+			const m = (board.match(/[XO]/g) || []).length;
+			const sc = `${fa(series[0])} : ${fa(series[1])}`;
+			return m ? `${sc} · ${fa(m)} حرکت` : sc;
+		},
 		activeSeat: (view) => (view.state && !view.state.over ? view.state.turn : null),
 		onStart: (m) => {
 			mode = m;
