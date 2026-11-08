@@ -4981,9 +4981,21 @@ html.is-standalone .gh {
   outline: none;
 }
 .gsw__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 1.05rem;
   font-weight: 900;
   color: #fff;
+}
+.gsw__count {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fcd34d;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: rgb(245 158 11 / 0.12);
+  border: 1px solid rgb(245 158 11 / 0.25);
 }
 .gsw__search {
   display: flex;
@@ -5199,7 +5211,12 @@ html.is-standalone .gh {
     touch-action: none;
   }
   .gsw__card {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 3.15;
+  }
+  .gsw__grid {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 3rem), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 3rem), transparent);
+    padding-bottom: 2.5rem;
   }
 }
 @keyframes gsw-up {
@@ -8635,6 +8652,12 @@ body.admin-bar #kmpr-sheet {
   body.admin-bar #kmpr-sheet {
     max-height: 88svh;
   }
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="color"]):not([type="file"]), textarea, select {
+  font-size: 16px !important;
+}
+input::placeholder, textarea::placeholder {
+  font-size: 0.8125rem;
 }
 .pointer-events-auto {
   pointer-events: auto;

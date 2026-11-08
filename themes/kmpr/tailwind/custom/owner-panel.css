@@ -1892,3 +1892,14 @@ html {
 	scroll-padding-top: calc(72px + var(--safe-t));
 	scroll-padding-bottom: calc(var(--tabs-h) + var(--safe-b) + 16px);
 }
+
+/* Form fields: 16px text so iOS Safari never zooms on focus; compact placeholders. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="color"]):not([type="file"]),
+textarea,
+select {
+	font-size: 16px !important;
+}
+input::placeholder,
+textarea::placeholder {
+	font-size: 0.8125rem;
+}

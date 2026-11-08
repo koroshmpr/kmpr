@@ -103,7 +103,7 @@ if ($gh_games) : ?>
     <div class="gsw__panel">
         <span class="gsw__handle" data-gsw-drag aria-hidden="true"></span>
         <div class="gsw__head" data-gsw-drag>
-            <p id="gsw-title" class="gsw__title">تعویض بازی</p>
+            <p id="gsw-title" class="gsw__title">تعویض بازی <span class="gsw__count"><?= esc_html(kmpr_fa_num(count($gh_games))); ?> بازی</span></p>
             <button type="button" class="gh__icon" data-gsw-close aria-label="بستن">
                 <svg width="16" height="16" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
             </button>

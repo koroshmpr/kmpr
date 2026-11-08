@@ -201,3 +201,14 @@ body.admin-bar #kmpr-sheet { max-height: calc(88svh - 46px); }
 	body.admin-bar .gh { top: 0 !important; }
 	body.admin-bar #kmpr-sheet { max-height: 88svh; }
 }
+
+/* Form fields: 16px text so iOS Safari never zooms on focus; compact placeholders. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="hidden"]):not([type="color"]):not([type="file"]),
+textarea,
+select {
+	font-size: 16px !important;
+}
+input::placeholder,
+textarea::placeholder {
+	font-size: 0.8125rem;
+}
