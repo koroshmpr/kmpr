@@ -5078,6 +5078,51 @@ html.is-standalone .gh {
     transition: none;
   }
 }
+@media (max-width: 479.98px) {
+  .gh__word {
+    display: none;
+  }
+  .gh__logo {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.65rem;
+  }
+  .gh__logo svg {
+    width: 17px;
+    height: 17px;
+  }
+  .gh__row {
+    gap: 0.35rem;
+  }
+  .gh__player {
+    gap: 0.35rem;
+    min-height: 2.5rem;
+    padding: 0.15rem;
+    padding-inline-end: 0.55rem;
+  }
+  .gh__player-av {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .gh__player-av > svg, .gh__player-av > img {
+    width: 100%;
+    height: 100%;
+  }
+  .gh__install {
+    width: 2.5rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+    padding: 0;
+    justify-content: center;
+  }
+  .gh__lvl {
+    font-size: 0.7rem;
+  }
+  .gh__icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
 .bh-line {
   transition: background-color .15s ease;
 }

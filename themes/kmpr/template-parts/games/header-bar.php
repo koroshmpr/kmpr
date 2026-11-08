@@ -45,11 +45,6 @@ $pad = '<svg width="20" height="20" class="shrink-0" viewBox="0 0 24 24" fill="c
                     <svg width="16" height="16" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
                     <span>نصب اپ</span>
                 </button>
-                <?php if (current_user_can('manage_options')) : ?>
-                    <a href="<?= esc_url(home_url('/panel/')); ?>" class="gh__icon min-[783px]:hidden" style="color:#fcd34d" aria-label="پنل مدیریت">
-                        <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-                    </a>
-                <?php endif; ?>
                 <button type="button" class="gh__icon gh__switch" data-gh-switch aria-haspopup="dialog" aria-controls="gh-switcher" aria-label="تعویض بازی" title="تعویض بازی">
                     <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg>
                 </button>
@@ -71,6 +66,12 @@ $pad = '<svg width="20" height="20" class="shrink-0" viewBox="0 0 24 24" fill="c
                         <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
                     </summary>
                     <div class="gh__menu" role="menu">
+                        <?php if (current_user_can('manage_options')) : ?>
+                            <a role="menuitem" href="<?= esc_url(home_url('/panel/')); ?>" data-external style="color:#fcd34d">
+                                <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+                                پنل مدیریت
+                            </a>
+                        <?php endif; ?>
                         <a role="menuitem" href="<?= esc_url(home_url('/')); ?>" data-external>
                             <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg>
                             سایت اصلی کوروش
