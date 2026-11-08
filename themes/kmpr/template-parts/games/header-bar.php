@@ -101,7 +101,8 @@ $gh_current = is_singular('game') ? get_the_ID() : 0;
 if ($gh_games) : ?>
 <dialog id="gh-switcher" class="gsw" aria-labelledby="gsw-title">
     <div class="gsw__panel">
-        <div class="gsw__head">
+        <span class="gsw__handle" data-gsw-drag aria-hidden="true"></span>
+        <div class="gsw__head" data-gsw-drag>
             <p id="gsw-title" class="gsw__title">تعویض بازی</p>
             <button type="button" class="gh__icon" data-gsw-close aria-label="بستن">
                 <svg width="16" height="16" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -120,9 +121,10 @@ if ($gh_games) : ?>
                 <li data-gsw-item="<?= esc_attr(mb_strtolower(get_the_title($g) . ' ' . $genre . ' ' . $g->post_name)); ?>">
                     <a href="<?= esc_url(get_permalink($g)); ?>" class="gsw__card<?= $is_cur ? ' is-current' : ''; ?>"<?= $is_cur ? ' aria-current="page"' : ''; ?>>
                         <span class="gsw__art"><?php if ($thumb) : ?><img src="<?= esc_url($thumb); ?>" alt="" width="320" height="180" loading="lazy" decoding="async"><?php endif; ?></span>
+                        <?php if ($is_cur) : ?><span class="gsw__now"><span class="gsw__dot"></span>در حال بازی</span><?php endif; ?>
                         <span class="gsw__meta">
                             <span class="gsw__name"><?= esc_html(get_the_title($g)); ?></span>
-                            <span class="gsw__genre"><?= $is_cur ? 'در حال بازی' : esc_html($genre); ?></span>
+                            <?php if ($genre) : ?><span class="gsw__genre"><?= esc_html($genre); ?></span><?php endif; ?>
                         </span>
                     </a>
                 </li>
@@ -136,13 +138,31 @@ if ($gh_games) : ?>
 (() => {
     const d = document.getElementById('gh-switcher');
     if (!d || typeof d.showModal !== 'function') return;
+    const panel = d.querySelector('.gsw__panel');
     const q = d.querySelector('[data-gsw-q]'), empty = d.querySelector('[data-gsw-empty]'), items = [...d.querySelectorAll('[data-gsw-item]')];
-    document.querySelectorAll('[data-gh-switch]').forEach((b) => b.addEventListener('click', () => { d.showModal(); q.value = ''; filter(); }));
-    d.querySelector('[data-gsw-close]').addEventListener('click', () => d.close());
-    d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
-    // Esc always closes the switcher (the search field and the game shell would otherwise swallow it).
-    d.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); d.close(); } }, true);
     const filter = () => { const t = q.value.trim().toLowerCase(); let n = 0; items.forEach((li) => { const ok = !t || li.dataset.gswItem.includes(t); li.hidden = !ok; n += ok; }); empty.hidden = n > 0; };
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const close = () => {
+        if (!d.open || d.classList.contains('is-closing')) return;
+        if (reduce) { d.close(); return; }
+        d.classList.add('is-closing');
+        setTimeout(() => { d.classList.remove('is-closing'); d.style.removeProperty('--drag'); d.close(); }, 240);
+    };
+    document.querySelectorAll('[data-gh-switch]').forEach((b) => b.addEventListener('click', () => {
+        q.value = ''; filter(); d.showModal();
+        d.querySelector('.gsw__card.is-current')?.scrollIntoView({ block: 'nearest' });
+    }));
+    d.querySelector('[data-gsw-close]').addEventListener('click', close);
+    d.addEventListener('click', (e) => { if (e.target === d) close(); });
+    // Esc always closes the switcher (the search field and the game shell would otherwise swallow it).
+    d.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } }, true);
+    // Bottom sheet (phones): drag the handle/header down to dismiss.
+    let y0 = null, dy = 0;
+    d.querySelectorAll('[data-gsw-drag]').forEach((h) => {
+        h.addEventListener('touchstart', (e) => { y0 = e.touches[0].clientY; dy = 0; d.classList.add('is-dragging'); }, { passive: true });
+        h.addEventListener('touchmove', (e) => { if (y0 === null) return; dy = Math.max(0, e.touches[0].clientY - y0); d.style.setProperty('--drag', dy + 'px'); }, { passive: true });
+        h.addEventListener('touchend', () => { d.classList.remove('is-dragging'); if (dy > 90) close(); else d.style.removeProperty('--drag'); y0 = null; });
+    });
     q.addEventListener('input', filter);
 })();
 </script>
