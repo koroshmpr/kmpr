@@ -8,7 +8,7 @@
     <a href="<?php the_permalink(); ?>" class="block relative overflow-hidden aspect-[16/10] bg-slate-950">
         <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none" 
              src="<?php echo get_the_post_thumbnail_url(get_the_ID(), 'large'); ?>" 
-             alt="<?= esc_attr(get_the_title()); ?>"
+             width="768" height="432" alt="<?= esc_attr(get_the_title()); ?>"
              loading="lazy">
         
         <!-- Category Badge -->

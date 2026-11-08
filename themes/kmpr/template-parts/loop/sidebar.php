@@ -6,7 +6,7 @@
 <div class="flex flex-col gap-8 text-start w-full">
     <!-- Popular Posts Widget -->
     <div class="w-full">
-        <h4 class="text-base font-black text-slate-800 border-b border-slate-200 pb-3 mb-4">محبوب‌ترین مقالات</h4>
+        <h4 class="text-base font-black text-white border-b border-white/10 pb-3 mb-4">محبوب‌ترین مقالات</h4>
         
         <div class="flex flex-col gap-3">
             <?php
@@ -29,7 +29,7 @@
 
     <!-- Suggested Post Widget -->
     <div class="w-full">
-        <h4 class="text-base font-black text-slate-800 border-b border-slate-200 pb-3 mb-4">پیشنهاد سردبیر</h4>
+        <h4 class="text-base font-black text-white border-b border-white/10 pb-3 mb-4">پیشنهاد سردبیر</h4>
         
         <div class="w-full">
             <?php

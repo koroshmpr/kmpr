@@ -83,8 +83,8 @@
                 
                 <div class="flex lg:flex-col justify-center gap-3 mt-1">
                     <!-- Phone trigger -->
-                    <?php if (get_field('phone_number', 'option')) : ?>
-                        <a href="tel:<?= esc_attr(get_field('phone', 'option')); ?>"
+                    <?php $kmpr_phone = get_field('phone', 'option') ?: get_field('phone_number', 'option'); if ($kmpr_phone) : ?>
+                        <a href="tel:<?= esc_attr(preg_replace('/[^\d+]/', '', $kmpr_phone)); ?>"
                            class="flex items-center justify-start gap-3 p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 rounded-2xl transition-all text-slate-100 group">
                             <span class="text-secondary shrink-0 group-hover:scale-110 transition-transform">
                                 <?php
@@ -94,7 +94,7 @@
                                 )); 
                                 ?>
                             </span>
-                            <span class="text-xs font-bold leading-none text-slate-100"><?= get_field('phone_number_label', 'option') ?: get_field('phone_number', 'option'); ?></span>
+                            <span class="text-xs font-bold leading-none text-slate-100"><?= esc_html(get_field('phone_number_label', 'option') ?: $kmpr_phone); ?></span>
                         </a>
                     <?php endif; ?>
 
@@ -107,7 +107,7 @@
                                     <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
                                 </svg>
                             </span>
-                            <span class="text-xs font-bold leading-none truncate w-full text-slate-100"><?= get_field('email', 'option'); ?></span>
+                            <span class="text-xs font-bold leading-none truncate w-full text-slate-100" dir="ltr"><?= esc_html(get_field('email', 'option')); ?></span>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -115,7 +115,7 @@
                 <!-- Confirmations icons repeater -->
                 <div class="flex gap-4 pt-4 justify-start items-center">
                     <?php while (have_rows('confirmation', 'option')): the_row(); ?>
-                        <div class="text-slate-300 text-xs font-medium"><?= get_sub_field('conf_items', 'option'); ?></div>
+                        <div class="text-slate-300 text-xs font-medium"><?= wp_kses_post(get_sub_field('conf_items', 'option')); ?></div>
                     <?php endwhile; ?>
                 </div>
             </div>

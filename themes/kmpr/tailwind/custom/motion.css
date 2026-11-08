@@ -1,0 +1,311 @@
+/* ==========================================================================
+   KMPR Motion (paired with javascript/motion.js)
+   Hidden states only apply when html.motion-ready is set (JS present, motion allowed).
+   ========================================================================== */
+
+:root {
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.motion-ready:not(.motion-fallback) [data-aos] {
+	opacity: 0;
+	transition-property: opacity, transform, filter;
+	transition-duration: 900ms;
+	transition-timing-function: var(--ease-out-expo);
+	will-change: opacity, transform;
+}
+.motion-ready:not(.motion-fallback) [data-aos='fade-up'] { transform: translate3d(0, 36px, 0); }
+.motion-ready:not(.motion-fallback) [data-aos='fade-down'] { transform: translate3d(0, -28px, 0); }
+.motion-ready:not(.motion-fallback) [data-aos='fade-left'] { transform: translate3d(40px, 0, 0); }
+.motion-ready:not(.motion-fallback) [data-aos='fade-right'] { transform: translate3d(-40px, 0, 0); }
+.motion-ready:not(.motion-fallback) [data-aos='zoom-in'] { transform: scale(0.94); }
+.motion-ready:not(.motion-fallback) [data-aos='zoom-out'] { transform: scale(1.06); }
+.motion-ready:not(.motion-fallback) [data-aos='blur'] { filter: blur(12px); transform: translate3d(0, 16px, 0); }
+.motion-ready:not(.motion-fallback) [data-split]:not([data-split-done]) { opacity: 0; }
+.motion-ready [data-aos].is-in {
+	opacity: 1;
+	transform: none;
+	filter: none;
+}
+
+/* Word-by-word headline */
+.split-word {
+	display: inline-block;
+	overflow: hidden;
+	vertical-align: top;
+	padding-block: 0.08em;
+	margin-block: -0.08em;
+}
+.split-word > span {
+	display: inline-block;
+}
+.motion-ready:not(.motion-fallback) [data-split] .split-word > span {
+	transform: translate3d(0, 110%, 0);
+	transition: transform 1s var(--ease-out-expo);
+	transition-delay: calc(var(--i, 0) * 70ms + var(--split-delay, 0ms));
+}
+.motion-ready [data-split].is-in .split-word > span {
+	transform: none;
+}
+
+/* Cursor spotlight cards */
+.spotlight {
+	position: relative;
+	isolation: isolate;
+}
+.spotlight::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(217 119 6 / 0.14), transparent 45%);
+	opacity: 0;
+	transition: opacity 0.4s;
+	pointer-events: none;
+	z-index: -1;
+}
+.spotlight:hover::before {
+	opacity: 1;
+}
+
+/* Animated gradient border */
+.border-glow {
+	position: relative;
+}
+.border-glow::after {
+	content: '';
+	position: absolute;
+	inset: -1px;
+	border-radius: inherit;
+	padding: 1px;
+	background: conic-gradient(from var(--angle, 0deg), transparent 60%, rgb(245 158 11 / 0.9), transparent 85%);
+	-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor;
+	mask-composite: exclude;
+	animation: border-spin 6s linear infinite;
+	pointer-events: none;
+}
+@property --angle {
+	syntax: '<angle>';
+	initial-value: 0deg;
+	inherits: false;
+}
+@keyframes border-spin {
+	to { --angle: 360deg; }
+}
+
+/* Infinite marquee */
+.marquee {
+	display: flex;
+	overflow: hidden;
+	-webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+	mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.marquee__track {
+	display: flex;
+	flex-shrink: 0;
+	gap: var(--gap, 1rem);
+	padding-inline-end: var(--gap, 1rem);
+	animation: marquee var(--speed, 40s) linear infinite;
+}
+.marquee--reverse .marquee__track {
+	animation-direction: reverse;
+}
+.marquee:hover .marquee__track {
+	animation-play-state: paused;
+}
+@keyframes marquee {
+	to { transform: translateX(-100%); }
+}
+
+/* Hero ambience */
+.hero-grid {
+	background-image:
+		linear-gradient(rgb(148 163 184 / 0.07) 1px, transparent 1px),
+		linear-gradient(90deg, rgb(148 163 184 / 0.07) 1px, transparent 1px);
+	background-size: 56px 56px;
+	-webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+	mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+}
+.aurora {
+	position: absolute;
+	border-radius: 9999px;
+	/* Soft glow via a radial mask instead of filter: blur() — far cheaper to paint. */
+	-webkit-mask-image: radial-gradient(closest-side, #000 0%, rgb(0 0 0 / 0.5) 45%, transparent 100%);
+	mask-image: radial-gradient(closest-side, #000 0%, rgb(0 0 0 / 0.5) 45%, transparent 100%);
+	opacity: 0.5;
+	animation: aurora 18s ease-in-out infinite alternate;
+	pointer-events: none;
+}
+@keyframes aurora {
+	0% { transform: translate3d(0, 0, 0) scale(1); }
+	50% { transform: translate3d(8%, -6%, 0) scale(1.15); }
+	100% { transform: translate3d(-6%, 8%, 0) scale(0.95); }
+}
+.cursor-glow {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.5s;
+	background: radial-gradient(600px circle at var(--gx, 50%) var(--gy, 50%), rgb(217 119 6 / 0.09), transparent 40%);
+}
+.orbit {
+	animation: orbit var(--orbit-speed, 30s) linear infinite;
+}
+.orbit > * {
+	animation: orbit var(--orbit-speed, 30s) linear infinite reverse;
+}
+@keyframes orbit {
+	to { transform: rotate(360deg); }
+}
+.float-y {
+	animation: float-y 6s ease-in-out infinite;
+}
+@keyframes float-y {
+	50% { transform: translateY(-10px); }
+}
+.word-rotator {
+	display: inline-grid;
+}
+.word-rotator > span {
+	grid-area: 1 / 1;
+	opacity: 0;
+	transform: translateY(40%);
+	animation: word-rotate calc(var(--n, 3) * 2.6s) var(--ease-out-expo) infinite;
+	animation-delay: calc(var(--i) * 2.6s);
+}
+@keyframes word-rotate {
+	0% { opacity: 0; transform: translateY(40%); }
+	6%, 27% { opacity: 1; transform: none; }
+	33%, 100% { opacity: 0; transform: translateY(-40%); }
+}
+.scroll-cue {
+	animation: scroll-cue 2s ease-in-out infinite;
+}
+@keyframes scroll-cue {
+	0% { transform: translateY(0); opacity: 0; }
+	30% { opacity: 1; }
+	100% { transform: translateY(14px); opacity: 0; }
+}
+.text-shimmer {
+	background: linear-gradient(110deg, #f59e0b 20%, #fde68a 40%, #f59e0b 60%) 0 0 / 250% 100%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	animation: shimmer 5s linear infinite;
+}
+@keyframes shimmer {
+	to { background-position: -250% 0; }
+}
+
+/* Sticky stacked project cards */
+.stack-card {
+	position: sticky;
+	top: calc(6rem + var(--i, 0) * 1.25rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+	}
+	.word-rotator > span:not(:first-child) { display: none; }
+	.word-rotator > span:first-child { opacity: 1; transform: none; }
+}
+
+/* ===== Hero portrait: layered depth ===== */
+.hero-portrait {
+	--px: 0;
+	--py: 0;
+}
+.hp-layer { will-change: transform; }
+.hp-plate { transform: translate3d(calc(var(--px) * -12px), calc(var(--py) * -8px), 0) scale(1.14); }
+.hp-rain { transform: translate3d(calc(var(--px) * -6px), calc(var(--py) * -4px), 0); }
+.hp-person {
+	z-index: 10;
+	transform-origin: 50% 100%;
+	transform: translate3d(calc(-50% + var(--px) * 14px), calc(var(--py) * 5px), 0) rotateY(calc(var(--px) * -3deg));
+	filter:
+		drop-shadow(0 0 1px rgb(255 255 255 / 0.35))
+		drop-shadow(-10px 0 22px rgb(0 255 65 / 0.18))
+		drop-shadow(10px 0 22px rgb(134 239 172 / 0.12))
+		drop-shadow(0 28px 28px rgb(0 0 0 / 0.55));
+}
+.hp-front {
+	z-index: 11;
+	transform: translate3d(calc(var(--px) * 24px), calc(var(--py) * 12px), 0);
+}
+.hp-glyph {
+	position: absolute;
+	top: -12%;
+	left: var(--x);
+	font: 700 18px ui-monospace, Menlo, monospace;
+	color: rgb(134 255 160 / 0.55);
+	filter: blur(1.2px);
+	text-shadow: 0 0 12px rgb(0 255 65 / 0.8);
+	animation: hp-fall var(--d, 8s) linear infinite;
+	animation-delay: var(--delay, 0s);
+}
+@keyframes hp-fall {
+	0% { transform: translateY(0); opacity: 0; }
+	10%, 80% { opacity: 1; }
+	100% { transform: translateY(34rem); opacity: 0; }
+}
+.hp-idle .hp-person { animation: hp-idle 8s ease-in-out infinite; }
+@keyframes hp-idle {
+	0%, 100% { transform: translate3d(-50%, 0, 0); }
+	50% { transform: translate3d(calc(-50% + 6px), -4px, 0) rotate(-0.4deg); }
+}
+
+.hp-scene { background: radial-gradient(ellipse at 50% 30%, #03140b 0%, #010604 70%); }
+
+/* ===== App-like page transitions (cross-document View Transitions; progressive enhancement) =====
+   Old page recedes like a card being stacked away; the new page slides up as a fresh sheet.
+   Header stays put. Only transform/opacity/clip-path on GPU snapshots — no layout work. */
+@view-transition { navigation: auto; }
+#header { view-transition-name: site-header; }
+::view-transition-group(site-header) { animation: none; z-index: 3; }
+html { background-color: #020617; } /* never let the white UA canvas show through during transitions */
+::view-transition { background-color: #020617; }
+::view-transition-group(root) { background-color: #020617; }
+::view-transition-old(root) { animation: vt-out 0.32s cubic-bezier(0.4, 0, 1, 1) both; transform-origin: 50% 0; }
+::view-transition-new(root) { animation: vt-in 0.62s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both; }
+@keyframes vt-out {
+	to { opacity: 0; transform: scale(0.94) translateY(-2%); border-radius: 28px; }
+}
+@keyframes vt-in {
+	from { opacity: 0; transform: translateY(7vh); clip-path: inset(0 2.5% 0 2.5% round 32px); }
+	60% { opacity: 1; }
+	to { clip-path: inset(0 0 0 0 round 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+	@view-transition { navigation: none; }
+}
+
+/* Above-the-fold entrance: transform-only CSS animation (never hides content → no LCP penalty, no JS needed). */
+[data-hero-rise] { animation: hero-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+[data-hero-rise]:nth-of-type(2) { animation-delay: 60ms; }
+@keyframes hero-rise { from { transform: translate3d(0, 18px, 0); } }
+
+/* Legacy large blur glows (blur-[120px]/[140px]) → identical look via radial mask, without the expensive filter. */
+[class*="blur-[1"][class*="rounded-full"] {
+	filter: none !important;
+	-webkit-mask-image: radial-gradient(closest-side, #000 0%, rgb(0 0 0 / 0.45) 45%, transparent 100%);
+	mask-image: radial-gradient(closest-side, #000 0%, rgb(0 0 0 / 0.45) 45%, transparent 100%);
+}
+
+/* About page portrait (warm editorial variant of the hero cut-out) */
+.about-person {
+	transform: translate3d(-50%, 0, 0);
+	filter: drop-shadow(0 24px 40px rgb(0 0 0 / 0.65)) drop-shadow(0 0 26px rgb(245 158 11 / 0.22));
+	animation: about-breathe 9s ease-in-out infinite;
+}
+@keyframes about-breathe {
+	0%, 100% { transform: translate3d(-50%, 0, 0); }
+	50% { transform: translate3d(-50%, -5px, 0) scale(1.01); }
+}
+.about-name { animation: about-name-drift 14s ease-in-out infinite alternate; }
+@keyframes about-name-drift { to { transform: translate3d(-46%, 0, 0); } }
+@media (prefers-reduced-motion: reduce) { .about-person, .about-name { animation: none; } }

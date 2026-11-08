@@ -36,7 +36,9 @@ function track_post_views($post_id)
         }
         $new_views = $current_views + 1;
         update_post_meta($post_id, 'post_views', $new_views);
-        setcookie('post_viewed_' . $post_id, 'true', time() + 3600 * 24, '/');
+        if (!headers_sent()) {
+            setcookie('post_viewed_' . $post_id, 'true', time() + 3600 * 24, '/');
+        }
     }
 }
 
@@ -45,24 +47,24 @@ function track_post_views($post_id)
  */
 function save_rating()
 {
-    if (isset($_POST['post_id']) && isset($_POST['rating_value'])) {
-        $post_id            = intval($_POST['post_id']);
-        $rating_value       = floatval($_POST['rating_value']);
-        $total_ratings      = get_post_meta($post_id, 'total_ratings', true);
-        $total_rating_value = get_post_meta($post_id, 'total_rating_value', true);
+    $post_id      = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
+    $rating_value = isset($_POST['rating_value']) ? (int) $_POST['rating_value'] : 0;
 
-        if (!$total_ratings) {
-            $total_ratings = 0;
-        }
-        if (!$total_rating_value) {
-            $total_rating_value = 0;
-        }
-
-        update_post_meta($post_id, 'rating_value', $rating_value);
-        update_post_meta($post_id, 'total_ratings', ++$total_ratings);
-        update_post_meta($post_id, 'total_rating_value', ($total_rating_value + $rating_value));
+    if (!$post_id || 'post' !== get_post_type($post_id) || 'publish' !== get_post_status($post_id) || $rating_value < 1 || $rating_value > 5) {
+        wp_send_json_error(array('message' => 'invalid'), 400);
     }
-    wp_die();
+
+    $total_ratings      = (int) get_post_meta($post_id, 'total_ratings', true) + 1;
+    $total_rating_value = (float) get_post_meta($post_id, 'total_rating_value', true) + $rating_value;
+
+    update_post_meta($post_id, 'rating_value', $rating_value);
+    update_post_meta($post_id, 'total_ratings', $total_ratings);
+    update_post_meta($post_id, 'total_rating_value', $total_rating_value);
+
+    wp_send_json_success(array(
+        'count'   => $total_ratings,
+        'average' => round($total_rating_value / $total_ratings, 1),
+    ));
 }
 add_action('wp_ajax_save_rating', 'save_rating');
 add_action('wp_ajax_nopriv_save_rating', 'save_rating');

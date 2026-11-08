@@ -4,8 +4,8 @@
  */
 ?>
 <div class="w-full">
-    <div class="border-b border-slate-200/80 pb-3 mb-6 flex justify-between items-center">
-        <h4 class="text-xl lg:text-2xl font-black text-slate-800">آخرین مقالات</h4>
+    <div class="border-b border-white/10 pb-3 mb-6 flex justify-between items-center">
+        <h4 class="text-xl lg:text-2xl font-black text-white">آخرین مقالات</h4>
     </div>
     
     <?php

@@ -1,334 +1,304 @@
 <?php
 /**
- * Smart Interactive Project & Architecture Configurator
- * Replaces boring static forms with an intelligent, highly engaging interactive scope builder.
+ * Project Request Wizard
+ * 4-step brief builder → stored in WP admin + instant Telegram notification (inc/project-requests.php).
+ *
+ * Optional $args: 'service' (string) service title for context, 'type' (string) preset project type.
  */
+$kmpr_opts   = kmpr_request_options();
+$kmpr_config = array(
+    'endpoint'    => esc_url_raw(rest_url('kmpr/v1/project-request')),
+    'options'     => array_diff_key($kmpr_opts, array('statuses' => 1)),
+    'service'     => $args['service'] ?? (is_singular('services') ? get_the_title() : ''),
+    'defaultType' => $args['type'] ?? '',
+    'telegram'    => kmpr_contact_url('telegram'),
+);
+$kmpr_type_icons = array(
+    'website'   => '<path d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9h18"/><path d="M7 6h.01M10 6h.01"/>',
+    'ecommerce' => '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+    'web_app'   => '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 8 3 3-3 3"/><path d="M14 14h2"/>',
+    'redesign'  => '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+    'seo'       => '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/><path d="M8 13l2-2 2 2 3-3"/>',
+    'consult'   => '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/>',
+);
+$kmpr_type_desc = array(
+    'website'   => 'معرفی برند یا کسب‌وکار با طراحی اختصاصی و سئوی اصولی',
+    'ecommerce' => 'فروشگاه سریع با درگاه پرداخت و مدیریت ساده سفارش‌ها',
+    'web_app'   => 'سامانه، داشبورد یا پنل اختصاصی با API و احراز هویت',
+    'redesign'  => 'بازطراحی سایت فعلی و رساندن سرعت به استاندارد گوگل',
+    'seo'       => 'رفع مشکلات فنی، اسکیما، ایندکس و Core Web Vitals',
+    'consult'   => 'بررسی فنی پروژه، انتخاب معماری یا جلسه مشاوره',
+);
 ?>
-<section id="smart-configurator" class="py-16 lg:py-24 bg-slate-950 text-white relative overflow-hidden select-none border-y border-slate-900"
-         x-data="projectConfigurator()">
-    <!-- Ambient subtle background glow -->
-    <div class="absolute top-1/4 start-1/4 w-96 h-96 bg-secondary/15 rounded-full blur-[140px] pointer-events-none"></div>
-    <div class="absolute bottom-10 end-1/4 w-96 h-96 bg-blue-600/15 rounded-full blur-[140px] pointer-events-none"></div>
+<section id="smart-configurator" aria-labelledby="request-title"
+         class="py-12 lg:py-8 lg:min-h-[calc(100svh-5rem)] lg:flex lg:flex-col lg:justify-center bg-slate-950 text-white relative overflow-x-clip border-y border-white/10 scroll-mt-20"
+         x-data='projectRequest(<?= wp_json_encode($kmpr_config, JSON_HEX_APOS | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE); ?>)'>
+    <div class="absolute top-1/4 start-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-[140px] pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute bottom-10 end-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" aria-hidden="true"></div>
 
-    <div class="container mx-auto px-4 sm:px-6 relative z-10 max-w-5xl">
-        <!-- Section Header -->
-        <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/15 border border-secondary/30 mb-4">
+    <div class="container mx-auto px-4 sm:px-6 relative z-10 max-w-6xl w-full">
+        <header class="text-center max-w-3xl mx-auto mb-7 lg:mb-6">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-secondary/15 border border-secondary/30 mb-3">
                 <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-                <span class="text-xs font-black uppercase text-secondary tracking-widest">پیکربندی هوشمند و بدون فرم خسته‌کننده</span>
+                <span class="text-xs font-black text-secondary">ثبت درخواست پروژه · کمتر از ۲ دقیقه</span>
             </div>
-            <h2 class="text-3xl sm:text-4xl font-black text-white leading-tight">
-                معماری و نیازهای پروژه خود را آنلاین انتخاب کنید
+            <h2 id="request-title" class="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight">
+                بریف پروژه‌تان را بسازید
             </h2>
-            <div class="h-1.5 w-16 bg-secondary mx-auto rounded-full mt-4 mb-3"></div>
-            <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
-                بدون نیاز به نوشتن دستی فرم‌های طولانی؛ گزینه‌های مدنظرتان را علامت بزنید تا معماری پیشنهادی و خلاصه پروژه در یک ثانیه آماده شود.
+            <p class="text-slate-300 text-sm sm:text-base leading-relaxed mt-3">
+                چند انتخاب ساده انجام دهید؛ درخواست شما مستقیم به خود من می‌رسد و معمولاً ظرف چند ساعت کاری برای هماهنگی جلسه تماس می‌گیرم.
             </p>
-        </div>
+        </header>
 
-        <!-- Main Configurator Card -->
-        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden text-start" data-aos="zoom-in">
-            
-            <!-- Step Indicators -->
-            <div class="flex w-fit mx-auto items-center justify-between border-b border-slate-800 pb-6 mb-8 text-xs font-bold">
-                <div @click="goToStep(1)" class="flex items-center gap-2 cursor-pointer transition-colors" :class="step >= 1 ? 'text-secondary' : 'text-slate-500'">
-                    <span class="size-6 rounded-full flex items-center justify-center text-xs font-mono font-black"
-                          :class="step >= 1 ? 'bg-secondary text-primary' : 'bg-slate-800 text-slate-400'">۱</span>
-                    <span class="hidden sm:inline">نوع پروژه</span>
-                </div>
-                <div class="h-0.5 flex-1 w-10 mx-3" :class="step >= 2 ? 'bg-secondary/60' : 'bg-slate-800'"></div>
-                <div @click="goToStep(2)" class="flex items-center gap-2 cursor-pointer transition-colors" :class="step >= 2 ? 'text-secondary' : 'text-slate-500'">
-                    <span class="size-6 rounded-full flex items-center justify-center text-xs font-mono font-black"
-                          :class="step >= 2 ? 'bg-secondary text-primary' : 'bg-slate-800 text-slate-400'">۲</span>
-                    <span class="hidden sm:inline">قابلیت‌های فنی</span>
-                </div>
-                <div class="h-0.5 flex-1 mx-3" :class="step >= 3 ? 'bg-secondary/60' : 'bg-slate-800'"></div>
-                <div @click="goToStep(3)" class="flex items-center gap-2 cursor-pointer transition-colors" :class="step >= 3 ? 'text-secondary' : 'text-slate-500'">
-                    <span class="size-6 rounded-full flex items-center justify-center text-xs font-mono font-black"
-                          :class="step >= 3 ? 'bg-secondary text-primary' : 'bg-slate-800 text-slate-400'">۳</span>
-                    <span class="hidden sm:inline">پیشنهاد معماری و شروع</span>
-                </div>
-            </div>
+        <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] gap-6 items-stretch">
 
-            <!-- Slide Viewport with Smooth Animated Height & Directional Slide -->
-            <div class="relative overflow-hidden w-full min-h-[460px] sm:min-h-[420px]">
+            <!-- ============ Wizard Card ============ -->
+            <div x-ref="card" class="rq-card flex flex-col h-[min(720px,calc(100svh-10rem))] lg:h-[clamp(540px,calc(100svh-15rem),680px)] bg-slate-900/80 border border-white/10 rounded-3xl shadow-2xl backdrop-blur-xl overflow-hidden scroll-mt-20">
 
-                <!-- STEP 1: Project Type Selection -->
-                <div x-show="step === 1"
-                     x-transition:enter="transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                     x-transition:enter-start="opacity-0 translate-x-12"
-                     x-transition:enter-end="opacity-100 translate-x-0"
-                     x-transition:leave="transition-all duration-300 ease-in absolute inset-x-0 top-0 pointer-events-none"
-                     x-transition:leave-start="opacity-100 translate-x-0"
-                     x-transition:leave-end="opacity-0 -translate-x-12">
-                    
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-lg sm:text-xl font-black text-white">۱. چه پلتفرمی مدنظر شماست؟</h3>
-                        <span class="text-xs font-mono text-slate-400 hidden sm:inline">گام ۱ از ۳</span>
+                <!-- Progress -->
+                <div x-show="status !== 'done'" class="shrink-0 px-5 sm:px-7 pt-5 sm:pt-6">
+                    <ol class="grid grid-cols-4 gap-2 text-[11px] sm:text-xs font-bold" aria-label="مراحل ثبت درخواست">
+                        <?php foreach (array(1 => 'نوع پروژه', 2 => 'امکانات و بودجه', 3 => 'جزئیات', 4 => 'اطلاعات تماس') as $n => $label) : ?>
+                            <li>
+                                <button type="button" @click="go(<?= $n; ?>)"
+                                        class="w-full text-start cursor-pointer group"
+                                        :aria-current="step === <?= $n; ?> ? 'step' : null">
+                                    <span class="block h-1.5 rounded-full transition-colors duration-300"
+                                          :class="step >= <?= $n; ?> ? 'bg-secondary' : 'bg-white/10 group-hover:bg-white/20'"></span>
+                                    <span class="mt-2 hidden sm:block transition-colors" :class="step >= <?= $n; ?> ? 'text-slate-100' : 'text-slate-400'"><?= esc_html($label); ?></span>
+                                </button>
+                            </li>
+                        <?php endforeach; ?>
+                    </ol>
+                    <div class="lg:hidden mt-3 flex items-center gap-3">
+                        <span class="text-xs font-bold text-slate-300 whitespace-nowrap">گام <span x-text="step.toLocaleString('fa-IR')"></span> از ۴</span>
+                        <span class="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden"><span class="rq-fill block h-full rounded-full transition-[width] duration-700 ease-out" :style="`width:${completion}%`"></span></span>
+                        <span class="text-sm font-black text-secondary tabular-nums" x-text="completion.toLocaleString('fa-IR') + '٪ آماده'"></span>
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-400 mb-6">هدف اصلی خود را برای راه‌اندازی یا توسعه سیستم انتخاب کنید.</p>
+                </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 lg:gap-5">
-                        <template x-for="p in projectTypes" :key="p.id">
-                            <div @click="selectedType = p.id; goToStep(2)"
-                                 :class="selectedType === p.id 
-                                    ? 'border-secondary bg-secondary/[0.08] ring-2 ring-secondary/40 shadow-xl shadow-secondary/10' 
-                                    : 'border-slate-800/90 bg-slate-950/70 hover:border-slate-700 hover:bg-slate-850 hover:-translate-y-0.5'"
-                                 class="p-6 sm:p-7 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[170px] sm:min-h-[185px] group relative overflow-hidden">
-                                
-                                <div class="flex items-center justify-between w-full">
-                                    <div class="size-12 rounded-2xl bg-secondary/15 text-secondary border border-secondary/25 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-secondary/25 transition-all"
-                                         x-html="p.svg">
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[11px] font-mono px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 font-semibold" x-text="p.badge"></span>
-                                        <span x-show="selectedType === p.id" class="size-5 rounded-full bg-secondary text-primary flex items-center justify-center">
-                                            <svg class="size-3" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/>
-                                            </svg>
-                                        </span>
-                                    </div>
-                                </div>
+                <form class="flex-1 min-h-0 flex flex-col px-5 sm:px-7 pt-4 sm:pt-5 pb-5 sm:pb-6" @submit.prevent="step < 4 ? go(step + 1) : submit()" novalidate x-show="status !== 'done'">
 
-                                <div class="mt-4">
-                                    <h4 class="text-base sm:text-lg font-black text-white group-hover:text-secondary transition-colors" x-text="p.title"></h4>
-                                    <p class="text-xs sm:text-sm text-slate-400 mt-1.5 leading-relaxed" x-text="p.desc"></p>
-                                </div>
+                    <!-- Honeypot (hidden from humans) -->
+                    <div class="absolute -start-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+                        <label>وب‌سایت <input type="text" tabindex="-1" autocomplete="off" x-model="form.website_url_confirm"></label>
+                    </div>
+
+                    <div x-ref="viewport" class="rq-viewport flex-1 min-h-0 grid -mx-1 px-1 overflow-x-hidden overflow-y-auto overscroll-contain" :style="`--dir:${dir}`">
+                    <!-- STEP 1 -->
+                    <fieldset class="rq-step pb-6" x-show="step === 1" x-transition:enter="rq-step-enter" x-transition:enter-start="rq-from" x-transition:enter-end="rq-to" x-transition:leave="rq-step-leave" x-transition:leave-start="rq-to" x-transition:leave-end="rq-out">
+                        <legend class="text-lg sm:text-xl font-black text-white mb-1">چه چیزی می‌خواهید بسازیم؟</legend>
+                        <p class="text-sm text-slate-400 mb-4">نزدیک‌ترین گزینه را انتخاب کنید؛ جزئیات را بعداً با هم دقیق می‌کنیم.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                            <?php foreach ($kmpr_opts['types'] as $id => $title) : ?>
+                                <button type="button" @click="pickType('<?= esc_js($id); ?>')"
+                                        :aria-pressed="form.type === '<?= esc_js($id); ?>'"
+                                        :class="form.type === '<?= esc_js($id); ?>' ? 'border-secondary bg-secondary/10 ring-2 ring-secondary/30' : 'border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.04]'"
+                                        class="group text-start p-3.5 sm:p-4 rounded-2xl border transition-[border-color,background-color,box-shadow] duration-200 cursor-pointer flex gap-3.5 items-center min-w-0">
+                                    <span class="size-10 sm:size-11 rounded-xl bg-secondary/15 text-secondary border border-secondary/25 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                                        <svg width="22" height="22" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><?= $kmpr_type_icons[$id]; // static markup ?></svg>
+                                    </span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block text-sm sm:text-[15px] font-black text-white leading-snug"><?= esc_html($title); ?></span>
+                                        <span class="block text-xs text-slate-400 leading-5 mt-1 line-clamp-2"><?= esc_html($kmpr_type_desc[$id]); ?></span>
+                                    </span>
+                                </button>
+                            <?php endforeach; ?>
+                        </div>
+                    </fieldset>
+
+                    <!-- STEP 2 -->
+                    <div x-show="step === 2" x-cloak x-transition:enter="rq-step-enter" x-transition:enter-start="rq-from" x-transition:enter-end="rq-to" x-transition:leave="rq-step-leave" x-transition:leave-start="rq-to" x-transition:leave-end="rq-out" class="rq-step pb-6 space-y-6">
+                        <fieldset>
+                            <legend class="text-lg sm:text-xl font-black text-white mb-1">چه امکاناتی برایتان مهم است؟</legend>
+                            <p class="text-sm text-slate-400 mb-4">هر چند مورد که لازم دارید (اختیاری).</p>
+                            <div class="flex flex-wrap gap-2">
+                                <?php foreach ($kmpr_opts['features'] as $id => $title) : ?>
+                                    <button type="button" @click="toggleFeature('<?= esc_js($id); ?>')"
+                                            :aria-pressed="form.features.includes('<?= esc_js($id); ?>')"
+                                            :class="form.features.includes('<?= esc_js($id); ?>') ? 'bg-secondary text-slate-950 border-secondary' : 'bg-white/[0.03] text-slate-200 border-white/10 hover:border-white/30'"
+                                            class="inline-flex items-center gap-2 px-3.5 py-2 min-h-10 rounded-full border text-xs sm:text-[13px] font-bold whitespace-nowrap transition-colors cursor-pointer">
+                                        <svg width="14" height="14" class="shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                                             x-show="form.features.includes('<?= esc_js($id); ?>')"><path fill-rule="evenodd" d="M16.7 4.15a.75.75 0 0 1 .15 1.05l-8 10.5a.75.75 0 0 1-1.13.08l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.9 3.9 7.47-9.82a.75.75 0 0 1 1.05-.15Z" clip-rule="evenodd"/></svg>
+                                        <?= esc_html($title); ?>
+                                    </button>
+                                <?php endforeach; ?>
                             </div>
-                        </template>
-                    </div>
-                </div>
+                        </fieldset>
 
-                <!-- STEP 2: Key Requirements & Features -->
-                <div x-show="step === 2"
-                     x-transition:enter="transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                     x-transition:enter-start="opacity-0 translate-x-12"
-                     x-transition:enter-end="opacity-100 translate-x-0"
-                     x-transition:leave="transition-all duration-300 ease-in absolute inset-x-0 top-0 pointer-events-none"
-                     x-transition:leave-start="opacity-100 translate-x-0"
-                     x-transition:leave-end="opacity-0 -translate-x-12">
-                    
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-lg sm:text-xl font-black text-white">۲. چه امکانات و اولویت‌هایی برای شما حیاتی است؟</h3>
-                        <button @click="goToStep(1)" class="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer transition-colors">
-                            <span>مرحله قبل</span>
-                            <svg class="size-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <fieldset>
+                                <legend class="text-base font-black text-white mb-3">بودجه تقریبی</legend>
+                                <div class="grid gap-2">
+                                    <?php foreach ($kmpr_opts['budgets'] as $id => $title) : ?>
+                                        <label class="flex items-center gap-3 px-4 py-2.5 min-h-11 rounded-xl border cursor-pointer transition-colors"
+                                               :class="form.budget === '<?= esc_js($id); ?>' ? 'border-secondary bg-secondary/10 text-white' : 'border-white/10 bg-white/[0.02] text-slate-300 hover:border-white/25'">
+                                            <input type="radio" name="budget" value="<?= esc_attr($id); ?>" x-model="form.budget" class="accent-amber-500 size-4 shrink-0">
+                                            <span class="text-sm font-bold"><?= esc_html($title); ?></span>
+                                        </label>
+                                    <?php endforeach; ?>
+                                </div>
+                            </fieldset>
+                            <fieldset>
+                                <legend class="text-base font-black text-white mb-3">زمان‌بندی</legend>
+                                <div class="grid gap-2">
+                                    <?php foreach ($kmpr_opts['timelines'] as $id => $title) : ?>
+                                        <label class="flex items-center gap-3 px-4 py-2.5 min-h-11 rounded-xl border cursor-pointer transition-colors"
+                                               :class="form.timeline === '<?= esc_js($id); ?>' ? 'border-secondary bg-secondary/10 text-white' : 'border-white/10 bg-white/[0.02] text-slate-300 hover:border-white/25'">
+                                            <input type="radio" name="timeline" value="<?= esc_attr($id); ?>" x-model="form.timeline" class="accent-amber-500 size-4 shrink-0">
+                                            <span class="text-sm font-bold"><?= esc_html($title); ?></span>
+                                        </label>
+                                    <?php endforeach; ?>
+                                </div>
+                            </fieldset>
+                        </div>
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-400 mb-6">ویژگی‌های مورد نظر را انتخاب کنید (امکان انتخاب چندگانه):</p>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 mb-8">
-                        <template x-for="feat in featureList" :key="feat.id">
-                            <div @click="toggleFeature(feat.id)"
-                                 :class="selectedFeatures.includes(feat.id) ? 'border-secondary bg-secondary/10 shadow-lg shadow-secondary/5' : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'"
-                                 class="p-4 sm:p-5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-start gap-3.5 min-h-[96px]">
-                                <div class="w-5 h-5 rounded-md mt-0.5 flex items-center justify-center shrink-0 border transition-all"
-                                     :class="selectedFeatures.includes(feat.id) ? 'bg-secondary border-secondary text-primary' : 'border-slate-700 bg-slate-900'">
-                                    <svg x-show="selectedFeatures.includes(feat.id)" class="size-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <span class="text-xs sm:text-sm font-black text-white block" x-text="feat.title"></span>
-                                    <span class="text-[11px] text-slate-400 leading-snug block mt-1" x-text="feat.desc"></span>
-                                </div>
+                    <!-- STEP 3 -->
+                    <fieldset x-show="step === 3" x-cloak x-transition:enter="rq-step-enter" x-transition:enter-start="rq-from" x-transition:enter-end="rq-to" x-transition:leave="rq-step-leave" x-transition:leave-start="rq-to" x-transition:leave-end="rq-out" class="rq-step pb-6 space-y-4">
+                        <legend class="text-lg sm:text-xl font-black text-white mb-1">کمی بیشتر توضیح دهید</legend>
+                        <p class="text-sm text-slate-400 -mt-3">همه فیلدهای این مرحله اختیاری‌اند، ولی کمک می‌کنند جلسه اول دقیق‌تر باشد.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="rq-business" class="block text-sm font-bold text-slate-200 mb-2">نام کسب‌وکار / برند</label>
+                                <input id="rq-business" type="text" x-model="form.business" maxlength="120" class="kmpr-input" placeholder="مثلاً: کافه ری‌را">
                             </div>
-                        </template>
+                            <div>
+                                <label for="rq-ref" class="block text-sm font-bold text-slate-200 mb-2">سایت فعلی یا نمونه مورد علاقه</label>
+                                <input id="rq-ref" type="text" inputmode="url" dir="ltr" x-model="form.reference" maxlength="300" class="kmpr-input text-left" placeholder="example.com">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="rq-msg" class="block text-sm font-bold text-slate-200 mb-2">ایده و هدف پروژه</label>
+                            <textarea id="rq-msg" rows="4" x-model="form.message" maxlength="2000" class="kmpr-input resize-none min-h-28"
+                                      placeholder="مخاطب شما چه کسانی هستند؟ مهم‌ترین چیزی که سایت باید انجام دهد چیست؟"></textarea>
+                            <p class="text-xs text-slate-400 mt-1.5 text-left" dir="ltr"><span x-text="form.message.length"></span>/2000</p>
+                        </div>
+                    </fieldset>
+
+                    <!-- STEP 4 -->
+                    <fieldset x-show="step === 4" x-cloak x-transition:enter="rq-step-enter" x-transition:enter-start="rq-from" x-transition:enter-end="rq-to" x-transition:leave="rq-step-leave" x-transition:leave-start="rq-to" x-transition:leave-end="rq-out" class="rq-step pb-6 space-y-4">
+                        <legend class="text-lg sm:text-xl font-black text-white mb-1">چطور با شما در ارتباط باشم؟</legend>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label for="rq-name" class="block text-sm font-bold text-slate-200 mb-2">نام و نام خانوادگی <span class="text-secondary">*</span></label>
+                                <input id="rq-name" type="text" autocomplete="name" required x-model="form.name" maxlength="80"
+                                       class="kmpr-input" :class="errorField === 'name' && '!border-rose-500'" :aria-invalid="errorField === 'name'">
+                            </div>
+                            <div>
+                                <label for="rq-phone" class="block text-sm font-bold text-slate-200 mb-2">شماره موبایل <span class="text-secondary">*</span></label>
+                                <input id="rq-phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" required x-model="form.phone" maxlength="16"
+                                       class="kmpr-input text-left" placeholder="0912 123 4567" :class="errorField === 'phone' && '!border-rose-500'" :aria-invalid="errorField === 'phone'">
+                            </div>
+                            <div>
+                                <label for="rq-email" class="block text-sm font-bold text-slate-200 mb-2">ایمیل <span class="text-slate-400 font-normal">(اختیاری)</span></label>
+                                <input id="rq-email" type="email" autocomplete="email" dir="ltr" x-model="form.email" maxlength="120"
+                                       class="kmpr-input text-left" :class="errorField === 'email' && '!border-rose-500'" :aria-invalid="errorField === 'email'">
+                            </div>
+                            <div>
+                                <label for="rq-tg" class="block text-sm font-bold text-slate-200 mb-2">آیدی تلگرام <span class="text-slate-400 font-normal">(اختیاری)</span></label>
+                                <input id="rq-tg" type="text" dir="ltr" x-model="form.telegram" maxlength="40" class="kmpr-input text-left" placeholder="@username">
+                            </div>
+                        </div>
+                        <div>
+                            <span class="block text-sm font-bold text-slate-200 mb-3">ترجیح می‌دهید از چه راهی ارتباط بگیرم؟</span>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" role="radiogroup">
+                                <?php foreach ($kmpr_opts['channels'] as $id => $title) : ?>
+                                    <label class="flex items-center justify-center gap-2 px-3 py-3 min-h-12 rounded-xl border cursor-pointer text-sm font-bold whitespace-nowrap transition-colors"
+                                           :class="form.channel === '<?= esc_js($id); ?>' ? 'border-secondary bg-secondary/10 text-white' : 'border-white/10 bg-white/[0.02] text-slate-300 hover:border-white/25'">
+                                        <input type="radio" name="channel" value="<?= esc_attr($id); ?>" x-model="form.channel" class="sr-only">
+                                        <?= esc_html($title); ?>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed flex gap-2 items-start">
+                            <svg width="16" height="16" class="shrink-0 mt-0.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                            اطلاعات شما فقط برای پیگیری همین درخواست استفاده می‌شود و در اختیار هیچ شخص یا سرویس دیگری قرار نمی‌گیرد.
+                        </p>
+                    </fieldset>
+
                     </div>
 
-                    <div class="flex justify-between items-center pt-4 border-t border-slate-800">
-                        <button @click="goToStep(1)" class="px-5 py-2.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors cursor-pointer">
+                    <!-- Error -->
+                    <div x-show="errorMessage" x-cloak role="alert"
+                         class="shrink-0 mt-3 flex items-start gap-3 rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                        <svg width="18" height="18" class="shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                        <span x-text="errorMessage"></span>
+                    </div>
+
+                    <!-- Nav -->
+                    <div class="shrink-0 flex items-center justify-between gap-3 mt-4 pt-4 border-t border-white/10 transition-opacity duration-300" :class="step > 1 || form.type ? 'opacity-100' : 'opacity-40 pointer-events-none'">
+                        <button type="button" @click="go(step - 1)" x-show="step > 1"
+                                class="px-5 py-3 min-h-11 rounded-full text-sm font-bold bg-white/[0.06] border border-white/10 text-slate-200 hover:bg-white/10 transition-colors cursor-pointer whitespace-nowrap">
                             مرحله قبل
                         </button>
-                        <button @click="goToStep(3)" class="px-7 py-3 rounded-full text-xs sm:text-sm font-black bg-secondary hover:bg-secondary-hover text-white transition-all duration-300 shadow-lg shadow-secondary/30 cursor-pointer flex items-center gap-2">
-                            <span>مشاهده پیشنهاد معماری و خروجی هوشمند</span>
-                            <svg class="size-4 rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd" />
-                            </svg>
+                        <span x-show="step === 1"></span>
+                        <button type="submit" :disabled="status === 'sending'"
+                                class="inline-flex items-center gap-2 px-7 py-3 min-h-11 rounded-full text-sm font-black bg-secondary hover:bg-secondary-hover text-slate-950 hover:text-white transition-colors shadow-lg shadow-secondary/25 cursor-pointer whitespace-nowrap disabled:opacity-60 disabled:cursor-wait">
+                            <span x-show="step < 4">ادامه</span>
+                            <span x-show="step === 4 && status !== 'sending'">ثبت و ارسال درخواست</span>
+                            <span x-show="status === 'sending'" class="inline-flex items-center gap-2">
+                                <svg width="16" height="16" class="shrink-0 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".3" stroke-width="3"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3"/></svg>
+                                در حال ارسال…
+                            </span>
+                            <svg x-show="status !== 'sending'" width="16" height="16" class="shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.61l4.16 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.61 9.25h10.64A.75.75 0 0 1 17 10Z" clip-rule="evenodd"/></svg>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Success -->
+                <div x-show="status === 'done'" x-cloak x-transition.opacity.duration.500ms class="flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center p-6 sm:p-10 text-center" role="status">
+                    <div class="mx-auto size-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-5">
+                        <svg width="32" height="32" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                    <h3 class="text-2xl font-black text-white">درخواست شما ثبت شد</h3>
+                    <p class="text-slate-300 text-sm sm:text-base mt-3 max-w-md mx-auto leading-relaxed">
+                        ممنون <span x-text="form.name"></span>! درخواست مستقیم برای من ارسال شد و به‌زودی از طریق
+                        <b class="text-white" x-text="label('channels', form.channel)"></b> با شما در ارتباط خواهم بود.
+                    </p>
+                    <div class="inline-flex items-center gap-3 mt-6 px-5 py-3 rounded-2xl bg-white/[0.04] border border-white/10">
+                        <span class="text-xs text-slate-400">کد پیگیری</span>
+                        <code class="font-mono font-black text-secondary text-lg" dir="ltr" x-text="trackingCode"></code>
+                        <button type="button" @click="copyCode()" class="text-xs font-bold text-slate-300 hover:text-white cursor-pointer min-h-11 px-2" aria-label="کپی کد پیگیری">کپی</button>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-8">
+                        <a :href="directTelegram" target="_blank" rel="noopener"
+                           class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 min-h-11 rounded-full bg-sky-600 hover:bg-sky-500 text-white text-sm font-black whitespace-nowrap transition-colors">
+                            <svg width="16" height="16" class="shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m20.67 3.72-17.73 6.83c-1.21.49-1.2 1.16-.22 1.47l4.55 1.42 10.53-6.65c.5-.3.95-.14.58.19l-8.53 7.7-.31 4.68c.46 0 .66-.21.92-.46l2.21-2.15 4.6 3.4c.85.47 1.46.23 1.67-.79l3.02-14.23c.31-1.24-.47-1.8-1.28-1.43z"/></svg>
+                            پیگیری سریع در تلگرام
+                        </a>
+                        <button type="button" @click="reset()"
+                                class="w-full sm:w-auto px-6 py-3 min-h-11 rounded-full bg-white/[0.06] border border-white/10 text-slate-200 text-sm font-bold hover:bg-white/10 cursor-pointer whitespace-nowrap">
+                            ثبت درخواست دیگر
                         </button>
                     </div>
                 </div>
-
-                <!-- STEP 3: Smart Output & Direct 1-Click Action -->
-                <div x-show="step === 3"
-                     x-transition:enter="transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                     x-transition:enter-start="opacity-0 translate-x-12"
-                     x-transition:enter-end="opacity-100 translate-x-0"
-                     x-transition:leave="transition-all duration-300 ease-in absolute inset-x-0 top-0 pointer-events-none"
-                     x-transition:leave-start="opacity-100 translate-x-0"
-                     x-transition:leave-end="opacity-0 -translate-x-12">
-                    
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
-                            <h3 class="text-lg sm:text-xl font-black text-white">۳. پیشنهاد استراتژیک و مشخصات فنی سیستم شما</h3>
-                        </div>
-                        <button @click="goToStep(2)" class="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer transition-colors">
-                            <span>ویرایش مشخصات</span>
-                            <svg class="size-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Analysis Summary Box -->
-                    <div class="bg-slate-950/80 rounded-2xl p-6 sm:p-7 border border-slate-800 mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="flex flex-col gap-1.5 border-b md:border-b-0 md:border-e border-slate-800/80 pb-4 md:pb-0 md:pe-4">
-                            <span class="text-xs text-slate-400 font-bold">معماری نرم‌افزاری پیشنهادی:</span>
-                            <span class="text-sm font-black text-secondary font-mono" x-text="getArchitectureRecommendation()"></span>
-                            <span class="text-[11px] text-slate-500">طراحی اختصاصی ۱۰۰٪ بدون استفاده از قالب‌های سنگین</span>
-                        </div>
-
-                        <div class="flex flex-col gap-1.5 border-b md:border-b-0 md:border-e border-slate-800/80 pb-4 md:pb-0 md:pe-4">
-                            <span class="text-xs text-slate-400 font-bold">پشته فناوری و استانداردها:</span>
-                            <div class="flex flex-wrap gap-1.5 mt-1">
-                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Zero Bloatware</span>
-                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">Custom Architecture</span>
-                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">High Concurrency</span>
-                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">llms.txt Protocol</span>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col gap-2">
-                            <span class="text-xs text-slate-400 font-bold">تعهدات و تضمین مهندسی:</span>
-                            <span class="text-xs font-bold text-emerald-400 flex items-center gap-2">
-                                <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                                </svg>
-                                <span>سرعت لود زیر یک ثانیه (100 Core Web Vitals)</span>
-                            </span>
-                            <span class="text-xs font-bold text-slate-300 flex items-center gap-2">
-                                <svg class="size-4 shrink-0 text-secondary" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                                </svg>
-                                <span>تحویل بدون باگ + پشتیبانی مستقیم دولوپر</span>
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- 1-Click Direct Action -->
-                    <div class="bg-gradient-to-r from-secondary/15 via-slate-800/60 to-slate-900 border border-secondary/30 rounded-2xl p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-6">
-                        <div class="text-start">
-                            <h4 class="text-base sm:text-lg font-black text-white mb-1">آماده‌اید پروژه خود را با بالاترین کیفیت شروع کنید؟</h4>
-                            <p class="text-xs text-slate-300 leading-relaxed">
-                                خلاصه نیازمندی‌های بالا در قالب یک پیام ساختاریافته آماده شده است. با یک کلیک مستقیماً با خود توسعه‌دهنده در ارتباط باشید:
-                            </p>
-                        </div>
-
-                        <div class="flex flex-wrap items-center gap-3 shrink-0 w-full sm:w-auto">
-                            <!-- WhatsApp Action -->
-                            <a :href="getWhatsAppLink()"
-                               target="_blank"
-                               class="w-full sm:w-auto text-center px-6 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all shadow-lg shadow-emerald-600/30">
-                                <svg class="size-4" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.39-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.24-.75-.67-1.25-1.49-1.4-1.74-.14-.25-.02-.39.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.43 1.02 2.6c.13.17 1.77 2.7 4.28 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.12-.22-.19-.47-.32"/>
-                                </svg>
-                                <span>ارسال خلاصه در واتساپ</span>
-                            </a>
-
-                            <!-- Telegram Action -->
-                            <a :href="getTelegramLink()"
-                               target="_blank"
-                               class="w-full sm:w-auto text-center px-6 py-3.5 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all shadow-lg shadow-sky-600/30">
-                                <svg class="size-4" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="m20.665 3.717-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.313 4.673c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
-                                </svg>
-                                <span>تلگرام</span>
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-
             </div>
 
+            <!-- ============ Live Summary ============ -->
+            <aside class="flex flex-col gap-4 lg:h-[clamp(540px,calc(100svh-15rem),680px)] min-h-0" aria-label="پیش‌نمایش زنده سایت شما">
+                <?php if (!empty($kmpr_config['service'])) : ?>
+                    <p class="text-xs font-bold text-slate-400">خدمت انتخابی: <span class="text-secondary"><?= esc_html($kmpr_config['service']); ?></span></p>
+                <?php endif; ?>
+                <div class="hidden lg:block lg:min-h-0 lg:flex-1 lg:overflow-hidden rounded-3xl"><?php get_template_part('template-parts/services/site-preview'); ?></div>
+
+                <div class="shrink-0 bg-white/[0.02] border border-white/10 rounded-3xl p-5 lg:py-3">
+                    <h3 class="text-sm font-black text-white mb-3 lg:hidden">بعد از ارسال چه می‌شود؟</h3>
+                    <ol class="space-y-2.5 text-xs text-slate-300 leading-relaxed lg:hidden">
+                        <li class="flex gap-3"><span class="size-6 rounded-full bg-white/[0.06] text-secondary font-black flex items-center justify-center shrink-0">۱</span>درخواست را بررسی می‌کنم و ظرف چند ساعت کاری تماس می‌گیرم.</li>
+                        <li class="flex gap-3"><span class="size-6 rounded-full bg-white/[0.06] text-secondary font-black flex items-center justify-center shrink-0">۲</span>یک جلسه کوتاه رایگان برای شناخت دقیق نیازها.</li>
+                        <li class="flex gap-3"><span class="size-6 rounded-full bg-white/[0.06] text-secondary font-black flex items-center justify-center shrink-0">۳</span>پیشنهاد مکتوب شامل محدوده کار، زمان‌بندی و هزینه.</li>
+                    </ol>
+                    <div class="mt-3 pt-3 border-t border-white/10 lg:mt-0 lg:pt-0 lg:border-0 flex items-center justify-between gap-3">
+                        <span class="text-xs text-slate-400">عجله دارید؟</span>
+                        <a href="<?= esc_url(kmpr_contact_url('telegram')); ?>" target="_blank" rel="noopener"
+                           class="inline-flex items-center gap-1.5 text-xs font-black text-sky-400 hover:text-sky-300 whitespace-nowrap min-h-11">
+                            پیام مستقیم در تلگرام
+                        </a>
+                    </div>
+                </div>
+            </aside>
         </div>
     </div>
 </section>
-
-<script>
-function projectConfigurator() {
-    return {
-        step: 1,
-        selectedType: 'ecommerce',
-        selectedFeatures: ['speed', 'ai', 'seo'],
-        projectTypes: [
-            {
-                id: 'ecommerce',
-                title: 'فروشگاه اینترنتی فوق‌سریع و اختصاصی',
-                desc: 'سیستم خرید تک‌مرحله‌ای، بدون کرش، سرعت لود زیر ۱ ثانیه و هماهنگ با درگاه‌های بانکی و انبارداری.',
-                badge: 'High Conversion',
-                svg: '<svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>'
-            },
-            {
-                id: 'web_app',
-                title: 'وب‌اپلیکیشن و سامانه تحت وب (SaaS / Portal)',
-                desc: 'فرانت‌اند مدرن با معماری کامپوننت‌محور، ارتباط بلادرنگ REST API، داشبورد اختصاصی مشتریان و احراز هویت.',
-                badge: 'Custom Architecture',
-                svg: '<svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 8 3 3-3 3"/><path d="M15 14h.01"/></svg>'
-            },
-            {
-                id: 'corporate',
-                title: 'وب‌سایت شرکتی برندینگ و B2B',
-                desc: 'طراحی بصری لوکس، پرستیژ بین‌المللی برای معرفی خدمات و سازمان با بالاترین استانداردهای سئو تکنیکال.',
-                badge: 'Brand Authority',
-                svg: '<svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v8h4"/><path d="M18 9h2a2 2 0 0 1 2 2v11h-4"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>'
-            },
-            {
-                id: 'redesign',
-                title: 'ریدیزاین اساسی، رفع باگ و ارتقای پرفورمنس',
-                desc: 'مهاجرت از قالب‌های سنگین به کدنویسی تمیز اختصاصی با تضمین نمره ۱۰۰ لایت‌هاوس و صفر درصد کدهای زائد.',
-                badge: 'Speed Guarantee',
-                svg: '<svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>'
-            }
-        ],
-        featureList: [
-            { id: 'speed', title: 'تضمین لود زیر ۱ ثانیه (Core Web Vitals)', desc: 'کدهای اختصاصی، تمیز و بدون پلاگین‌های زائد' },
-            { id: 'ai', title: 'بهینه‌سازی برای هوش مصنوعی (llms.txt)', desc: 'ایندکسینگ خودکار توسط مدل‌های ChatGPT و Claude' },
-            { id: 'seo', title: 'سئو تکنیکال و معماری عمیق اسکیما', desc: 'داده‌های ساختاریافته برای بیشترین رتبه در نتایج جستجو' },
-            { id: 'pwa', title: 'طراحی واکنش‌گرا و تجربه شبیه اپ (PWA)', desc: 'نویگیشن روان و کارکرد بی‌نقص روی موبایل و تبلت' },
-            { id: 'api', title: 'اتصال اختصاصی به سیستم‌های مالی / CRM', desc: 'همگام‌سازی اتوماتیک سفارشات، مشتریان و کالاها' },
-            { id: 'security', title: 'امنیت پیشرفته و معماری ضد نفوذ', desc: 'کدهای استاندارد با رعایت سخت‌گیرانه‌ترین تدابیر امنیتی' }
-        ],
-
-        goToStep(s) {
-            this.step = s;
-        },
-
-        toggleFeature(id) {
-            if (this.selectedFeatures.includes(id)) {
-                this.selectedFeatures = this.selectedFeatures.filter(f => f !== id);
-            } else {
-                this.selectedFeatures.push(id);
-            }
-        },
-
-        getArchitectureRecommendation() {
-            if (this.selectedType === 'web_app') return 'Next.js 15 Full-Stack + Headless API Engine';
-            if (this.selectedType === 'ecommerce') return 'Custom High-Velocity E-Commerce Engine';
-            if (this.selectedType === 'redesign') return 'Clean Architecture (0 Bloatware)';
-            return 'Bespoke Modern Enterprise Architecture';
-        },
-
-        getFormattedSummary() {
-            const typeObj = this.projectTypes.find(p => p.id === this.selectedType);
-            const typeName = typeObj ? typeObj.title : 'پروژه اختصاصی';
-            const features = this.selectedFeatures.join(', ');
-            return `سلام، من از بخش پیکربندی هوشمند سایت، پروژه با مشخصات زیر را انتخاب کردم:\n• نوع پروژه: ${typeName}\n• معماری پیشنهادی: ${this.getArchitectureRecommendation()}\n• اولویت‌های کلیدی: ${features}\nلطفاً در خصوص برآورد هزینه و مراحل شروع راهنمایی بفرمایید.`;
-        },
-
-        getWhatsAppLink() {
-            const text = encodeURIComponent(this.getFormattedSummary());
-            const phone = '09358088118';
-            return `https://wa.me/98${phone.substring(1)}?text=${text}`;
-        },
-
-        getTelegramLink() {
-            const text = encodeURIComponent(this.getFormattedSummary());
-            return `https://t.me/koroshmpr?text=${text}`;
-        }
-    };
-}
-</script>

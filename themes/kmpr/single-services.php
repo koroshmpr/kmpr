@@ -1,254 +1,294 @@
-<?php get_header();
+<?php
+/**
+ * Single service — conversion-focused landing page.
+ * Fields: «اطلاعات خدمت» (per service) + labels in «تنظیمات سایت › صفحه خدمات».
+ */
+get_header();
 
 while (have_posts()) :
     the_post();
+    $post_id      = get_the_ID();
+    $title        = get_the_title();
+    $badge        = get_field('services_badge');
+    $desc         = get_field('services_description') ?: wp_trim_words(get_the_excerpt(), 30);
+    $price_raw    = get_field('starting_price');
+    $price        = $price_raw ?: kmpr_srv_opt('srvs_price_fallback');
+    $duration     = get_field('duration');
+    $type         = get_field('request_type');
+    $deliverables = kmpr_srv_rows('deliverables');
+    $audience     = kmpr_lines(get_field('audience'));
+    $steps        = kmpr_srv_rows('service_steps', null, 't');
+    $faq          = kmpr_srv_rows('service_faq', null, 'question');
+    $plans        = kmpr_srv_on(get_field('Proposal_switch')) ? kmpr_srv_rows('proposal', null, 'proposal_title') : array();
+    $proof_ids    = kmpr_srv_portfolio_ids($post_id, 6);
+    $archive_url  = get_post_type_archive_link('services') ?: home_url('/services/');
+    $pick         = 'data-srv-pick data-type="' . esc_attr($type) . '" data-service="' . esc_attr($title) . '"';
+    $permalink    = get_permalink();
+
+    /* Service JSON-LD (same @id as the Yoast graph node so they merge) */
+    $service_schema = array(
+        '@context'    => 'https://schema.org',
+        '@type'       => 'Service',
+        '@id'         => $permalink . '#service',
+        'name'        => $title,
+        'url'         => $permalink,
+        'description' => wp_strip_all_tags($desc),
+        'serviceType' => $title,
+        'inLanguage'  => 'fa-IR',
+        'areaServed'  => array('@type' => 'Country', 'name' => 'Iran'),
+        'provider'    => array(
+            '@type' => 'Person',
+            '@id'   => untrailingslashit(home_url('/')) . '/#person',
+            'name'  => 'کوروش محمدپور',
+            'url'   => home_url('/'),
+        ),
+    );
+    if (has_post_thumbnail()) {
+        $service_schema['image'] = get_the_post_thumbnail_url($post_id, 'full');
+    }
+    if ($deliverables) {
+        $service_schema['hasOfferCatalog'] = array(
+            '@type'           => 'OfferCatalog',
+            'name'            => 'خروجی‌های ' . $title,
+            'itemListElement' => array_map(function ($d) {
+                return array('@type' => 'Offer', 'itemOffered' => array('@type' => 'Service', 'name' => wp_strip_all_tags($d['title']), 'description' => wp_strip_all_tags($d['desc'] ?? '')));
+            }, $deliverables),
+        );
+    }
     ?>
-    <!-- Hero Header -->
-    <section class="relative min-h-[42vh] lg:min-h-[52vh] flex items-center overflow-hidden bg-slate-950 text-white select-none">
-        <!-- Ambient Glow -->
-        <div class="absolute top-1/3 -start-10 w-80 h-80 bg-secondary/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-10 end-10 w-80 h-80 bg-blue-600/15 rounded-full blur-[100px] pointer-events-none"></div>
 
-        <img data-aos="fade-down" data-aos-duration="1000" 
-             class="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-25 select-none scale-105"
-             src="<?= esc_url(get_the_post_thumbnail_url()); ?>"
-             alt="<?= esc_attr(get_the_title()); ?>">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/40"></div>
-        
-        <div class="container mx-auto px-4 sm:px-6 relative z-10 text-center mt-10">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md mb-4">
-                <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-                <span class="text-xs font-black uppercase text-slate-200 tracking-wider">خدمات تخصصی</span>
-            </div>
-            <h1 class="text-3xl lg:text-5xl font-black text-white tracking-tight drop-shadow-lg max-w-3xl mx-auto leading-tight" data-aos="zoom-in">
-                <?= get_the_title(); ?>
-            </h1>
-        </div>
-    </section>
+    <article id="service-<?= (int) $post_id; ?>" <?php post_class('relative'); ?>>
+        <!-- Hero -->
+        <header class="relative isolate overflow-hidden pt-14 pb-16 lg:pt-20 lg:pb-24">
+            <div class="absolute inset-0 hero-grid -z-10" aria-hidden="true"></div>
+            <div class="aurora w-[34rem] h-[34rem] -top-40 -start-40 bg-secondary/20 -z-10" aria-hidden="true"></div>
+            <div class="aurora w-[26rem] h-[26rem] -bottom-40 end-0 bg-indigo-600/20 -z-10 [animation-delay:-6s]" aria-hidden="true"></div>
 
-    <!-- Content Area -->
-    <section class="container mx-auto px-4 sm:px-6 -mt-16 relative z-20 pb-16">
-        <div class="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-12 shadow-xl max-w-4xl mx-auto text-start">
-            <!-- Share buttons -->
-            <div class="border-b border-slate-200/60 pb-6 mb-6">
-                <?php
-                get_template_part('template-parts/share-button', null, array(
-                    'headingClass' => 'text-xs font-bold text-slate-500',
-                    'class'        => 'gap-3 justify-start',
-                ));
-                ?>
-            </div>
-            
-            <!-- Body content -->
-            <article class="prose max-w-none text-slate-700 leading-loose text-justify text-base lg:text-lg">
-                <?= the_content(); ?>
-            </article>
-        </div>
-    </section>
-
-    <!-- Proposal / Pricing Tiers -->
-    <?php if (get_field('Proposal_switch') == 'yes') { ?>
-        <section class="bg-slate-50 border-y border-slate-200/80 py-16 lg:py-24">
             <div class="container mx-auto px-4 sm:px-6">
-                <div class="text-center max-w-2xl mx-auto mb-16">
-                    <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-2">تعرفه‌ها و پلن‌ها</span>
-                    <h2 class="text-2xl lg:text-4xl font-black text-slate-900 mb-4">طرح‌ها و تعرفه‌ها</h2>
-                    <div class="h-1.5 w-16 bg-secondary mx-auto rounded-full"></div>
-                </div>
+                <nav aria-label="مسیر صفحه" class="mb-10" data-aos="fade-down">
+                    <ol class="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-400">
+                        <li><a href="<?= esc_url(home_url('/')); ?>" class="hover:text-secondary transition-colors">خانه</a></li>
+                        <li aria-hidden="true">/</li>
+                        <li><a href="<?= esc_url($archive_url); ?>" class="hover:text-secondary transition-colors">خدمات</a></li>
+                        <li aria-hidden="true">/</li>
+                        <li class="text-slate-200" aria-current="page"><?= esc_html($title); ?></li>
+                    </ol>
+                </nav>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
-                    <?php
-                    if (have_rows('proposal')) {
-                        while (have_rows('proposal')): the_row();
-                            $rowIndex = get_row_index();
-                            $offer = get_sub_field('proposal_offer'); 
-                            
-                            // Define highlight classes for "best offer" tier
-                            $card_bg = ($offer == 'yes') ? 'bg-slate-900 text-white scale-105 border-transparent ring-4 ring-secondary/30 shadow-2xl' : 'bg-white text-slate-800 border-slate-200/80 shadow-md';
-                            $row_bg = ($offer == 'yes') ? 'bg-white/10 text-slate-100' : 'bg-slate-100 text-slate-700';
-                            $title_color = ($offer == 'yes') ? 'text-secondary' : 'text-slate-900';
-                            
-                            $anim = '';
-                            if (($rowIndex) == 1) {
-                                $anim = 'data-aos="fade-right" data-aos-delay="100"';
-                            } elseif (($rowIndex) == 2) {
-                                $anim = 'data-aos="fade-up"';
-                            } elseif (($rowIndex) == 3) {
-                                $anim = 'data-aos="fade-left" data-aos-delay="100"';
-                            }
-                            ?>
-                            <div <?= $anim; ?> class="rounded-3xl border p-8 flex flex-col justify-between text-start gap-6 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 <?= $card_bg; ?>">
-                                <div class="text-center border-b border-slate-200/60 pb-6">
-                                    <?php if ($offer == 'yes') : ?>
-                                        <span class="inline-block bg-secondary text-white text-[10px] font-black uppercase px-3 py-1 rounded-full mb-3 shadow-xs">
-                                            پیشنهاد ویژه
-                                        </span>
-                                    <?php endif; ?>
-                                    <h3 class="text-xl lg:text-2xl font-black mb-2 <?= $title_color; ?>"><?= get_sub_field('proposal_title'); ?></h3>
-                                    <?php if (get_sub_field('proposal_description')) { ?>
-                                        <p class="text-xs opacity-80 mt-2 font-medium"><?= get_sub_field('proposal_description'); ?></p>
-                                    <?php }; ?>
-                                </div>
-                                
-                                <div class="flex flex-col gap-3 flex-1 justify-start">
-                                    <?php while (have_rows('proposal_row')): the_row(); ?>
-                                        <?php $propertyValue = get_sub_field('Property_value'); ?>
-                                        <div class="flex justify-between items-center px-4 py-3 rounded-xl text-xs font-bold <?= $row_bg; ?>">
-                                            <span class="opacity-90"><?= get_sub_field('Property_label'); ?></span>
-                                            <?php if ($propertyValue) { ?>
-                                                <span class="text-secondary font-black"><?= $propertyValue; ?></span>
-                                            <?php } ?>
-                                        </div>
-                                    <?php endwhile; ?>
-                                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                    <div class="lg:col-span-7">
+                        <div class="flex flex-wrap items-center gap-3 mb-6" data-aos="fade-up">
+                            <span class="size-14 rounded-2xl bg-secondary/10 border border-secondary/25 text-secondary flex items-center justify-center shrink-0"><?= kmpr_service_icon($post_id, 28); ?></span>
+                            <?php if ($badge) : ?>
+                                <span class="px-3 py-1.5 rounded-full bg-secondary/15 text-secondary text-xs font-black"><?= esc_html($badge); ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <h1 class="text-[2.1rem] leading-[1.35] sm:text-5xl sm:leading-[1.3] xl:text-6xl xl:leading-[1.25] font-black text-white tracking-tight" data-split><?= esc_html($title); ?></h1>
+                        <p class="mt-6 max-w-[42rem] text-base lg:text-lg text-slate-300 leading-loose" data-aos="fade-up" data-aos-delay="250"><?= esc_html($desc); ?></p>
+                        <div class="mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-3" data-aos="fade-up" data-aos-delay="400">
+                            <a href="#smart-configurator" <?= $pick; ?> data-magnetic
+                               class="group inline-flex items-center justify-center gap-2.5 min-h-11 px-8 py-3.5 rounded-full bg-secondary hover:bg-amber-500 text-slate-950 font-black text-sm sm:text-base whitespace-nowrap shadow-[0_10px_40px_-10px] shadow-secondary/60 transition-colors">
+                                <?= esc_html(kmpr_srv_opt('srvs_cta')); ?>
+                                <svg width="18" height="18" class="shrink-0 group-hover:-translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.61l4.16 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.61 9.25h10.64A.75.75 0 0 1 17 10Z" clip-rule="evenodd"/></svg>
+                            </a>
+                            <?php if ($tg = kmpr_contact_url('telegram')) : ?>
+                                <a href="<?= esc_url($tg); ?>" target="_blank" rel="noopener"
+                                   class="inline-flex items-center justify-center gap-2 min-h-11 px-8 py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/15 hover:border-white/30 text-slate-100 font-bold text-sm sm:text-base whitespace-nowrap transition-colors">
+                                    <svg width="18" height="18" class="shrink-0 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                                    مشاوره سریع در تلگرام
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
 
-                                <div class="mt-6 text-center">
-                                    <a href="#contact" class="inline-block w-full text-center py-4 rounded-2xl font-black text-xs sm:text-sm transition-all duration-300 <?= ($offer == 'yes') ? 'bg-secondary hover:bg-secondary-hover text-white shadow-lg shadow-secondary/30 hover:scale-[1.02]' : 'bg-primary hover:bg-slate-800 text-white shadow-md hover:scale-[1.02]'; ?>">
-                                        سفارش و مشاوره رایگان
-                                    </a>
-                                </div>
+                    <!-- Fact card -->
+                    <aside class="lg:col-span-5" data-aos="fade-left" data-aos-delay="300" aria-label="خلاصه خدمت">
+                        <div class="border-glow rounded-3xl">
+                            <div class="rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl p-6 sm:p-8">
+                                <dl class="grid grid-cols-2 gap-5">
+                                    <div class="col-span-2 sm:col-span-1">
+                                        <dt class="text-xs font-bold text-slate-400 mb-1.5">شروع هزینه</dt>
+                                        <dd class="text-xl font-black text-white"><?= esc_html($price); ?></dd>
+                                    </div>
+                                    <div class="col-span-2 sm:col-span-1">
+                                        <dt class="text-xs font-bold text-slate-400 mb-1.5">زمان تقریبی</dt>
+                                        <dd class="text-xl font-black text-white"><?= esc_html($duration ?: 'بعد از جلسه اول'); ?></dd>
+                                    </div>
+                                </dl>
+                                <?php if ($deliverables) : ?>
+                                    <ul class="mt-6 pt-6 border-t border-white/10 space-y-3">
+                                        <?php foreach (array_slice($deliverables, 0, 4) as $d) : ?>
+                                            <li class="flex items-start gap-2.5 text-sm text-slate-200">
+                                                <svg width="18" height="18" class="shrink-0 mt-0.5 text-secondary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 4.15a.75.75 0 0 1 .15 1.05l-8 10.5a.75.75 0 0 1-1.13.08l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.9 3.9 7.47-9.82a.75.75 0 0 1 1.05-.15Z" clip-rule="evenodd"/></svg>
+                                                <span><?= esc_html($d['title']); ?></span>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php endif; ?>
+                                <p class="mt-6 pt-5 border-t border-white/10 flex items-center gap-2 text-xs font-bold text-slate-300">
+                                    <span class="size-2 rounded-full bg-emerald-400 shrink-0"></span>
+                                    <?= esc_html(kmpr_field('response_time', null, 'option')); ?> · همکاری مستقیم با خودم
+                                </p>
                             </div>
-                        <?php endwhile;
-                    } ?>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </header>
+
+        <!-- Body content -->
+        <?php if (trim(get_the_content())) : ?>
+            <section class="relative py-16 lg:py-24 border-t border-white/10" aria-label="توضیحات خدمت">
+                <div class="container mx-auto px-4 sm:px-6">
+                    <div class="srv-prose prose prose-invert prose-slate prose-base lg:prose-lg max-w-[48rem] mx-auto" data-aos="fade-up">
+                        <?php the_content(); ?>
+                    </div>
+                </div>
+            </section>
+        <?php endif; ?>
+
+        <!-- Deliverables + audience -->
+        <?php if ($deliverables || $audience) : ?>
+            <section class="relative py-20 lg:py-28 border-t border-white/10" aria-labelledby="srv-deliver-title">
+                <div class="container mx-auto px-4 sm:px-6">
+                    <?php kmpr_srv_head('خروجی‌ها', kmpr_srv_opt('srvs_deliver_title'), '', 'srv-deliver-title'); ?>
+                    <?php if ($deliverables) : ?>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5" data-stagger="70">
+                            <?php foreach ($deliverables as $i => $d) : ?>
+                                <div class="spotlight p-6 sm:p-7 rounded-3xl bg-white/[0.025] border border-white/10 hover:border-secondary/40 transition-colors" data-aos="fade-up">
+                                    <span class="text-sm font-black text-secondary"><?= esc_html(kmpr_fa_num(sprintf('%02d', $i + 1))); ?></span>
+                                    <h3 class="mt-3 text-lg font-black text-white mb-2"><?= esc_html($d['title']); ?></h3>
+                                    <?php if (!empty($d['desc'])) : ?>
+                                        <p class="text-sm text-slate-300 leading-loose"><?= esc_html($d['desc']); ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($audience) : ?>
+                        <div class="mt-12 lg:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-secondary/10 via-white/[0.02] to-transparent border border-secondary/20" data-aos="fade-up">
+                            <div class="lg:col-span-4">
+                                <h3 class="text-2xl sm:text-3xl font-black text-white leading-snug"><?= esc_html(kmpr_srv_opt('srvs_audience_title')); ?></h3>
+                                <a href="#smart-configurator" <?= $pick; ?> class="mt-6 inline-flex items-center justify-center min-h-11 px-6 py-3 rounded-full bg-secondary hover:bg-amber-500 text-slate-950 text-sm font-black whitespace-nowrap transition-colors">
+                                    بله، همین را می‌خواهم
+                                </a>
+                            </div>
+                            <ul class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                                <?php foreach ($audience as $line) : ?>
+                                    <li class="flex items-start gap-3 text-sm sm:text-base text-slate-200 leading-relaxed">
+                                        <span class="mt-0.5 size-6 shrink-0 rounded-full bg-secondary/20 text-secondary flex items-center justify-center">
+                                            <svg width="14" height="14" class="shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 4.15a.75.75 0 0 1 .15 1.05l-8 10.5a.75.75 0 0 1-1.13.08l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.9 3.9 7.47-9.82a.75.75 0 0 1 1.05-.15Z" clip-rule="evenodd"/></svg>
+                                        </span>
+                                        <?= esc_html($line); ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </section>
+        <?php endif; ?>
+
+        <?php
+        get_template_part('template-parts/services/steps', null, array(
+            'steps'  => $steps,
+            'kicker' => 'مراحل کار',
+            'title'  => kmpr_srv_opt('srvs_steps_title'),
+            'text'   => $duration ? 'زمان تقریبی کل پروژه: ' . $duration : '',
+            'id'     => 'srv-steps-title',
+        ));
+        ?>
+
+        <!-- Plans -->
+        <?php if ($plans) : ?>
+            <section class="relative py-20 lg:py-28 border-t border-white/10" aria-labelledby="srv-plans-title">
+                <div class="container mx-auto px-4 sm:px-6">
+                    <?php kmpr_srv_head('پلن‌ها', kmpr_srv_opt('srvs_plans_title'), '', 'srv-plans-title', true); ?>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 max-w-[72rem] mx-auto items-stretch" data-stagger="100">
+                        <?php foreach ($plans as $plan) :
+                            $hot  = kmpr_srv_on($plan['proposal_offer'] ?? '');
+                            $rows = array_filter((array) ($plan['proposal_row'] ?? array()), function ($r) {
+                                return !empty($r['Property_label']);
+                            }); ?>
+                            <div class="relative flex flex-col rounded-3xl p-7 sm:p-8 transition-colors <?= $hot ? 'bg-slate-900 border-2 border-secondary/60 shadow-[0_20px_60px_-20px] shadow-secondary/40 lg:-translate-y-3' : 'bg-white/[0.025] border border-white/10 hover:border-white/25'; ?>" data-aos="fade-up">
+                                <?php if ($hot) : ?>
+                                    <span class="absolute -top-3.5 start-7 px-3 py-1 rounded-full bg-secondary text-slate-950 text-xs font-black whitespace-nowrap">پیشنهاد من</span>
+                                <?php endif; ?>
+                                <h3 class="text-xl sm:text-2xl font-black <?= $hot ? 'text-secondary' : 'text-white'; ?>"><?= esc_html($plan['proposal_title']); ?></h3>
+                                <?php if (!empty($plan['proposal_description'])) : ?>
+                                    <p class="mt-2 text-sm text-slate-300 leading-relaxed"><?= esc_html($plan['proposal_description']); ?></p>
+                                <?php endif; ?>
+                                <ul class="mt-6 pt-6 border-t border-white/10 space-y-3 flex-1">
+                                    <?php foreach ($rows as $row) : ?>
+                                        <li class="flex items-start justify-between gap-3 text-sm">
+                                            <span class="flex items-start gap-2.5 text-slate-200">
+                                                <svg width="18" height="18" class="shrink-0 mt-0.5 text-secondary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 4.15a.75.75 0 0 1 .15 1.05l-8 10.5a.75.75 0 0 1-1.13.08l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.9 3.9 7.47-9.82a.75.75 0 0 1 1.05-.15Z" clip-rule="evenodd"/></svg>
+                                                <?= esc_html($row['Property_label']); ?>
+                                            </span>
+                                            <?php if (!empty($row['Property_value'])) : ?>
+                                                <bdi class="font-black text-white whitespace-nowrap"><?= esc_html(kmpr_fa_num(trim($row['Property_value']))); ?></bdi>
+                                            <?php endif; ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <a href="#smart-configurator" <?= $pick; ?> data-plan="<?= esc_attr($plan['proposal_title']); ?>"
+                                   class="mt-8 inline-flex items-center justify-center w-full min-h-11 px-6 py-3 rounded-full text-sm font-black whitespace-nowrap transition-colors <?= $hot ? 'bg-secondary hover:bg-amber-500 text-slate-950' : 'bg-white/[0.05] hover:bg-secondary border border-white/10 hover:border-secondary text-white hover:text-slate-950'; ?>">
+                                    انتخاب این پلن
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <p class="mt-10 text-center text-sm text-slate-400" data-aos="fade-up"><?= esc_html(kmpr_srv_opt('srvs_plans_note')); ?></p>
+                </div>
+            </section>
+        <?php endif; ?>
+
+        <?php
+        get_template_part('template-parts/services/proof', null, array(
+            'ids'    => $proof_ids,
+            'kicker' => 'نمونه‌کارها',
+            'title'  => kmpr_srv_opt('srvs_work_title'),
+            'id'     => 'srv-proof-title',
+        ));
+
+        get_template_part('template-parts/services/faq', null, array(
+            'items'  => $faq,
+            'kicker' => 'سوالات متداول',
+            'title'  => kmpr_srv_opt('srvs_faq_title'),
+            'id'     => 'srv-faq-title',
+            'schema' => true,
+        ));
+        ?>
+        <script type="application/ld+json"><?= wp_json_encode($service_schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG); ?></script>
+    </article>
+
+    <!-- Other services -->
+    <?php
+    $others = new WP_Query(array(
+        'post_type'      => 'services',
+        'post_status'    => 'publish',
+        'posts_per_page' => 3,
+        'post__not_in'   => array($post_id),
+        'orderby'        => array('menu_order' => 'ASC', 'date' => 'ASC'),
+        'no_found_rows'  => true,
+    ));
+    if ($others->have_posts()) : ?>
+        <section class="relative py-20 lg:py-28 border-t border-white/10" aria-labelledby="srv-other-title">
+            <div class="container mx-auto px-4 sm:px-6">
+                <?php kmpr_srv_head('خدمات دیگر', kmpr_srv_opt('srvs_other_title'), '', 'srv-other-title'); ?>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6" data-stagger="90">
+                    <?php while ($others->have_posts()) : $others->the_post(); ?>
+                        <div data-aos="fade-up"><?php get_template_part('template-parts/services/services-card'); ?></div>
+                    <?php endwhile; ?>
                 </div>
             </div>
         </section>
-    <?php } ?>
+    <?php endif;
+    wp_reset_postdata();
 
-    <!-- Related Portfolios Slider -->
-    <section class="container mx-auto px-4 sm:px-6 py-16 overflow-hidden">
-        <?php
-        $current_service_id = get_the_ID();
-        $args = array(
-            'post_type'  => 'portfolio',
-            'meta_query' => array(
-                array(
-                    'key'     => 'relation-service',
-                    'value'   => '"' . $current_service_id . '"',
-                    'compare' => 'LIKE'
-                )
-            )
-        );
+    get_template_part('template-parts/services/smart-configurator', null, array('service' => $title, 'type' => $type));
+    get_template_part('template-parts/services/pick-script');
+endwhile;
 
-        $related_portfolios = new WP_Query($args);
-
-        if ($related_portfolios->have_posts()):
-            ?>
-            <div class="flex items-center justify-between border-b border-slate-200/80 pb-4 mb-8">
-                <div>
-                    <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-1">کارهای انجام شده</span>
-                    <h3 class="text-2xl font-black text-slate-900 text-start">نمونه کارهای مرتبط با این خدمت</h3>
-                </div>
-            </div>
-            
-            <div class="swiper post-slider w-full !overflow-visible cursor-grab active:cursor-grabbing"
-                 data-index="related-portfolios" 
-                 data-perfix="relport" 
-                 data-space="24" 
-                 data-loop="1" 
-                 data-perpage="3" 
-                 data-laptop="3" 
-                 data-tablet="2" 
-                 data-mobile="1.15">
-                <div class="swiper-wrapper">
-                    <?php
-                    while ($related_portfolios->have_posts()): $related_portfolios->the_post();
-                        ?>
-                        <div class="swiper-slide h-auto">
-                            <?php
-                            get_template_part('template-parts/portfolio/portfolio-card', null, array(
-                                'class' => 'h-full'
-                            ));
-                            ?>
-                        </div>
-                    <?php endwhile; ?>
-                </div>
-                
-                <!-- Swiper Controls -->
-                <div class="flex items-center justify-center gap-4 mt-8">
-                    <!-- Prev Button (pointing right in RTL) -->
-                    <button class="relport-prev-related-portfolios p-2.5 text-slate-700 hover:text-white bg-white hover:bg-secondary border border-slate-200 rounded-full transition-all cursor-pointer shadow-2xs" aria-label="Previous Slide">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-                        </svg>
-                    </button>
-                    <div class="swiper-pagination relport-pagination-related-portfolios flex gap-1.5 items-center"></div>
-                    <!-- Next Button (pointing left in RTL) -->
-                    <button class="relport-next-related-portfolios p-2.5 text-slate-700 hover:text-white bg-white hover:bg-secondary border border-slate-200 rounded-full transition-all cursor-pointer shadow-2xs" aria-label="Next Slide">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        <?php
-        endif;
-        wp_reset_postdata();
-        ?>
-    </section>
-
-    <!-- Other Services Carousel -->
-    <section class="container mx-auto px-4 sm:px-6 py-16 overflow-hidden border-t border-slate-200/80">
-        <div class="flex items-center justify-between pb-4 mb-8">
-            <div>
-                <span class="text-xs font-black uppercase text-secondary tracking-widest block mb-1">دیگر خدمات</span>
-                <h3 class="text-2xl font-black text-slate-900 text-start">سایر خدمات مجموعه</h3>
-            </div>
-        </div>
-        
-        <div class="swiper post-slider w-full !overflow-visible cursor-grab active:cursor-grabbing"
-             data-index="other-services" 
-             data-perfix="services" 
-             data-space="24" 
-             data-loop="1" 
-             data-perpage="3" 
-             data-laptop="3" 
-             data-tablet="2" 
-             data-mobile="1.15">
-            <div class="swiper-wrapper">
-                <?php
-                global $post;
-                $current_post_id = $post->ID;
-                $args = array(
-                    'post_type'           => 'services',
-                    'post_status'         => 'publish',
-                    'order'               => 'DESC',
-                    'posts_per_page'      => -1,
-                    'ignore_sticky_posts' => true,
-                    'post__not_in'        => array($current_post_id)
-                );
-                $loop = new WP_Query($args);
-                if ($loop->have_posts()) :
-                    while ($loop->have_posts()) : $loop->the_post(); ?>
-                        <div class="swiper-slide h-auto">
-                            <?php get_template_part('template-parts/services/services-card'); ?>
-                        </div>
-                    <?php endwhile;
-                endif;
-                wp_reset_postdata(); ?>
-            </div>
-            
-            <!-- Swiper Controls -->
-            <div class="flex items-center justify-center gap-4 mt-8">
-                <!-- Prev Button (pointing right in RTL) -->
-                <button class="services-prev-other-services p-2.5 text-slate-700 hover:text-white bg-white hover:bg-secondary border border-slate-200 rounded-full transition-all cursor-pointer shadow-2xs" aria-label="Previous Slide">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-                    </svg>
-                </button>
-                <div class="swiper-pagination services-pagination-other-services flex gap-1.5 items-center"></div>
-                <!-- Next Button (pointing left in RTL) -->
-                <button class="services-next-other-services p-2.5 text-slate-700 hover:text-white bg-white hover:bg-secondary border border-slate-200 rounded-full transition-all cursor-pointer shadow-2xs" aria-label="Next Slide">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Smart Interactive Project Configurator Section (Replaces Static Form) -->
-    <?php get_template_part('template-parts/services/smart-configurator'); ?>
-<?php endwhile;
-wp_reset_query();
-get_footer(); ?>
+get_footer();

@@ -1,0 +1,100 @@
+/* games: xo */
+.xo-grid {
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 0.6rem;
+	width: min(100%, 100cqh, 26rem);
+	aspect-ratio: 1;
+	max-height: 100%;
+}
+.mx-board {
+	container-type: size;
+}
+.xo-cell {
+	position: relative;
+	border-radius: 1.25rem;
+	background: rgb(255 255 255 / 0.035);
+	border: 1px solid rgb(255 255 255 / 0.1);
+	transition: background-color 0.2s, border-color 0.2s, transform 0.15s;
+	-webkit-tap-highlight-color: transparent;
+}
+.xo-cell:not(:disabled):hover {
+	background: rgb(255 255 255 / 0.07);
+	border-color: rgb(245 158 11 / 0.45);
+}
+.xo-cell:not(:disabled):active {
+	transform: scale(0.96);
+}
+.xo-cell:focus-visible {
+	outline: 2px solid #f59e0b;
+	outline-offset: 2px;
+}
+.xo-cell.is-win {
+	background: rgb(245 158 11 / 0.14);
+	border-color: rgb(245 158 11 / 0.6);
+}
+.xo-num {
+	position: absolute;
+	top: 0.4rem;
+	inset-inline-start: 0.55rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+	color: rgb(148 163 184 / 0.6);
+}
+.xo-mark {
+	position: absolute;
+	inset: 8%;
+	width: 84%;
+	height: 84%;
+	fill: none;
+	stroke-width: 11;
+	stroke-linecap: round;
+}
+.xo-mark path,
+.xo-mark circle {
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	animation: xo-draw 0.35s ease-out forwards;
+}
+.xo-mark path:nth-child(2) {
+	animation-delay: 0.15s;
+}
+.xo-x {
+	stroke: #f59e0b;
+	filter: drop-shadow(0 0 12px rgb(245 158 11 / 0.55));
+}
+.xo-o {
+	stroke: #38bdf8;
+	filter: drop-shadow(0 0 12px rgb(56 189 248 / 0.55));
+}
+.xo-line {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+.xo-line line {
+	stroke: #fff;
+	stroke-width: 8;
+	stroke-linecap: round;
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	opacity: 0;
+}
+.has-line .xo-line line {
+	opacity: 0.9;
+	animation: xo-draw 0.45s 0.2s ease-out forwards;
+}
+@keyframes xo-draw {
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.xo-mark path,
+	.xo-mark circle,
+	.has-line .xo-line line {
+		animation: none;
+		stroke-dashoffset: 0;
+	}
+}

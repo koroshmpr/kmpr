@@ -33,6 +33,11 @@ define('KMPR_INC', KMPR_DIR . '/inc/');
 require_once KMPR_INC . 'setup.php';
 
 /**
+ * Custom post types & taxonomies: portfolio, services, rating (formerly mu-plugins/custom-post-types.php)
+ */
+require_once KMPR_INC . 'post-types.php';
+
+/**
  * Assets & Fonts: Tailwind CSS, deferred Alpine/Swiper JS, font preloading
  */
 require_once KMPR_INC . 'assets.php';
@@ -74,7 +79,7 @@ require_once KMPR_INC . 'search-route.php';
 require_once KMPR_INC . 'schema-manager.php';
 
 /**
- * LLMs & AI Engine: Automated llms.txt & llms-full.txt generator with WP admin dashboard
+ * LLMs & AI: /llms.txt, /llms-full.txt, per-page Markdown (<url>.md), AI-crawler policy (heavy parts lazy-loaded from inc/llms/)
  */
 require_once KMPR_INC . 'llms-manager.php';
 
@@ -82,3 +87,45 @@ require_once KMPR_INC . 'llms-manager.php';
  * Online Resume Manager: ACF field groups, dynamic data, and PDF sync for /resume/
  */
 require_once KMPR_INC . 'resume-manager.php';
+
+/**
+ * Project Requests: lead capture CPT, secured REST endpoint, Telegram Bot notifications & admin workflow
+ */
+require_once KMPR_INC . 'project-requests.php';
+
+/**
+ * Presentation helpers: experience years, portfolio covers, request URL
+ */
+require_once KMPR_INC . 'home-helpers.php';
+
+/**
+ * ACF schema in code + kmpr_field()/kmpr_contact() helpers (all front-end copy editable from the panel)
+ */
+require_once KMPR_INC . 'acf-fields.php';
+
+/**
+ * Feature modules: blog (course/series engine + fields), portfolio & services extra fields
+ */
+require_once KMPR_INC . 'acf-blog.php';
+require_once KMPR_INC . 'blog-features.php';
+require_once KMPR_INC . 'acf-portfolio-extra.php';
+require_once KMPR_INC . 'acf-services-extra.php';
+require_once KMPR_INC . 'games.php';
+require_once KMPR_INC . 'arcade-monetize.php'; // Game Center demand test: «پاس آرکید», support, sponsors, advergame funnel
+
+/**
+ * Content sync bridge: applies queued kmpr_sync_* meta written by remote tools (MCP) via core APIs
+ */
+require_once KMPR_INC . 'content-sync.php';
+
+/**
+ * Performance: speculative prefetch on hover, speculative-request detection
+ */
+require_once KMPR_INC . 'performance.php';
+require_once KMPR_INC . 'play-nudge.php';
+require_once KMPR_INC . 'nav-icons.php';
+
+/**
+ * Technical SEO on top of Yoast: titles, descriptions, robots, OG image fallback, sitemaps, robots.txt, manifest
+ */
+require_once KMPR_INC . 'seo.php';

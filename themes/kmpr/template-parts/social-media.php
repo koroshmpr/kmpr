@@ -53,10 +53,10 @@
             </a>
         </li>
     <?php endif; ?>
-    <?php if( get_field('linkedin', 'option') ) : ?>
+    <?php if( kmpr_contact('linkedin') ) : ?>
         <li>
             <a class="flex items-center justify-center size-9 rounded-full border border-white/10 bg-white/5 text-slate-300 hover:bg-secondary hover:text-white hover:border-transparent transition-all duration-300" 
-               href="<?= esc_url(get_field('linkedin', 'option')); ?>"
+               href="<?= esc_url(kmpr_contact('linkedin')); ?>"
                aria-label="linkedin" target="_blank">
                 <?php get_template_part('template-parts/svg/social/linkedin', null, $args); ?>
             </a>

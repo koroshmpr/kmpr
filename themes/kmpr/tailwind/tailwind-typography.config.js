@@ -17,11 +17,12 @@ module.exports = {
 		'./template-parts/**/*.php'
 	],
 	theme: {
-		maxWidth: {
-			'content': '60rem',
-			'wide': '60rem',
-		},
 		extend: {
+			// Extend (not replace) so Tailwind's default max-w-* scale (max-w-xl, max-w-2xl…) keeps working.
+			maxWidth: {
+				'content': '60rem',
+				'wide': '60rem',
+			},
 			typography: (theme) => ({
 				DEFAULT: {
 					css: [
