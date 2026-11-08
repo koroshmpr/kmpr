@@ -50,6 +50,9 @@ $pad = '<svg width="20" height="20" class="shrink-0" viewBox="0 0 24 24" fill="c
                         <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
                     </a>
                 <?php endif; ?>
+                <button type="button" class="gh__icon gh__switch" data-gh-switch aria-haspopup="dialog" aria-controls="gh-switcher" aria-label="تعویض بازی" title="تعویض بازی">
+                    <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg>
+                </button>
                 <button type="button" class="gh__icon gh__reload" data-gh-reload aria-label="بارگذاری دوباره صفحه" title="بارگذاری دوباره">
                     <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
                 </button>
@@ -90,3 +93,56 @@ $pad = '<svg width="20" height="20" class="shrink-0" viewBox="0 0 24 24" fill="c
         </div>
     </div>
 </header>
+
+<?php
+$gh_games   = get_posts(array('post_type' => 'game', 'post_status' => 'publish', 'posts_per_page' => 40, 'orderby' => array('menu_order' => 'ASC', 'date' => 'DESC'), 'no_found_rows' => true));
+$gh_current = is_singular('game') ? get_the_ID() : 0;
+if ($gh_games) : ?>
+<dialog id="gh-switcher" class="gsw" aria-labelledby="gsw-title">
+    <div class="gsw__panel">
+        <div class="gsw__head">
+            <p id="gsw-title" class="gsw__title">تعویض بازی</p>
+            <button type="button" class="gh__icon" data-gsw-close aria-label="بستن">
+                <svg width="16" height="16" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <label class="gsw__search">
+            <svg width="16" height="16" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="search" data-gsw-q placeholder="جستجوی بازی…" aria-label="جستجوی بازی" autocomplete="off">
+        </label>
+        <ul class="gsw__grid" role="list">
+            <?php foreach ($gh_games as $g) :
+                $terms = get_the_terms($g, 'game_category');
+                $genre = ($terms && !is_wp_error($terms)) ? $terms[0]->name : '';
+                $thumb = get_the_post_thumbnail_url($g, 'medium_large');
+                $is_cur = (int) $g->ID === (int) $gh_current; ?>
+                <li data-gsw-item="<?= esc_attr(mb_strtolower(get_the_title($g) . ' ' . $genre . ' ' . $g->post_name)); ?>">
+                    <a href="<?= esc_url(get_permalink($g)); ?>" class="gsw__card<?= $is_cur ? ' is-current' : ''; ?>"<?= $is_cur ? ' aria-current="page"' : ''; ?>>
+                        <span class="gsw__art"><?php if ($thumb) : ?><img src="<?= esc_url($thumb); ?>" alt="" width="320" height="180" loading="lazy" decoding="async"><?php endif; ?></span>
+                        <span class="gsw__meta">
+                            <span class="gsw__name"><?= esc_html(get_the_title($g)); ?></span>
+                            <span class="gsw__genre"><?= $is_cur ? 'در حال بازی' : esc_html($genre); ?></span>
+                        </span>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+        <p class="gsw__empty" data-gsw-empty hidden>بازی‌ای با این نام پیدا نشد.</p>
+        <a href="<?= esc_url($games_url); ?>" class="gsw__all">همه بازی‌ها در گیم‌سنتر</a>
+    </div>
+</dialog>
+<script>
+(() => {
+    const d = document.getElementById('gh-switcher');
+    if (!d || typeof d.showModal !== 'function') return;
+    const q = d.querySelector('[data-gsw-q]'), empty = d.querySelector('[data-gsw-empty]'), items = [...d.querySelectorAll('[data-gsw-item]')];
+    document.querySelectorAll('[data-gh-switch]').forEach((b) => b.addEventListener('click', () => { d.showModal(); q.value = ''; filter(); }));
+    d.querySelector('[data-gsw-close]').addEventListener('click', () => d.close());
+    d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+    // Esc always closes the switcher (the search field and the game shell would otherwise swallow it).
+    d.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); d.close(); } }, true);
+    const filter = () => { const t = q.value.trim().toLowerCase(); let n = 0; items.forEach((li) => { const ok = !t || li.dataset.gswItem.includes(t); li.hidden = !ok; n += ok; }); empty.hidden = n > 0; };
+    q.addEventListener('input', filter);
+})();
+</script>
+<?php endif; ?>

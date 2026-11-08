@@ -6,17 +6,33 @@
  */
 const GLYPHS = 'アカサタナ01{}<>/=;:+*#$ابپتثجچحخدذرزسشصضطظعغفقکگلمنوهی0123456789KMPR'.split('');
 
-function startRain(canvas) {
+/**
+ * Code rain with depth: three size "layers" (far → near), longer trails, glowing heads on the near layer,
+ * occasional bright column flashes. opts: { fps, layers: [0,1,2] subset, alpha }.
+ */
+function startRain(canvas, opts = {}) {
 	const ctx = canvas.getContext('2d', { alpha: true });
 	const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+	const frameMs = 1000 / (opts.fps || 30);
+	const layerSizes = [10, 14, 19];
+	const layers = opts.layers || [0, 1, 2];
+	const fade = opts.fade || 0.12;
 	let w = 0;
 	let h = 0;
 	let cols = [];
-	let size = 14;
 	let running = false;
 	let raf = 0;
 	let last = 0;
+
+	const spawn = (c, top) => {
+		c.layer = layers[(Math.random() * layers.length) | 0];
+		c.size = layerSizes[c.layer];
+		c.speed = (0.45 + Math.random() * 0.6) * (0.7 + c.layer * 0.45);
+		c.len = 4 + ((Math.random() * 6) | 0) + c.layer * 2;
+		c.y = top ? Math.random() * -h * 0.6 : Math.random() * h * 1.1 - h * 0.1;
+		c.flash = 0;
+	};
 
 	const resize = () => {
 		const r = canvas.getBoundingClientRect();
@@ -25,46 +41,64 @@ function startRain(canvas) {
 		canvas.width = Math.round(w * dpr);
 		canvas.height = Math.round(h * dpr);
 		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-		size = w < 320 ? 12 : 14;
-		const n = Math.ceil(w / size);
-		cols = Array.from({ length: n }, () => ({
-			y: Math.random() * h * 1.2 - h * 0.2,
-			speed: 0.6 + Math.random() * 1.4,
-			glow: Math.random() < 0.12,
-			depth: Math.random(),
-		}));
-		ctx.fillStyle = '#010604';
-		ctx.fillRect(0, 0, w, h);
+		const gap = 12;
+		cols = Array.from({ length: Math.ceil(w / gap) }, (_, i) => {
+			const c = { x: i * gap + gap / 2 };
+			spawn(c, false);
+			return c;
+		});
+		if (!opts.transparent) {
+			ctx.fillStyle = '#010604';
+			ctx.fillRect(0, 0, w, h);
+		}
 	};
+
+	const glyph = () => GLYPHS[(Math.random() * GLYPHS.length) | 0];
 
 	const frame = (t) => {
 		if (!running) return;
 		raf = requestAnimationFrame(frame);
-		if (t - last < 33) return; // ~30fps is plenty for this effect
+		if (t - last < frameMs) return;
 		last = t;
-		// Trail fade
-		ctx.fillStyle = 'rgba(1, 6, 4, 0.13)';
-		ctx.fillRect(0, 0, w, h);
-		ctx.font = `600 ${size}px ui-monospace, Menlo, monospace`;
+		if (opts.transparent) {
+			// fade trails to transparent so the page background shows through
+			ctx.globalCompositeOperation = 'destination-out';
+			ctx.fillStyle = `rgba(0, 0, 0, ${fade})`;
+			ctx.fillRect(0, 0, w, h);
+			ctx.globalCompositeOperation = 'source-over';
+		} else {
+			ctx.fillStyle = `rgba(1, 6, 4, ${fade})`;
+			ctx.fillRect(0, 0, w, h);
+		}
 		ctx.textAlign = 'center';
-		cols.forEach((c, i) => {
-			const x = i * size + size / 2;
-			const ch = GLYPHS[(Math.random() * GLYPHS.length) | 0];
-			// Matrix green spectrum: near-white head → phosphor green → deep green body.
-			ctx.fillStyle = c.glow ? 'rgba(236, 253, 245, 0.95)' : `rgba(180, 255, 200, ${0.55 + c.depth * 0.4})`;
-			ctx.fillText(ch, x, c.y);
-			ctx.fillStyle = `rgba(0, 255, 65, ${0.25 + c.depth * 0.45})`;
-			ctx.fillText(GLYPHS[(Math.random() * GLYPHS.length) | 0], x, c.y - size);
-			ctx.fillStyle = `rgba(21, 128, 61, ${0.2 + c.depth * 0.3})`;
-			ctx.fillText(GLYPHS[(Math.random() * GLYPHS.length) | 0], x, c.y - size * 2);
-			c.y += size * c.speed * 0.5;
-			if (c.y > h + size * 4 && Math.random() > 0.975) {
-				c.y = Math.random() * -60;
-				c.speed = 0.6 + Math.random() * 1.4;
-				c.glow = Math.random() < 0.12;
-				c.depth = Math.random();
+		// draw far → near so near glyphs sit on top
+		for (const L of [0, 1, 2]) {
+			if (!layers.includes(L)) continue;
+			ctx.font = `600 ${layerSizes[L]}px ui-monospace, Menlo, monospace`;
+			const depthA = 0.35 + L * 0.3;
+			for (const c of cols) {
+				if (c.layer !== L) continue;
+				const s = c.size;
+				// trail body: phosphor green fading out
+				for (let k = 1; k < 4; k++) {
+					const a = depthA * (1 - k / 4) * 0.9;
+					ctx.fillStyle = k === 1 ? `rgba(0, 255, 70, ${a})` : `rgba(22, 163, 74, ${a})`;
+					ctx.fillText(glyph(), c.x, c.y - s * k);
+				}
+				// head
+				if (L === 2) {
+					ctx.shadowColor = 'rgba(74, 222, 128, 0.9)';
+					ctx.shadowBlur = 8;
+				}
+				ctx.fillStyle = c.flash > 0 ? 'rgba(255, 255, 255, 1)' : `rgba(220, 255, 230, ${0.55 + L * 0.2})`;
+				ctx.fillText(glyph(), c.x, c.y);
+				if (L === 2) ctx.shadowBlur = 0;
+				if (c.flash > 0) c.flash--;
+				else if (Math.random() < 0.0025) c.flash = 6;
+				c.y += s * c.speed * 0.55;
+				if (c.y - c.len * s > h && Math.random() > 0.9) spawn(c, true);
 			}
-		});
+		}
 	};
 
 	const play = () => {
@@ -79,7 +113,6 @@ function startRain(canvas) {
 
 	resize();
 	if (reduce) {
-		// One static, readable frame.
 		for (let k = 0; k < 40; k++) {
 			last = -1e9;
 			running = true;
@@ -136,10 +169,16 @@ function parallax(root) {
 
 export default function initHeroPortrait() {
 	document.querySelectorAll('[data-hero-portrait]').forEach((root) => {
-		const canvas = root.querySelector('canvas');
+		const canvas = root.querySelector('canvas.hp-rain');
+		const outer = root.querySelector('canvas.hp-rain-outer');
 		if (canvas) {
 			// Start the effect only after the page is loaded and the main thread is idle (keeps LCP/TBT clean).
-			const go = () => ('requestIdleCallback' in window ? requestIdleCallback(() => startRain(canvas), { timeout: 2500 }) : setTimeout(() => startRain(canvas), 1200));
+			const start = () => {
+				startRain(canvas, { fps: 30 });
+				// Dim spill outside the frame: far layer only, lower fps; skipped when hidden (mobile).
+				if (outer && outer.offsetParent !== null) startRain(outer, { fps: 20, layers: [0, 1], fade: 0.14, transparent: true });
+			};
+			const go = () => ('requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 2500 }) : setTimeout(start, 1200));
 			if (document.readyState === 'complete') go();
 			else window.addEventListener('load', go, { once: true });
 		}

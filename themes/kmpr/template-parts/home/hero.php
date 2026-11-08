@@ -95,7 +95,9 @@ $btn2     = kmpr_link(get_field('hero_secondary_btn'), get_post_type_archive_lin
 
             <!-- Portrait: layered depth (code rain → cut-out portrait breaking out of the frame) -->
             <div class="order-first lg:order-none lg:col-span-5 flex justify-center pt-12 sm:pt-14 lg:pt-0" data-hero-rise>
-                <div class="hero-portrait relative w-[13.5rem] min-[400px]:w-[15rem] sm:w-[21rem] xl:w-[24rem] aspect-[4/5]" data-hero-portrait>
+                <div class="hero-portrait relative w-[13.5rem] min-[400px]:w-[15rem] sm:w-[22rem] xl:w-[26rem] aspect-[4/5]" data-hero-portrait>
+                    <!-- Rain spilling outside the frame (tablet/desktop) -->
+                    <canvas class="hp-rain-outer hidden sm:block absolute -inset-x-16 -inset-y-12 -z-10 pointer-events-none" aria-hidden="true"></canvas>
                     <!-- Orbit ring -->
                     <div class="absolute -inset-10 sm:-inset-14 rounded-full border border-dashed border-white/10 orbit hidden sm:block" style="--orbit-speed:40s" aria-hidden="true">
                         <?php foreach ($stack as $i => $tech) :
@@ -112,6 +114,7 @@ $btn2     = kmpr_link(get_field('hero_secondary_btn'), get_post_type_archive_lin
                             <img src="<?= esc_url($plate_url); ?>" alt="" width="640" height="640" decoding="async" class="hp-layer hp-plate absolute inset-0 w-full h-full object-cover opacity-40">
                         <?php endif; ?>
                         <canvas class="hp-layer hp-rain absolute inset-0 w-full h-full"></canvas>
+                        <div class="hp-scan absolute inset-0 pointer-events-none"></div>
                         <!-- volumetric light from above + floor glow + vignette -->
                         <div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_0%,rgb(134_239_172/0.16),transparent_70%)]"></div>
                         <div class="absolute inset-x-0 bottom-0 h-1/3 bg-[radial-gradient(ellipse_70%_100%_at_50%_100%,rgb(0_255_65/0.14),transparent_70%)]"></div>

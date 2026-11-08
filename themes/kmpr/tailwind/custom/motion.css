@@ -309,3 +309,27 @@ html { background-color: #020617; } /* never let the white UA canvas show throug
 .about-name { animation: about-name-drift 14s ease-in-out infinite alternate; }
 @keyframes about-name-drift { to { transform: translate3d(-46%, 0, 0); } }
 @media (prefers-reduced-motion: reduce) { .about-person, .about-name { animation: none; } }
+
+/* Hero Matrix: outer spill + CRT scan feel */
+.hp-rain-outer {
+	width: calc(100% + 8rem);
+	height: calc(100% + 6rem);
+	opacity: 0.8;
+	-webkit-mask-image: radial-gradient(ellipse 72% 68% at 50% 52%, #000 50%, transparent 88%);
+	mask-image: radial-gradient(ellipse 72% 68% at 50% 52%, #000 50%, transparent 88%);
+}
+.hp-scan {
+	background: repeating-linear-gradient(to bottom, rgb(0 0 0 / 0.18) 0 1px, transparent 1px 3px);
+	mix-blend-mode: multiply;
+}
+.hp-scan::after {
+	content: '';
+	position: absolute;
+	inset-inline: 0;
+	top: 0;
+	height: 22%;
+	background: linear-gradient(to bottom, transparent, rgb(74 222 128 / 0.08), transparent);
+	animation: hp-scanline 6s linear infinite;
+}
+@keyframes hp-scanline { from { transform: translateY(-100%); } to { transform: translateY(460%); } }
+@media (prefers-reduced-motion: reduce) { .hp-scan::after { animation: none; display: none; } }
