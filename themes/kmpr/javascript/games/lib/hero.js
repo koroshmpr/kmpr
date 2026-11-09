@@ -13,7 +13,7 @@
  */
 export const OL = '#16120f';
 export const HERO_H = { big: 32, small: 22 };
-const SHIRT = { none: ['#1d4ed8', '#3b6ef0'], coffee: ['#1d4ed8', '#3b6ef0'], dev: ['#0891b2', '#22b8d6'], jet: ['#4338ca', '#6366f1'] };
+const SHIRT = { none: ['#1d4ed8', '#3b6ef0'], coffee: ['#1d4ed8', '#3b6ef0'], dev: ['#0891b2', '#22b8d6'], jet: ['#4338ca', '#6366f1'], army: ['#4d5d3a', '#6b7c4f'] };
 export const FORMS = { coffee: SHIRT.coffee[0], dev: SHIRT.dev[0], jet: SHIRT.jet[0] };
 const SKIN = '#d9a07a', SKIN_D = '#b57d5b', HAIR = '#121016', BEARD = '#231a16', PANTS = '#17171c';
 

@@ -11,7 +11,7 @@ export const GAME_NAME = 'کوروش دیباگر';
 export const CHAPTERS = ['شبی که سایت کاله خوابید', 'روز قرعه‌کشی ماست سون', 'فروشگاه گیلدا و درگاه قطع', 'خانه سرمایه، ساعت ۴ صبح'];
 
 export const INTRO = [
-	{ scene: 'desk', tired: 1, mood: 'tired', cap: 'هر برنامه‌نویس چند شب دارد که هیچ‌وقت یادش نمی‌رود. اولینِ کوروش: شب قبل از قرعه‌کشی بزرگ کمپین ماست سون کاله.', say: 'همه‌چی آماده‌ست. فردا روز بزرگیه ☕' },
+	{ scene: 'desk', tired: 1, mood: 'tired', cap: 'هر برنامه‌نویس چند شب دارد که هیچ‌وقت یادش نمی‌رود. یکی از شب‌های کوروش در آژانس ماکان: شب قبل از قرعه‌کشی بزرگ کمپین ماست سون کاله.', say: 'همه‌چی آماده‌ست. فردا روز بزرگیه ☕' },
 	{ scene: 'alarm', mood: 'shock', cap: 'ساعت ۲۳:۵۸. صفحه قرمز می‌شود: سایت از دسترس خارج شده است!', say: 'سایت پایینه؟! فردا قرعه‌کشیه!' },
 	{ scene: 'army', mood: 'shock', cap: 'باگ‌ها از همه طرف هجوم می‌آورند و دکمه DEPLOY قفل می‌شود. وقت زیادی نمانده.', say: 'نه نه نه… مردم منتظرن!' },
 	{ scene: 'dive', mood: 'fire', cap: 'کوروش تصمیم می‌گیرد سایت را از نو بسازد؛ همین امشب. عینک، قهوه، شیرجه توی کد.', say: 'تا صبح یه سایت جدید بالا میارم.' },
@@ -67,6 +67,65 @@ export const RAIN_NAME = 'زیپ کیف · منوچهری';
 export const RAIN_OUTRO = [
 	{ scene: 'shop', mood: 'happy', cap: 'خیابان منوچهری. استادکار زیپ را عوض می‌کند؛ تسک‌ها هم یکی‌یکی بسته شده‌اند.', say: 'زیپش مثل روز اول شد! حالا تسک بعدی… 😅' },
 ];
+// chapter «سربازی» (stages 110–112) — chapter zero: courier missions, the Shahriar fuel bluff, the Maragheh clearance run
+export const ARMY_NAME = 'سربازی';
+export const ARMY_STORY = [
+	[{ scene: 'army', mood: 'fire', cap: 'اول از همه: سربازی. محل خدمت مجتمع فنی ۲۲۱ مراغه است، ولی کوروش مامور تهران است؛ نامه‌بر پادگان‌ها. شب‌ها هم کلاس برنامه‌نویسی.', say: 'ماموریت امروز: سه نامه، سه پادگان، یک روز!' }],
+	[{ scene: 'fuel', mood: 'shock', cap: 'باک خالی است. پمپ‌بنزین پادگان شهریار فقط به پادگان‌های خودی بنزین می‌دهد… باید زبان‌بازی کرد.', say: 'مسئول پمپ: از کدوم پادگانی؟ 🤨' }],
+	[{ scene: 'class', mood: 'fire', cap: 'شب قبل از تسویه، سر کلاس برنامه‌نویسی.', say: 'استاد، تمرین رو فردا شب تحویل می‌دم؛ باید برم مراغه تسویه کنم و برگردم!' }],
+];
+export const ARMY_OUTRO = [
+	{ scene: 'grade', mood: 'happy', cap: 'رفت، تسویه کرد، برگشت… و فردا شب پروژه را تحویل استاد داد.', say: 'استاد: نمره واقعی‌ات ۱۳۰ از ۱۰۰ بود… ولی بیشتر از ۱۰۰ نمی‌شه داد! 😄' },
+];
+/** The Shahriar fuel bluff: 3 questions, pick the smooth answer; two slips and he gets suspicious. */
+const FUEL_Q = [
+	{ q: 'از کدوم پادگانی؟', a: [['پادگان ۳۲۱… همین بغل! 😎', 1], ['مجتمع فنی ۲۲۱ مراغه', 0, 'مراغه؟! اینجا شهریاره ها…'], ['راستش فقط بنزین می‌خوام 😅', 0, 'یعنی چی فقط بنزین؟!']] },
+	{ q: 'نامه ماموریتت کو؟', a: [['ایناهاش، مهرش هم خورده 📨', 1], ['جا گذاشتم', 0, 'بدون نامه؟ عمراً!'], ['تو کیفمه… زیپش خرابه', 0, 'باز کن ببینم…']] },
+	{ q: 'چند لیتر؟', a: [['تا باک پر شه؛ فرمانده منتظره', 1], ['۲۰۰ لیتر', 0, '۲۰۰ لیتر؟! ماشین داری یا تانکر؟'], ['هرچی شد به حساب ۲۲۱ مراغه بنویس', 0, 'مراغه؟ مگه نگفتی ۳۲۱؟!']] },
+];
+export function showDialog(host, { done, sound }) {
+	const el = document.createElement('div');
+	el.className = 'kr-comic kr-dlg';
+	el.innerHTML = `<div class="kr-comic__box"><p class="kr-comic__k">سربازی · پمپ‌بنزین پادگان شهریار</p>
+		<div class="kr-comic__page kr-dlg__page"><div class="kr-comic__panel kr-comic__main"><div class="kr-comic__in"><canvas width="640" height="300" aria-hidden="true"></canvas></div><p class="kr-comic__say is-on is-shout" data-d-q></p></div></div>
+		<div class="kr-dlg__opts" data-d-opts role="group" aria-label="جواب‌ها"></div>
+		<div class="kr-comic__bar"><span class="kr-comic__dots" data-d-sus></span></div></div>`;
+	host.appendChild(el);
+	const cx = el.querySelector('canvas').getContext('2d'); cx.scale(2, 2);
+	let i = 0, sus = 0, closed = false, raf = 0, react = '', t0 = performance.now();
+	const frame = () => {
+		const t = (performance.now() - t0) / 1000, w = 320, h = 150;
+		const g = cx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#fcd34d'); g.addColorStop(1, '#fde68a'); cx.fillStyle = g; cx.fillRect(0, 0, w, h);
+		cx.fillStyle = '#78716c'; cx.fillRect(0, h * 0.82, w, h); cx.fillStyle = '#b91c1c'; cx.fillRect(w * 0.55, h * 0.18, w * 0.4, 12); cx.fillStyle = '#e5e7eb'; cx.fillRect(w * 0.58, h * 0.26, 6, h * 0.56); cx.fillRect(w * 0.9, h * 0.26, 6, h * 0.56);
+		cx.fillStyle = '#ef4444'; cx.strokeStyle = OL; cx.lineWidth = 2; cx.beginPath(); cx.roundRect(w * 0.66, h * 0.44, 22, 40, 3); cx.fill(); cx.stroke(); cx.fillStyle = '#fff'; cx.fillRect(w * 0.66 + 4, h * 0.44 + 6, 14, 10); // pump
+		cx.save(); cx.translate(w * 0.24, h * 0.82); cx.scale(1.9, 1.9); drawHero(cx, 0, -32, 'big', 'army', 'stand', 1); cx.restore();
+		drawPerson(cx, w * 0.82, h * 0.82, 1.7, 'soldier', { mood: sus >= 1 ? 'angry' : 'meh' }, t);
+		if (sus) { cx.font = `900 14px ${FF}`; cx.textAlign = 'center'; cx.fillStyle = '#dc2626'; cx.fillText('🤨'.repeat(sus), w * 0.82, h * 0.18); }
+		if (!closed) raf = requestAnimationFrame(frame);
+	};
+	const meter = () => { el.querySelector('[data-d-sus]').textContent = `شک مسئول پمپ: ${'●'.repeat(sus)}${'○'.repeat(2 - sus)}`; };
+	const ask = () => {
+		const r = FUEL_Q[i];
+		el.querySelector('[data-d-q]').textContent = react ? `${react} … ${r.q}` : `مسئول پمپ: ${r.q}`;
+		el.querySelector('[data-d-opts]').innerHTML = r.a.map((a, k) => [a, k]).sort(() => Math.random() - 0.5).map(([a, k]) => `<button type="button" class="kr-dlg__opt" data-k="${k}">${a[0]}</button>`).join('');
+		meter();
+	};
+	el.addEventListener('click', (e) => {
+		const b = e.target.closest('.kr-dlg__opt');
+		if (!b) return;
+		const a = FUEL_Q[i].a[Number(b.dataset.k)];
+		if (a[1]) { sound && sound('coin'); react = 'آهان… باشه'; }
+		else { sus++; sound && sound('wrong'); react = a[2]; }
+		if (sus >= 2) { el.querySelector('[data-d-q]').textContent = `${a[2]} برو بیرون! 😠`; el.querySelector('[data-d-opts]').innerHTML = ''; meter(); return setTimeout(() => { close(); done && done(false); }, 1600); }
+		i++;
+		if (i >= FUEL_Q.length) { el.querySelector('[data-d-q]').textContent = 'باشه بابا، برو بزن… ⛽ باک پر شد!'; el.querySelector('[data-d-opts]').innerHTML = ''; sound && sound('level'); return setTimeout(() => { close(); done && done(true); }, 1500); }
+		ask();
+	});
+	const close = () => { if (closed) return; closed = true; cancelAnimationFrame(raf); el.remove(); };
+	ask(); frame();
+	return close;
+}
+
 // chapter «بیورزونانس» (stages 107–109) — the very beginning: OCR puzzle → 25,000 articles → learning WordPress + boss Azizi
 export const BIO_NAME = 'بیورزونانس';
 export const BIO_STORY = [
@@ -212,6 +271,8 @@ function person(c, x, by, k, o, t) {
 	if (o.name) { c.font = `800 ${Math.round(4.2 * k)}px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = 'rgba(0,0,0,.6)'; const tw = c.measureText(o.name).width + 6; c.fillRect(x - tw / 2, by + 2, tw, 5.4 * k); c.fillStyle = '#fff'; c.fillText(o.name, x, by + 2 + 2.7 * k); }
 }
 const CAST = {
+	soldier: { skin: '#d9a07a', hair: '#1c1917', style: 'short', top: '#4d5d3a', pants: '#3f4a2e', name: 'مسئول پمپ' },
+	ostad: { skin: '#e3b38d', hair: '#9ca3af', style: 'short', top: '#1e3a8a', glasses: true, name: 'استاد' },
 	shayan2: { skin: '#e3b08a', hair: '#151312', style: 'messy', top: '#1f2937', beard: true, polo: true, name: 'شایان' },
 	hossein: { skin: '#d9a684', hair: '#d1d5db', style: 'bald', top: '#78716c', pants: '#44403c', name: 'حسین' },
 	azizi: { skin: '#e8bf9a', hair: '#9ca3af', style: 'bald', top: '#556b2f', pants: '#3f3f46', glasses: true, goatee: true, name: 'آقای عزیزی' },
@@ -270,6 +331,7 @@ function heart(c, x, y, k, a = 1) {
 /** Korosh's white L90 sedan (side view), Korosh at the wheel. (x, by) bottom-centre, k scale. */
 export function drawL90(c, x, by, k, t, moving = true, model = 'l90') {
 	if (model === '207') return draw207(c, x, by, k, t, moving);
+	if (model === 'bus') return drawBus(c, x, by, k, t, moving);
 	c.save(); c.translate(x, by); c.scale(k, k); c.lineJoin = 'round';
 	const bob = moving ? Math.abs(Math.sin(t * 12)) * 0.5 : 0;
 	c.translate(0, -bob);
@@ -304,6 +366,18 @@ export function drawL90(c, x, by, k, t, moving = true, model = 'l90') {
 	c.restore();
 }
 
+/** intercity bus Tehran ↔ Maragheh, Korosh in the front window. */
+function drawBus(c, x, by, k, t, moving) {
+	c.save(); c.translate(x, by); c.scale(k, k); c.lineJoin = 'round';
+	const bob = moving ? Math.abs(Math.sin(t * 10)) * 0.4 : 0; c.translate(0, -bob);
+	c.fillStyle = '#f8fafc'; c.strokeStyle = OL; c.lineWidth = 1.3; c.beginPath(); c.roundRect(-26, -24, 52, 20, 3); c.fill(); c.stroke();
+	c.fillStyle = '#1d4ed8'; c.fillRect(-26, -10, 52, 3);
+	c.fillStyle = '#1e293b'; for (let i = 0; i < 5; i++) c.fillRect(-23 + i * 8.6, -21, 7, 7); c.fillRect(18.6, -21, 6, 11);
+	c.fillStyle = '#121016'; c.beginPath(); c.arc(21.4, -18.4, 2.4, 0, 7); c.fill(); c.fillStyle = '#d9a07a'; c.fillRect(21.8, -17.4, 1.8, 2.2);
+	c.fillStyle = '#fde047'; c.beginPath(); c.arc(25.4, -7, 1.1, 0, 7); c.fill();
+	[-16, 15].forEach((wx) => { c.save(); c.translate(wx, -4 + bob); c.rotate(moving ? t * 16 : 0); c.fillStyle = '#111827'; c.beginPath(); c.arc(0, 0, 4, 0, 7); c.fill(); c.strokeStyle = OL; c.lineWidth = 1; c.stroke(); c.fillStyle = '#9ca3af'; c.beginPath(); c.arc(0, 0, 1.7, 0, 7); c.fill(); c.restore(); });
+	c.restore();
+}
 /** the cousin's silver Peugeot 207 hatchback: cousin driving, Korosh in the passenger seat with the laptop bag. */
 function draw207(c, x, by, k, t, moving) {
 	c.save(); c.translate(x, by); c.scale(k, k); c.lineJoin = 'round';
@@ -665,6 +739,27 @@ export function drawPanel(c, w, h, panel, t, worlds) {
 		burst(c, w * 0.62, h * 0.4, 16, 8, '#fef08a', t - 0.5, t);
 		sfx(c, 'زیپ ✓', w * 0.62, h * 0.4, 14, 0, '#16a34a', t - 0.5);
 		rainFx(c, w, h, t, 0.5);
+	} else if (sc === 'army' || sc === 'fuel' || sc === 'class' || sc === 'grade') {
+		if (sc === 'class' || sc === 'grade') {
+			c.fillStyle = '#fef3c7'; c.fillRect(0, 0, w, h); c.fillStyle = '#f8fafc'; c.strokeStyle = OL; c.lineWidth = 2; c.fillRect(w * 0.08, h * 0.1, w * 0.5, h * 0.42); c.strokeRect(w * 0.08, h * 0.1, w * 0.5, h * 0.42);
+			c.fillStyle = '#1e40af'; c.font = '700 8px ui-monospace,monospace'; c.textAlign = 'left'; ['<?php', '$score = 100;', '// real: 130', 'echo "PASS";'].forEach((l, i) => c.fillText(l, w * 0.11, h * 0.18 + i * 11));
+			c.fillStyle = '#a16207'; c.fillRect(0, h * 0.8, w, h);
+			drawPerson(c, w * 0.78, h * 0.8, 1.9, 'ostad', { mood: sc === 'grade' ? 'laugh' : 'smile' }, t);
+			heroAt(w * 0.4, h * 0.8, 'stand', 1, 1.9, 0, sc === 'class' ? 0.5 : 0);
+			if (sc === 'grade') { c.save(); c.translate(w * 0.62, h * 0.42); c.rotate(-0.12); c.fillStyle = '#fff'; c.strokeStyle = OL; c.lineWidth = 1.5; c.fillRect(-20, -14, 40, 28); c.strokeRect(-20, -14, 40, 28); c.fillStyle = '#16a34a'; c.font = `900 11px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('۱۰۰/۱۰۰', 0, -2); c.fillStyle = '#dc2626'; c.font = `900 7px ${FF}`; c.fillText('(۱۳۰!)', 0, 8); c.restore(); burst(c, w * 0.62, h * 0.2, 20, 9, '#fde047', t - 0.4, t); sfx(c, '۱۰۰!', w * 0.62, h * 0.2, 16, 0.1, '#16a34a', t - 0.4); }
+			else sfx(c, 'فردا شب؟!', w * 0.78, h * 0.18, 14, 0.08, '#1e40af', t - 0.5);
+		} else {
+			const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, sc === 'fuel' ? '#fcd34d' : '#bae6fd'); g.addColorStop(1, '#fef3c7'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+			c.fillStyle = '#a8a29e'; c.fillRect(0, h * 0.8, w, h);
+			// garrison gate: two posts, a striped barrier and a sentry booth (no insignia)
+			c.fillStyle = '#d6d3d1'; c.strokeStyle = OL; c.lineWidth = 2; c.fillRect(w * 0.56, h * 0.3, 12, h * 0.5); c.strokeRect(w * 0.56, h * 0.3, 12, h * 0.5); c.fillRect(w * 0.92, h * 0.3, 12, h * 0.5); c.strokeRect(w * 0.92, h * 0.3, 12, h * 0.5);
+			c.save(); c.translate(w * 0.6, h * 0.55); c.rotate(sc === 'army' ? -Math.min(0.8, t * 0.6) : 0); for (let i = 0; i < 8; i++) { c.fillStyle = i % 2 ? '#fff' : '#dc2626'; c.fillRect(i * 13, -3, 13, 6); } c.strokeRect(0, -3, 104, 6); c.restore();
+			c.fillStyle = '#4d5d3a'; c.fillRect(w * 0.74, h * 0.4, 30, h * 0.4); c.strokeRect(w * 0.74, h * 0.4, 30, h * 0.4); c.fillStyle = '#bae6fd'; c.fillRect(w * 0.74 + 5, h * 0.46, 20, 12);
+			c.fillStyle = OL; c.font = `900 9px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(sc === 'fuel' ? 'پادگان شهریار' : 'پادگان', w * 0.75, h * 0.24);
+			c.save(); c.translate(w * 0.32, h * 0.8); c.scale(2, 2); drawHero(c, 0, -32, 'big', 'army', sc === 'army' ? 'run1' : 'stand', 1, 1, 1, sc === 'army' ? (t * 1.8) % 1 : null); c.restore();
+			if (sc === 'army') { for (let i = 0; i < 3; i++) { c.save(); c.translate(w * 0.18 + i * 14, h * 0.32 - Math.sin(t * 3 + i) * 4); c.rotate(-0.2 + i * 0.2); c.fillStyle = '#fef3c7'; c.strokeStyle = OL; c.lineWidth = 1.2; c.fillRect(-8, -5, 16, 10); c.strokeRect(-8, -5, 16, 10); c.beginPath(); c.moveTo(-8, -5); c.lineTo(0, 1); c.lineTo(8, -5); c.stroke(); c.restore(); } sfx(c, 'ماموریت غیرممکن!', w * 0.36, h * 0.12, 15, -0.06, '#dc2626', t - 0.3); }
+			else { drawPerson(c, w * 0.66, h * 0.8, 1.7, 'soldier', { mood: 'meh' }, t); sfx(c, '⛽ ؟', w * 0.5, h * 0.2, 18, 0.1, '#b91c1c', t - 0.3); }
+		}
 	} else if (sc === 'bio' || sc === 'articles' || sc === 'azizi' || sc === 'levelup') {
 		const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#ecfdf5'); g.addColorStop(1, '#a7f3d0'); c.fillStyle = g; c.fillRect(0, 0, w, h);
 		c.fillStyle = '#6ee7b7'; c.fillRect(0, h * 0.8, w, h); c.fillStyle = '#065f46'; c.font = `900 10px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('شرکت بیورزونانس', w * 0.5, h * 0.07);

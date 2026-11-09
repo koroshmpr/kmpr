@@ -15,7 +15,7 @@ import { createCanvas } from '../lib/canvas.js';
 import { store } from '../lib/store.js';
 import { fa, listeners, clamp } from '../lib/util.js';
 import { HERO_H, drawHero, OL } from '../lib/hero.js';
-import { INTRO, STAGES as STORY, OUTRO, CHAPTERS, GAME_NAME, showComic, drawBeetle, drawL90, drawMaedeh, SIDE_STORY, SIDE_OUTRO, SIDE_NAME, AWARD, WAR_NAME, WAR_OUTRO, RAIN_NAME, RAIN_OUTRO, PAND_NAME, PAND_STORY, PAND_OUTRO, BIO_NAME, BIO_STORY, BIO_OUTRO, showOCR, drawPerson, drawYousef, drawShayan } from './korosh-story.js';
+import { INTRO, STAGES as STORY, OUTRO, CHAPTERS, GAME_NAME, showComic, drawBeetle, drawL90, drawMaedeh, SIDE_STORY, SIDE_OUTRO, SIDE_NAME, AWARD, WAR_NAME, WAR_OUTRO, RAIN_NAME, RAIN_OUTRO, PAND_NAME, PAND_STORY, PAND_OUTRO, BIO_NAME, BIO_STORY, BIO_OUTRO, showOCR, ARMY_NAME, ARMY_STORY, ARMY_OUTRO, showDialog, drawPerson, drawYousef, drawShayan } from './korosh-story.js';
 
 export const achievements = CATALOG['korosh-run'].achievements;
 
@@ -38,8 +38,11 @@ const WORLDS = [
 	{ name: 'بیورزونانس · OCR', sky: ['#ecfdf5', '#a7f3d0'], dirt: '#0f766e', dirtD: '#115e59', top: '#5eead4', topD: '#99f6e4', theme: 'office', song: 'room', foes: [] },
 	{ name: 'بیورزونانس · ۲۵٬۰۰۰ مقاله', sky: ['#ecfdf5', '#d1fae5'], dirt: '#0f766e', dirtD: '#115e59', top: '#5eead4', topD: '#99f6e4', theme: 'office', song: 'plains', foes: [] },
 	{ name: 'بیورزونانس · آقای عزیزی', sky: ['#d1fae5', '#f0fdf4'], dirt: '#0f766e', dirtD: '#115e59', top: '#5eead4', topD: '#99f6e4', theme: 'office', song: 'boss', foes: [], boss: 'azizi', bossName: 'آقای عزیزی' },
+	{ name: 'سربازی · نامه‌رسانی', sky: ['#7dd3fc', '#fef3c7'], dirt: '#78716c', dirtD: '#57534e', top: '#a8a29e', topD: '#d6d3d1', theme: 'drive', song: 'plains', foes: [] },
+	{ name: 'سربازی · پمپ‌بنزین شهریار', sky: ['#fcd34d', '#fef3c7'], dirt: '#78716c', dirtD: '#57534e', top: '#a8a29e', topD: '#d6d3d1', theme: 'drive', song: 'plains', foes: [] },
+	{ name: 'سربازی · جاده مراغه', sky: ['#fb923c', '#1e293b'], dirt: '#3f3f46', dirtD: '#27272a', top: '#71717a', topD: '#fafafa', theme: 'drive', song: 'night', foes: [] },
 ];
-const MAIN_WORLDS = 4, SIDE0 = 100, WAR = 102, RAIN = 103, PAND0 = 104, BIO0 = 107; // 107 OCR puzzle · 108 articles · 109 WordPress + boss Azizi · 104 parking · 105 Trello QC · 106 boss Bakhshi // side stages: 100 drive + 101 on foot (Maedeh), 102 the war-days mission
+const MAIN_WORLDS = 4, SIDE0 = 100, WAR = 102, RAIN = 103, PAND0 = 104, BIO0 = 107, ARMY0 = 110; // 110 courier · 111 fuel dialog · 112 Maragheh run · 107 OCR puzzle · 108 articles · 109 WordPress + boss Azizi · 104 parking · 105 Trello QC · 106 boss Bakhshi // side stages: 100 drive + 101 on foot (Maedeh), 102 the war-days mission
 const TOTAL = MAIN_WORLDS * STAGES_PER;
 const H_SMALL = 22, H_BIG = 32, P_W = 12;
 // programmer one-liners Korosh (or the hacker) says during play
@@ -66,7 +69,8 @@ const HERO_FIT = 0.74; // full drawing (afro included) ≈ hitbox height, so the
 const rng = (seed) => { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); };
 const SIDE_SAVE = 'kmpr_kr_side';
 const WAR_SAVE = 'kmpr_kr_war', RAIN_SAVE = 'kmpr_kr_rain', PAND_SAVE = 'kmpr_kr_pand';
-const BIO_SAVE = 'kmpr_kr_bio';
+const BIO_SAVE = 'kmpr_kr_bio', ARMY_SAVE = 'kmpr_kr_army';
+const readArmy = () => { try { return Number(localStorage.getItem(ARMY_SAVE)) || 0; } catch (e) { return 0; } };
 const readBio = () => { try { return Number(localStorage.getItem(BIO_SAVE)) || 0; } catch (e) { return 0; } };
 const readPand = () => { try { return Number(localStorage.getItem(PAND_SAVE)) || 0; } catch (e) { return 0; } };
 const readRain = () => { try { return localStorage.getItem(RAIN_SAVE) === '1'; } catch (e) { return false; } };
@@ -207,11 +211,12 @@ function buildLevel(n) {
 }
 function buildSide(n) {
 	if (n === RAIN) return buildRain(n);
+	if (n === ARMY0) return buildCourier(n);
 	if (n === BIO0 + 1) return buildArticles(n);
 	if (n === BIO0 + 2) return buildBioBoss();
 	if (n === PAND0 + 1) return buildQC(n);
 	if (n === PAND0 + 2) return buildPandBoss();
-	const war = n === WAR, drive = n === SIDE0 || n === PAND0 || war, r = rng(9001 + n * 31), W = war ? 210 : drive ? 230 : 170;
+	const war = n === WAR, drive = n === SIDE0 || n === PAND0 || n === ARMY0 + 2 || war, r = rng(9001 + n * 31), W = war ? 210 : drive ? 230 : 170;
 	const map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
 	const ents = [];
 	const set = (x, y, c) => x >= 0 && x < W && y >= 0 && y < ROWS && (map[y][x] = c);
@@ -239,7 +244,7 @@ function buildSide(n) {
 	flat(W - x);
 	let cxT = Math.floor(W / 2);
 	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
-	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: war ? 'war' : drive ? 'drive' : 'date', goalLabel: n === PAND0 ? 'پارکینگ پند' : 'کوچه مائده' };
+	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: war ? 'war' : drive ? 'drive' : 'date', goalLabel: n === PAND0 ? 'پارکینگ پند' : n === ARMY0 + 2 ? 'پادگان ۲۲۱ مراغه' : 'کوچه مائده', model: n === ARMY0 + 2 ? 'bus' : 'l90', army: n === ARMY0 + 2 };
 }
 function buildRain(n) {
 	const r = rng(5150 + n), W = 190;
@@ -282,6 +287,30 @@ function buildQC(n) {
 	let cxT = Math.floor(W / 2);
 	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
 	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: 'qc' };
+}
+function buildCourier(n) {
+	// three garrison gates with a mailbox each; the run only counts once all three letters are delivered
+	const r = rng(321 + n), W = 200;
+	const map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
+	const ents = [], gates = [];
+	const set = (x, y, c) => x >= 0 && x < W && y >= 0 && y < ROWS && (map[y][x] = c);
+	let x = 0;
+	const flat = (len) => { for (let i = 0; i < len && x < W; i++, x++) for (let y = GY; y < ROWS; y++) set(x, y, '#'); };
+	flat(14);
+	while (x < W - 26) {
+		if (gates.length < 3 && x > 40 + gates.length * 50) { flat(2); gates.push({ x: x + 2, done: false }); flat(8); continue; }
+		const k = r();
+		if (k < 0.2) { x += 2 + (r() < 0.3 ? 1 : 0); flat(4); }
+		else if (k < 0.4) { const y = GY - 3 - Math.floor(r() * 2), len = 3 + Math.floor(r() * 2); flat(2); for (let i = 0; i < len; i++) set(x + i, y, '='); set(x + 1, y - 1, 'o'); flat(len + 2); }
+		else if (k < 0.58) { ents.push({ t: 'clock', x: (x + 6) * T, y: (GY - 1) * T }); flat(9); }
+		else if (k < 0.72) { ents.push({ t: 'mail', x: (x + 6) * T, y: (GY - 1) * T }); flat(9); }
+		else if (k < 0.84) { for (let i = 0; i < 2; i++) for (let j = 0; j <= i; j++) set(x + 1 + i, GY - 1 - j, '#'); flat(6); }
+		else { for (let i = 0; i < 3; i++) set(x + 2 + i, GY - 2, 'o'); flat(8); }
+	}
+	flat(W - x);
+	let cxT = Math.floor(W / 2);
+	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
+	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: 'courier', gates, army: true };
 }
 function buildArticles(n) {
 	const r = rng(2500 + n), W = 180;
@@ -436,17 +465,22 @@ export function mount(stage, api) {
 	stage.appendChild(mapEl);
 	const renderMap = () => {
 		const unlocked = readProgress();
-		mapEl.innerHTML = `<div class="kr-map__box">
-			<div class="kr-map__hero"><span class="kr-map__face" aria-hidden="true"></span><div><p class="kr-map__k">${GAME_NAME}</p><p class="kr-map__t">یک مرحله را انتخاب کن</p></div><button type="button" class="kr-map__story" data-story>📖 داستان</button>${unlocked >= 6 ? '<button type="button" class="kr-map__story" data-award>🏆 جشن ماکان</button>' : ''}</div>
-			${WORLDS.slice(0, MAIN_WORLDS).map((w, wi) => `<div class="kr-map__world" style="--a:${w.top};--b:${w.sky[0]}"><p class="kr-map__wn">دنیای ${fa(wi + 1)} · ${w.name} <small>${CHAPTERS[wi]}</small></p><div class="kr-map__row">${Array.from({ length: STAGES_PER }, (_, si) => {
+		const mainW = (wi, chap) => { const w = WORLDS[wi]; return `<div class="kr-map__world" style="--a:${w.top};--b:${w.sky[0]}"><p class="kr-map__wn">${chap} · ${w.name} <small>${CHAPTERS[wi]}</small></p><div class="kr-map__row">${Array.from({ length: STAGES_PER }, (_, si) => {
 				const n = wi * STAGES_PER + si, open = n <= unlocked, boss = si === 2;
 				return `<button type="button" class="kr-map__st${n === unlocked ? ' is-next' : ''}${boss ? ' is-boss' : ''}" data-st="${n}" ${open ? '' : 'disabled'} aria-label="دنیای ${fa(wi + 1)} مرحله ${fa(si + 1)}${boss ? ' (باس)' : ''}${open ? '' : ' (قفل)'}">${open ? (boss ? '👾 باس' : `مرحله ${fa(si + 1)}`) : '🔒'}</button>`;
-			}).join('<i aria-hidden="true"></i>')}</div></div>`).join('')}
-			${(() => { const open = unlocked >= 3, done = readSide(); return `<div class="kr-map__world kr-map__side" style="--a:#f472b6;--b:#7c3aed"><p class="kr-map__wn">💗 داستان فرعی · ${SIDE_NAME} <small>${open ? (done >= 2 ? 'مائده خوشحال است ✓' : 'مائده از اضافه‌کاری‌ها شاکی است؛ برو دیدنش!') : 'بعد از دنیای ۱ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${SIDE0}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: رانندگی با ال ۹۰">${open ? '🚗 ال ۹۰' : '🔒'}</button><i aria-hidden="true"></i><button type="button" class="kr-map__st" data-st="${SIDE0 + 1}" ${open && done >= 1 ? '' : 'disabled'} aria-label="داستان فرعی: کوچه مائده">${open && done >= 1 ? '🌹 کوچه مائده' : '🔒'}</button></div></div>`; })()}
-			${(() => { const done = readBio(); const st = (i, ic, lbl) => `<button type="button" class="kr-map__st${done === i ? ' is-next' : ''}${i === 2 ? ' is-boss' : ''}" data-st="${BIO0 + i}" ${done >= i ? '' : 'disabled'} aria-label="${BIO_NAME}: ${lbl}">${done >= i ? `${ic} ${lbl}` : '🔒'}</button>`; return `<div class="kr-map__world kr-map__side" style="--a:#34d399;--b:#0f766e"><p class="kr-map__wn">🧪 فصل اول · ${BIO_NAME} <small>${done >= 3 ? 'وردپرس یاد گرفته شد ✓' : 'OCR کتاب‌های روسی، ۲۵ هزار مقاله و آقای عزیزی'}</small></p><div class="kr-map__row">${st(0, '🔤', 'OCR')}<i aria-hidden="true"></i>${st(1, '📄', '۲۵ هزار مقاله')}<i aria-hidden="true"></i>${st(2, '📚', 'عزیزی')}</div></div>`; })()}
-			${(() => { const open = unlocked >= 3, done = readPand(); const st = (i, ic, lbl) => `<button type="button" class="kr-map__st${open && done === i ? ' is-next' : ''}${i === 2 ? ' is-boss' : ''}" data-st="${PAND0 + i}" ${open && done >= i ? '' : 'disabled'} aria-label="${PAND_NAME}: ${lbl}">${open && done >= i ? `${ic} ${lbl}` : '🔒'}</button>`; return `<div class="kr-map__world kr-map__side" style="--a:#a78bfa;--b:#0ea5e9"><p class="kr-map__wn">🗂 فصل ویژه · ${PAND_NAME} <small>${open ? (done >= 3 ? 'رتبه صفحه اول ✓ بخشی رفت' : 'ترافیک صبح، QCهای یوسف و آقای بخشی') : 'بعد از دنیای ۱ باز می‌شود'}</small></p><div class="kr-map__row">${st(0, '🚗', 'پارکینگ')}<i aria-hidden="true"></i>${st(1, '🗂', 'QC ترلو')}<i aria-hidden="true"></i>${st(2, '👔', 'بخشی')}</div></div>`; })()}
-			${(() => { const open = unlocked >= 4, done = readRain(); return `<div class="kr-map__world kr-map__side" style="--a:#60a5fa;--b:#334155"><p class="kr-map__wn">🎒 داستان فرعی · ${RAIN_NAME} <small>${open ? (done ? 'زیپ درست شد ✓' : 'زیپ کیف لپ‌تاپ خراب شده؛ زیر باران تا منوچهری برو') : 'بعد از مرحله ۵ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${RAIN}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: زیپ کیف">${open ? '☔ منوچهری' : '🔒'}</button></div></div>`; })()}
-			${(() => { const open = unlocked >= 6, done = readWar(); return `<div class="kr-map__world kr-map__side" style="--a:#fb923c;--b:#475569"><p class="kr-map__wn">🛰 ماموریت فرعی · ${WAR_NAME} <small>${open ? (done ? 'فایل‌های شبا نجات پیدا کرد ✓' : 'روزهای جنگ؛ فایل‌های سایت شبا را از شرکت بیاور') : 'بعد از دنیای ۲ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${WAR}" ${open ? '' : 'disabled'} aria-label="ماموریت فرعی: بومهن تا پاسداران">${open ? '🚙 ۲۰۷ پسرخاله' : '🔒'}</button></div></div>`; })()}
+			}).join('<i aria-hidden="true"></i>')}</div></div>`; };
+		mapEl.innerHTML = `<div class="kr-map__box">
+			<div class="kr-map__hero"><span class="kr-map__face" aria-hidden="true"></span><div><p class="kr-map__k">${GAME_NAME}</p><p class="kr-map__t">یک مرحله را انتخاب کن</p></div><button type="button" class="kr-map__story" data-story>📖 داستان</button>${unlocked >= 6 ? '<button type="button" class="kr-map__story" data-award>🏆 جشن ماکان</button>' : ''}</div>
+			${(() => { const done = readArmy(); const st = (i, ic, lbl) => `<button type="button" class="kr-map__st${done === i ? ' is-next' : ''}" data-st="${ARMY0 + i}" ${done >= i ? '' : 'disabled'} aria-label="${ARMY_NAME}: ${lbl}">${done >= i ? `${ic} ${lbl}` : '🔒'}</button>`; return `<div class="kr-map__world kr-map__side" style="--a:#a3b18a;--b:#4d5d3a"><p class="kr-map__wn">فصل ۱ · 🎖 ${ARMY_NAME} <small>${done >= 3 ? 'تسویه شد ✓ نمره ۱۰۰ (۱۳۰!)' : 'نامه‌رسانی پادگان‌ها، بنزین شهریار، تسویه مراغه'}</small></p><div class="kr-map__row">${st(0, '📨', 'نامه‌ها')}<i aria-hidden="true"></i>${st(1, '⛽', 'بنزین')}<i aria-hidden="true"></i>${st(2, '🚌', 'مراغه')}</div></div>`; })()}
+			${(() => { const done = readBio(), open = readArmy() >= 3; const st = (i, ic, lbl) => `<button type="button" class="kr-map__st${open && done === i ? ' is-next' : ''}${i === 2 ? ' is-boss' : ''}" data-st="${BIO0 + i}" ${open && done >= i ? '' : 'disabled'} aria-label="${BIO_NAME}: ${lbl}">${open && done >= i ? `${ic} ${lbl}` : '🔒'}</button>`; return `<div class="kr-map__world kr-map__side" style="--a:#34d399;--b:#0f766e"><p class="kr-map__wn">فصل ۲ · 🧪 ${BIO_NAME} <small>${!open ? 'بعد از فصل سربازی باز می‌شود' : done >= 3 ? 'وردپرس یاد گرفته شد ✓' : 'OCR کتاب‌های روسی، ۲۵ هزار مقاله و آقای عزیزی'}</small></p><div class="kr-map__row">${st(0, '🔤', 'OCR')}<i aria-hidden="true"></i>${st(1, '📄', '۲۵ هزار مقاله')}<i aria-hidden="true"></i>${st(2, '📚', 'عزیزی')}</div></div>`; })()}
+			${(() => { const open = readBio() >= 3, done = readPand(); const st = (i, ic, lbl) => `<button type="button" class="kr-map__st${open && done === i ? ' is-next' : ''}${i === 2 ? ' is-boss' : ''}" data-st="${PAND0 + i}" ${open && done >= i ? '' : 'disabled'} aria-label="${PAND_NAME}: ${lbl}">${open && done >= i ? `${ic} ${lbl}` : '🔒'}</button>`; return `<div class="kr-map__world kr-map__side" style="--a:#a78bfa;--b:#0ea5e9"><p class="kr-map__wn">فصل ۳ · 🗂 ${PAND_NAME} <small>${open ? (done >= 3 ? 'رتبه صفحه اول ✓ بخشی رفت' : 'ترافیک صبح، QCهای یوسف و آقای بخشی') : 'بعد از فصل بیورزونانس باز می‌شود'}</small></p><div class="kr-map__row">${st(0, '🚗', 'پارکینگ')}<i aria-hidden="true"></i>${st(1, '🗂', 'QC ترلو')}<i aria-hidden="true"></i>${st(2, '👔', 'بخشی')}</div></div>`; })()}
+			${mainW(0, 'فصل ۴ · ماکان')}
+			${mainW(1, 'فصل ۴ · ماکان')}
+			${(() => { const open = unlocked >= 3, done = readSide(); return `<div class="kr-map__world kr-map__side" style="--a:#f472b6;--b:#7c3aed"><p class="kr-map__wn">فصل ۴ · 💗 ماکان و ${SIDE_NAME} <small>${open ? (done >= 2 ? 'مائده خوشحال است ✓' : 'مائده از اضافه‌کاری‌ها شاکی است؛ برو دیدنش!') : 'بعد از دنیای ۱ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${SIDE0}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: رانندگی با ال ۹۰">${open ? '🚗 ال ۹۰' : '🔒'}</button><i aria-hidden="true"></i><button type="button" class="kr-map__st" data-st="${SIDE0 + 1}" ${open && done >= 1 ? '' : 'disabled'} aria-label="داستان فرعی: کوچه مائده">${open && done >= 1 ? '🌹 کوچه مائده' : '🔒'}</button></div></div>`; })()}
+			${mainW(2, 'فصل ۵ · گیلدا')}
+			${mainW(3, 'فصل ۶ · خانه سرمایه')}
+			${(() => { const open = unlocked >= 9, done = readWar(); return `<div class="kr-map__world kr-map__side" style="--a:#fb923c;--b:#475569"><p class="kr-map__wn">فصل ۷ · 🛰 جنگ و شبا · ${WAR_NAME} <small>${open ? (done ? 'فایل‌های شبا نجات پیدا کرد ✓' : 'روزهای جنگ؛ فایل‌های سایت شبا را از شرکت بیاور') : 'بعد از رسیدن به خانه سرمایه باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${WAR}" ${open ? '' : 'disabled'} aria-label="ماموریت فرعی: بومهن تا پاسداران">${open ? '🚙 ۲۰۷ پسرخاله' : '🔒'}</button></div></div>`; })()}
+			${(() => { const open = readWar(), done = readRain(); return `<div class="kr-map__world kr-map__side" style="--a:#60a5fa;--b:#334155"><p class="kr-map__wn">فصل ۸ · 🎒 ${RAIN_NAME} <small>${open ? (done ? 'زیپ درست شد ✓' : 'زیپ کیف لپ‌تاپ خراب شده؛ زیر باران تا منوچهری برو') : 'بعد از فصل جنگ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${RAIN}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: زیپ کیف">${open ? '☔ منوچهری' : '🔒'}</button></div></div>`; })()}
 			<p class="kr-map__h">${api.touch ? 'گوشی را افقی کن · ◀ ▶ حرکت · ⤒ پرش · ⚡ قدرت · ▼ سرور مخفی' : '← → حرکت · Space پرش · Shift دویدن · X قدرت · ↓ ورود به سرور مخفی'}</p>
 			<p class="kr-map__h">هر مرحله فقط یک جان اضافه دارد و خوب پنهان شده؛ به دیوارهای ترک‌خورده و سرورهای ▼ دقت کن 🤫</p>
 		</div>`;
@@ -477,13 +511,22 @@ export function mount(stage, api) {
 		pad.hidden = true;
 		music.stop();
 		const side = n >= SIDE0, w = side ? MAIN_WORLDS + (n - SIDE0) : Math.floor(n / STAGES_PER), boss = !side && n % STAGES_PER === STAGES_PER - 1;
-		comic = showComic(stage, side ? (n >= BIO0 ? BIO_STORY[n - BIO0] : n >= PAND0 ? PAND_STORY[n - PAND0] : SIDE_STORY[n - SIDE0]).map((pn) => ({ ...pn, world: w })) : [{ ...STORY[n], world: w, boss, tired: boss ? 0 : 0.85 }], {
+		comic = showComic(stage, side ? (n >= ARMY0 ? ARMY_STORY[n - ARMY0] : n >= BIO0 ? BIO_STORY[n - BIO0] : n >= PAND0 ? PAND_STORY[n - PAND0] : SIDE_STORY[n - SIDE0]).map((pn) => ({ ...pn, world: w })) : [{ ...STORY[n], world: w, boss, tired: boss ? 0 : 0.85 }], {
 			worlds: WORLDS, sound: (n) => api.sfx(n),
-			label: side && n >= BIO0 ? `فصل اول · ${WORLDS[w].name}` : side ? `${n >= PAND0 ? PAND_NAME : n === RAIN ? RAIN_NAME : n === WAR ? WAR_NAME : `داستان فرعی · ${SIDE_NAME}`} · ${WORLDS[w].name}` : `${CHAPTERS[w]} · ${boss ? 'نبرد با باس' : `مرحله ${fa((n % STAGES_PER) + 1)}`}`,
+			label: side && n >= BIO0 ? WORLDS[w].name : side ? `${n >= PAND0 ? PAND_NAME : n === RAIN ? RAIN_NAME : n === WAR ? WAR_NAME : `داستان فرعی · ${SIDE_NAME}`} · ${WORLDS[w].name}` : `${CHAPTERS[w]} · ${boss ? 'نبرد با باس' : `مرحله ${fa((n % STAGES_PER) + 1)}`}`,
 			skip: false,
 			done: () => {
 				comic = null;
 				if (!s || s.over) return;
+				if (n === ARMY0 + 1) { // the fuel bluff is a dialog, not a platform level
+					comic = showDialog(stage, { sound: (k) => api.sfx(k), done: (ok) => {
+						comic = null;
+						if (!s || s.over) return;
+						if (ok) { s.score += 1500; api.setScore(s.score); try { if (readArmy() < 2) localStorage.setItem(ARMY_SAVE, '2'); } catch (e) { /* ignore */ } playStage(ARMY0 + 2); }
+						else { s.mode = 'map'; mapEl.hidden = false; renderMap(); api.toast('مسئول پمپ شک کرد! دوباره امتحان کن 🤨'); }
+					} });
+					return;
+				}
 				if (n === BIO0) { // the OCR stage is a thinking puzzle, not a platform level
 					comic = showOCR(stage, { sound: (k) => api.sfx(k), done: (pts, ok) => {
 						comic = null;
@@ -547,11 +590,13 @@ export function mount(stage, api) {
 		s.bombs = []; s.bombT = 2.5; s.shake = 0;
 		s.task = null; s.taskT = 3; s.tasksDone = 0;
 		s.qcDone = 0; s.qcMiss = 0; s.qcT = 1.5; s.yq = null;
-		if (n === PAND0) s.timeLeft = 110; // must park before 9:00
+		if (n === PAND0) s.timeLeft = 110;
+		if (n === ARMY0) { s.timeLeft = 160; s.delivered = 0; }
+		if (n === ARMY0 + 2) s.timeLeft = 120; // must park before 9:00
 		if (lv.side === 'date') { s.pat = 100; }
 		api.hud({ level: lv.side ? 'فرعی' : `${fa(n + 1)} از ${fa(TOTAL)}`, levelLabel: 'مرحله', lives: s.lives, extra: fa(s.coins), extraLabel: 'سکه' });
 		s.arts = 0;
-		s.banner = { t: lv.side ? (lv.side === 'articles' ? '📄 مقاله‌ها را جمع کن؛ حسین ایراد می‌گیرد، از رویش بپر!' : lv.side === 'bio' ? '📚 کتاب‌های مهارت را بگیر و قوی شو؛ آخرش آقای عزیزی!' : lv.side === 'qc' ? '🗂 کارت‌های QC یوسف را بگیر؛ هرچه تندتر، او هم تندتر!' : lv.side === 'pand' ? '👔 آقای بخشی: با هر ضربه رتبه سایت بالاتر می‌رود' : n === PAND0 ? '🅿️ تا ساعت ۹ برس پارکینگ پند!' : lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
+		s.banner = { t: lv.side ? (lv.side === 'courier' ? '📨 ماموریت غیرممکن: سه نامه را به سه پادگان برسان!' : n === ARMY0 + 2 ? '🚌 تا مراغه و برگشت؛ قبل از کلاس فردا شب!' : lv.side === 'articles' ? '📄 مقاله‌ها را جمع کن؛ حسین ایراد می‌گیرد، از رویش بپر!' : lv.side === 'bio' ? '📚 کتاب‌های مهارت را بگیر و قوی شو؛ آخرش آقای عزیزی!' : lv.side === 'qc' ? '🗂 کارت‌های QC یوسف را بگیر؛ هرچه تندتر، او هم تندتر!' : lv.side === 'pand' ? '👔 آقای بخشی: با هر ضربه رتبه سایت بالاتر می‌رود' : n === PAND0 ? '🅿️ تا ساعت ۹ برس پارکینگ پند!' : lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
 		music.play(songFor());
 	};
 	const addScore = (v, x, y) => { s.score += v; api.setScore(s.score); if (x !== undefined) s.pops.push({ x, y, t: `+${fa(v)}`, life: 0.8 }); };
@@ -873,6 +918,14 @@ export function mount(stage, api) {
 				for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; s.parts.push({ k: 'fw', x: fx, y: fy, vx: Math.cos(a) * 1.6, vy: Math.sin(a) * 1.6, life: 0.9, c: `hsl(${hue} 90% 60%)` }); }
 			}
 			if (s.won <= 0) {
+				if (s.stageN >= ARMY0) {
+					const step = s.stageN - ARMY0 + 1;
+					try { if (step > readArmy()) localStorage.setItem(ARMY_SAVE, String(step)); } catch (e) { /* ignore */ }
+					if (step < 3) return playStage(s.stageN + 1);
+					s.mode = 'story'; music.stop(); pad.hidden = true; s.lives++; api.hud({ lives: s.lives });
+					comic = showComic(stage, ARMY_OUTRO.map((pn) => ({ ...pn, world: s.world })), { worlds: WORLDS, sound: (n) => api.sfx(n), label: `${ARMY_NAME} · پایان فصل · +۱ جان`, done: () => { comic = null; if (!s || s.over) return; s.mode = 'map'; mapEl.hidden = false; renderMap(); } });
+					return;
+				}
 				if (s.stageN >= BIO0) {
 					const step = s.stageN - BIO0 + 1;
 					try { if (step > readBio()) localStorage.setItem(BIO_SAVE, String(step)); } catch (e) { /* ignore */ }
@@ -924,6 +977,13 @@ export function mount(stage, api) {
 		if (s.shield > 0) { s.shield -= f / 60; if (s.shield <= 0) { music.setSpeed(1); s.shield = 0; } }
 
 		if (s.lv.side === 'drive' && !s.won && !s.dying) { keys.right = true; keys.left = false; keys.run = true; firePressed = false; }
+		if (s.lv.side === 'courier' && !s.won && !s.dying) {
+			for (const g of s.lv.gates) if (!g.done && Math.abs(p.x + p.w / 2 - (g.x + 3) * T) < 14 && p.ground) {
+				g.done = true; s.delivered++; addScore(800, (g.x + 3) * T, GY * T - 50); snd('level', 'level');
+				s.banner = { t: `📨 نامه ${fa(s.delivered)} از ۳ تحویل شد ✓`, life: 1.6 };
+				for (let i = 0; i < 8; i++) s.parts.push({ k: 'brick', x: (g.x + 3) * T, y: GY * T - 30, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 3, life: 0.7, c: '#fde68a' });
+			}
+		}
 		if (s.lv.side === 'qc' && !s.won && !s.dying) {
 			s.qcT -= f / 60;
 			if (s.qcT <= 0) {
@@ -1117,6 +1177,7 @@ export function mount(stage, api) {
 		}
 
 		// goal: the DEPLOY button (step on it)
+		if (s.lv.side === 'courier' && s.delivered < 3 && p.x > s.lv.goal.x - 40) { p.x = s.lv.goal.x - 40; p.vx = Math.min(0, p.vx); if (!s.banner || s.banner.life <= 0) s.banner = { t: `هنوز ${fa(3 - s.delivered)} نامه مانده! برگرد 📨`, life: 1.4 }; }
 		if (s.goalOn && !s.lv.isRoom && !s.won) {
 			const g = s.lv.goal, bx = g.x, by = g.y - 30;
 			if (p.x + p.w > bx + 2 && p.x < bx + 30 && p.y + p.h >= by - 2) {
@@ -1127,7 +1188,7 @@ export function mount(stage, api) {
 				const bonus = Math.max(0, Math.round(s.timeLeft)) * 10 + (perfect ? 2000 : 0);
 				addScore(1000 + bonus, bx, by - 20);
 				if (s.lv.side === 'articles') s.arts = 25000;
-				s.banner = { t: s.lv.side === 'articles' ? 'اسکریپت آپلود دسته‌ای! ۲۵٬۰۰۰ مقاله یکجا رفت بالا 🚀' : s.lv.side === 'rain' ? 'رسیدی منوچهری! زیپ درست می‌شه 🎒' : s.lv.side === 'war' ? 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' : s.lv.side === 'drive' ? 'رسیدی! ال ۹۰ پارک شد 🅿️' : s.lv.side === 'date' ? 'مائده خوشحال شد! 💗' : perfect ? 'دیپلوی پرشی! +۲۰۰۰ ✨' : 'دیپلوی موفق! 🚀', life: 2.6 };
+				s.banner = { t: s.lv.side === 'courier' ? 'ماموریت انجام شد! 🎖' : s.stageN === ARMY0 + 2 ? 'رسیدی مراغه! تسویه شد ✓' : s.lv.side === 'articles' ? 'اسکریپت آپلود دسته‌ای! ۲۵٬۰۰۰ مقاله یکجا رفت بالا 🚀' : s.lv.side === 'rain' ? 'رسیدی منوچهری! زیپ درست می‌شه 🎒' : s.lv.side === 'war' ? 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' : s.lv.side === 'drive' ? 'رسیدی! ال ۹۰ پارک شد 🅿️' : s.lv.side === 'date' ? 'مائده خوشحال شد! 💗' : perfect ? 'دیپلوی پرشی! +۲۰۰۰ ✨' : 'دیپلوی موفق! 🚀', life: 2.6 };
 				music.stop();
 				snd('clear', 'level');
 				api.unlock('deploy');
@@ -1165,7 +1226,7 @@ export function mount(stage, api) {
 	const drawPlayer = () => {
 		const p = s.p, air = !p.ground && !s.won;
 		if (p.inv > 0 && Math.floor(s.t / 4) % 2) return;
-		const size = s.big ? 'big' : 'small', form = s.big ? s.form || 'coffee' : 'none';
+		const size = s.big ? 'big' : 'small', form = s.lv.army && (!s.big || !s.form || s.form === 'coffee') ? 'army' : s.big ? s.form || 'coffee' : 'none';
 		if (s.big && s.form === 'jet') { rr(p.x + p.w / 2 - p.face * 9 - 2, p.y + 15, 5, 11, 2, '#94a3b8'); if (air && keys.jump && p.fuel > 0) circ(p.x + p.w / 2 - p.face * 9 + 0.5, p.y + 28, 2.5, '#fb923c', null); }
 		// juice: squash & stretch, idle breathing, victory hops
 		let sx = 1, sy = 1, oy = 0;
@@ -1183,7 +1244,7 @@ export function mount(stage, api) {
 			ctx.restore();
 			if (u < 0.5) for (let i = 0; i < 6; i++) circ(s.ghost.x + Math.cos(i) * u * 40, s.ghost.y - 10 + Math.sin(i * 2) * u * 30, 2, i % 2 ? '#22d3ee' : '#f43f5e', null);
 		}
-		if (s.lv.side === 'drive' || s.lv.side === 'war') { drawL90(ctx, p.x + p.w / 2, p.y + p.h + 1, 0.82, s.t / 60, Math.abs(p.vx) > 0.2, s.lv.side === 'war' ? '207' : 'l90'); return; }
+		if (s.lv.side === 'drive' || s.lv.side === 'war') { drawL90(ctx, p.x + p.w / 2, p.y + p.h + 1, 0.82, s.t / 60, Math.abs(p.vx) > 0.2, s.lv.side === 'war' ? '207' : s.lv.model || 'l90'); return; }
 		const fx0 = p.x + p.w / 2, fy0 = p.y + oy + p.h;
 		ctx.save(); ctx.translate(fx0, fy0); ctx.scale(HERO_FIT, HERO_FIT);
 		if (s.dying) { ctx.translate(0, -p.h / 2); ctx.rotate((2.4 - s.dying) * 7); ctx.translate(0, p.h / 2); }
@@ -1577,6 +1638,14 @@ export function mount(stage, api) {
 			if (q.k === 'flash') { const k = q.life / 0.18; ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(s.t / 3); ctx.fillStyle = q.c; for (let i = 0; i < 6; i++) { ctx.rotate(Math.PI / 3); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(1.4, 6 * k + 2); ctx.lineTo(-1.4, 6 * k + 2); ctx.fill(); } ctx.beginPath(); ctx.arc(0, 0, 2.5 * k + 1, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore(); }
 			if (q.k === 'dust') circ(q.x, q.y, 2.5 + (0.35 - q.life) * 8, `rgba(226,232,240,${q.life})`, null);
 		});
+		if (s.lv.side === 'courier') s.lv.gates.forEach((g) => {
+			const gx = g.x * T, gy = GY * T;
+			rr(gx - 4, gy - 52, 8, 52, 1, '#d6d3d1', OL, 1.2); rr(gx + 92, gy - 52, 8, 52, 1, '#d6d3d1', OL, 1.2);
+			ctx.save(); ctx.translate(gx + 4, gy - 30); ctx.rotate(g.done ? -1.2 : 0); for (let i = 0; i < 6; i++) R(i * 14, -2, 14, 4, i % 2 ? '#fff' : '#dc2626'); ctx.restore();
+			rr(gx + 64, gy - 36, 22, 36, 2, '#4d5d3a', OL, 1.2); R(gx + 68, gy - 30, 14, 9, '#bae6fd');
+			rr(gx + 40, gy - 18, 14, 18, 2, g.done ? '#16a34a' : '#b45309', OL, 1.2); text(g.done ? '✓' : '📨', gx + 47, gy - 6, 8, '#fff');
+			text(`پادگان ${['۰۱', '۰۶', '۲۱'][s.lv.gates.indexOf(g)]}`, gx + 48, gy - 58, 7, '#1c1917');
+		});
 		if (s.lv.side === 'rain') s.lv.puddles.forEach(([a, b]) => { ctx.beginPath(); ctx.ellipse((a + b + 1) * T / 2, GY * T + 1, (b - a + 1) * T / 2, 3.5, 0, 0, 7); ctx.fillStyle = 'rgba(96,165,250,.55)'; ctx.fill(); ctx.strokeStyle = 'rgba(219,234,254,.7)'; ctx.lineWidth = 1; ctx.stroke(); });
 		(s.bombs || []).forEach((b) => {
 			const k = 1 - Math.max(0, b.t) / 1.25, gy = GY * T, pulse = 1 + Math.sin(s.t / 2) * 0.12;
@@ -1595,6 +1664,7 @@ export function mount(stage, api) {
 			if (Math.floor(s.t) % 420 < 6) { ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(0, 0, view.vw, VIEW_H); }
 		}
 		hud();
+		if (s.lv.side === 'courier') { const tw = 110, tx2 = view.vw - tw - 4; panel(tx2, 26, tw, 16, '#a3b18a'); text(`📨 نامه‌ها: ${fa(s.delivered)} از ۳`, tx2 + tw / 2, 37.5, 8, '#fff'); }
 		if (s.lv.side === 'articles') { const tw = 150, tx2 = view.vw - tw - 4; panel(tx2, 26, tw, 16, '#10b981'); text(`📄 مقاله: ${fa(s.arts.toLocaleString('en-US'))} از ۲۵٬۰۰۰`, tx2 + tw / 2, 37.5, 8, '#fff'); }
 		if (s.lv.side === 'qc') {
 			const tw = 108, tx2 = view.vw - tw - 4; panel(tx2, 26, tw, 16, '#0ea5e9'); text(`🗂 QC: ${fa(s.qcDone)} از ۱۰۰`, tx2 + tw / 2, 37.5, 8, '#fff');

@@ -542,3 +542,10 @@
 @keyframes kr-ocr-bad { 30% { background: #fecaca; transform: translateX(-3px); } 70% { transform: translateX(3px); } }
 .kr-ocr__fa { margin: 0.2rem 0 0.4rem; text-align: center; font-size: 0.85rem; font-weight: 800; color: #0f766e; }
 .kr-ocr__hint { margin: 0; font-size: 0.72rem; font-weight: 700; color: #57534e; text-align: center; }
+/* Shahriar fuel dialog */
+.kr-dlg__page { grid-template-columns: 1fr; }
+.kr-dlg__page .kr-comic__main canvas { aspect-ratio: 32 / 15; filter: none; }
+.kr-dlg__opts { direction: rtl; display: grid; gap: 0.4rem; }
+.kr-dlg__opt { min-height: 44px; padding: 0.55rem 0.9rem; text-align: start; font-weight: 900; font-size: 0.9rem; color: #111; background: #fff; border: 2.5px solid #111; border-radius: 0.4rem; box-shadow: 4px 4px 0 #111; cursor: pointer; }
+.kr-dlg__opt:hover { background: #fef9c3; transform: translate(-1px, -1px); }
+.kr-dlg .kr-comic__say { left: auto; right: 0.6rem; top: auto; bottom: 0.6rem; transform: skewX(4deg); max-width: 60%; }
