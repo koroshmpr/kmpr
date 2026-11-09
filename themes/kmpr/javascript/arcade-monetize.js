@@ -53,6 +53,11 @@
 	};
 	const track = (ev, now) => {
 		if (!C.track) return;
+		// Speculatively prerendered page (games-pwa.php): count only once the visitor actually lands on it.
+		if (document.prerendering) {
+			document.addEventListener('prerenderingchange', () => track(ev, now), { once: true });
+			return;
+		}
 		queue.push(ev);
 		clearTimeout(timer);
 		if (now) flush();

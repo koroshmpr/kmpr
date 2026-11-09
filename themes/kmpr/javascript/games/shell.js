@@ -169,11 +169,13 @@ export async function createShell(root) {
 		mod = await ENGINE_LOADERS[engine]();
 	} catch (e) {
 		root.dataset.state = 'error';
+		root.querySelectorAll('.kl').forEach((n) => n.remove());
 		const o = root.querySelector('[data-overlay]');
 		if (o) o.insertAdjacentHTML('beforeend', '<p class="game-screen__status" data-tone="warn">بارگذاری بازی ناموفق بود؛ صفحه را دوباره باز کنید.</p>');
 		return null;
 	}
 	root.dataset.state = 'idle';
+	root.querySelectorAll('.kl').forEach((n) => n.remove());
 
 	const $ = (s) => root.querySelector(s);
 	const frame = $('[data-frame]');
@@ -382,6 +384,19 @@ export async function createShell(root) {
 	api.emit = emit;
 
 	/* --- Focus (immersive) mode --- */
+	// Wide games on a portrait phone: try a real orientation lock; where that is impossible (iOS, no fullscreen)
+	// rotate the frame with CSS (html.game-rotate) — canvas.toWorld() maps the pointer back.
+	const LANDSCAPE = !!(CATALOG[engine] && CATALOG[engine].landscape);
+	const syncRotate = () => {
+		const on = LANDSCAPE && focused && api.touch && !fsElement() && window.innerHeight > window.innerWidth * 1.1;
+		document.documentElement.classList.toggle('game-rotate', on);
+	};
+	if (LANDSCAPE) {
+		window.addEventListener('resize', () => setTimeout(syncRotate, 60));
+		window.addEventListener('orientationchange', () => setTimeout(syncRotate, 250));
+		document.addEventListener('fullscreenchange', () => setTimeout(syncRotate, 60));
+		document.addEventListener('webkitfullscreenchange', () => setTimeout(syncRotate, 60));
+	}
 	let focused = false;
 	let pushed = false;
 	const enterFocus = (gesture = true) => {
@@ -400,10 +415,19 @@ export async function createShell(root) {
 			window.scrollTo(0, 0);
 			emit('kmpr:focus-change', { active: true });
 		}
+		syncRotate();
 		// Phones: real fullscreen + optional orientation lock (needs a user gesture; ignored when unsupported).
 		if (gesture && api.touch && !fsElement() && (frame.requestFullscreen || frame.webkitRequestFullscreen)) {
 			Promise.resolve((frame.requestFullscreen || frame.webkitRequestFullscreen).call(frame, { navigationUI: 'hide' }))
-				.then(() => inst && inst.orientation && screen.orientation && screen.orientation.lock && screen.orientation.lock(inst.orientation).catch(() => {}))
+				.then(() => {
+					const o = (inst && inst.orientation) || (LANDSCAPE && 'landscape');
+					if (!o) return;
+					const lock = screen.orientation && screen.orientation.lock ? screen.orientation.lock(o) : Promise.reject();
+					// A fullscreen element ignores CSS transforms: if the lock is refused, drop fullscreen and rotate with CSS.
+					return lock.catch(() => {
+						if (LANDSCAPE && window.innerHeight > window.innerWidth && fsElement()) (document.exitFullscreen || document.webkitExitFullscreen).call(document).catch?.(() => {});
+					});
+				})
 				.catch(() => {});
 		}
 		setFsBtn();
@@ -415,6 +439,7 @@ export async function createShell(root) {
 		saveSnap(true);
 		document.documentElement.classList.remove('game-focus');
 		root.classList.remove('is-focus');
+		syncRotate();
 		emit('kmpr:focus-change', { active: false });
 		if (fsElement()) (document.exitFullscreen || document.webkitExitFullscreen).call(document).catch?.(() => {});
 		setFsBtn();
@@ -506,6 +531,41 @@ export async function createShell(root) {
 		inst && inst.resume();
 	};
 
+	/* --- Game-over quick actions: same mode again, next AI level, change mode, share, other games --- */
+	const lastShare = { score: 0 };
+	const overActions = (needsNick) => {
+		const af = needsNick ? '' : ' data-autofocus';
+		const same = currentMode && currentMode.type !== 'online';
+		const levels = (api._matchUI && api._matchUI.levels) || [];
+		const li = same && currentMode.type === 'ai' ? levels.findIndex((l) => l.id === currentMode.level) : -1;
+		const next = li >= 0 && levels[li + 1];
+		const cur = li >= 0 ? levels[li] : null;
+		const out = [
+			same
+				? `<button type="button" class="game-btn game-btn--primary" data-act="again"${af}>${ICONS.play} دوباره${cur ? ` (${esc(cur.label)})` : ' با همین حالت'}</button>`
+				: `<button type="button" class="game-btn game-btn--primary" data-act="play"${af}>${ICONS.play} دوباره بازی کن</button>`,
+		];
+		if (next) out.push(`<button type="button" class="game-btn" data-act="harder" data-level="${esc(next.id)}">سخت‌تر: ${esc(next.label)}</button>`);
+		if (api._matchUI) out.push(`<button type="button" class="game-btn" data-act="mode">تغییر حالت</button>`);
+		out.push(`<button type="button" class="game-btn" data-act="share">اشتراک امتیاز</button>`);
+		out.push(`<a class="game-btn" href="${esc(root.dataset.hub || '/games/')}">بازی‌های دیگر</a>`);
+		return out.join('');
+	};
+	const shareScore = async () => {
+		const title = (CATALOG[engine] && CATALOG[engine].title) || document.title;
+		const text = `من در «${title}» ${fa(lastShare.score)} امتیاز گرفتم! تو چند می‌گیری؟`;
+		const url = api.gameUrl;
+		try {
+			if (navigator.share) await navigator.share({ title, text, url });
+			else {
+				await navigator.clipboard.writeText(`${text} ${url}`);
+				toast('<span>لینک و امتیاز کپی شد</span>');
+			}
+		} catch (e) {
+			/* cancelled */
+		}
+	};
+
 	const finish = async ({ score: final = score, meta = {} }) => {
 		if (state !== 'running' && state !== 'paused') return;
 		if (state === 'running') activeMs += performance.now() - resumedAt;
@@ -514,6 +574,7 @@ export async function createShell(root) {
 		inst && inst.pause();
 		setPauseBtn();
 		final = Math.max(0, Math.floor(final));
+		lastShare.score = final;
 		api.setScore(final);
 		const before = store.game(engine).best;
 		const { best, isBest } = store.record(engine, final, activeMs);
@@ -537,7 +598,8 @@ export async function createShell(root) {
 					.map((a) => `<li>${a.icon || '★'} ${esc(a.title)}</li>`)
 					.join('')}</ul>`
 			: '';
-		const metaHtml = meta.summary ? `<p class="game-screen__text">${esc(meta.summary)}</p>` : '';
+		const gap = !isBest && best > final ? `<p class="game-screen__text game-screen__gap">${fa(best - final)} امتیاز تا رکوردت فاصله داشتی؛ یک دست دیگر؟</p>` : '';
+		const metaHtml = gap + (meta.summary ? `<p class="game-screen__text">${esc(meta.summary)}</p>` : '');
 
 		screen(`<div class="game-screen">
 			<p class="game-screen__kicker">${isBest && final > 0 ? (before > 0 ? 'رکورد جدید!' : 'اولین رکورد شما') : 'پایان بازی'}</p>
@@ -559,9 +621,8 @@ export async function createShell(root) {
 			}
 			<p class="game-screen__status" data-submit-status aria-live="polite"></p>
 			<div data-kmpr-slot="game-over"></div>
-			<div class="game-screen__actions">
-				<button type="button" class="game-btn game-btn--primary" data-act="play"${needsNick ? '' : ' data-autofocus'}>${ICONS.play} دوباره بازی کن</button>
-			</div>
+			<div class="game-screen__actions">${overActions(needsNick)}</div>
+			<p class="game-screen__keys" aria-hidden="true">Enter = دوباره · M = تغییر حالت</p>
 		</div>`);
 
 		if (!canSubmit) return;
@@ -705,6 +766,14 @@ export async function createShell(root) {
 		if (!b || !root.contains(b)) return;
 		const act = b.dataset.act;
 		if (act === 'play') play();
+		else if (act === 'again') {
+			snapWrite(engine, null);
+			if (currentMode && currentMode.type !== 'online') play({ mode: currentMode });
+			else play();
+		} else if (act === 'harder') {
+			snapWrite(engine, null);
+			play({ mode: { ...(currentMode || { type: 'ai' }), level: b.dataset.level } });
+		} else if (act === 'share') shareScore();
 		else if (act === 'menu') state === 'over' ? play() : null;
 		else if (act === 'resume') resume();
 		else if (act === 'pause') state === 'running' ? pause() : resume();
@@ -737,6 +806,11 @@ export async function createShell(root) {
 		if (e.key === 'Escape' && focused && !document.querySelector('dialog[open]')) {
 			e.preventDefault();
 			leaveFocus();
+			return;
+		}
+		if (state === 'over' && (e.key === 'm' || e.key === 'M' || e.key === 'ن') && api._matchUI) {
+			e.preventDefault();
+			api._matchUI.open();
 			return;
 		}
 		if (inst && inst.noAutoPause) return;
@@ -783,6 +857,11 @@ export async function createShell(root) {
 	const snap = snapRead(engine);
 	if (roomCode && CATALOG[engine] && CATALOG[engine].online) {
 		play({ join: roomCode.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) });
+	} else if (new URLSearchParams(window.location.search).get('create') && CATALOG[engine] && CATALOG[engine].online) {
+		// From the hub lobby «ساخت اتاق»: open the game and create a private room right away.
+		play();
+		history.replaceState(null, '', window.location.pathname);
+		setTimeout(() => api._matchUI && api._matchUI.create && api._matchUI.create(), 60);
 	} else if (snap && (snap.data || snap.mode)) {
 		restoreSnap(snap);
 	}

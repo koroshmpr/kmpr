@@ -241,6 +241,111 @@ function prefetch() {
 	document.addEventListener('touchstart', go, { passive: true });
 }
 
+/* ---------------- page loader: only when a navigation is slow (> 150ms) ---------------- */
+function pageLoader() {
+	let t = 0;
+	const show = () => {
+		if (document.querySelector('.kl-page')) return;
+		import('./lib/loader.js').then(({ loaderHTML }) => {
+			const d = document.createElement('div');
+			d.className = 'kl-page';
+			d.innerHTML = loaderHTML();
+			document.body.appendChild(d);
+		});
+	};
+	document.addEventListener('click', (e) => {
+		const a = e.target.closest && e.target.closest('a[href]');
+		if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === '_blank' || a.hasAttribute('download')) return;
+		const u = new URL(a.href, location.href);
+		if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash) || u.pathname.startsWith('/wp-')) return;
+		clearTimeout(t);
+		t = setTimeout(show, 150);
+	});
+	// Back/forward cache restore: never leave a loader on screen.
+	window.addEventListener('pageshow', () => {
+		clearTimeout(t);
+		document.querySelectorAll('.kl-page').forEach((n) => n.remove());
+	});
+}
+
+
+/* ---------------- device player: ask a nickname once, then keep it on this device ---------------- */
+async function devicePlayer() {
+	const [{ store }, { online }, { avatarSvg, AVATAR_STYLES, AVATAR_HUES }] = await Promise.all([import('./lib/store.js'), import('./lib/api.js'), import('./lib/avatar.js')]);
+	const startPresence = () => {
+		const shell = document.querySelector('[data-game-shell]');
+		const where = shell ? shell.dataset.engine : 'hub';
+		let t = 0;
+		const beat = async () => {
+			clearTimeout(t);
+			if (document.hidden) return;
+			const p = store.player;
+			try {
+				const res = await online.presence({ player_id: p.id, nickname: p.nickname, avatar: p.avatar || {}, where });
+				if (res && res.ok) {
+					window.kmprPresence = res;
+					window.dispatchEvent(new CustomEvent('kmpr:presence', { detail: res }));
+					document.querySelectorAll('.gh__nav [data-online-count], .gdock [data-online-count]').forEach((el) => {
+						el.textContent = Number(res.count || 0).toLocaleString('fa-IR');
+						el.hidden = false;
+					});
+					if (where !== 'hub') {
+						const n = (res.online || []).filter((u) => u.where === where).length;
+						document.querySelectorAll('[data-here]').forEach((el) => (el.textContent = n.toLocaleString('fa-IR')));
+						document.querySelectorAll('[data-here-wrap]').forEach((el) => (el.hidden = n < 1));
+					}
+				}
+			} catch (e) {
+				/* offline: ignore */
+			}
+			t = setTimeout(beat, 25000);
+		};
+		document.addEventListener('visibilitychange', () => !document.hidden && beat());
+		beat();
+	};
+	if (store.player.nickname) return startPresence();
+
+	const styles = AVATAR_STYLES.map((x) => (typeof x === 'string' ? x : x.id));
+	let av = { style: styles[0], hue: AVATAR_HUES[Math.floor(Math.random() * AVATAR_HUES.length)] };
+	const d = document.createElement('dialog');
+	d.className = 'gc-hello';
+	d.setAttribute('aria-labelledby', 'gc-hello-t');
+	const avatars = () => styles.map((st) => `<button type="button" class="gc-hello__av" data-st="${esc(st)}" aria-pressed="${String(st === av.style)}" aria-label="آواتار ${esc(st)}">${avatarSvg(store.player.id, { style: st, hue: av.hue }, 52)}</button>`).join('');
+	d.innerHTML = `<form method="dialog" class="gc-hello__card">
+		<p class="gc-hello__k">🎮 به گیم‌سنتر خوش آمدی</p>
+		<h2 id="gc-hello-t" class="gc-hello__t">اسمت در بازی‌ها چی باشد؟</h2>
+		<p class="gc-hello__x">فقط یک بار می‌پرسیم؛ روی همین دستگاه می‌ماند و در جدول برترین‌ها و لابی دیده می‌شود. ثبت‌نام لازم نیست.</p>
+		<div class="gc-hello__avs" data-avs>${avatars()}</div>
+		<input class="gc-hello__in" name="nick" maxlength="24" required autocomplete="nickname" placeholder="مثلاً: شاهین شب">
+		<p class="gc-hello__err" data-err aria-live="polite"></p>
+		<button type="submit" class="gc-hello__go">بزن بریم ▶</button>
+	</form>`;
+	document.body.appendChild(d);
+	d.addEventListener('cancel', (e) => e.preventDefault()); // nickname is required once
+	d.querySelector('[data-avs]').addEventListener('click', (e) => {
+		const b = e.target.closest('[data-st]');
+		if (!b) return;
+		av = { ...av, style: b.dataset.st };
+		d.querySelectorAll('[data-st]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+	});
+	d.querySelector('form').addEventListener('submit', (e) => {
+		const nick = d.querySelector('input').value.trim().replace(/\s+/g, ' ').slice(0, 24);
+		if (nick.length < 2) {
+			e.preventDefault();
+			d.querySelector('[data-err]').textContent = 'حداقل دو حرف بنویس.';
+			return;
+		}
+		store.set('nickname', nick);
+		store.set('avatar', av);
+		online.profile({ player_id: store.player.id, nickname: nick, avatar: av }).catch(() => {});
+		window.dispatchEvent(new CustomEvent('kmpr:profile-changed'));
+		setTimeout(() => d.remove(), 300);
+		startPresence();
+	});
+	d.showModal();
+	setTimeout(() => d.querySelector('input').focus(), 50);
+}
+
 export function initPwa() {
 	if (html.dataset.pwaReady) return;
 	html.dataset.pwaReady = '1';
@@ -299,6 +404,10 @@ export function initPwa() {
 	registerSW();
 	appNav();
 	prefetch();
+	pageLoader();
+	// Not while speculatively prerendered: wait until the visitor actually sees the page.
+	if (document.prerendering) document.addEventListener('prerenderingchange', () => devicePlayer(), { once: true });
+	else devicePlayer();
 	syncButtons();
 	// Auto-suggest only on the hub (game pages: right after leaving a finished game, never over the start screen).
 	if (onHub()) maybeEncourage();

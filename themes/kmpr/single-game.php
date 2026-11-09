@@ -16,39 +16,58 @@ while (have_posts()) :
     ?>
     <article class="relative isolate overflow-hidden" style="--accent: <?= esc_attr($g['accent_hex']); ?>">
         <div class="aurora w-[32rem] h-[32rem] -top-56 -start-40 bg-secondary/20 -z-10" aria-hidden="true"></div>
+        <!-- Game banner as the page backdrop (cover image, or generated 2D art) -->
+        <div class="gs-banner" aria-hidden="true">
+            <?php if ($g['cover']) : ?>
+                <img src="<?= esc_url($g['cover']['url']); ?>" alt="" width="<?= (int) $g['cover']['width']; ?>" height="<?= (int) $g['cover']['height']; ?>" decoding="async" fetchpriority="low">
+            <?php else : echo kmpr_game_art_html($g, 'gc-art--banner'); // phpcs:ignore ?>
+            <?php endif; ?>
+        </div>
 
-        <!-- Game-first header: one compact strip, then the stage right away -->
+        <!-- Arcade-cabinet marquee: back to hub, neon title, live stats, how-to popover — then the stage -->
         <header class="gs-head container mx-auto px-3 sm:px-6">
-            <nav aria-label="مسیر صفحه" class="gs-crumbs">
-                <ol class="flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
-                    <li><a href="<?= esc_url(home_url('/')); ?>" class="hover:text-secondary">خانه</a></li>
-                    <li aria-hidden="true">/</li>
-                    <li><a href="<?= esc_url(get_post_type_archive_link('game')); ?>" class="hover:text-secondary">بازی‌ها</a></li>
-                    <li aria-hidden="true">/</li>
-                    <li class="text-slate-300 font-bold truncate max-w-[12rem]" aria-current="page"><?= esc_html($g['title']); ?></li>
+            <nav aria-label="مسیر صفحه" class="sr-only">
+                <ol>
+                    <li><a href="<?= esc_url(home_url('/')); ?>">خانه</a></li>
+                    <li><a href="<?= esc_url(get_post_type_archive_link('game')); ?>">بازی‌ها</a></li>
+                    <li aria-current="page"><?= esc_html($g['title']); ?></li>
                 </ol>
             </nav>
-            <div class="gs-strip">
-                <?php if ($g['cover']) : ?>
-                    <span class="gs-thumb" aria-hidden="true"><img src="<?= esc_url(get_the_post_thumbnail_url($g['id'], 'thumbnail') ?: $g['cover']['url']); ?>" width="48" height="48" alt="" decoding="async"></span>
-                <?php endif; ?>
+            <div class="gs-mq max-w-6xl mx-auto">
+                <a href="<?= esc_url(get_post_type_archive_link('game')); ?>" class="gs-mq__back" aria-label="بازگشت به گیم‌سنتر">
+                    <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                    <span class="hidden sm:inline">گیم‌سنتر</span>
+                </a>
+                <span class="gs-mq__art">
+                    <?php if ($g['cover']) : ?>
+                        <img src="<?= esc_url(get_the_post_thumbnail_url($g['id'], 'thumbnail') ?: $g['cover']['url']); ?>" width="48" height="48" alt="" decoding="async">
+                    <?php else : echo kmpr_game_art_html($g, 'gc-art--sm'); // phpcs:ignore ?>
+                    <?php endif; ?>
+                </span>
                 <div class="min-w-0 flex-1">
-                    <h1 class="gs-title"><?= esc_html($g['title']); ?></h1>
-                    <div class="gs-chips">
-                        <?php if ($g['genre']) : ?>
-                            <a href="<?= esc_url($g['genre_url']); ?>" class="gs-chip gs-chip--accent"><?= esc_html($g['genre']); ?></a>
-                        <?php endif; ?>
-                        <span class="gs-chip"><?= esc_html($g['diff_label']); ?></span>
-                        <?php if ($is_online) : ?>
-                            <span class="gs-chip gs-chip--online"><span class="size-1.5 rounded-full bg-emerald-400 shrink-0"></span>آنلاین</span>
-                        <?php endif; ?>
-                        <span class="gs-chip gs-chip--stat lg:hidden"><?= esc_html(kmpr_game_num($plays)); ?> دست</span>
-                    </div>
+                    <h1 class="gs-mq__title"><?= esc_html($g['title']); ?></h1>
+                    <p class="gs-mq__meta">
+                        <?php if ($g['genre']) : ?><a href="<?= esc_url($g['genre_url']); ?>"><?= esc_html($g['genre']); ?></a> · <?php endif; ?>
+                        <?= esc_html($g['diff_label']); ?><?= $is_online ? ' · <span class="text-emerald-300">آنلاین</span>' : ''; ?>
+                    </p>
                 </div>
-                <dl class="gs-stats">
-                    <div><dt>دست بازی‌شده</dt><dd><?= esc_html(kmpr_game_num($plays)); ?></dd></div>
-                    <div><dt>بازیکن</dt><dd><?= esc_html(kmpr_game_num($players)); ?></dd></div>
+                <dl class="gs-mq__stats">
+                    <div class="gs-mq__here" data-here-wrap hidden><dt>الان اینجا</dt><dd><span class="gs-mq__dot" aria-hidden="true"></span><b data-here>۰</b></dd></div>
+                    <div><dt>دست</dt><dd><?= esc_html(kmpr_game_num($plays)); ?></dd></div>
+                    <div class="hidden sm:block"><dt>بازیکن</dt><dd><?= esc_html(kmpr_game_num($players)); ?></dd></div>
                 </dl>
+                <?php if ($g['how'] || $g['controls']) : ?>
+                    <button type="button" class="gs-mq__how" popovertarget="gs-how" aria-label="راهنمای بازی">
+                        <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg>
+                        <span class="hidden sm:inline">راهنما</span>
+                    </button>
+                    <div id="gs-how" popover class="gs-pop">
+                        <p class="gs-pop__t">چطور بازی کنم؟</p>
+                        <?php if ($g['how']) : ?><ol class="gs-pop__how"><?php foreach ($g['how'] as $i => $step) : ?><li><b><?= esc_html(kmpr_fa_num($i + 1)); ?></b><span><?= esc_html($step); ?></span></li><?php endforeach; ?></ol><?php endif; ?>
+                        <?php if ($g['controls']) : ?><ul class="gs-pop__keys"><?php foreach ($g['controls'] as $c) : ?><li><kbd dir="ltr"><?= esc_html($c['key']); ?></kbd><span><?= esc_html($c['action']); ?></span></li><?php endforeach; ?></ul><?php endif; ?>
+                        <button type="button" class="gs-pop__x" popovertarget="gs-how" popovertargetaction="hide">فهمیدم</button>
+                    </div>
+                <?php endif; ?>
             </div>
         </header>
 

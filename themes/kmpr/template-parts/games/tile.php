@@ -17,6 +17,7 @@ if (($args['context'] ?? 'hub') === 'home') : ?>
             <span class="gc-tile__media">
                 <?php if ($g['cover']) : ?>
                     <img src="<?= esc_url($g['cover']['url']); ?>" width="<?= (int) $g['cover']['width']; ?>" height="<?= (int) $g['cover']['height']; ?>" alt="<?= esc_attr($g['cover']['alt']); ?>" loading="lazy" decoding="async">
+                <?php else : echo kmpr_game_art_html($g); // phpcs:ignore ?>
                 <?php endif; ?>
             </span>
             <span class="gc-tile__shade" aria-hidden="true"></span>
@@ -37,25 +38,18 @@ if (($args['context'] ?? 'hub') === 'home') : ?>
 endif;
 ?>
 <<?= $tag; ?> class="<?= esc_attr($args['class'] ?? 'gc-rail__item'); ?>">
-    <a href="<?= esc_url($g['url']); ?>" class="gc-tile group" style="--accent: <?= esc_attr($g['accent_hex']); ?>">
-        <span class="gc-tile__media">
-            <?php if ($g['cover']) : ?>
-                <img src="<?= esc_url($g['cover']['url']); ?>" width="<?= (int) $g['cover']['width']; ?>" height="<?= (int) $g['cover']['height']; ?>" alt="<?= esc_attr($g['cover']['alt']); ?>" loading="lazy" decoding="async">
-            <?php endif; ?>
-        </span>
-        <span class="gc-tile__shade" aria-hidden="true"></span>
-        <span class="gc-tile__chips">
+    <a href="<?= esc_url($g['url']); ?>" class="gc-card group" style="--accent: <?= esc_attr($g['accent_hex']); ?>">
+        <span class="gc-card__chips">
             <?php if ($online) : ?>
                 <span class="gc-chip gc-chip--online"><span class="size-1.5 rounded-full bg-emerald-400 shrink-0"></span>آنلاین</span>
             <?php endif; ?>
             <?php if ($best) : ?>
-                <span class="gc-chip gc-chip--best" data-best-wrap hidden><svg width="12" height="12" class="shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 21l1.6-7L2 9.2l7.1-.6Z"/></svg><span data-game-best="<?= esc_attr($g['engine']); ?>"></span></span>
+                <span class="gc-chip gc-chip--best" data-best-wrap hidden>★ <span data-game-best="<?= esc_attr($g['engine']); ?>"></span></span>
             <?php endif; ?>
         </span>
-        <span class="gc-tile__body">
-            <span class="gc-tile__genre"><?= esc_html($g['genre'] ?: 'بازی'); ?> · <?= esc_html($g['diff_label']); ?></span>
-            <span class="gc-tile__title"><?= esc_html($g['title']); ?></span>
-        </span>
-        <span class="gc-tile__play" aria-hidden="true"><svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 7 5.5Z"/></svg></span>
+        <span class="gc-card__icon"><?= kmpr_game_icon_svg($g['engine']); // phpcs:ignore ?></span>
+        <span class="gc-card__title"><?= esc_html($g['title']); ?></span>
+        <span class="gc-card__meta"><?= esc_html($g['genre'] ?: 'بازی'); ?> · <?= esc_html($g['diff_label']); ?></span>
+        <span class="gc-card__play"><svg width="14" height="14" class="shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 7 5.5Z"/></svg>بازی کن</span>
     </a>
 </<?= $tag; ?>>

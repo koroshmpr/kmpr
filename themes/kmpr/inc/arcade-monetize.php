@@ -87,6 +87,12 @@ function kmpr_am_on($surface)
 
 function kmpr_am_prices()
 {
+    // Real subscription on: every visitor sees the first plan's monthly price (no A/B on real money).
+    if (function_exists('kmpr_sub_enabled') && kmpr_sub_enabled()) {
+        $p = kmpr_sub_plans()[0];
+        $m = (int) round($p['price'] / max(1, $p['months']));
+        return array('A' => $m, 'B' => $m);
+    }
     return array(
         'A' => max(0, (int) kmpr_latin_digits_safe(kmpr_am_opt('am_price_a'))),
         'B' => max(0, (int) kmpr_latin_digits_safe(kmpr_am_opt('am_price_b'))),
@@ -106,6 +112,10 @@ function kmpr_am_num($n)
 
 function kmpr_am_pass_on()
 {
+    // The subscription master switch (inc/arcade-subscription.php) hides every pass surface.
+    if (function_exists('kmpr_sub_enabled') && !kmpr_sub_enabled()) {
+        return false;
+    }
     return kmpr_am_on('pass');
 }
 
@@ -610,6 +620,9 @@ function kmpr_am_buy_html($surface, $class = 'am-btn am-btn--gold')
 {
     $label = esc_html(kmpr_am_opt('am_pass_btn'));
     $pay   = (string) kmpr_am_opt('am_pay_url');
+    if (function_exists('kmpr_sub_enabled') && kmpr_sub_enabled()) {
+        return '<button type="button" class="' . esc_attr($class) . '" data-am-go="sub" aria-haspopup="dialog">' . kmpr_am_icon('ticket') . '<span>' . $label . '</span></button>';
+    }
     if ($pay !== '') {
         return '<a class="' . esc_attr($class) . '" href="' . esc_url($pay) . '" data-am-go="pay" rel="nofollow">' . kmpr_am_icon('ticket') . '<span>' . $label . '</span></a>';
     }
@@ -618,7 +631,8 @@ function kmpr_am_buy_html($surface, $class = 'am-btn am-btn--gold')
 
 function kmpr_am_render_pass_card()
 {
-    $perks = function_exists('kmpr_lines') ? kmpr_lines(kmpr_am_opt('am_pass_perks')) : array();
+    $src   = function_exists('kmpr_sub_enabled') && kmpr_sub_enabled() ? kmpr_sub_opt('sub_perks') : kmpr_am_opt('am_pass_perks');
+    $perks = function_exists('kmpr_lines') ? kmpr_lines($src) : array();
     ?>
     <section class="am-pass" data-am="pass" data-am-s="hub" aria-labelledby="am-pass-title">
         <div class="am-pass__fx" aria-hidden="true"></div>
@@ -731,7 +745,7 @@ add_action('wp_footer', function () {
             echo '<template data-am-tpl="adv"><div class="am-mini am-mini--adv" data-am="adv"><span class="am-mini__ic am-mini__ic--adv">' . kmpr_am_icon('pad', 22) . '</span><div class="am-mini__body"><p class="am-mini__title">' . esc_html(kmpr_am_opt('am_adv_title')) . '</p><p class="am-mini__text">' . esc_html(kmpr_am_opt('am_adv_text')) . '</p></div><a class="am-btn am-btn--fuchsia am-btn--sm" href="' . esc_url(kmpr_am_adv_url()) . '" data-am-go="adv">' . esc_html(kmpr_am_opt('am_adv_btn')) . '</a></div></template>'; // phpcs:ignore
         }
     }
-    if (kmpr_am_pass_on() && (string) kmpr_am_opt('am_pay_url') === '') {
+    if (kmpr_am_pass_on() && (string) kmpr_am_opt('am_pay_url') === '' && !(function_exists('kmpr_sub_enabled') && kmpr_sub_enabled())) {
         kmpr_am_render_modal();
     }
 }, 5);

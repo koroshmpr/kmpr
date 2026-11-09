@@ -33,11 +33,11 @@ $pad = '<svg width="20" height="20" class="shrink-0" viewBox="0 0 24 24" fill="c
             </a>
             <p class="gh__title" aria-hidden="true"><?= esc_html($screen); ?></p>
             <nav class="gh__nav hidden lg:block ms-4" aria-label="ناوبری گیم‌سنتر">
-                <ul class="flex items-center gap-1">
-                    <li><a href="<?= esc_url($games_url); ?>"<?= $on_hub ? ' aria-current="page"' : ''; ?>>همه بازی‌ها</a></li>
-                    <li><a href="<?= esc_url($games_url); ?>#rail-online-title">آنلاین</a></li>
-                    <li><a href="<?= esc_url($games_url); ?>#lobby">لابی و برترین‌ها</a></li>
-                    <li><a href="<?= esc_url($games_url); ?>#profile">پروفایل</a></li>
+                <ul class="flex items-center gap-1.5">
+                    <li><a href="<?= esc_url($games_url); ?>#games" data-gh-tab="games"<?= $on_hub && 'games' === 'games' ? ' aria-current="page"' : ''; ?>><span class="gh__nav-ic"><svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="7" width="19" height="11" rx="5.5"/><path d="M7.5 10.5v4M5.5 12.5h4"/><circle cx="15.5" cy="11.5" r=".9" fill="currentColor"/><circle cx="17.5" cy="13.8" r=".9" fill="currentColor"/></svg></span><span>بازی‌ها</span></a></li>
+                    <li><a href="<?= esc_url($games_url); ?>#lobby" data-gh-tab="lobby"<?= $on_hub && 'lobby' === 'games' ? ' aria-current="page"' : ''; ?>><span class="gh__nav-ic"><svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M14 20a4.5 4.5 0 0 1 7.5-3.3"/></svg></span><span>لابی</span><b class="gh__nav-live" data-online-count hidden></b></a></li>
+                    <li><a href="<?= esc_url($games_url); ?>#ranks" data-gh-tab="ranks"<?= $on_hub && 'ranks' === 'games' ? ' aria-current="page"' : ''; ?>><span class="gh__nav-ic"><svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><span>رتبه‌ها</span></a></li>
+                    <li><a href="<?= esc_url($games_url); ?>#profile" data-gh-tab="profile"<?= $on_hub && 'profile' === 'games' ? ' aria-current="page"' : ''; ?>><span class="gh__nav-ic"><svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span>پروفایل</span></a></li>
                 </ul>
             </nav>
             <div class="ms-auto flex items-center gap-2">

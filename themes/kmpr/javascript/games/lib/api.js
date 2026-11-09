@@ -52,6 +52,7 @@ async function roomReq(path, { method = 'GET', body, query, token } = {}) {
 
 export const online = {
 	profile: (body) => roomReq('/profile', { method: 'POST', body }),
+	presence: (body) => roomReq('/presence', { method: 'POST', body }),
 	topPlayers: () => roomReq('/top-players'),
 	lobby: (game) => roomReq('/rooms/lobby', { query: { game } }),
 	create: (body) => roomReq('/rooms', { method: 'POST', body }),

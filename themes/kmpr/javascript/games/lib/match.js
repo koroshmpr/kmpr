@@ -462,14 +462,20 @@ export function createMatchUI(stage, api, cfg) {
 
 	/* ---------------- result (AI / local) ---------------- */
 	const result = ({ title, text = '', tone = 'accent', primary = 'بازی دوباره', onPrimary, secondary = 'منوی بازی', onSecondary }) => {
+		// Quick «same level» / «harder» without going back through the chooser.
+		const levels = cfg.ai || [];
+		const li = mode && mode.type === 'ai' ? levels.findIndex((l) => l.id === mode.level) : -1;
+		const lvl = li >= 0 ? levels[li] : null;
+		const next = li >= 0 ? levels[li + 1] : null;
 		const color = tone === 'win' ? 'text-emerald-400' : tone === 'loss' ? 'text-rose-400' : 'text-sky-300';
 		showLayer(`<div class="rounded-3xl bg-slate-900/90 border border-white/10 p-5 sm:p-6 flex flex-col gap-3 text-center shadow-2xl">
 			<p class="text-xs font-black ${color}">پایان دست</p>
 			<p class="text-3xl font-black text-white">${esc(title)}</p>
 			${text ? `<p class="text-sm text-slate-300">${esc(text)}</p>` : ''}
 			<div class="grid grid-cols-2 gap-2 pt-2">
-				<button type="button" class="${BTN_PRIMARY}" data-mx="r-primary" data-autofocus>${esc(primary)}</button>
+				<button type="button" class="${BTN_PRIMARY}" data-mx="r-primary" data-autofocus>${esc(primary)}${lvl ? ` (${esc(lvl.label)})` : ''}</button>
 				<button type="button" class="${BTN_GHOST}" data-mx="r-secondary">${esc(secondary)}</button>
+				${next ? `<button type="button" class="${BTN_GHOST} col-span-2" data-mx="r-harder" data-level="${esc(next.id)}">سخت‌تر: ${esc(next.label)}</button>` : ''}
 			</div>
 		</div>`);
 		result.primary = onPrimary;
@@ -580,6 +586,9 @@ export function createMatchUI(stage, api, cfg) {
 			b.disabled = true;
 			b.textContent = 'منتظر حریف…';
 			await room.rematch();
+		} else if (act === 'r-harder' && mode) {
+			lastWrite({ level: b.dataset.level });
+			enter({ type: 'ai', level: b.dataset.level, options: { ...mode.options } });
 		} else if (act === 'r-primary') {
 			hideLayer();
 			result.primary && result.primary();
@@ -611,7 +620,7 @@ export function createMatchUI(stage, api, cfg) {
 		if (room && room.view && room.view.status === 'waiting') room.leave();
 	};
 	window.addEventListener('pagehide', onHide);
-	api._matchUI = { open: () => (hasCurrent() ? chooser() : menu()) };
+	api._matchUI = { open: () => (hasCurrent() ? chooser() : menu()), create: () => cfg.online && guard(() => startOnline('create')), levels: (cfg.ai || []).map((l) => ({ id: l.id, label: l.label })) };
 
 	return {
 		root,

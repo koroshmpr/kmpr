@@ -112,6 +112,8 @@ require_once KMPR_INC . 'article-banners.php'; // [kmpr_banner] in-article banne
 require_once KMPR_INC . 'acf-portfolio-extra.php';
 require_once KMPR_INC . 'acf-services-extra.php';
 require_once KMPR_INC . 'games.php';
+require_once KMPR_INC . 'games-lobby.php'; // lobby presence + generated 2D cover art
+require_once KMPR_INC . 'arcade-subscription.php'; // «پاس آرکید» real subscription: plans, manual/Zarinpal payment, approvals, perks (one master switch)
 require_once KMPR_INC . 'arcade-monetize.php'; // Game Center demand test: «پاس آرکید», support, sponsors, advergame funnel
 
 /**

@@ -240,3 +240,32 @@ function kmpr_arcade_pwa_stats_line()
     $n = fn($k) => number_format_i18n((int) ($s[$k] ?? 0));
     return 'نصب اپ (PWA): پیشنهاد نصب ' . $n('prompt') . ' · پذیرفته ' . $n('accepted') . ' · رد شده ' . $n('dismissed') . ' · نصب‌شده ' . $n('installed') . ' · راهنمای iOS ' . $n('ios_sheet');
 }
+
+/**
+ * Instant navigation inside the Game Center:
+ * - Speculation Rules: prefetch game-center links on hover, prerender on hover-intent (Chromium; ignored elsewhere).
+ * - Cross-document View Transitions: a short cross-fade instead of a white flash (Chromium 126+, Safari 18.2+).
+ * - modulepreload of the arcade entry so it starts with the HTML.
+ * Analytics in arcade-monetize.js wait for `prerenderingchange`, so prerendered pages are not counted until shown.
+ */
+add_action('wp_head', function () {
+    if (!function_exists('kmpr_is_games_page') || !kmpr_is_games_page() || is_user_logged_in()) {
+        return;
+    }
+    $base  = wp_parse_url(get_post_type_archive_link('game'), PHP_URL_PATH) ?: '/games/';
+    $rules = array(
+        'prerender' => array(array('where' => array('and' => array(array('href_matches' => $base . '*'), array('not' => array('href_matches' => '*\\?*')), array('not' => array('href_matches' => '*.webmanifest')))), 'eagerness' => 'moderate')),
+        'prefetch'  => array(array('where' => array('href_matches' => $base . '*'), 'eagerness' => 'moderate')),
+    );
+    echo '<script type="speculationrules">' . wp_json_encode($rules, JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
+}, 3);
+add_action('wp_head', function () {
+    if (!function_exists('kmpr_is_games_page') || !kmpr_is_games_page()) {
+        return;
+    }
+    echo '<style>@view-transition{navigation:auto}::view-transition-old(root){animation:kvt-out .22s cubic-bezier(.4,0,1,1) both}::view-transition-new(root){animation:kvt-in .38s cubic-bezier(.22,1,.36,1) .04s both}@keyframes kvt-out{to{opacity:0;transform:scale(.985);filter:blur(4px)}}@keyframes kvt-in{from{opacity:0;transform:scale(1.015)}}@media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}</style>' . "\n";
+    $entry = get_template_directory() . '/public/js/games/index.js';
+    if (file_exists($entry)) {
+        echo '<link rel="modulepreload" href="' . esc_url(get_template_directory_uri() . '/public/js/games/index.js?ver=' . filemtime($entry)) . '">' . "\n";
+    }
+}, 4);

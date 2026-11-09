@@ -8,6 +8,7 @@ import { api as rest, online } from './lib/api.js';
 import { avatarSvg, AVATAR_STYLES, AVATAR_HUES } from './lib/avatar.js';
 import { CATALOG } from './catalog.js';
 import { fa, esc } from './lib/util.js';
+import { drawHero } from './lib/hero.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -232,15 +233,35 @@ function badges() {
 	const remote = new Set();
 	let total = 0;
 	let got = 0;
+	// SVG medals grouped by game: tier ring (bronze → silver → gold by order), the game's cartoon icon inside.
+	const TIERS = [['#d97706', '#fcd34d'], ['#94a3b8', '#f1f5f9'], ['#eab308', '#fef08a']];
+	const inner = (svg) => (/<svg[^>]*>([\s\S]*)<\/svg>/.exec(svg || '') || [])[1] || '';
+	const medal = (g, i, on) => {
+		const [ring, light] = TIERS[Math.min(2, Math.floor(i / 2))];
+		const acc = (g && g.accent) || '#f59e0b';
+		return `<svg viewBox="0 0 48 58" width="44" height="53" aria-hidden="true" class="ab-medal">
+			<path d="M12 2h9l5 16h-9zM36 2h-9l-5 16h9z" fill="${acc}" stroke="#16120f" stroke-width="2" stroke-linejoin="round"/>
+			<circle cx="24" cy="36" r="19" fill="${ring}" stroke="#16120f" stroke-width="2.5"/>
+			<circle cx="24" cy="36" r="14.5" fill="${light}" stroke="#16120f" stroke-width="1.5"/>
+			<g transform="translate(13.5 25.5) scale(.33)">${inner(g && g.icon)}</g>
+			<path d="M16 26a11 11 0 0 1 8-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+			${on ? '' : '<g><circle cx="38" cy="48" r="7" fill="#1e293b" stroke="#16120f" stroke-width="1.5"/><path d="M35.5 47v-1.5a2.5 2.5 0 0 1 5 0V47" stroke="#94a3b8" stroke-width="1.5" fill="none"/><rect x="34.5" y="47" width="7" height="4.5" rx="1" fill="#94a3b8"/></g>'}
+		</svg>`;
+	};
 	el.innerHTML = Object.entries(CATALOG)
-		.flatMap(([slug, c]) =>
-			c.achievements.map((a) => {
-				total++;
-				const on = (p.games[slug] && p.games[slug].ach.includes(a.id)) || remote.has(`${slug}:${a.id}`);
-				if (on) got++;
-				return `<li class="arcade-badge${on ? ' is-on' : ''}" title="${esc(c.title + ' — ' + a.title + ': ' + a.desc)}"><span aria-hidden="true">${a.icon}</span><span class="sr-only">${esc(c.title + ' — ' + a.title)} ${on ? '(باز شده)' : '(قفل)'}</span></li>`;
-			})
-		)
+		.map(([slug, c]) => {
+			const g = gameByEngine(slug);
+			let mine = 0;
+			const items = c.achievements
+				.map((a, i) => {
+					total++;
+					const on = (p.games[slug] && p.games[slug].ach.includes(a.id)) || remote.has(`${slug}:${a.id}`);
+					if (on) { got++; mine++; }
+					return `<li class="arcade-badge${on ? ' is-on' : ''}" title="${esc(a.title + ': ' + a.desc)}">${medal(g, i, on)}<span class="ab-name">${esc(a.title)}</span><span class="sr-only">${esc(a.desc)} ${on ? '(باز شده)' : '(قفل)'}</span></li>`;
+				})
+				.join('');
+			return `<li class="ab-game"><p class="ab-game__t">${esc(c.title)} <span>${fa(mine)}/${fa(c.achievements.length)}</span></p><ul class="ab-row">${items}</ul></li>`;
+		})
 		.join('');
 	const c = $('[data-badges-count]');
 	if (c) c.textContent = `${fa(got)} از ${fa(total)}`;
@@ -262,12 +283,12 @@ function continuePlaying() {
 	el.innerHTML = played
 		.map(([slug, g]) => {
 			const gm = gameByEngine(slug);
-			return `<li class="gc-rail__item"><a href="${esc(gm.url)}" class="gc-tile group" style="--accent:${esc(gm.accent)}">
-				<span class="gc-tile__media">${gm.cover ? `<img src="${esc(gm.cover)}" width="768" height="432" alt="" loading="lazy" decoding="async">` : ''}</span>
-				<span class="gc-tile__shade" aria-hidden="true"></span>
-				<span class="gc-tile__chips">${gm.online ? '<span class="gc-chip gc-chip--online">آنلاین</span>' : '<span></span>'}${g.best ? `<span class="gc-chip gc-chip--best">رکورد ${fa(g.best)}</span>` : ''}</span>
-				<span class="gc-tile__body"><span class="gc-tile__genre">${fa(g.plays)} بار بازی کرده‌اید</span><span class="gc-tile__title">${esc(gm.title)}</span></span>
-				<span class="gc-tile__play" aria-hidden="true"><svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 7 5.5Z"/></svg></span>
+			return `<li class="gc-rail__item"><a href="${esc(gm.url)}" class="gc-card group" style="--accent:${esc(gm.accent)}">
+				<span class="gc-card__chips">${g.best ? `<span class="gc-chip gc-chip--best">★ ${fa(g.best)}</span>` : ''}</span>
+				<span class="gc-card__icon">${gm.icon || ''}</span>
+				<span class="gc-card__title">${esc(gm.title)}</span>
+				<span class="gc-card__meta">${fa(g.plays)} بار بازی کرده‌اید</span>
+				<span class="gc-card__play"><svg width="14" height="14" class="shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5.5v13a1 1 0 0 0 1.5.86l11-6.5a1 1 0 0 0 0-1.72l-11-6.5A1 1 0 0 0 7 5.5Z"/></svg>ادامه</span>
 			</a></li>`;
 		})
 		.join('');
@@ -447,6 +468,141 @@ async function topPlayers() {
 	io.observe(el);
 }
 
+
+/* ---------------- tabs: games / lobby / ranks (hash-addressable, view-transition switch) ---------------- */
+function tabs() {
+	const bar = $('[data-gc-tabs]');
+	if (!bar) return;
+	const tabsEls = [...bar.querySelectorAll('[data-tab]')];
+	const panes = [...document.querySelectorAll('[data-pane]')];
+	const ink = bar.querySelector('.gc-tabs__ink');
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	let current = 'games';
+	let busy = false;
+	const moveInk = () => {
+		const t = tabsEls.find((x) => x.dataset.tab === current);
+		if (!t || !ink) return;
+		ink.style.width = `${t.offsetWidth}px`;
+		ink.style.transform = `translateX(${t.offsetLeft}px)`;
+	};
+	const show = (name, animate = true) => {
+		if (!panes.some((p) => p.dataset.pane === name)) name = 'games';
+		if (name === current && animate) return;
+		const swap = () => {
+			current = name;
+			panes.forEach((p) => (p.hidden = p.dataset.pane !== name));
+			tabsEls.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === name)));
+			document.querySelectorAll('[data-gh-tab]').forEach((a) => (a.dataset.ghTab === name ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
+			moveInk();
+			window.dispatchEvent(new CustomEvent('kmpr:hub-tab', { detail: { tab: name } }));
+		};
+		if (!animate || reduced) return swap();
+		// Direction-aware, GPU-only transition (View Transitions API; CSS fallback elsewhere).
+		const order = tabsEls.map((t) => t.dataset.tab);
+		document.documentElement.dataset.gcDir = order.indexOf(name) > order.indexOf(current) ? 'next' : 'prev';
+		// Keep the reader at the top of the panel area (just under the sticky header).
+		const curPane = panes.find((p) => p.dataset.pane === current);
+		const head = document.querySelector('.gh');
+		const top = curPane ? curPane.getBoundingClientRect().top + window.scrollY - (head ? head.getBoundingClientRect().bottom : 70) - 12 : 0;
+		const run = () => {
+			swap();
+			if (window.scrollY > top) window.scrollTo({ top, behavior: 'instant' });
+		};
+		if (document.startViewTransition) {
+			busy = true;
+			const vt = document.startViewTransition(run);
+			vt.finished.finally(() => (busy = false));
+		} else {
+			run();
+			const pane = panes.find((p) => p.dataset.pane === name);
+			pane.classList.remove('is-enter');
+			void pane.offsetWidth;
+			pane.classList.add('is-enter');
+		}
+	};
+	bar.addEventListener('click', (e) => {
+		const t = e.target.closest('[data-tab]');
+		if (!t) return;
+		e.preventDefault();
+		if (busy) return;
+		history.replaceState(null, '', `#${t.dataset.tab}`);
+		show(t.dataset.tab);
+	});
+	bar.addEventListener('keydown', (e) => {
+		const i = tabsEls.findIndex((x) => x.dataset.tab === current);
+		const d = { ArrowLeft: 1, ArrowRight: -1 }[e.key];
+		if (d === undefined) return;
+		const n = tabsEls[(i + d + tabsEls.length) % tabsEls.length];
+		n.focus();
+		n.click();
+	});
+	// In-page links to old anchors (#leaders, #lobby, #profile…) open the right tab.
+	const fromHash = () => {
+		const h = location.hash.slice(1);
+		const pane = panes.find((p) => p.dataset.pane === h || (h && p.querySelector(`#${CSS.escape(h)}`)));
+		if (pane) show(pane.dataset.pane, false);
+	};
+	window.addEventListener('hashchange', () => {
+		const h = location.hash.slice(1);
+		if (panes.some((p) => p.dataset.pane === h)) show(h);
+		else fromHash();
+	});
+	// Header / dock shortcuts on the hub itself: animated switch, no jump.
+	document.querySelectorAll('[data-gh-tab]').forEach((a) =>
+		a.addEventListener('click', (e) => {
+			const k = a.dataset.ghTab;
+			if (!panes.some((p) => p.dataset.pane === k)) return;
+			e.preventDefault();
+			history.replaceState(null, '', `#${k}`);
+			show(k);
+		})
+	);
+	window.addEventListener('resize', moveInk);
+	fromHash();
+	moveInk();
+}
+
+/* ---------------- presence list (data comes from pwa.js heartbeats) ---------------- */
+function presence() {
+	const list = $('[data-online]');
+	const counts = document.querySelectorAll('[data-online-count]');
+	const label = $('[data-online-label]');
+	window.addEventListener('kmpr:presence', (e) => {
+		const d = e.detail || {};
+		counts.forEach((c) => {
+			c.textContent = fa(d.count || 0);
+			c.hidden = false;
+		});
+		if (label) label.textContent = `${fa(d.count || 0)} نفر`;
+		if (!list) return;
+		const urlOf = (engine) => (games.find((g) => g.engine === engine) || {}).url;
+		list.innerHTML = (d.online || []).length
+			? d.online
+					.map((u) => {
+						const url = u.where !== 'hub' && urlOf(u.where);
+						return `<li class="gc-online__row${u.me ? ' is-me' : ''}">
+							<span class="gc-online__av">${avatarSvg(u.id, u.avatar || {}, 40)}<i></i></span>
+							<span class="min-w-0 flex-1"><b>${esc(u.nick)}${u.me ? ' (شما)' : ''}</b><small>${u.where === 'hub' ? 'در لابی' : `در حال بازی «${esc(u.title)}»`}</small></span>
+							${url && !u.me ? `<a href="${esc(url)}" class="gc-online__go">همین بازی</a>` : ''}
+						</li>`;
+					})
+					.join('')
+			: '<li class="text-sm text-slate-400 py-6 text-center rounded-2xl border border-dashed border-white/10">فعلاً فقط خودت اینجایی! یک اتاق بساز و لینکش را بفرست.</li>';
+	});
+}
+
+/* spotlight: animated pixel Korosh (running in place) when the featured game has no cover */
+function heroArt() {
+	document.querySelectorAll('[data-hero-art]').forEach((c) => {
+		const ctx = c.getContext('2d');
+		ctx.scale(4, 4); // vector hero on a 4× canvas: crisp when CSS scales it up
+		const t0 = performance.now();
+		const paint = () => { ctx.clearRect(0, 0, 36, 56); drawHero(ctx, 18, 22, 'big', 'coffee', 'run', 1, 1, 1, (performance.now() - t0) / 450); };
+		paint();
+		if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) { const loop = () => { paint(); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+	});
+}
+
 export function initHub() {
 	try {
 		games = JSON.parse(($('[data-arcade-games]') || {}).textContent || '[]');
@@ -460,5 +616,9 @@ export function initHub() {
 	starfield();
 	lobby();
 	topPlayers();
+	tabs();
+	presence();
+	heroArt();
+	window.addEventListener('kmpr:profile-changed', () => renderAll());
 	sync();
 }

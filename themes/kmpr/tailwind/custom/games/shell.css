@@ -1252,3 +1252,107 @@ body.admin-bar.single-game .game-shell:not(.is-focus) .game-shell__stage {
 		animation: none;
 	}
 }
+
+/* game-over extras */
+.game-screen__gap {
+	color: #fcd34d;
+}
+.game-screen__keys {
+	margin: 0.2rem 0 0;
+	font-size: 0.72rem;
+	color: #64748b;
+}
+@media (pointer: coarse) {
+	.game-screen__keys {
+		display: none;
+	}
+}
+.game-screen__actions .game-btn {
+	white-space: nowrap;
+	min-height: 44px;
+}
+
+/* forced landscape on portrait phones (html.game-rotate, see shell syncRotate) */
+html.game-focus.game-rotate .game-shell.is-focus .game-shell__frame {
+	inset: auto;
+	top: 0;
+	left: 100vw;
+	right: auto;
+	bottom: auto;
+	width: 100dvh;
+	height: 100vw;
+	padding-bottom: 0;
+	transform-origin: top left;
+	transform: rotate(90deg);
+	animation: none;
+}
+
+/* ---------- 2D loaders (javascript/games/lib/loader.js) ---------- */
+.kl {
+	position: absolute;
+	inset: 0;
+	z-index: 30;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1.1rem;
+	background: rgb(2 6 23 / 0.92);
+	opacity: 0;
+	pointer-events: none;
+	animation: kl-in 0.2s 0.15s forwards; /* fast loads never show it */
+}
+.kl-page {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+}
+.kl-page .kl {
+	animation-delay: 0s;
+	pointer-events: auto;
+}
+.kl__tip {
+	margin: 0;
+	font-size: 0.85rem;
+	font-weight: 700;
+	color: #94a3b8;
+}
+@keyframes kl-in { to { opacity: 1; } }
+.kl i, .kl b, .kl span { display: block; }
+/* 1. pixel hopper */
+.kl-pixel { width: 64px; height: 64px; display: flex; align-items: flex-end; justify-content: center; border-bottom: 4px solid #334155; }
+.kl-pixel i {
+	width: 8px; height: 8px; margin-bottom: 26px; background: transparent; image-rendering: pixelated;
+	box-shadow: 8px 0 #f59e0b, 16px 0 #f59e0b, 0 8px #f59e0b, 8px 8px #0f172a, 16px 8px #f59e0b, 24px 8px #f59e0b, 0 16px #f59e0b, 8px 16px #f59e0b, 16px 16px #f59e0b, 24px 16px #f59e0b, 0 24px #f59e0b, 24px 24px #f59e0b;
+	transform: translate(-12px, -26px);
+	animation: kl-hop 0.5s infinite alternate cubic-bezier(0.3, 0, 0.7, 1);
+}
+@keyframes kl-hop { to { transform: translate(-12px, 0); } }
+/* 2. bouncing balls */
+.kl-bounce { display: flex; gap: 10px; height: 60px; align-items: flex-end; }
+.kl-bounce i { width: 16px; height: 16px; border-radius: 50%; background: #38bdf8; animation: kl-bounce 0.6s infinite alternate cubic-bezier(0.3, 0, 0.7, 1); }
+.kl-bounce i:nth-child(2) { background: #f59e0b; animation-delay: 0.15s; }
+.kl-bounce i:nth-child(3) { background: #f43f5e; animation-delay: 0.3s; }
+@keyframes kl-bounce { from { transform: translateY(-40px); } to { transform: translateY(0) scaleX(1.2) scaleY(0.85); } }
+/* 3. stacking blocks */
+.kl-blocks { display: grid; grid-template-columns: repeat(2, 20px); gap: 4px; }
+.kl-blocks i { width: 20px; height: 20px; border-radius: 4px; background: #a78bfa; animation: kl-block 1.6s infinite; }
+.kl-blocks i:nth-child(2) { background: #34d399; animation-delay: 0.2s; }
+.kl-blocks i:nth-child(3) { background: #fbbf24; animation-delay: 0.4s; }
+.kl-blocks i:nth-child(4) { background: #f472b6; animation-delay: 0.6s; }
+@keyframes kl-block { 0%, 100% { transform: translateY(-30px); opacity: 0; } 25%, 75% { transform: none; opacity: 1; } }
+/* 4. orbit */
+.kl-orbit { position: relative; width: 70px; height: 70px; }
+.kl-orbit b { position: absolute; inset: 22px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fde68a, #f59e0b); }
+.kl-orbit i { position: absolute; inset: 0; border: 2px dashed #334155; border-radius: 50%; animation: kl-spin 1.2s linear infinite; }
+.kl-orbit i::after { content: ''; position: absolute; top: -6px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: #38bdf8; }
+@keyframes kl-spin { to { transform: rotate(360deg); } }
+/* 5. gamepad */
+.kl-pad { position: relative; width: 84px; height: 44px; border-radius: 22px; background: #1e293b; border: 2px solid #475569; }
+.kl-pad span { position: absolute; left: 14px; top: 13px; width: 18px; height: 18px; background: linear-gradient(#94a3b8, #94a3b8) center/6px 100% no-repeat, linear-gradient(#94a3b8, #94a3b8) center/100% 6px no-repeat; }
+.kl-pad i { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #f43f5e; right: 14px; top: 10px; animation: kl-press 0.8s infinite; }
+.kl-pad i + i { background: #22c55e; right: 26px; top: 22px; animation-delay: 0.4s; }
+@keyframes kl-press { 50% { transform: scale(0.6); filter: brightness(1.6); } }
+@media (prefers-reduced-motion: reduce) {
+	.kl * , .kl *::after { animation-duration: 2.5s !important; }
+}

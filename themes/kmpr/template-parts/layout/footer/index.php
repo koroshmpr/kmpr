@@ -262,7 +262,7 @@ $kf_wa_svg = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" f
                         </span>
                         <?php if ($kf_game_covers) : ?>
                             <span class="kf-game__art pointer-events-none absolute inset-y-0 end-0 -z-10 w-32 sm:w-36 overflow-hidden" aria-hidden="true">
-                                <img src="<?= esc_url($kf_game_covers[0]['src']); ?>" alt="" width="768" height="432" loading="lazy" decoding="async"
+                                <img src="<?= esc_url($kf_game_covers[0]['src']); ?>" alt="<?= esc_attr($kf_game_covers[0]['alt']); ?>" width="768" height="432" loading="lazy" decoding="async"
                                      class="absolute top-0 left-0 h-full w-auto max-w-none opacity-85 transition duration-500 group-hover:scale-105 group-hover:opacity-100 motion-reduce:transition-none origin-left">
                             </span>
                         <?php endif; ?>

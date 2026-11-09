@@ -8,10 +8,10 @@ $g = $args['game'] ?? null;
 if (!$g) {
     return;
 }
-$is_match = in_array($g['engine'], array('xo', 'rps15', 'chess', 'color-race'), true);
+$is_match = in_array($g['engine'], array('xo', 'rps15', 'chess', 'color-race', 'air-hockey', 'penalty', 'foosball'), true);
 $cover    = $g['cover'];
 ?>
-<div class="game-shell" data-game-shell data-game-id="<?= (int) $g['id']; ?>" data-engine="<?= esc_attr($g['engine']); ?>" data-url="<?= esc_url($g['url']); ?>" style="--accent: <?= esc_attr($g['accent_hex']); ?>">
+<div class="game-shell" data-game-shell data-game-id="<?= (int) $g['id']; ?>" data-engine="<?= esc_attr($g['engine']); ?>" data-url="<?= esc_url($g['url']); ?>" data-hub="<?= esc_url(get_post_type_archive_link('game')); ?>" style="--accent: <?= esc_attr($g['accent_hex']); ?>">
     <div class="game-shell__frame" data-frame>
         <div class="game-shell__bar">
             <div class="game-shell__stats">
@@ -67,7 +67,7 @@ $cover    = $g['cover'];
                     if ($gstats && $gstats['plays'] > 0) : ?>
                         <p class="game-screen__stats"><span><?= esc_html(kmpr_game_num($gstats['plays'])); ?> دست بازی‌شده</span><span><?= esc_html(kmpr_game_num($gstats['players'])); ?> بازیکن</span><?php if (!empty($gstats['top'])) : ?><span>قهرمان: <?= esc_html($gstats['top']['nickname']); ?></span><?php endif; ?></p>
                     <?php endif; ?>
-                    <p class="game-screen__hint"><?= $is_match ? 'مقابل هوش مصنوعی، دو نفره یا آنلاین با دوستان' : 'صدا پیش‌فرض خاموش است · Esc برای توقف'; ?></p>
+                    <p class="game-screen__hint"><?= $is_match ? (!empty(kmpr_game_engines()[$g['engine']]['online']) ? 'مقابل هوش مصنوعی، دو نفره یا آنلاین با دوستان' : 'مقابل هوش مصنوعی یا دو نفره روی یک دستگاه') : 'صدا پیش‌فرض خاموش است · Esc برای توقف'; ?></p>
                     <div data-kmpr-slot="game-intro"></div>
                     <noscript><p class="game-screen__status" data-tone="warn">برای بازی، جاوااسکریپت مرورگر را فعال کنید.</p></noscript>
                 </div>

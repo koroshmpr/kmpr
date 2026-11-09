@@ -40,18 +40,32 @@ $rails = array();
 if ($term) {
     $rails[] = array('id' => 'rail-term', 'title' => $term->name, 'text' => $term->description, 'ids' => $ids);
 } else {
+    $by_date = $ids;
+    usort($by_date, fn($a, $b) => strcmp(get_post_field('post_date', $b), get_post_field('post_date', $a)));
+    $rails[] = array('id' => 'rail-new', 'title' => '🆕 تازه‌ها', 'text' => 'جدیدترین بازی‌های گیم‌سنتر', 'ids' => array_slice($by_date, 0, 10));
+    $by_plays = $ids;
+    usort($by_plays, fn($a, $b) => ($stats['games'][$b]['plays'] ?? 0) <=> ($stats['games'][$a]['plays'] ?? 0));
+    $rails[] = array('id' => 'rail-hot', 'title' => '🔥 محبوب‌ترین‌ها', 'text' => 'بیشترین دست بازی‌شده', 'ids' => array_slice($by_plays, 0, 10));
     $online_ids = array_values(array_filter($ids, fn($id) => !empty($engines[(string) kmpr_game_meta($id, 'game_engine')]['online'])));
-    $arcade_ids = array_values(array_filter($ids, fn($id) => !in_array($id, $online_ids, true) && $in_terms($id, array('arcade'))));
-    $mind_ids   = array_values(array_filter($ids, fn($id) => !in_array($id, $online_ids, true) && !in_array($id, $arcade_ids, true)));
     $rails[]    = array('id' => 'rail-online', 'title' => 'آنلاین با دوستان', 'text' => 'مقابل هوش مصنوعی، دو نفره یا با لینک دعوت', 'ids' => $online_ids, 'online' => true);
-    $rails[]    = array('id' => 'rail-arcade', 'title' => 'آرکید', 'text' => 'رکورد بزنید و اسم‌تان را به جدول برسانید', 'ids' => $arcade_ids);
-    $rails[]    = array('id' => 'rail-mind', 'title' => 'مهارتی و فکری', 'text' => 'سرعت، دقت و حافظه؛ با حال‌وهوای کدنویسی', 'ids' => $mind_ids);
+    foreach ((array) $genres as $gt) {
+        if (!is_object($gt)) {
+            continue;
+        }
+        $gids = array_values(array_filter($ids, fn($id) => $in_terms($id, array($gt->slug))));
+        if ($gids && !array_diff($gids, $online_ids)) {
+            continue; // same games as «آنلاین با دوستان» — don't show the row twice
+        }
+        if ($gids) {
+            $rails[] = array('id' => 'rail-' . $gt->term_id, 'title' => $gt->name, 'text' => $gt->description, 'ids' => $gids);
+        }
+    }
 }
 
 $catalog = array();
 foreach ($ids as $id) {
     $d         = kmpr_game_data($id, 'medium_large');
-    $catalog[] = array('id' => $id, 'engine' => $d['engine'], 'title' => $d['title'], 'url' => $d['url'], 'cover' => $d['cover']['url'] ?? '', 'accent' => $d['accent_hex'], 'genre' => $d['genre'], 'online' => !empty($engines[$d['engine']]['online']));
+    $catalog[] = array('id' => $id, 'engine' => $d['engine'], 'title' => $d['title'], 'url' => $d['url'], 'cover' => $d['cover']['url'] ?? '', 'accent' => $d['accent_hex'], 'genre' => $d['genre'], 'online' => !empty($engines[$d['engine']]['online']), 'icon' => kmpr_game_icon_svg($d['engine']));
 }
 $title = $term ? ($term->name . ' — گیم‌سنتر') : kmpr_game_opt('ga_title');
 $text  = $term ? ($term->description ?: 'بازی‌های ژانر ' . $term->name . '؛ همه را خودم از صفر با جاوااسکریپت ساخته‌ام.') : kmpr_game_opt('ga_text');
@@ -107,12 +121,12 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
             </button>
         </section>
 
-        <!-- Title -->
-        <header class="mt-8 lg:mt-10 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-            <div class="max-w-3xl">
+        <!-- Title + tabs -->
+        <header class="gc-top<?= $term ? '' : ' sr-only'; ?>"><?php /* main hub: heading kept for SEO/a11y only — the games start right away */ ?>
+            <div class="min-w-0">
                 <span class="inline-flex items-center gap-2 text-xs font-black text-secondary"><span class="w-6 h-px bg-secondary"></span><?= esc_html($term ? 'ژانر' : kmpr_game_opt('ga_kicker')); ?></span>
-                <h1 class="mt-3 text-[1.9rem] leading-[1.45] sm:text-4xl lg:text-5xl lg:leading-[1.35] font-black text-white tracking-tight"><?= esc_html($title); ?></h1>
-                <p class="mt-3 text-sm sm:text-base text-slate-300 leading-8"><?= esc_html($text); ?></p>
+                <h1 class="gc-top__title"><?= esc_html($title); ?></h1>
+                <p class="gc-top__text"><?= esc_html($text); ?></p>
             </div>
             <dl class="flex gap-2 shrink-0">
                 <div class="gc-stat"><dt>بازی</dt><dd><?= esc_html(kmpr_fa_num(count($ids))); ?></dd></div>
@@ -121,6 +135,17 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
             </dl>
         </header>
 
+        <?php if (!$term) : ?>
+            <nav class="gc-tabs" role="tablist" aria-label="بخش‌های گیم‌سنتر" data-gc-tabs>
+                <a href="#games" role="tab" class="gc-tab" data-tab="games" aria-selected="true"><span aria-hidden="true">🎮</span> بازی‌ها <b><?= esc_html(kmpr_fa_num(count($ids))); ?></b></a>
+                <a href="#lobby" role="tab" class="gc-tab" data-tab="lobby" aria-selected="false"><span class="gc-tab__live" aria-hidden="true"></span> لابی <b data-online-count>…</b></a>
+                <a href="#ranks" role="tab" class="gc-tab" data-tab="ranks" aria-selected="false"><span aria-hidden="true">🏆</span> رتبه‌ها<span class="gc-tab__long">&nbsp;و چالش</span></a>
+                <span class="gc-tabs__ink" aria-hidden="true"></span>
+            </nav>
+        <?php endif; ?>
+
+        <!-- Panel: games -->
+        <section class="gc-pane" id="games" role="tabpanel" data-pane="games" aria-label="بازی‌ها">
         <?php if ($spot) : ?>
             <!-- Spotlight -->
             <section class="gc-spot mt-6" aria-label="بازی‌های ویژه" aria-roledescription="carousel" data-gc-spot>
@@ -130,6 +155,10 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                     <article class="gc-spot__slide<?= $i === 0 ? ' is-active' : ''; ?>" style="--accent: <?= esc_attr($sg['accent_hex']); ?>" data-gc-slide aria-roledescription="slide" aria-label="<?= esc_attr(kmpr_fa_num($i + 1) . ' از ' . kmpr_fa_num(count($spot))); ?>"<?= $i ? ' aria-hidden="true"' : ''; ?>>
                         <?php if ($sg['cover']) : ?>
                             <img class="gc-spot__img" src="<?= esc_url($sg['cover']['url']); ?>" width="<?= (int) $sg['cover']['width']; ?>" height="<?= (int) $sg['cover']['height']; ?>" alt="" <?= $i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?> decoding="async">
+                        <?php elseif ($sg['engine'] === 'korosh-run') : ?>
+                            <div class="gc-spot__art gc-spot__art--hero" aria-hidden="true"><canvas data-hero-art width="144" height="224"></canvas></div>
+                        <?php else : ?>
+                            <div class="gc-spot__art" aria-hidden="true"><?= kmpr_game_art_html($sg, 'gc-art--banner'); // phpcs:ignore ?></div>
                         <?php endif; ?>
                         <div class="gc-spot__shade" aria-hidden="true"></div>
                         <div class="gc-spot__body">
@@ -161,8 +190,6 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
             </section>
         <?php endif; ?>
 
-        <?php do_action('kmpr_games_hub_slot', 'after_hero', $term); ?>
-
         <?php if ($genres && !is_wp_error($genres)) : ?>
             <nav aria-label="ژانرها" class="mt-8 -mx-4 px-4 overflow-x-auto gc-noscroll">
                 <ul class="flex gap-2 w-max">
@@ -174,9 +201,7 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
             </nav>
         <?php endif; ?>
 
-        <div class="mt-6 grid grid-cols-1 xl:grid-cols-12 gap-8 xl:gap-6 items-start">
-            <!-- Rails -->
-            <div class="xl:col-span-8 min-w-0 flex flex-col gap-9" id="all-games">
+            <div class="mt-6 flex flex-col gap-9 min-w-0" id="all-games">
                 <?php if (!$term) : ?>
                     <section class="gc-rail" aria-labelledby="rail-continue-title" data-continue-rail hidden>
                         <div class="gc-rail__head">
@@ -186,9 +211,12 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                     </section>
                 <?php endif; ?>
 
-                <?php foreach ($rails as $rail) :
+                <?php foreach ($rails as $ri => $rail) :
                     if (!$rail['ids']) {
                         continue;
+                    }
+                    if ($ri === 3) {
+                        do_action('kmpr_games_hub_slot', 'after_hero', $term); // pass card after the first rows, not before the games
                     } ?>
                     <section class="gc-rail" aria-labelledby="<?= esc_attr($rail['id']); ?>-title" data-gc-rail>
                         <div class="gc-rail__head">
@@ -216,33 +244,62 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                     <p class="text-center text-slate-300 py-16 rounded-3xl border border-dashed border-white/10">هنوز بازی‌ای در این بخش منتشر نشده است.</p>
                 <?php endif; ?>
 
-                <?php do_action('kmpr_games_hub_slot', 'after_rails', $term); ?>
-
-                <?php if (!$term) : ?>
-                    <!-- Badges + recent -->
-                    <section class="gc-panel" aria-label="نشان‌ها و بازی‌های اخیر">
-                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                            <div class="lg:col-span-3">
-                                <div class="flex items-center justify-between gap-3 mb-3">
-                                    <h2 class="text-lg font-black text-white">نشان‌های من</h2>
-                                    <span class="text-sm text-slate-300" data-badges-count></span>
-                                </div>
-                                <ul class="grid grid-cols-8 sm:grid-cols-12 gap-1.5" data-badges></ul>
-                            </div>
-                            <div class="lg:col-span-2">
-                                <h2 class="text-lg font-black text-white mb-3">بازی‌های اخیر</h2>
-                                <ul class="flex flex-col gap-2" data-recent>
-                                    <li class="text-sm text-slate-400 py-5 text-center rounded-2xl border border-dashed border-white/10">هنوز سابقه‌ای ثبت نشده است.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
+                <?php if (!$ids) : ?>
+                    <p class="text-center text-slate-300 py-16 rounded-3xl border border-dashed border-white/10">هنوز بازی‌ای در این بخش منتشر نشده است.</p>
                 <?php endif; ?>
+                <?php do_action('kmpr_games_hub_slot', 'after_rails', $term); ?>
             </div>
+        </section>
 
-            <!-- Side panels -->
-            <aside class="xl:col-span-4 flex flex-col gap-5 xl:sticky xl:top-24" aria-label="چالش روزانه، لابی و برترین‌ها">
-                <?php do_action('kmpr_games_hub_slot', 'sidebar', $term); ?>
+        <?php if (!$term) : ?>
+            <!-- Panel: lobby -->
+            <section class="gc-pane" id="lobby" role="tabpanel" data-pane="lobby" aria-label="لابی" hidden>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                    <div class="gc-panel lg:col-span-5">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <h2 class="flex items-center gap-2 text-lg font-black text-white"><span class="gc-tab__live" aria-hidden="true"></span> الان آنلاین</h2>
+                            <span class="text-xs text-slate-400" data-online-label>در حال بررسی…</span>
+                        </div>
+                        <ul class="gc-online" data-online aria-live="polite"></ul>
+                        <p class="mt-3 text-xs text-slate-400 leading-6">بازیکن‌هایی که همین حالا در گیم‌سنتر هستند (هر ۲۵ ثانیه به‌روز می‌شود).</p>
+                    </div>
+                    <div class="lg:col-span-7 flex flex-col gap-5">
+                        <div class="gc-panel">
+                            <div class="flex items-center justify-between gap-3 mb-3">
+                                <h2 class="text-lg font-black text-white">ساخت اتاق</h2>
+                                <span class="text-xs text-slate-400">یک بازی انتخاب کن و لینک دعوت بگیر</span>
+                            </div>
+                            <ul class="gc-mk">
+                                <?php foreach ($ids as $rid) :
+                                    $eng = (string) kmpr_game_meta($rid, 'game_engine');
+                                    if (empty($engines[$eng]['online'])) {
+                                        continue;
+                                    }
+                                    $rd = kmpr_game_data($rid, 'thumbnail'); ?>
+                                    <li><a class="gc-mk__btn" href="<?= esc_url(add_query_arg('create', '1', $rd['url'])); ?>" style="--accent: <?= esc_attr($rd['accent_hex']); ?>" rel="nofollow">
+                                        <span class="gc-mk__ic"><?= kmpr_game_icon_svg($eng); // phpcs:ignore ?></span>
+                                        <span class="min-w-0"><b><?= esc_html($rd['title']); ?></b><small>اتاق خصوصی + لینک</small></span>
+                                    </a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <div class="gc-panel">
+                            <div class="flex items-center justify-between gap-3 mb-3">
+                                <h2 class="flex items-center gap-2 text-lg font-black text-white"><span class="size-2.5 rounded-full bg-emerald-400 shrink-0"></span> اتاق‌های منتظر حریف</h2>
+                            </div>
+                            <ul class="flex flex-col gap-2" data-lobby aria-live="polite">
+                                <li class="text-sm text-slate-400 py-5 text-center rounded-2xl border border-dashed border-white/10">در حال بررسی اتاق‌ها…</li>
+                            </ul>
+                            <p class="mt-3 text-xs text-slate-400 leading-6">در بازی‌های آنلاین «حریف تصادفی» را بزنید تا اتاق شما اینجا دیده شود.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Panel: ranks & challenge -->
+            <section class="gc-pane" id="ranks" role="tabpanel" data-pane="ranks" aria-label="رتبه‌ها و چالش" hidden>
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+                    <div class="xl:col-span-4 flex flex-col gap-5">
                 <?php if ($daily) :
                     $dg = kmpr_game_data($daily['id'], 'medium'); ?>
                     <div class="gc-panel gc-panel--daily spotlight" data-daily data-engine="<?= esc_attr($daily['engine']); ?>" data-target="<?= (int) $daily['target']; ?>">
@@ -255,17 +312,6 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                     </div>
                 <?php endif; ?>
 
-                <?php if (!$term) : ?>
-                    <div class="gc-panel" id="lobby">
-                        <div class="flex items-center justify-between gap-3 mb-3">
-                            <h2 class="flex items-center gap-2 text-lg font-black text-white"><span class="size-2.5 rounded-full bg-emerald-400 shrink-0"></span> لابی آنلاین</h2>
-                            <span class="text-xs text-slate-400">اتاق‌های منتظر حریف</span>
-                        </div>
-                        <ul class="flex flex-col gap-2" data-lobby aria-live="polite">
-                            <li class="text-sm text-slate-400 py-5 text-center rounded-2xl border border-dashed border-white/10">در حال بررسی اتاق‌ها…</li>
-                        </ul>
-                        <p class="mt-3 text-xs text-slate-400 leading-6">اتاقی نیست؟ در یک بازی آنلاین «حریف تصادفی» را بزنید تا اتاق شما اینجا دیده شود.</p>
-                    </div>
                     <?php if (kmpr_games_server_scores()) : ?>
                     <div class="gc-panel scroll-mt-24" id="leaders">
                         <div class="flex items-center justify-between gap-3 mb-3">
@@ -277,9 +323,31 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                         </ol>
                     </div>
                     <?php endif; ?>
-                <?php endif; ?>
-            </aside>
-        </div>
+                        <?php do_action('kmpr_games_hub_slot', 'sidebar', $term); ?>
+                    </div>
+                    <div class="xl:col-span-8 min-w-0">
+                    <!-- Badges + recent -->
+                    <section class="gc-panel" aria-label="نشان‌ها و بازی‌های اخیر">
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                            <div class="lg:col-span-3">
+                                <div class="flex items-center justify-between gap-3 mb-3">
+                                    <h2 class="text-lg font-black text-white">نشان‌های من</h2>
+                                    <span class="text-sm text-slate-300" data-badges-count></span>
+                                </div>
+                                <ul data-badges></ul>
+                            </div>
+                            <div class="lg:col-span-2">
+                                <h2 class="text-lg font-black text-white mb-3">بازی‌های اخیر</h2>
+                                <ul class="flex flex-col gap-2" data-recent>
+                                    <li class="text-sm text-slate-400 py-5 text-center rounded-2xl border border-dashed border-white/10">هنوز سابقه‌ای ثبت نشده است.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    </div>
+                </div>
+            </section>
+        <?php endif; ?>
     </div>
 
     <!-- CTA -->

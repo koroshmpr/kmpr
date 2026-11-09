@@ -11,7 +11,8 @@ export function createCanvas(stage, { vh = 540, onResize } = {}) {
 	const view = { w: 0, h: 0, vw: 0, vh, scale: 1, dpr: 1 };
 
 	const fit = () => {
-		const r = stage.getBoundingClientRect();
+		// Layout size (not the bounding box) so a CSS-rotated stage (forced landscape) still fits correctly.
+		const r = { width: stage.clientWidth, height: stage.clientHeight };
 		if (!r.width || !r.height) return;
 		const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
 		canvas.width = Math.round(r.width * dpr);
@@ -39,6 +40,8 @@ export function createCanvas(stage, { vh = 540, onResize } = {}) {
 		/** client coords → virtual world coords */
 		toWorld(clientX, clientY) {
 			const r = canvas.getBoundingClientRect();
+			// html.game-rotate = frame rotated 90° clockwise: local x runs down the screen, local y runs right→left.
+			if (document.documentElement.classList.contains('game-rotate')) return { x: (clientY - r.top) / view.scale, y: (r.right - clientX) / view.scale };
 			return { x: (clientX - r.left) / view.scale, y: (clientY - r.top) / view.scale };
 		},
 		destroy() {

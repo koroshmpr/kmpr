@@ -37,6 +37,7 @@ if (file_exists(__DIR__ . '/games-rooms-extra.php')) {
 function kmpr_game_engines()
 {
     return array(
+        'korosh-run'   => array('label' => 'کوروش دیباگر (پلتفرمر)', 'max' => 600000, 'pps' => 1500, 'min_ms' => 8000),
         'jota'         => array('label' => 'سفر فضانورد (JotA)', 'max' => 500000, 'pps' => 900, 'min_ms' => 4000),
         'bug-hunter'   => array('label' => 'شکارچی باگ', 'max' => 200000, 'pps' => 600, 'min_ms' => 4000),
         'type-code'    => array('label' => 'تایپ کد', 'max' => 3000, 'pps' => 60, 'min_ms' => 20000),
@@ -49,6 +50,23 @@ function kmpr_game_engines()
         'rps15'        => array('label' => 'سنگ کاغذ قیچی ۱۵ حالته (آنلاین)', 'max' => 10000, 'pps' => 400, 'min_ms' => 2000, 'online' => true),
         'chess'        => array('label' => 'شطرنج (آنلاین)', 'max' => 20000, 'pps' => 200, 'min_ms' => 8000, 'online' => true),
         'color-race'   => array('label' => 'رنگ‌بازی (آنلاین)', 'max' => 20000, 'pps' => 600, 'min_ms' => 5000, 'online' => true),
+        'iran-quiz'    => array('label' => 'ایران‌گرد', 'max' => 60000, 'pps' => 400, 'min_ms' => 8000),
+        'haft-sin'     => array('label' => 'سفره هفت‌سین', 'max' => 100000, 'pps' => 500, 'min_ms' => 4000),
+        'air-hockey'   => array('label' => 'ایرهاکی (دو نفره)', 'max' => 20000, 'pps' => 400, 'min_ms' => 8000),
+        'penalty'      => array('label' => 'ضربات پنالتی (دو نفره)', 'max' => 10000, 'pps' => 300, 'min_ms' => 8000),
+        'basket'       => array('label' => 'پرتاب سه‌امتیازی (چند نفره)', 'max' => 20000, 'pps' => 300, 'min_ms' => 5000),
+        'slide-puzzle' => array('label' => 'پازل کشویی', 'max' => 60000, 'pps' => 200, 'min_ms' => 6000),
+        'sudoku'       => array('label' => 'سودوکو ۶×۶', 'max' => 100000, 'pps' => 150, 'min_ms' => 15000),
+        'hanoi'        => array('label' => 'برج‌های هانوی', 'max' => 60000, 'pps' => 300, 'min_ms' => 5000),
+        'tehran-metro' => array('label' => 'کوروش در مترو تهران', 'max' => 200000, 'pps' => 400, 'min_ms' => 3000),
+        'qahvechi'     => array('label' => 'قهوه‌چی', 'max' => 150000, 'pps' => 300, 'min_ms' => 5000),
+        'debugger'     => array('label' => 'دیباگر', 'max' => 100000, 'pps' => 300, 'min_ms' => 5000),
+        'foosball'     => array('label' => 'فوتبال دستی (دو نفره)', 'max' => 20000, 'pps' => 400, 'min_ms' => 8000),
+        'esm-famil'    => array('label' => 'اسم‌فامیل سریع', 'max' => 100000, 'pps' => 300, 'min_ms' => 5000),
+        'rhythm-code'  => array('label' => 'ریتم کد', 'max' => 300000, 'pps' => 3000, 'min_ms' => 8000),
+        'math-sprint'  => array('label' => 'درست یا غلط', 'max' => 120000, 'pps' => 600, 'min_ms' => 5000),
+        'tehran-taxi'  => array('label' => 'تاکسی تهران', 'max' => 200000, 'pps' => 400, 'min_ms' => 3000),
+        'caspian-fishing' => array('label' => 'ماهیگیری خزر', 'max' => 60000, 'pps' => 300, 'min_ms' => 5000),
     );
 }
 
@@ -883,7 +901,7 @@ add_action('pre_get_posts', function ($q) {
         return;
     }
     if ($q->is_post_type_archive('game') || $q->is_tax('game_category')) {
-        $q->set('posts_per_page', 24);
+        $q->set('posts_per_page', 100); // the hub shows the whole catalogue (grouped by category), no pagination
         $q->set('orderby', array('menu_order' => 'ASC', 'date' => 'DESC'));
     }
 });
@@ -1010,4 +1028,194 @@ add_filter('body_class', function ($classes) {
         $classes[] = 'is-arcade';
     }
     return $classes;
+});
+
+/**
+ * One-time seed of game posts for engines added in code (runs once per seed version, admin only).
+ * Skips an engine when any post (any status) already uses it, so deleting/drafting is respected.
+ */
+add_action('admin_init', function () {
+    $ver = 7;
+    if ((int) get_option('kmpr_games_seed', 0) >= $ver || !current_user_can('manage_options')) {
+        return;
+    }
+    update_option('kmpr_games_seed', $ver, false);
+    $seed = array(
+        'iran-quiz' => array(
+            'title'   => 'ایران‌گرد',
+            'slug'    => 'iran-gard',
+            'content' => 'یک مسابقه سریع دور ایران: مرکز استان‌ها، سوغات شهرها و جاذبه‌های تاریخی را در ۶۰ ثانیه حدس بزن. هر جواب درست ۲ ثانیه وقت اضافه می‌دهد.',
+            'tagline' => 'مرکز استان، سوغات و جاذبه‌ها را در ۶۰ ثانیه حدس بزن',
+            'how'     => "سؤال را بخوان و از ۴ گزینه جواب درست را بزن\nهر جواب درست ۲ ثانیه وقت اضافه و ضریب امتیاز می‌دهد\nجواب غلط ۳ ثانیه از وقتت کم می‌کند",
+            'desk'    => "۱ تا ۴ | انتخاب گزینه\nEsc | توقف",
+            'mob'     => 'روی گزینه درست ضربه بزن',
+            'accent'  => 'emerald',
+            'diff'    => 'easy',
+            'cat'     => 'iranian',
+        ),
+        'haft-sin' => array(
+            'title'   => 'سفره هفت‌سین',
+            'slug'    => 'haft-sin',
+            'content' => 'روی سفره چیزهای مختلفی ظاهر می‌شود؛ فقط آن‌هایی را بردار که با «س» شروع می‌شوند. هر هفت سین اصلی را جمع کن تا سفره کامل شود و امتیاز ویژه بگیری.',
+            'tagline' => 'فقط سین‌ها را بردار و سفره را کامل کن',
+            'how'     => "فقط آیتم‌هایی که با «س» شروع می‌شوند را بزن\nزدن آیتم اشتباه یک جان کم می‌کند (۳ جان)\nهر ۷ سین اصلی = سفره کامل و ۷۰۰ امتیاز",
+            'desk'    => "کلیک | برداشتن\nاعداد ۱ تا ۹ (نام‌پد) | خانه‌ها",
+            'mob'     => 'روی سین‌ها ضربه بزن',
+            'accent'  => 'rose',
+            'diff'    => 'medium',
+            'cat'     => 'iranian',
+        ),
+        'air-hockey' => array(
+            'title'   => 'ایرهاکی',
+            'slug'    => 'air-hockey',
+            'content' => 'ایرهاکی دوبعدی سریع: با دسته، دیسک را به دروازه حریف بزن. مقابل ربات در سه سطح یا دو نفره روی یک گوشی (هر نفر یک سمت صفحه).',
+            'tagline' => 'دو نفره روی یک گوشی یا مقابل ربات',
+            'how'     => "دسته‌ات را با انگشت یا موس حرکت بده\nدیسک را به دروازه بالای صفحه بزن\nدو نفره: هر نفر نیمه خودش را لمس کند",
+            'desk'    => "موس | حرکت دسته بازیکن ۱\nجهت‌نماها | بازیکن ۱\nW A S D | بازیکن ۲",
+            'mob'     => 'هر نفر نیمه خودش را لمس کند',
+            'accent'  => 'sky',
+            'diff'    => 'medium',
+            'cat'     => 'sport',
+        ),
+        'penalty' => array(
+            'title'   => 'ضربات پنالتی',
+            'slug'    => 'penalty',
+            'content' => 'ضربات پنالتی ۵ به ۵ و بعد گل طلایی. شوت بزن، دروازه‌بانی کن و حواست به نگاه حریف باشد. مقابل ربات یا دو نفره.',
+            'tagline' => '۵ ضربه، بعد گل طلایی؛ مقابل ربات یا دو نفره',
+            'how'     => "وقتی شوت می‌زنی یکی از ۶ گوشه دروازه را بزن\nوقتی دروازه‌بانی، به یکی از گوشه‌ها شیرجه بزن\nربات قبل از شوت به یک گوشه نگاه می‌کند؛ همیشه راست نمی‌گوید!",
+            'desk'    => "کلیک | انتخاب گوشه\n۷ ۸ ۹ / ۴ ۵ ۶ | گوشه‌های دروازه",
+            'mob'     => 'روی گوشه دروازه ضربه بزن',
+            'accent'  => 'emerald',
+            'diff'    => 'easy',
+            'cat'     => 'sport',
+        ),
+        'basket' => array(
+            'title'   => 'پرتاب سه‌امتیازی',
+            'slug'    => 'basket-shot',
+            'content' => 'بسکتبال دوبعدی: توپ را بکش و رها کن تا وارد سبد شود. تک‌نفره ۶۰ ثانیه، یا ۲ تا ۴ نفره به‌نوبت روی یک دستگاه.',
+            'tagline' => 'بکش، رها کن، تور! تا ۴ نفر به‌نوبت',
+            'how'     => "توپ را بگیر و به عقب بکش؛ خط‌چین مسیر را نشان می‌دهد\nرها کن تا پرتاب شود\nبدون برخورد به حلقه = ۳ امتیاز، با برخورد = ۲",
+            'desk'    => "کشیدن و رها کردن موس | پرتاب",
+            'mob'     => 'توپ را بکش و رها کن',
+            'accent'  => 'amber',
+            'diff'    => 'easy',
+            'cat'     => 'sport',
+        ),
+        'slide-puzzle' => array(
+            'title'   => 'پازل کشویی',
+            'slug'    => 'slide-puzzle',
+            'content' => 'خانه‌ها را بلغزان تا اعداد مرتب شوند. از ۳×۳ شروع می‌شود و تا ۵×۵ سخت‌تر می‌شود؛ ۱۸۰ ثانیه وقت داری.',
+            'tagline' => 'اعداد را مرتب کن؛ از ۳×۳ تا ۵×۵',
+            'how'     => "روی خانه‌ای که کنار جای خالی است بزن\nاعداد را به ترتیب ۱، ۲، ۳… مرتب کن\nهر تخته حل‌شده ۱۵ ثانیه وقت اضافه می‌دهد",
+            'desk'    => "کلیک | لغزاندن\nجهت‌نماها | لغزاندن",
+            'mob'     => 'روی خانه‌ها ضربه بزن',
+            'accent'  => 'violet',
+            'diff'    => 'medium',
+            'cat'     => 'puzzle',
+        ),
+        'sudoku' => array(
+            'title'   => 'سودوکو ۶×۶',
+            'slug'    => 'sudoku',
+            'content' => 'سودوکوی کوچک و سریع: هر ردیف، ستون و جعبه ۲×۳ باید اعداد ۱ تا ۶ را یک‌بار داشته باشد. ۳ اشتباه = پایان.',
+            'tagline' => 'سودوکوی کوچک و سریع برای هر روز',
+            'how'     => "یک خانه خالی را انتخاب کن و عدد بزن\nهر ردیف، ستون و جعبه ۱ تا ۶ را یک‌بار دارد\nسه اشتباه = پایان دور",
+            'desk'    => "۱ تا ۶ | وارد کردن عدد\nجهت‌نماها | جابه‌جایی\nBackspace | پاک کردن",
+            'mob'     => 'خانه را بزن، بعد عدد را',
+            'accent'  => 'sky',
+            'diff'    => 'medium',
+            'cat'     => 'puzzle',
+        ),
+        'hanoi' => array(
+            'title'   => 'برج‌های هانوی',
+            'slug'    => 'hanoi',
+            'content' => 'معمای کلاسیک: کل برج را به آخرین میله منتقل کن؛ دیسک بزرگ هیچ‌وقت روی کوچک نمی‌نشیند. از ۳ تا ۷ دیسک.',
+            'tagline' => 'معمای کلاسیک؛ با کمترین حرکت ببر',
+            'how'     => "یک میله را انتخاب کن، بعد میله مقصد را\nدیسک بزرگ‌تر روی کوچک‌تر نمی‌رود\nکمترین حرکت = بیشترین امتیاز",
+            'desk'    => "۱ ۲ ۳ | انتخاب میله",
+            'mob'     => 'روی میله‌ها ضربه بزن',
+            'accent'  => 'amber',
+            'diff'    => 'hard',
+            'cat'     => 'puzzle',
+        ),
+    );
+    $seed['korosh-run'] = array(
+        'title'   => 'کوروش ران',
+        'slug'    => 'korosh-run',
+        'content' => 'ماجراجویی پلتفرمر دوبعدی با شخصیت پیکسلی کوروش: عینک آفتابی، ریش و قهوه همیشگی! از خیابان‌های تهران تا دفتر شبانه و کویر تخت جمشید بدو، روی باگ‌ها بپر، از بلوک‌های کد سکه و قهوه بگیر و خودت را به موشک دیپلوی برسان. موسیقی چیپ‌تیون اختصاصی هر دنیا.',
+        'tagline' => 'بپر، قهوه بخور، باگ‌ها را له کن و دیپلوی کن!',
+        'how'     => "با جهت‌ها حرکت کن و با پرش روی دشمن‌ها فرود بیا\nبه بلوک‌های «{ }» از زیر ضربه بزن تا سکه یا قهوه بدهد\nقهوه تو را بزرگ می‌کند و می‌توانی دانه قهوه پرتاب کنی\nبه موشک DEPLOY آخر مرحله برس؛ سه دنیا و شش مرحله",
+        'desk'    => "← → یا A D | حرکت\nSpace / ↑ / W | پرش (نگه داشتن = پرش بلندتر)\nShift | دویدن\nX یا J | پرتاب دانه قهوه",
+        'mob'     => 'دکمه‌های پایین صفحه: چپ/راست، پرش و قهوه (گوشی را افقی کنید)',
+        'accent'  => 'amber',
+        'diff'    => 'medium',
+        'cat'     => 'adventure',
+        'featured' => true,
+    );
+    $seed['tehran-metro'] = array('title' => 'کوروش در مترو تهران', 'slug' => 'tehran-metro', 'content' => 'کوروش با قهوه‌اش در تونل‌های مترو تهران می‌دود: از روی گیت‌ها بپر، زیر تابلوها سُر بخور و بلیت جمع کن. هر ایستگاه سرعت بیشتر می‌شود.', 'tagline' => 'از تجریش تا کهریزک بدو؛ بپر، سُر بخور، بلیت جمع کن', 'how' => "از روی گیت‌ها و جعبه‌ها بپر\nزیر تابلوهای زرد سُر بخور\nقهوه یک بار از تو محافظت می‌کند", 'desk' => "Space / ↑ | پرش\n↓ | سُر خوردن", 'mob' => 'ضربه = پرش · کشیدن به پایین = سُر خوردن', 'accent' => 'rose', 'diff' => 'medium', 'cat' => 'adventure');
+    $seed['qahvechi'] = array('title' => 'قهوه‌چی', 'slug' => 'qahvechi', 'content' => 'کافه کوروش شلوغ است! سفارش هر مشتری را ببین، مواد را در فنجان بریز و قبل از تمام شدن حوصله‌اش سرو کن. هر روز نوشیدنی‌های جدید اضافه می‌شود.', 'tagline' => 'سفارش‌ها را درست و سریع سرو کن', 'how' => "سفارش مشتری را روی حباب بخوان\nمواد را بزن تا در فنجان ریخته شود\nروی همان مشتری بزن تا سرو شود؛ ۳ مشتری از دست رفته = پایان", 'desk' => "۱ تا ۶ | مواد\nQ W E | سرو به صندلی ۱ تا ۳\nBackspace | خالی کردن فنجان", 'mob' => 'روی مواد و بعد روی مشتری ضربه بزن', 'accent' => 'amber', 'diff' => 'easy', 'cat' => 'arcade');
+    $seed['debugger'] = array('title' => 'دیباگر', 'slug' => 'debugger', 'content' => 'کد خراب شده! قطعه‌های مسیر اجرا را بچرخان تا جریان داده از main() به return برسد و Build پاس شود. تخته‌ها کم‌کم بزرگ‌تر می‌شوند.', 'tagline' => 'قطعه‌ها را بچرخان تا Build پاس شود', 'how' => "روی هر خانه بزن تا ۹۰ درجه بچرخد\nمسیر روشن را از main() به return برسان\nهر باگ رفع‌شده ۲۵ ثانیه وقت اضافه می‌دهد", 'desk' => "کلیک | چرخاندن خانه", 'mob' => 'روی خانه‌ها ضربه بزن', 'accent' => 'sky', 'diff' => 'medium', 'cat' => 'puzzle');
+    $seed['foosball'] = array('title' => 'فوتبال دستی', 'slug' => 'foosball', 'content' => 'فوتبال دستی روی یک گوشی: هر نفر نیمه خودش را لمس می‌کند و میله‌ها را جابه‌جا می‌کند. مقابل ربات در سه سطح یا دو نفره با دوستت.', 'tagline' => 'دو نفره روی یک گوشی یا مقابل ربات', 'how' => "انگشتت را در نیمه خودت بکش تا میله‌ها حرکت کنند\nلمس = ضربه قدرتی\nاولین کسی که به تعداد گل برسد برنده است", 'desk' => "← → | میله‌های قرمز\nSpace | ضربه\nA D / S | بازیکن آبی (دو نفره)", 'mob' => 'هر نفر نیمه خودش را لمس کند', 'accent' => 'emerald', 'diff' => 'easy', 'cat' => 'sport');
+    $seed['esm-famil'] = array('title' => 'اسم‌فامیل سریع', 'slug' => 'esm-famil', 'content' => 'اسم‌فامیل همیشگی، این بار سریع و تک‌نفره: حرف و دسته می‌آید، از چهار گزینه کلمه درست را انتخاب کن و برگه را کامل کن.', 'tagline' => 'حرف، دسته، جواب؛ سریع‌تر از همه!', 'how' => "حرف و دسته (اسم، شهر، حیوان، …) نمایش داده می‌شود\nکلمه‌ای را بزن که هم در آن دسته است و هم با آن حرف شروع می‌شود\nجواب درست ۲ ثانیه وقت اضافه می‌دهد", 'desk' => "۱ تا ۴ | انتخاب گزینه", 'mob' => 'روی گزینه درست ضربه بزن', 'accent' => 'violet', 'diff' => 'easy', 'cat' => 'iranian');
+    $seed['korosh-run']['refresh'] = true;
+    $seed['korosh-run']['title'] = 'کوروش دیباگر';
+    $seed['korosh-run']['content'] = 'پلتفرمری بر اساس شب‌های واقعی کاری کوروش: شبی که سایت کمپین ماست سون کاله درست قبل از قرعه‌کشی از دسترس خارج شد و کوروش تا صبح سایت را از نو ساخت (و سایت قبلی درست همان موقع برگشت!)، روز قرعه‌کشی و هجوم مردم، فروشگاه گیلدا که درست وقتی مشتری‌ها آمدند درگاهش قطع شد، و قیمت‌های زنده خانه سرمایه. داستان کمیک هر مرحله را دنبال کن، با قهوه، لپ‌تاپ و جت‌پک باگ‌ها را دیباگ کن، باس‌ها را شکست بده و دکمه DEPLOY را بزن.';
+    $seed['korosh-run']['tagline'] = 'شب دیپلوی، ارتش باگ‌ها و یک لیوان قهوه؛ دیباگشان کن!';
+    $seed['korosh-run']['how']  = "بپر، باگ‌ها را له کن و به بلوک‌های «{ }» از زیر ضربه بزن\nقهوه ☕ = دانه قهوه، لپ‌تاپ 💻 = شلیک کد، جت‌پک 🚀 = پرش دوبل؛ هر بار فقط یکی\nسرورهای ▼ و بلوک‌های نامرئی راز دارند؛ آخر هر دنیا یک باس منتظر است";
+    $seed['korosh-run']['desk'] = "← → | حرکت\nSpace / ↑ | پرش\nShift | دویدن\nX | قدرت\n↓ | ورود به سرور مخفی";
+    $seed['rhythm-code'] = array('title' => 'ریتم کد', 'slug' => 'rhythm-code', 'content' => 'نت‌ها روی چهار خط پایین می‌آیند؛ درست وقتی به خط ضربه رسیدند بزن. موسیقی چیپ‌تیون اختصاصی، هر آهنگ سریع‌تر از قبلی.', 'tagline' => 'همراه موسیقی بزن، کمبو بساز', 'how' => "نت‌ها روی چهار خط پایین می‌آیند\nوقتی نت به دایره رسید، کلید همان خط را بزن\nدقت ۶۰٪ = آهنگ بعدی سریع‌تر", 'desk' => "D F J K | چهار خط", 'mob' => 'روی خط‌ها ضربه بزن', 'accent' => 'violet', 'diff' => 'medium', 'cat' => 'music');
+    $seed['math-sprint'] = array('title' => 'درست یا غلط', 'slug' => 'math-sprint', 'content' => 'یک معادله می‌بینی؛ درست است یا غلط؟ سریع جواب بده. اول جمع و تفریق، بعد ضرب و تقسیم با عددهای بزرگ‌تر.', 'tagline' => 'حساب ذهنی سریع: درست یا غلط؟', 'how' => "معادله را ببین و تصمیم بگیر درست است یا غلط\nجواب درست ۱ ثانیه وقت اضافه می‌دهد، غلط ۲ ثانیه کم می‌کند\nهر ۸ جواب درست، سطح بالا می‌رود", 'desk' => "→ | درست\n← | غلط", 'mob' => 'روی درست یا غلط ضربه بزن', 'accent' => 'sky', 'diff' => 'easy', 'cat' => 'education');
+    $seed['tehran-taxi'] = array('title' => 'تاکسی تهران', 'slug' => 'tehran-taxi', 'content' => 'با تاکسی زرد از وسط ترافیک تهران رد شو: از ماشین‌ها، اتوبوس‌ها و چاله‌ها جا خالی بده، مسافر سوار کن و بنزین بگیر.', 'tagline' => 'در ترافیک تهران جا خالی بده و مسافر بزن', 'how' => "بین سه لاین جابه‌جا شو و به ماشین‌ها نخور\nمسافرها را سوار کن تا امتیاز بگیری\nبنزین یک جان برمی‌گرداند؛ سه تصادف = پایان", 'desk' => "← → | تغییر لاین", 'mob' => 'سمت چپ/راست صفحه را بزن یا بکش', 'accent' => 'amber', 'diff' => 'medium', 'cat' => 'racing');
+    $seed['caspian-fishing'] = array('title' => 'ماهیگیری خزر', 'slug' => 'caspian-fishing', 'content' => 'یک غروب آرام کنار دریای خزر: قلاب را پایین بفرست، صبر کن ماهی نوک بزند و در لحظه درست بکش. کیلکا، سفید، کپور، قزل‌آلا و اگر خوش‌شانس باشی، تاس‌ماهی!', 'tagline' => 'آرام بگیر، قلاب بینداز، خاویار بگیر', 'how' => "نگه دار تا قلاب پایین برود، رها کن تا بایستد\nوقتی ماهی نوک زد، وقتی عقربه در ناحیه سبز است بزن\nپوتین کهنه ۵ ثانیه وقت کم می‌کند!", 'desk' => "Space / ↓ | پایین بردن قلاب و کشیدن\n↑ | بالا آوردن قلاب", 'mob' => 'نگه دار و در لحظه درست ضربه بزن', 'accent' => 'sky', 'diff' => 'easy', 'cat' => 'casual');
+    $cats = array('music' => 'موسیقی و ریتم', 'education' => 'آموزشی', 'racing' => 'مسابقه‌ای', 'casual' => 'کژوال و آرامش', 'adventure' => 'ماجراجویی', 'sport' => 'ورزشی', 'puzzle' => 'فکری و معمایی', 'iranian' => 'ایرانی');
+    $term = function ($slug) use ($cats) {
+        $t = get_term_by('slug', $slug, 'game_category');
+        if (!$t) {
+            $r = wp_insert_term($cats[$slug], 'game_category', array('slug' => $slug));
+            return is_wp_error($r) ? 0 : (int) $r['term_id'];
+        }
+        return (int) $t->term_id;
+    };
+    $accents = kmpr_game_accents();
+    foreach ($seed as $engine => $g) {
+        $exists = get_posts(array('post_type' => 'game', 'post_status' => 'any', 'meta_key' => 'game_engine', 'meta_value' => $engine, 'fields' => 'ids', 'numberposts' => 1));
+        if ($exists) {
+            if (!empty($g['refresh'])) {
+                wp_update_post(array('ID' => $exists[0], 'post_title' => $g['title'], 'post_content' => $g['content']));
+                update_post_meta($exists[0], 'game_tagline', $g['tagline']);
+                update_post_meta($exists[0], 'game_how_to_play', $g['how']);
+                update_post_meta($exists[0], 'game_controls_desktop', $g['desk']);
+            }
+            $tid = $term($g['cat']);
+            if ($tid && !has_term('', 'game_category', $exists[0])) {
+                wp_set_object_terms($exists[0], array($tid), 'game_category');
+            }
+            continue;
+        }
+        $id = wp_insert_post(array('post_type' => 'game', 'post_status' => 'publish', 'post_title' => $g['title'], 'post_name' => $g['slug'], 'post_content' => $g['content']), true);
+        if (is_wp_error($id)) {
+            continue;
+        }
+        $tid = $term($g['cat']);
+        if ($tid) {
+            wp_set_object_terms($id, array($tid), 'game_category');
+        }
+        if (!empty($g['featured'])) {
+            update_post_meta($id, 'game_is_featured', 1);
+            update_post_meta($id, '_game_is_featured', 'field_kmpr_game_featured');
+            wp_update_post(array('ID' => $id, 'menu_order' => -10));
+        }
+        $meta = array(
+            'engine' => array('game_engine', $engine),
+            'tagline' => array('game_tagline', $g['tagline']),
+            'difficulty' => array('game_difficulty', $g['diff']),
+            'accent' => array('game_accent', isset($accents[$g['accent']]) ? $g['accent'] : 'amber'),
+            'how' => array('game_how_to_play', $g['how']),
+            'controls_desktop' => array('game_controls_desktop', $g['desk']),
+            'controls_mobile' => array('game_controls_mobile', $g['mob']),
+        );
+        foreach ($meta as $key => $m) {
+            update_post_meta($id, $m[0], $m[1]);
+            update_post_meta($id, '_' . $m[0], 'field_kmpr_game_' . $key);
+        }
+    }
 });

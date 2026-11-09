@@ -1,0 +1,280 @@
+/* «ایران‌گرد» + «سفره هفت‌سین» (DOM engines) */
+.iq,
+.hs {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	padding: clamp(0.75rem, 3vw, 1.5rem);
+	color: #e2e8f0;
+	background: radial-gradient(ellipse at top, rgba(20, 184, 166, 0.14), transparent 60%), #020617;
+}
+.iq__top,
+.hs__top {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+}
+.iq__tag {
+	padding: 0.25rem 0.75rem;
+	border-radius: 999px;
+	background: rgba(20, 184, 166, 0.15);
+	color: #5eead4;
+	font-size: 0.8rem;
+	font-weight: 900;
+	white-space: nowrap;
+}
+.iq__combo {
+	color: #fbbf24;
+	font-weight: 900;
+}
+.iq__time {
+	margin-inline-start: auto;
+	font-size: 1.35rem;
+	font-weight: 900;
+	color: #fff;
+	font-variant-numeric: tabular-nums;
+}
+.iq__bar {
+	height: 6px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.1);
+	overflow: hidden;
+}
+.iq__bar i {
+	display: block;
+	height: 100%;
+	background: linear-gradient(90deg, #14b8a6, #f59e0b);
+	transform-origin: right;
+}
+.iq__q {
+	margin: auto 0 0;
+	text-align: center;
+	font-size: clamp(1.1rem, 3.6vw, 1.7rem);
+	font-weight: 900;
+	color: #fff;
+	line-height: 1.7;
+}
+.iq__opts {
+	margin-bottom: auto;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.6rem;
+}
+.iq__opt {
+	min-height: 52px;
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.6rem 0.9rem;
+	border-radius: 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	background: rgba(255, 255, 255, 0.05);
+	color: #f1f5f9;
+	font-weight: 800;
+	font-size: 1rem;
+	text-align: start;
+	transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.iq__opt:hover {
+	border-color: rgba(94, 234, 212, 0.5);
+}
+.iq__opt:active {
+	transform: scale(0.98);
+}
+.iq__opt kbd {
+	font: inherit;
+	font-size: 0.75rem;
+	color: #94a3b8;
+	padding: 0.1rem 0.45rem;
+	border-radius: 0.4rem;
+	background: rgba(255, 255, 255, 0.07);
+}
+.iq__opt.is-ok {
+	background: rgba(16, 185, 129, 0.22);
+	border-color: #10b981;
+}
+.iq__opt.is-bad {
+	background: rgba(244, 63, 94, 0.2);
+	border-color: #f43f5e;
+}
+@media (max-width: 420px) {
+	.iq__opts {
+		grid-template-columns: 1fr;
+	}
+}
+
+.hs {
+	background: radial-gradient(ellipse at bottom, rgba(34, 197, 94, 0.14), transparent 60%), #020617;
+}
+.hs__lives {
+	white-space: nowrap;
+	flex-shrink: 0;
+	font-size: 1.1rem;
+	letter-spacing: 0.1em;
+}
+.hs__set {
+	margin-inline-start: auto;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 0.25rem;
+}
+.hs__set i {
+	font-style: normal;
+	font-size: 0.7rem;
+	font-weight: 800;
+	padding: 0.15rem 0.45rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.06);
+	color: #64748b;
+}
+.hs__set i.is-on {
+	background: rgba(34, 197, 94, 0.2);
+	color: #86efac;
+}
+.hs__board {
+	flex: 1;
+	min-height: 0;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: clamp(0.4rem, 2vw, 0.8rem);
+	padding: clamp(0.5rem, 2vw, 1rem);
+	border-radius: 1.25rem;
+	background: repeating-linear-gradient(45deg, rgba(220, 38, 38, 0.1) 0 12px, rgba(250, 204, 21, 0.06) 12px 24px);
+	border: 2px solid rgba(250, 204, 21, 0.25);
+}
+.hs__cell {
+	min-height: 44px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.2rem;
+	border-radius: 1.25rem;
+	background: rgba(2, 6, 23, 0.55);
+	border: 1px dashed rgba(255, 255, 255, 0.1);
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+.hs__cell.is-up {
+	border-style: solid;
+	border-color: rgba(255, 255, 255, 0.25);
+	background: rgba(255, 255, 255, 0.07);
+	animation: hs-pop 0.18s ease-out;
+}
+.hs__cell.is-bad {
+	background: rgba(244, 63, 94, 0.3);
+}
+.hs__ic {
+	font-size: clamp(1.6rem, 6vw, 2.6rem);
+	line-height: 1;
+}
+.hs__nm {
+	font-size: 0.8rem;
+	font-weight: 800;
+	color: #f1f5f9;
+	white-space: nowrap;
+}
+.hs__hint {
+	margin: 0;
+	text-align: center;
+	font-size: 0.8rem;
+	color: #94a3b8;
+}
+@keyframes hs-pop {
+	from { transform: scale(0.6); opacity: 0; }
+	to { transform: none; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.hs__cell.is-up { animation: none; }
+}
+
+/* ایران‌گرد — card + options layout (two columns from tablet up) */
+.iq {
+	background:
+		radial-gradient(60% 50% at 85% 10%, rgba(20, 184, 166, 0.16), transparent 70%),
+		radial-gradient(50% 50% at 10% 90%, rgba(245, 158, 11, 0.12), transparent 70%),
+		#020617;
+}
+.iq__main {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.9rem;
+}
+.iq__card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+	text-align: center;
+}
+.iq__icon {
+	font-size: clamp(2rem, 7vw, 3rem);
+	line-height: 1;
+}
+.iq__q {
+	margin: 0;
+}
+.iq__opts {
+	margin: 0;
+}
+.iq__stats {
+	display: none;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+	justify-content: center;
+	font-size: 0.8rem;
+	color: #94a3b8;
+}
+.iq__stats span {
+	padding: 0.3rem 0.7rem;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.05);
+	white-space: nowrap;
+}
+.iq__stats b {
+	color: #f1f5f9;
+}
+.iq__hist {
+	display: flex;
+	gap: 0.3rem;
+	min-height: 10px;
+}
+.iq__hist i {
+	width: 10px;
+	height: 10px;
+	border-radius: 999px;
+}
+.iq__hist .is-ok { background: #10b981; }
+.iq__hist .is-bad { background: #f43f5e; }
+@media (min-width: 768px) and (min-height: 380px) {
+	.iq { padding: 1.5rem 2rem; gap: 1rem; }
+	.iq__main {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+		align-items: center;
+		gap: 2rem;
+	}
+	.iq__card {
+		height: 100%;
+		max-height: 22rem;
+		justify-content: center;
+		padding: 1.5rem;
+		border-radius: 1.75rem;
+		border: 1px solid rgba(94, 234, 212, 0.18);
+		background: linear-gradient(160deg, rgba(20, 184, 166, 0.12), rgba(2, 6, 23, 0.4));
+		box-shadow: 0 30px 60px -30px rgba(20, 184, 166, 0.35);
+	}
+	.iq__icon { font-size: 3.6rem; }
+	.iq__q { font-size: clamp(1.3rem, 2.2vw, 1.9rem); }
+	.iq__stats { display: flex; }
+	.iq__opts { grid-template-columns: 1fr; gap: 0.75rem; }
+	.iq__opt { min-height: 60px; font-size: 1.1rem; padding: 0.8rem 1.1rem; }
+	.iq__opt:hover { background: rgba(94, 234, 212, 0.08); transform: translateX(-4px); }
+	.iq__opt kbd { font-size: 0.85rem; padding: 0.2rem 0.6rem; }
+}
