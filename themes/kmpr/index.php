@@ -86,9 +86,9 @@ foreach ($all_courses as $c) {
             </span>
             <h2 id="courses-title" class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight" <?= kmpr_split_attr(kmpr_blog_text('blog_courses_title')); ?>><?= esc_html(kmpr_blog_text('blog_courses_title')); ?></h2>
         </header>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-<?= count($courses) >= 3 ? '3' : '2'; ?> gap-5" data-stagger="100">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-5" data-stagger="100">
             <?php foreach ($courses as $i => $course) {
-                get_template_part('template-parts/blog/course-card', null, array('course' => $course, 'index' => $i));
+                get_template_part('template-parts/blog/course-card', null, array('course' => $course, 'index' => $i, 'class' => kmpr_course_grid_span($i, count($courses))));
             } ?>
         </div>
     </div>

@@ -23,7 +23,7 @@ function kmpr_blog_defaults()
     return array(
         'blog_hero_kicker'      => 'آکادمی کوروش',
         'blog_hero_title'       => 'یاد بگیر، درس به درس',
-        'blog_hero_intro'       => 'مقاله‌ها را مثل یک دوره پشت سر هم بخوان: هر موضوع یک مسیر یادگیری است که از مقدمه شروع می‌شود و قدم‌به‌قدم به جزئیات فنی طراحی، توسعه، پرفورمنس و سئو می‌رسد. پیشرفتت روی همین مرورگر ذخیره می‌شود.',
+        'blog_hero_intro'       => 'مقاله‌ها را مثل یک دوره پشت سر هم بخوان: هر موضوع یک مسیر یادگیری است که از مقدمه شروع می‌شود و قدم‌به‌قدم به جزئیات فنی طراحی سایت، سرعت، سئو، وردپرس اختصاصی و امنیت می‌رسد. پیشرفتت روی همین مرورگر ذخیره می‌شود.',
         'blog_search_placeholder' => 'جستجو در درس‌ها و مقاله‌ها...',
         'blog_courses_kicker'   => 'مسیرهای یادگیری',
         'blog_courses_title'    => 'یک دوره را انتخاب کن',
@@ -126,3 +126,84 @@ function kmpr_register_blog_acf()
         'location' => array(array(array('param' => 'page_type', 'operator' => '==', 'value' => 'posts_page'))),
     ));
 }
+
+/* -------------------------------------------------------------------------
+ * Article images live in the Media Library (dashboard), not in theme code:
+ * «تنظیمات سایت → تصاویر مقالات»: author photo (byline, author box, author replies) and the
+ * fallback cover for posts without a featured image. On first admin visit the theme's bundled photos are
+ * imported into the Media Library once and set here, so the owner can swap them from the dashboard.
+ * ---------------------------------------------------------------------- */
+
+add_action('acf/include_fields', function () {
+    if (!function_exists('acf_add_local_field_group')) {
+        return;
+    }
+    acf_add_local_field_group(array(
+        'key'      => 'group_kmpr_article_images',
+        'title'    => 'تصاویر مقالات',
+        'fields'   => array(
+            array('key' => 'field_kmpr_author_photo', 'name' => 'author_photo', 'label' => 'عکس نویسنده', 'type' => 'image', 'return_format' => 'id', 'preview_size' => 'thumbnail', 'library' => 'all', 'instructions' => 'کنار نام نویسنده در مقاله، باکس نویسنده و پاسخ‌های نویسنده در دیدگاه‌ها.'),
+            array('key' => 'field_kmpr_post_default_cover', 'name' => 'post_default_cover', 'label' => 'کاور پیش‌فرض مقاله', 'type' => 'image', 'return_format' => 'id', 'preview_size' => 'medium', 'library' => 'all', 'instructions' => 'برای مقاله‌هایی که تصویر شاخص ندارند.'),
+        ),
+        'location' => array(array(array('param' => 'options_page', 'operator' => '==', 'value' => 'acf-options-theme-settings'))),
+        'menu_order' => 30,
+    ));
+});
+
+/** Attachment URL of an «تصاویر مقالات» option; the bundled file is only a last-resort fallback. */
+function kmpr_article_image_url($field, $size = 'thumbnail')
+{
+    $id = function_exists('get_field') ? (int) get_field($field, 'option', false) : 0;
+    $url = $id ? wp_get_attachment_image_url($id, $size) : '';
+    return $url ?: get_template_directory_uri() . '/public/images/korosh-mpr.webp';
+}
+function kmpr_author_photo_url($size = 'thumbnail')
+{
+    return kmpr_article_image_url('author_photo', $size);
+}
+function kmpr_default_cover_url($size = 'thumbnail')
+{
+    return kmpr_article_image_url('post_default_cover', $size);
+}
+
+/** One-time: move the bundled article photos into the Media Library and select them in the options. */
+add_action('admin_init', function () {
+    if (get_option('kmpr_article_images_v1') || !function_exists('update_field') || !current_user_can('upload_files')) {
+        return;
+    }
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+    $import = function ($rel, $title, $alt) {
+        $src = get_template_directory() . $rel;
+        if (!is_readable($src)) {
+            return 0;
+        }
+        $tmp = wp_tempnam(basename($src));
+        if (!$tmp || !copy($src, $tmp)) {
+            return 0;
+        }
+        $id = media_handle_sideload(array('name' => basename($src), 'tmp_name' => $tmp), 0, $title);
+        if (is_wp_error($id)) {
+            @unlink($tmp);
+            return 0;
+        }
+        update_post_meta($id, '_wp_attachment_image_alt', $alt);
+        return (int) $id;
+    };
+    $name = function_exists('kmpr_author_name') ? kmpr_author_name() : 'کوروش محمدپور';
+    if (!get_field('author_photo', 'option', false)) {
+        $id = $import('/public/images/korosh-mpr.webp', 'عکس نویسنده', $name);
+        if ($id) {
+            update_field('author_photo', $id, 'option');
+        }
+    }
+    if (!get_field('post_default_cover', 'option', false)) {
+        $id = $import('/public/images/og-default.png', 'کاور پیش‌فرض مقاله', get_bloginfo('name'));
+        if ($id) {
+            update_field('post_default_cover', $id, 'option');
+        }
+    }
+    update_option('kmpr_article_images_v1', 1, false);
+});
+

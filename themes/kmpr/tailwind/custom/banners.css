@@ -1,0 +1,177 @@
+/* In-article banners ([kmpr_banner], inc/article-banners.php).
+ * Accent colour comes from --kb (per type / per course). Motion: a light sweep crosses the card every few
+ * seconds ("برق") and the border glows on hover; both are transform/opacity only and off for reduced motion. */
+
+.kb-banner {
+	--kb: #f59e0b;
+	position: relative;
+	margin: 2.2em 0;
+	border-radius: 1.5rem;
+	padding: 1px; /* gradient border */
+	background: linear-gradient(120deg, color-mix(in srgb, var(--kb) 75%, transparent), rgb(255 255 255 / 0.07) 25%, rgb(255 255 255 / 0.05) 45%, color-mix(in srgb, var(--kb) 60%, transparent) 60%, rgb(255 255 255 / 0.06) 80%, color-mix(in srgb, var(--kb) 75%, transparent));
+	background-size: 300% 300%;
+	isolation: isolate;
+	overflow: hidden;
+	box-shadow: 0 18px 50px -28px color-mix(in srgb, var(--kb) 60%, transparent);
+	transition: box-shadow 0.5s ease, transform 0.5s ease;
+	/* Idle motion: the border light slowly travels around the card and the glow breathes */
+	animation: kb-border 9s ease-in-out infinite alternate, kb-glow 4.5s ease-in-out infinite;
+}
+.kb-banner:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 22px 60px -24px color-mix(in srgb, var(--kb) 85%, transparent);
+}
+
+@keyframes kb-border {
+	0% { background-position: 0% 50%; }
+	100% { background-position: 100% 50%; }
+}
+@keyframes kb-glow {
+	0%, 100% { box-shadow: 0 18px 50px -30px color-mix(in srgb, var(--kb) 45%, transparent); }
+	50% { box-shadow: 0 20px 56px -24px color-mix(in srgb, var(--kb) 75%, transparent); }
+}
+
+/* Shine sweep: a soft, wide band that crosses slowly, then rests (same speed on hover, only brighter) */
+.kb-banner::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+	background: linear-gradient(105deg, transparent 25%, rgb(255 255 255 / 0.05) 38%, rgb(255 255 255 / 0.13) 46%, color-mix(in srgb, var(--kb) 28%, transparent) 50%, rgb(255 255 255 / 0.13) 54%, rgb(255 255 255 / 0.05) 62%, transparent 75%);
+	transform: translateX(-120%);
+	opacity: 0.85;
+	transition: opacity 0.5s ease;
+	animation: kb-shine 7s cubic-bezier(0.45, 0, 0.25, 1) 1.2s infinite;
+}
+.kb-banner:hover::after { opacity: 1; }
+[dir="rtl"] .kb-banner::after { animation-name: kb-shine-rtl; }
+
+@keyframes kb-shine {
+	0% { transform: translateX(-120%); }
+	40%, 100% { transform: translateX(120%); }
+}
+@keyframes kb-shine-rtl {
+	0% { transform: translateX(120%); }
+	40%, 100% { transform: translateX(-120%); }
+}
+
+.lesson-prose .kb-link,
+.kb-link {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	grid-template-columns: 5.5rem minmax(0, 1fr);
+	grid-template-areas: "media body" "cta cta";
+	gap: 0.9rem 1rem;
+	align-items: center;
+	padding: 1rem;
+	border-radius: calc(1.5rem - 1px);
+	background:
+		radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--kb) 16%, transparent), transparent 55%),
+		linear-gradient(160deg, #0d1529, #0a0f1e);
+	color: #e2e8f0;
+	text-decoration: none;
+}
+.lesson-prose .kb-link:hover { color: #e2e8f0; }
+
+.kb-media {
+	grid-area: media;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	aspect-ratio: 1;
+	border-radius: 1rem;
+	overflow: hidden;
+	background: color-mix(in srgb, var(--kb) 14%, #0b1224);
+	color: var(--kb);
+	border: 1px solid rgb(255 255 255 / 0.08);
+}
+.kb-media .kb-icon { width: 34px; height: 34px; }
+.kb-banner .kb-img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	object-fit: cover;
+	border-radius: 0;
+	transition: transform 0.7s ease;
+}
+.kb-banner:hover .kb-img { transform: scale(1.06); }
+
+.kb-body { grid-area: body; display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.kb-kicker {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	font-weight: 900;
+	color: var(--kb);
+}
+.kb-kicker .kb-icon { flex-shrink: 0; }
+.kb-title { font-size: 1.0625rem; line-height: 1.7; font-weight: 900; color: #fff; }
+.kb-text {
+	font-size: 0.875rem;
+	line-height: 1.9;
+	color: #cbd5e1;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.kb-meta { font-size: 0.75rem; color: #94a3b8; }
+
+.kb-cta {
+	grid-area: cta;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	min-height: 2.75rem;
+	padding: 0.75rem 1.5rem;
+	border-radius: 999px;
+	background: var(--kb);
+	color: #0b1224;
+	font-size: 0.875rem;
+	font-weight: 900;
+	white-space: nowrap;
+	box-shadow: 0 0 0 0 color-mix(in srgb, var(--kb) 55%, transparent);
+	animation: kb-pulse 3.2s ease-out infinite;
+}
+.kb-arrow { flex-shrink: 0; transition: transform 0.3s ease; }
+.kb-banner:hover .kb-arrow { transform: translateX(-4px); }
+[dir="ltr"] .kb-banner:hover .kb-arrow { transform: translateX(4px) scaleX(-1); }
+
+@keyframes kb-pulse {
+	0%, 55% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--kb) 50%, transparent); }
+	85%, 100% { box-shadow: 0 0 0 12px transparent; }
+}
+
+/* Ad label stays readable and explicit */
+.kb-banner--ad .kb-kicker {
+	align-self: flex-start;
+	padding: 0.1rem 0.6rem;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--kb) 15%, transparent);
+}
+
+@media (min-width: 640px) {
+	.lesson-prose .kb-link,
+	.kb-link {
+		grid-template-columns: 11rem minmax(0, 1fr) auto;
+		grid-template-areas: "media body cta";
+		gap: 1.25rem;
+		padding: 1.1rem 1.1rem 1.1rem 1.5rem;
+	}
+	.kb-media { aspect-ratio: 16 / 10; }
+	.kb-title { font-size: 1.1875rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.kb-banner, .kb-banner::after, .kb-cta, .kb-img, .kb-arrow { animation: none !important; transition: none !important; }
+	.kb-banner::after { display: none; }
+	.kb-banner:hover { transform: none; }
+}

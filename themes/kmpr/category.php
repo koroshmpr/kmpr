@@ -160,7 +160,6 @@ foreach ($lessons as $lid) {
                                     <div class="min-w-0 flex-1">
                                         <?php if ($lid === $pillar) : ?><span class="inline-block mb-1.5 text-xs font-black px-2 py-0.5 rounded-full <?= esc_attr($pal['soft'] . ' ' . $pal['text']); ?>">ستون</span><?php endif; ?>
                                         <span class="sr-only" x-text="$store.lessons.has(<?= (int) $lid; ?>) ? 'خوانده‌شده' : ''"></span>
-                                        </span>
                                         <h3 class="text-base sm:text-lg font-black text-white leading-snug group-hover:text-secondary transition-colors"><?= esc_html(get_the_title($lid)); ?></h3>
                                         <p class="mt-2 text-sm text-slate-300 leading-7 line-clamp-2"><?= esc_html($ex); ?></p>
                                         <span class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-slate-400">
@@ -194,9 +193,9 @@ if ($others) : ?>
 <section class="py-14 lg:py-20 border-t border-white/10" aria-labelledby="other-courses-title">
     <div class="container mx-auto px-4 sm:px-6">
         <h2 id="other-courses-title" class="text-2xl sm:text-3xl font-black text-white mb-8">دوره‌های دیگر</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5" data-stagger="100">
-            <?php foreach (array_slice($others, 0, 3) as $i => $oc) {
-                get_template_part('template-parts/blog/course-card', null, array('course' => $oc, 'index' => $i));
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-5" data-stagger="100">
+            <?php foreach ($others as $i => $oc) {
+                get_template_part('template-parts/blog/course-card', null, array('course' => $oc, 'index' => $i, 'class' => kmpr_course_grid_span($i, count($others))));
             } ?>
         </div>
     </div>

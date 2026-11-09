@@ -334,6 +334,7 @@ function kmpr_blog_schema_pieces($with_breadcrumb)
     } elseif (is_category()) {
         $info = kmpr_course_info(get_queried_object());
         if ($info && $info['count']) {
+            $pieces[] = kmpr_course_schema($info);
             $pieces[] = kmpr_course_itemlist($info);
             if ($with_breadcrumb) {
                 $pieces[] = array('@type' => 'BreadcrumbList', '@id' => $info['url'] . '#kmpr-breadcrumb', 'itemListElement' => array(
@@ -365,6 +366,75 @@ function kmpr_course_itemlist($info)
     );
 }
 
+/**
+ * schema.org Course for a course (category) page — the fields Google's course rich results ask for:
+ * provider, offers (free), hasCourseInstance (online + workload). Lessons are listed by the ItemList above.
+ */
+function kmpr_course_schema($info)
+{
+    $minutes = max(1, (int) $info['minutes']);
+    $levels  = array();
+    foreach ($info['lessons'] as $id) {
+        if ($lv = kmpr_lesson_level($id)) {
+            $levels[$lv['key']] = true;
+        }
+    }
+    $levels = array_values(array_intersect_key(array('beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'), $levels));
+    $course = array(
+        '@type'               => 'Course',
+        '@id'                 => $info['url'] . '#course',
+        'name'                => $info['title'],
+        'description'         => $info['intro'] ?: $info['title'],
+        'url'                 => $info['url'],
+        'inLanguage'          => 'fa-IR',
+        'isAccessibleForFree' => true,
+        'timeRequired'        => 'PT' . $minutes . 'M',
+        'provider'            => array('@type' => 'Person', 'name' => get_bloginfo('name'), 'url' => home_url('/')),
+        'offers'              => array('@type' => 'Offer', 'category' => 'Free', 'price' => 0, 'priceCurrency' => 'IRR', 'url' => $info['url']),
+        'hasCourseInstance'   => array('@type' => 'CourseInstance', 'courseMode' => 'Online', 'courseWorkload' => 'PT' . $minutes . 'M', 'inLanguage' => 'fa-IR'),
+        'mainEntityOfPage'    => array('@id' => $info['url']),
+    );
+    if ($levels) {
+        $course['educationalLevel'] = count($levels) > 1 ? $levels[0] . ' – ' . end($levels) : $levels[0];
+    }
+    if ($info['pillar'] && ($img = get_the_post_thumbnail_url($info['pillar'], 'full'))) {
+        $course['image'] = $img;
+    }
+    return $course;
+}
+
+/**
+ * Column span for course card $i of $n in a `md:grid-cols-2 xl:grid-cols-6` grid, so the last row is never
+ * lopsided: 3 per row on xl, an incomplete last row is split evenly (2 → halves, 1 → previous row of 4 becomes 2+2).
+ */
+function kmpr_course_grid_span($i, $n)
+{
+    $rest = $n % 3;
+    $wide = ($rest === 2 && $i >= $n - 2) || ($rest === 1 && $i >= $n - 4);
+    $cls  = $wide ? 'xl:col-span-3' : 'xl:col-span-2';
+    if ($n % 2 === 1 && $i === $n - 1) {
+        $cls .= ' md:col-span-2';
+    }
+    return $cls;
+}
+
+/* Hub and course pages are collections, not articles. */
+add_filter('wpseo_opengraph_type', function ($type) {
+    return (is_home() || is_category()) ? 'website' : $type;
+});
+
+/* A course page shares its pillar lesson's cover instead of the site-wide default image. */
+add_action('wpseo_add_opengraph_images', function ($images) {
+    if (!is_category()) {
+        return;
+    }
+    $info  = kmpr_course_info(get_queried_object());
+    $thumb = $info && $info['pillar'] ? (int) get_post_thumbnail_id($info['pillar']) : 0;
+    if ($thumb) {
+        $images->add_image_by_id($thumb);
+    }
+});
+
 add_filter('wpseo_schema_graph', function ($graph) {
     if (is_singular('post') || is_category()) {
         foreach (kmpr_blog_schema_pieces(false) as $piece) {
@@ -395,7 +465,7 @@ add_action('wp_head', function () {
 function kmpr_comment_avatar($name, $seed = '', $is_author = false, $size = 'size-10 sm:size-11')
 {
     if ($is_author) {
-        return '<img src="' . esc_url(get_template_directory_uri() . '/public/images/korosh-mpr.webp') . '" alt="" width="44" height="44" loading="lazy" class="' . esc_attr($size) . ' shrink-0 rounded-2xl object-cover object-top border border-secondary/40">';
+        return '<img src="' . esc_url(kmpr_author_photo_url('thumbnail')) . '" alt="" width="44" height="44" loading="lazy" class="' . esc_attr($size) . ' shrink-0 rounded-2xl object-cover object-top border border-secondary/40">';
     }
     $name  = trim(wp_strip_all_tags((string) $name)) ?: 'مهمان';
     $parts = preg_split('/\s+/u', $name);

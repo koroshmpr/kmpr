@@ -91,7 +91,7 @@ while (have_posts()) :
 
                 <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 text-sm text-slate-400" data-aos="fade-up" data-aos-delay="200">
                     <span class="inline-flex items-center gap-3">
-                        <img src="<?= esc_url(get_template_directory_uri() . '/public/images/korosh-mpr.webp'); ?>" alt="<?= esc_attr(kmpr_author_name()); ?>" width="40" height="40" class="size-10 rounded-full object-cover object-top border border-white/15">
+                        <img src="<?= esc_url(kmpr_author_photo_url('thumbnail')); ?>" alt="<?= esc_attr(kmpr_author_name()); ?>" width="40" height="40" class="size-10 rounded-full object-cover object-top border border-white/15">
                         <span class="flex flex-col leading-tight">
                             <span class="font-black text-white"><?= esc_html(kmpr_author_name()); ?></span>
                             <time class="text-xs" datetime="<?= esc_attr(get_the_date('c')); ?>"><?= esc_html(shamsi_date('j F Y', $published)); ?></time>

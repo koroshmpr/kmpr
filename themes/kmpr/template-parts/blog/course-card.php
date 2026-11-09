@@ -1,6 +1,6 @@
 <?php
 /**
- * Course card (blog hub). $args['course'] = kmpr_course_info(), $args['index'] = int.
+ * Course card (blog hub). $args['course'] = kmpr_course_info(), $args['index'] = int, $args['class'] = grid span classes.
  * Progress / continue link are computed client-side from $store.lessons.
  */
 $c = $args['course'] ?? null;
@@ -12,7 +12,7 @@ $ids  = array_map('intval', $c['lessons']);
 $urls = array_map('get_permalink', $ids);
 $idx  = (int) ($args['index'] ?? 0);
 ?>
-<article data-aos="fade-up" class="h-full"
+<article data-aos="fade-up" class="h-full <?= esc_attr($args['class'] ?? ''); ?>"
          x-data="{ ids: <?= esc_attr(wp_json_encode($ids)); ?>, urls: <?= esc_attr(wp_json_encode($urls)); ?> }">
     <div class="spotlight relative h-full flex flex-col rounded-3xl bg-white/[0.025] border border-white/10 <?= esc_attr($p['hover']); ?> transition-colors duration-500 overflow-hidden p-6 sm:p-7">
         <div class="pointer-events-none absolute -top-24 -end-24 size-64 rounded-full bg-gradient-to-br <?= esc_attr($p['glow']); ?> to-transparent blur-2xl" aria-hidden="true"></div>

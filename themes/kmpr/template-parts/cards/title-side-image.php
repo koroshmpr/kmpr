@@ -8,7 +8,7 @@
         <!-- Image thumbnail -->
         <div class="size-16 rounded-xl overflow-hidden shrink-0 bg-slate-950 border border-white/10 relative">
             <img class="w-full h-full object-cover pointer-events-none transition-transform duration-500 group-hover:scale-105" 
-                 src="<?php echo get_the_post_thumbnail_url(get_the_ID(), 'thumbnail') ?: (get_template_directory_uri() . '/public/images/korosh-mpr.webp'); ?>" 
+                 src="<?php echo get_the_post_thumbnail_url(get_the_ID(), 'thumbnail') ?: kmpr_default_cover_url('thumbnail'); ?>" 
                  alt="<?= esc_attr(get_the_title()); ?>"
                  loading="lazy">
         </div>

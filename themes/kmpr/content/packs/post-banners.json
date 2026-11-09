@@ -1,0 +1,201 @@
+{
+ "batch": "post-banners-2026-11",
+ "posts": [
+  {
+   "type": "post",
+   "slug": "core-web-vitals-complete-guide",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"speed-optimization\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"course\" item=\"seo-course\"]",
+     "before_h2": 14
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "core-web-vitals-optimization-to-100",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"speed-optimization\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"game\" item=\"neon-snake\"]",
+     "before_h2": 9
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "headless-wordpress-with-nextjs-guide",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"web-app-development\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"course\" item=\"custom-wordpress-development\"]",
+     "before_h2": 6
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "image-optimization-web-performance",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"speed-optimization\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"game\" item=\"hex-hunter\"]",
+     "before_h2": 8
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "javascript-css-third-party-scripts-performance",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"speed-optimization\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"game\" item=\"type-code\"]",
+     "before_h2": 7
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "scalable-online-platforms-architecture",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"web-app-development\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"portfolio\" item=\"traders-dastyar\"]",
+     "before_h2": 5
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "software-engineering-standards-vs-freelance",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"portfolio\" item=\"landing-maker\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"game\" item=\"bug-hunter\"]",
+     "before_h2": 7
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "technical-seo-before-launch",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"course\" item=\"seo-course\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"seo\"]",
+     "before_h2": 13
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "technical-seo-core-web-vitals-guide",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"speed-optimization\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"course\" item=\"seo-course\"]",
+     "before_h2": 9
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "website-design-complete-guide",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"website\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"portfolio\" item=\"psb-co\"]",
+     "before_h2": 12
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "website-design-cost",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"website\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"portfolio\" item=\"gilda-store\"]",
+     "before_h2": 8
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "website-launch-checklist-maintenance",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"website-support\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"course\" item=\"website-security-maintenance\"]",
+     "before_h2": 7
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "website-ux-ui-content-structure",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"landing-page\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"game\" item=\"hex-hunter\"]",
+     "before_h2": 8
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "why-ready-wordpress-themes-hurt-businesses",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"course\" item=\"custom-wordpress-development\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"portfolio\" item=\"metavision\"]",
+     "before_h2": 6
+    }
+   ]
+  }
+ ]
+}

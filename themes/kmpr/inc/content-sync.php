@@ -151,6 +151,19 @@ function kmpr_sync_process_site()
         return;
     }
 
+    $log = kmpr_sync_apply_site($data);
+    update_option('options_kmpr_sync_result', wp_json_encode(array('ok' => true, 'batch' => $data['batch'] ?? '', 'at' => gmdate('c'), 'log' => array_slice($log, 0, 60)), JSON_UNESCAPED_UNICODE), false);
+
+    delete_option('options_kmpr_sync_site');
+    delete_option('_options_kmpr_sync_site');
+}
+
+/**
+ * Apply a decoded site payload (options, terms, menu_items, acf_options, posts, menus) and return a log.
+ * Shared by the remote queue above and the theme content packs (inc/content-packs.php).
+ */
+function kmpr_sync_apply_site(array $data)
+{
     $log     = array();
     $allowed = array('blogname', 'blogdescription');
     foreach ((array) ($data['options'] ?? array()) as $key => $value) {
@@ -199,7 +212,9 @@ function kmpr_sync_process_site()
             $meta[$tax][$term_id]['wpseo_title'] = sanitize_text_field($t['yoast']['title'] ?? '');
             $meta[$tax][$term_id]['wpseo_desc']  = sanitize_text_field($t['yoast']['desc'] ?? '');
             update_option('wpseo_taxonomy_meta', $meta);
+            wp_update_term($term_id, $tax, array()); // fires edited_term so Yoast rebuilds the term indexable from the new meta
         }
+        $log[] = ($term_id ? 'term #' . $term_id : 'ERR term') . ' ' . $tax . ':' . ($t['slug'] ?? $match);
     }
     update_option('kmpr_term_slug_map', $renamed, false);
 
@@ -233,15 +248,12 @@ function kmpr_sync_process_site()
     foreach ((array) ($data['menus'] ?? array()) as $m) {
         $log[] = kmpr_sync_menu((array) $m);
     }
-    update_option('options_kmpr_sync_result', wp_json_encode(array('ok' => true, 'batch' => $data['batch'] ?? '', 'at' => gmdate('c'), 'log' => array_slice($log, 0, 60)), JSON_UNESCAPED_UNICODE), false);
     if (!empty($data['batch'])) {
         $done = (array) get_option('kmpr_sync_log', array());
-        $done[sanitize_key($data['batch'])] = array('at' => gmdate('c'), 'log' => array_slice($log ?? array(), 0, 200));
+        $done[sanitize_key($data['batch'])] = array('at' => gmdate('c'), 'log' => array_slice($log, 0, 200));
         update_option('kmpr_sync_log', array_slice($done, -40, null, true), false);
     }
-
-    delete_option('options_kmpr_sync_site');
-    delete_option('_options_kmpr_sync_site');
+    return $log;
 }
 
 /**
@@ -286,13 +298,16 @@ function kmpr_sync_resolve($v)
     }, $v);
 }
 
-function kmpr_sync_media_id($file)
+function kmpr_sync_media_id($file, $set = null)
 {
     global $wpdb;
     static $cache = array();
     $file = basename(trim($file));
     if ($file === '') {
         return 0;
+    }
+    if ($set !== null) {
+        return $cache[$file] = (int) $set;
     }
     if (isset($cache[$file])) {
         return $cache[$file];
@@ -336,6 +351,10 @@ function kmpr_sync_upsert_post(array $p)
         $post  = $found ? $found[0] : null;
     }
 
+    if (!$post && empty($p['title'])) {
+        return 'skip (missing, no title)'; // patch-only records (e.g. "inject") never create empty posts
+    }
+
     $arr = array('post_type' => $type, 'post_name' => $slug);
     foreach (array('title' => 'post_title', 'content' => 'post_content', 'excerpt' => 'post_excerpt', 'status' => 'post_status', 'menu_order' => 'menu_order') as $k => $col) {
         if (array_key_exists($k, $p)) {
@@ -350,7 +369,11 @@ function kmpr_sync_upsert_post(array $p)
     if (!empty($p['parent'])) {
         $arr['post_parent'] = (int) kmpr_sync_resolve($p['parent']);
     }
-    if ($post) {
+    if ($post && $post->post_name === $slug && !array_diff_key($arr, array('post_type' => 1, 'post_name' => 1))) {
+        // Meta/SEO-only record: don't touch the post row (wp_update_post would re-validate e.g. a stale page template).
+        $id   = $post->ID;
+        $verb = 'meta';
+    } elseif ($post) {
         $arr['ID'] = $post->ID;
         $id        = wp_update_post(wp_slash($arr), true);
         $verb      = 'updated';
@@ -387,6 +410,13 @@ function kmpr_sync_upsert_post(array $p)
             update_post_meta($mid, '_wp_attachment_image_alt', sanitize_text_field($alt));
         }
     }
+    if (!empty($p['inject'])) {
+        $content = (string) get_post_field('post_content', $id);
+        $patched = kmpr_sync_inject($content, (array) $p['inject']);
+        if ($patched !== $content) {
+            wp_update_post(wp_slash(array('ID' => $id, 'post_content' => $patched)));
+        }
+    }
     $y = (array) ($p['yoast'] ?? array());
     foreach (array('title' => '_yoast_wpseo_title', 'desc' => '_yoast_wpseo_metadesc', 'focuskw' => '_yoast_wpseo_focuskw') as $k => $mk) {
         if (isset($y[$k])) {
@@ -395,6 +425,32 @@ function kmpr_sync_upsert_post(array $p)
     }
     clean_post_cache($id);
     return $verb . ' #' . $id;
+}
+
+/**
+ * Insert snippets (e.g. [kmpr_banner …]) into post content without rewriting it:
+ *   [{"html": "[kmpr_banner type=\"service\" item=\"seo\"]", "before_h2": 3}]
+ * Inserted before the N-th <h2> (1-based; past the end → before the last <h2>, normally «جمع‌بندی»).
+ * Idempotent: a snippet already present anywhere in the content is skipped.
+ */
+function kmpr_sync_inject($content, array $ops)
+{
+    foreach ($ops as $op) {
+        $html = trim((string) ($op['html'] ?? ''));
+        if ($html === '' || strpos($content, $html) !== false) {
+            continue;
+        }
+        preg_match_all('/<h2[\s>]/i', $content, $m, PREG_OFFSET_CAPTURE);
+        $heads = $m[0];
+        if (!$heads) {
+            $content = rtrim($content) . "\n\n" . $html . "\n";
+            continue;
+        }
+        $n   = max(1, (int) ($op['before_h2'] ?? 3));
+        $pos = $heads[min($n, count($heads)) - 1][1];
+        $content = substr($content, 0, $pos) . $html . "\n\n" . substr($content, $pos);
+    }
+    return $content;
 }
 
 /**

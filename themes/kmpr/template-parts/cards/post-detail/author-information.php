@@ -5,7 +5,7 @@
 $author_id   = (int) get_post_field('post_author', get_the_ID());
 $author_name = kmpr_author_name();
 $author_bio  = get_the_author_meta('description', $author_id) ?: sprintf('من کوروش محمدپور هستم؛ %s با بیش از %s سال تجربه. این درس‌ها را از دل پروژه‌های واقعی می‌نویسم تا مستقیم در کارت به درد بخورند.', kmpr_field('job_title', 'طراح و توسعه‌دهنده وب', 'option'), kmpr_fa_num(kmpr_years_experience()));
-$avatar      = get_template_directory_uri() . '/public/images/korosh-mpr.webp';
+$avatar      = kmpr_author_photo_url('medium');
 ?>
 <section id="author-section" aria-label="درباره نویسنده" data-aos="fade-up"
          class="relative overflow-hidden rounded-3xl bg-white/[0.025] border border-white/10 p-6 sm:p-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-start">

@@ -1,32 +1,85 @@
 name: Deploy Theme to WordPress Host
 
+# CI budget rules (see AGENTS.md → "GitHub Actions budget"):
+# - Runs only when the theme (or this file) changes; docs, tools/ and AGENTS.md never trigger a deploy.
+# - One deploy at a time: a running upload is never cut off halfway, and while it runs only the newest
+#   waiting push is kept (older queued runs are dropped — the newest commit contains them anyway).
+# - Build output (public/css, public/js) is committed after a local `npm run production`, so Node is only
+#   installed and the build only re-run when build inputs changed. Manual run can force a rebuild.
+
 on:
   push:
     branches:
       - main
       - master
+    paths:
+      - 'themes/kmpr/**'
+      - '!themes/kmpr/**/*.md'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Rebuild CSS/JS even if no build input changed'
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
 
 jobs:
   deploy:
     name: Build & Deploy via FTP
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none # full commit graph for the diff below, file contents only for HEAD
+
+      - name: Decide whether assets must be rebuilt
+        id: changes
+        env:
+          BEFORE: ${{ github.event.before }}
+          FORCE: ${{ inputs.force_build }}
+        run: |
+          build=true
+          if [ "$FORCE" != "true" ] && [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            changed=$(git diff --name-only "$BEFORE" "$GITHUB_SHA" -- \
+              themes/kmpr/javascript themes/kmpr/tailwind themes/kmpr/tailwind.css \
+              themes/kmpr/postcss.config.mjs themes/kmpr/package.json themes/kmpr/package-lock.json)
+            [ -z "$changed" ] && build=false
+          fi
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "Asset rebuild needed: $build"
 
       - name: Setup Node.js
+        if: steps.changes.outputs.build == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: themes/kmpr/package-lock.json
 
-      - name: Install dependencies & Build Production Assets (Tailwind + JS)
+      - name: Restore node_modules cache
+        if: steps.changes.outputs.build == 'true'
+        id: nm-cache
+        uses: actions/cache@v4
+        with:
+          path: themes/kmpr/node_modules
+          key: nm-${{ runner.os }}-node20-${{ hashFiles('themes/kmpr/package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.changes.outputs.build == 'true' && steps.nm-cache.outputs.cache-hit != 'true'
         working-directory: ./themes/kmpr
-        run: |
-          npm ci
-          npm run production
+        run: npm ci --no-audit --no-fund
+
+      - name: Build Production Assets (Tailwind + JS)
+        if: steps.changes.outputs.build == 'true'
+        working-directory: ./themes/kmpr
+        run: npm run production
 
       - name: Deploy theme files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -36,6 +89,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./themes/kmpr/
           server-dir: ${{ secrets.FTP_SERVER_DIR || './' }}
+          log-level: minimal
           exclude: |
             **/.git*
             **/.git*/**
@@ -59,4 +113,3 @@ jobs:
             template-parts/global
             assets/**
             assets
-

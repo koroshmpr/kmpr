@@ -108,6 +108,7 @@ require_once KMPR_INC . 'acf-fields.php';
  */
 require_once KMPR_INC . 'acf-blog.php';
 require_once KMPR_INC . 'blog-features.php';
+require_once KMPR_INC . 'article-banners.php'; // [kmpr_banner] in-article banners + «بنر» editor button
 require_once KMPR_INC . 'acf-portfolio-extra.php';
 require_once KMPR_INC . 'acf-services-extra.php';
 require_once KMPR_INC . 'games.php';
@@ -117,6 +118,7 @@ require_once KMPR_INC . 'arcade-monetize.php'; // Game Center demand test: «پ�
  * Content sync bridge: applies queued kmpr_sync_* meta written by remote tools (MCP) via core APIs
  */
 require_once KMPR_INC . 'content-sync.php';
+require_once KMPR_INC . 'content-packs.php'; // content/packs/*.json → courses, lessons, covers (applied once per file hash)
 
 /**
  * Performance: speculative prefetch on hover, speculative-request detection

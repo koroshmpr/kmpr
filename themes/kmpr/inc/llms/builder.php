@@ -73,7 +73,10 @@ class KMPR_LLMs_Builder
             return '';
         }
         $c = has_blocks($c) ? do_blocks($c) : wpautop($c);
-        return do_shortcode($c);
+        $GLOBALS['kmpr_llms_rendering'] = true; // shortcodes such as [kmpr_banner] render as plain links
+        $c = do_shortcode($c);
+        $GLOBALS['kmpr_llms_rendering'] = false;
+        return $c;
     }
 
     /** Cut Markdown to a byte budget at a paragraph boundary (keeps code fences balanced). */
