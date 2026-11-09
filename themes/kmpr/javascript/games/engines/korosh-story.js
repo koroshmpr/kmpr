@@ -889,48 +889,84 @@ const OCR_LINES = [
 	['кровяное давление', 'فشار خون'], ['головная боль', 'سردرد'], ['диагностика организма', 'تشخیص وضعیت بدن'], ['частота колебаний', 'فرکانس نوسان'],
 ];
 const LOOKALIKE = { о: '0', з: '3', б: '6', ч: '4', и: 'u', п: 'n', г: 'r', т: '7', а: '@', л: 'JI' };
-/** Returns a close() function; done(points, passed) when the 5 pages are over. */
+/**
+ * Two phases: 1) scan — press «اسکن» while the sliding page is inside the green zone (3 pages);
+ * 2) OCR check — the book line (correct) sits above the OCR output; tap the characters that differ.
+ * Returns close(); done(points, passed).
+ */
 export function showOCR(host, { done, sound }) {
-	const lines = OCR_LINES.slice().sort(() => Math.random() - 0.5).slice(0, 5);
+	const PAGES = 4, SEC = 25;
+	const lines = OCR_LINES.slice().sort(() => Math.random() - 0.5).slice(0, PAGES);
+	const faNum = (v) => String(v).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
 	const el = document.createElement('div');
 	el.className = 'kr-comic kr-ocr';
-	el.innerHTML = `<div class="kr-comic__box"><p class="kr-comic__k">بیورزونانس · OCR کتاب پزشکی روسی</p>
-		<div class="kr-ocr__page"><p class="kr-ocr__meta"><span data-o-n></span><span data-o-left></span></p><div class="kr-ocr__bar"><i data-o-bar></i></div>
-		<p class="kr-ocr__line" data-o-line dir="ltr" lang="ru"></p><p class="kr-ocr__fa" data-o-fa></p>
-		<p class="kr-ocr__hint">OCR بعضی حرف‌های روسی را با عدد یا حرف لاتین شبیهش عوض کرده؛ روی حرف‌های اشتباه بزن.</p></div>
-		<div class="kr-comic__bar"><span class="kr-comic__dots" data-o-score></span><button type="button" class="kr-comic__go" data-o-skip>صفحه بعد ◂</button></div></div>`;
+	el.innerHTML = `<div class="kr-comic__box"><p class="kr-comic__k">بیورزونانس · اسکن و OCR کتاب پزشکی روسی</p>
+		<div class="kr-ocr__page" data-o-body></div>
+		<div class="kr-comic__bar"><span class="kr-comic__dots" data-o-score></span><button type="button" class="kr-comic__go" data-o-act></button></div></div>`;
 	host.appendChild(el);
-	const $ = (q) => el.querySelector(q);
-	let i = 0, pts = 0, found = 0, total = 0, left = 0, t = 0, raf = 0, last = 0, closed = false, wrongs = [];
-	const SEC = 18;
+	const $ = (q) => el.querySelector(q), body = $('[data-o-body]'), act = $('[data-o-act]');
+	let phase = 'scan', pts = 0, found = 0, total = 0, closed = false, raf = 0, last = performance.now();
+	const score = () => { $('[data-o-score]').textContent = `امتیاز: ${faNum(pts)}`; };
+	// ---- phase 1: scanning
+	let scanned = 0, pos = 0, dir = 1, speed = 0.55, flash = 0;
+	const scanUI = () => {
+		body.innerHTML = `<p class="kr-ocr__meta"><span>📠 مرحله ۱: اسکن کتاب</span><span data-o-cnt>${faNum(scanned)} از ۳ صفحه</span></p>
+			<div class="kr-ocr__scan"><i class="kr-ocr__zone"></i><span class="kr-ocr__sheet" data-o-sheet>📄</span><i class="kr-ocr__light"></i></div>
+			<p class="kr-ocr__hint">صفحه کتاب جلوی اسکنر جابه‌جا می‌شود؛ وقتی داخل نوار سبز است «اسکن!» را بزن (یا Space).</p>`;
+		act.textContent = '📠 اسکن!';
+	};
+	const doScan = () => {
+		if (Math.abs(pos - 0.5) < 0.11) { scanned++; pts += 200; flash = 0.3; speed += 0.18; sound && sound('coin'); el.querySelector('.kr-ocr__scan').classList.add('is-hit'); setTimeout(() => el.querySelector('.kr-ocr__scan') && el.querySelector('.kr-ocr__scan').classList.remove('is-hit'), 250); }
+		else { pts = Math.max(0, pts - 50); sound && sound('wrong'); const sh = $('[data-o-sheet]'); sh.classList.remove('is-blur'); void sh.offsetWidth; sh.classList.add('is-blur'); }
+		$('[data-o-cnt]').textContent = `${faNum(scanned)} از ۳ صفحه`; score();
+		if (scanned >= 3) { phase = 'ocr'; setTimeout(() => { if (!closed) { i = 0; page(); } }, 500); }
+	};
+	// ---- phase 2: compare book vs OCR output
+	let i = 0, wrongs = [], left = 0, t = 0;
 	const page = () => {
-		const [ru, fa] = lines[i];
-		const chars = [...ru], idx = chars.map((ch, k) => (LOOKALIKE[ch] ? k : -1)).filter((k) => k >= 0).sort(() => Math.random() - 0.5).slice(0, 2 + (i > 1 ? 1 : 0));
-		wrongs = idx; left = idx.length; total += idx.length; t = SEC;
-		$('[data-o-line]').innerHTML = chars.map((ch, k) => `<button type="button" class="kr-ocr__ch${ch === ' ' ? ' is-sp' : ''}" data-k="${k}">${idx.includes(k) ? LOOKALIKE[ch] : ch === ' ' ? '&nbsp;' : ch}</button>`).join('');
-		$('[data-o-fa]').textContent = `ترجمه: ${fa}`;
-		$('[data-o-n]').textContent = `صفحه ${'۱۲۳۴۵'[i]} از ۵`;
+		const [ru, fa] = lines[i], chars = [...ru];
+		wrongs = chars.map((ch, k) => (LOOKALIKE[ch] ? k : -1)).filter((k) => k >= 0).sort(() => Math.random() - 0.5).slice(0, 2);
+		left = wrongs.length; total += left; t = SEC;
+		body.innerHTML = `<p class="kr-ocr__meta"><span>🔍 مرحله ۲: صفحه ${faNum(i + 1)} از ${faNum(PAGES)}</span><span data-o-left></span></p><div class="kr-ocr__bar"><i data-o-bar></i></div>
+			<p class="kr-ocr__lbl">📖 متن کتاب (درست):</p><p class="kr-ocr__line is-book" dir="ltr" lang="ru">${chars.map((ch) => `<span class="kr-ocr__bk">${ch === ' ' ? '&nbsp;' : ch}</span>`).join('')}</p>
+			<p class="kr-ocr__lbl">🖥 خروجی OCR (حرف‌های فرق‌دار را بزن):</p><p class="kr-ocr__line" dir="ltr" lang="ru">${chars.map((ch, k) => `<button type="button" class="kr-ocr__ch${ch === ' ' ? ' is-sp' : ''}" data-k="${k}">${wrongs.includes(k) ? LOOKALIKE[ch] : ch === ' ' ? '&nbsp;' : ch}</button>`).join('')}</p>
+			<p class="kr-ocr__fa">ترجمه: ${fa}</p>`;
+		act.textContent = 'صفحه بعد ◂';
 		upd();
 	};
-	const upd = () => { $('[data-o-left]').textContent = `${left} خطای باقی‌مانده`.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]); $('[data-o-score]').textContent = `امتیاز: ${pts}`.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]); };
+	const upd = () => { const l = $('[data-o-left]'); if (l) l.textContent = `${faNum(left)} اشتباه مانده`; score(); };
 	const next = () => { if (closed) return; i++; if (i >= lines.length) return finish(); page(); };
-	const finish = () => { close(); done && done(pts, found >= Math.ceil(total * 0.7)); };
-	const tick = (now) => { const dt = Math.min(0.1, (now - last) / 1000); last = now; t -= dt; $('[data-o-bar]').style.transform = `scaleX(${Math.max(0, t / SEC)})`; if (t <= 0) next(); if (!closed) raf = requestAnimationFrame(tick); };
+	const finish = () => { close(); done && done(pts, found >= Math.ceil(total * 0.6)); };
+	const tick = (now) => {
+		const dt = Math.min(0.1, (now - last) / 1000); last = now;
+		if (phase === 'scan') {
+			pos += dir * speed * dt; if (pos > 1) { pos = 1; dir = -1; } if (pos < 0) { pos = 0; dir = 1; }
+			const sh = $('[data-o-sheet]'); if (sh) sh.style.insetInlineStart = `calc(${(pos * 100).toFixed(1)}% - 1rem)`;
+		} else {
+			t -= dt;
+			const bar = $('[data-o-bar]'); if (bar) bar.style.transform = `scaleX(${Math.max(0, t / SEC)})`;
+			if (t < SEC - 10) el.querySelectorAll('.kr-ocr__ch').forEach((b) => wrongs.includes(Number(b.dataset.k)) && !b.disabled && b.classList.add('is-hint'));
+			if (t <= 0) next();
+		}
+		if (!closed) raf = requestAnimationFrame(tick);
+	};
 	el.addEventListener('click', (e) => {
-		if (e.target.closest('[data-o-skip]')) return next();
+		if (e.target.closest('[data-o-act]')) return phase === 'scan' ? doScan() : next();
 		const b = e.target.closest('.kr-ocr__ch');
-		if (!b || b.disabled) return;
+		if (!b || b.disabled || phase !== 'ocr') return;
 		const k = Number(b.dataset.k);
 		if (wrongs.includes(k)) {
-			b.disabled = true; b.classList.add('is-ok'); b.textContent = [...lines[i][0]][k];
+			b.disabled = true; b.classList.remove('is-hint'); b.classList.add('is-ok'); b.textContent = [...lines[i][0]][k];
 			found++; left--; pts += 150; sound && sound('coin');
-			if (!left) { pts += Math.round(t) * 20; sound && sound('level'); upd(); setTimeout(next, 650); }
+			if (!left) { pts += Math.round(t) * 20; sound && sound('level'); upd(); setTimeout(next, 700); }
 		} else { b.classList.remove('is-bad'); void b.offsetWidth; b.classList.add('is-bad'); t = Math.max(0.5, t - 2); sound && sound('wrong'); }
 		upd();
 	});
-	const close = () => { if (closed) return; closed = true; cancelAnimationFrame(raf); el.remove(); };
-	page();
-	last = performance.now(); raf = requestAnimationFrame(tick);
+	const onKey = (e) => { if (phase === 'scan' && (e.code === 'Space' || e.code === 'Enter')) { e.preventDefault(); e.stopPropagation(); doScan(); } };
+	window.addEventListener('keydown', onKey, true);
+	const close = () => { if (closed) return; closed = true; cancelAnimationFrame(raf); window.removeEventListener('keydown', onKey, true); el.remove(); };
+	scanUI(); score();
+	raf = requestAnimationFrame(tick);
 	return close;
 }
 

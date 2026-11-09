@@ -549,3 +549,15 @@
 .kr-dlg__opt { min-height: 44px; padding: 0.55rem 0.9rem; text-align: start; font-weight: 900; font-size: 0.9rem; color: #111; background: #fff; border: 2.5px solid #111; border-radius: 0.4rem; box-shadow: 4px 4px 0 #111; cursor: pointer; }
 .kr-dlg__opt:hover { background: #fef9c3; transform: translate(-1px, -1px); }
 .kr-dlg .kr-comic__say { left: auto; right: 0.6rem; top: auto; bottom: 0.6rem; transform: skewX(4deg); max-width: 60%; }
+.kr-ocr__scan { position: relative; height: 5.5rem; margin: 0.4rem 0 0.6rem; border-radius: 0.6rem; background: linear-gradient(#e7e5e4, #d6d3d1); border: 2px solid #111; overflow: hidden; }
+.kr-ocr__zone { position: absolute; inset-block: 0; left: 39%; width: 22%; background: rgb(16 185 129 / 0.28); border-inline: 2px dashed #059669; }
+.kr-ocr__light { position: absolute; inset-block: 0; left: 50%; width: 3px; background: #22d3ee; box-shadow: 0 0 12px 4px rgb(34 211 238 / 0.7); }
+.kr-ocr__sheet { position: absolute; top: 50%; translate: 0 -50%; font-size: 2.6rem; line-height: 1; transition: filter 0.2s; }
+.kr-ocr__sheet.is-blur { animation: kr-ocr-blur 0.45s; }
+@keyframes kr-ocr-blur { 40% { filter: blur(4px); } }
+.kr-ocr__scan.is-hit { box-shadow: inset 0 0 0 999px rgb(34 211 238 / 0.35); }
+.kr-ocr__lbl { margin: 0.35rem 0 0; font-size: 0.75rem; font-weight: 900; color: #57534e; }
+.kr-ocr__line.is-book { margin: 0.1rem 0 0.2rem; }
+.kr-ocr__bk { min-width: 1.6rem; text-align: center; font-size: clamp(1.15rem, 3.6cqw, 1.7rem); color: #44403c; }
+.kr-ocr__ch.is-hint { animation: kr-ocr-hint 1s infinite; }
+@keyframes kr-ocr-hint { 50% { background: rgb(239 68 68 / 0.2); } }
