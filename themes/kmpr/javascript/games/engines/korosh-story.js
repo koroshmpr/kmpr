@@ -67,6 +67,23 @@ export const RAIN_NAME = 'زیپ کیف · منوچهری';
 export const RAIN_OUTRO = [
 	{ scene: 'shop', mood: 'happy', cap: 'خیابان منوچهری. استادکار زیپ را عوض می‌کند؛ تسک‌ها هم یکی‌یکی بسته شده‌اند.', say: 'زیپش مثل روز اول شد! حالا تسک بعدی… 😅' },
 ];
+// chapter «بیورزونانس» (stages 107–109) — the very beginning: OCR puzzle → 25,000 articles → learning WordPress + boss Azizi
+export const BIO_NAME = 'بیورزونانس';
+export const BIO_STORY = [
+	[
+		{ scene: 'bio', mood: 'shock', cap: 'خیلی قبل از همه این‌ها: شرکت بیورزونانس. کوروش هم طراح سایت است و هم مترجم کتاب‌های پزشکی روسی. مائده و شایان هم آنجا هستند.', say: 'اسکن کتاب‌ها رو OCR کردم… این حروف روسی چرا قاطی شدن؟!' },
+	],
+	[
+		{ scene: 'articles', mood: 'shock', cap: 'حالا حدود ۲۵ هزار مقاله باید روی سایت برود؛ بدون هیچ راهی برای آپلود یکجا. حسین هم مدام ایراد می‌گیرد.', say: 'یکی‌یکی؟! تا سال بعد طول می‌کشه…' },
+	],
+	[
+		{ scene: 'azizi', mood: 'fire', cap: 'آقای عزیزی، رئیس شرکت، نتیجه می‌خواهد. کوروش تصمیم می‌گیرد وردپرس و برنامه‌نویسی را جدی یاد بگیرد و قوی‌تر شود.', say: 'یاد می‌گیرم… و قوی‌تر برمی‌گردم.' },
+	],
+];
+export const BIO_OUTRO = [
+	{ scene: 'levelup', mood: 'happy', cap: 'وردپرس، PHP، جاوااسکریپت… کوروش حالا یک برنامه‌نویس واقعی است. و این شروع راهی بود که به پند پلاس رسید.', say: 'مرحله بعد: پند پلاس! 🚀' },
+];
+
 // chapter «پند پلاس» (stages 104–106): morning traffic & parking → Yousef's Trello QC storm → boss Mr. Bakhshi
 export const PAND_NAME = 'پند پلاس';
 export const PAND_STORY = [
@@ -174,10 +191,13 @@ function person(c, x, by, k, o, t) {
 		c.fillStyle = o.hair; c.beginPath(); c.moveTo(-5.4, -28); c.quadraticCurveTo(-6.4, -35, -0.6, -35.4); c.quadraticCurveTo(6.4, -35.8, 6, -29); c.quadraticCurveTo(3, -32.4, -1.6, -31.4); c.quadraticCurveTo(-4, -30.6, -5.4, -28); c.fill(); c.stroke();
 		c.strokeStyle = '#6b5a50'; c.lineWidth = 0.5; c.beginPath(); c.moveTo(-2.6, -34.6); c.quadraticCurveTo(-3.4, -32.6, -3.6, -30.8); c.stroke(); c.strokeStyle = OL;
 	}
+	else if (o.style === 'messy') { c.fillStyle = o.hair; for (let i = 0; i < 8; i++) { const a = Math.PI * (1.05 + i * 0.13); c.beginPath(); c.ellipse(Math.cos(a) * 4.6, -28 + Math.sin(a) * 4.8, 2.4, 1.6, a + 1.2, 0, 7); c.fill(); } c.beginPath(); c.arc(0, -28, 5.6, Math.PI * 1.05, Math.PI * 1.95); c.fill(); }
 	else if (o.style === 'bald') { c.fillStyle = o.hair; [-1, 1].forEach((d) => { c.beginPath(); c.ellipse(d * 4.8, -27.4, 1.5, 2.6, 0, 0, 7); c.fill(); }); c.fillStyle = 'rgba(255,255,255,.4)'; c.beginPath(); c.ellipse(-1.6, -30.6, 1.8, 0.8, -0.3, 0, 7); c.fill(); }
 	else if (o.style === 'curly') { for (let i = 0; i < 9; i++) { const a = Math.PI + (i / 8) * Math.PI; c.beginPath(); c.arc(Math.cos(a) * 5, -27.5 + Math.sin(a) * 5, 2.1, 0, 7); c.fill(); } }
 	else { c.beginPath(); c.arc(0, -27.6, 5.6, Math.PI * 1.02, Math.PI * 1.98); c.quadraticCurveTo(3, -29.4, -5.4, -27.4); c.fill(); }
 	if (o.tie) { c.fillStyle = '#f8fafc'; c.beginPath(); c.moveTo(-2.4, -21); c.lineTo(0, -18); c.lineTo(2.4, -21); c.fill(); c.fillStyle = '#b91c1c'; c.beginPath(); c.moveTo(-0.9, -19.4); c.lineTo(0.9, -19.4); c.lineTo(1.3, -13); c.lineTo(0, -11.6); c.lineTo(-1.3, -13); c.closePath(); c.fill(); c.lineWidth = 0.5; c.stroke(); c.lineWidth = 1; }
+	if (o.polo) { c.fillStyle = '#111827'; c.beginPath(); c.moveTo(-3.4, -21); c.lineTo(0, -19); c.lineTo(3.4, -21); c.lineTo(2, -22); c.lineTo(0, -20.6); c.lineTo(-2, -22); c.closePath(); c.fill(); }
+	if (o.goatee) { c.fillStyle = 'rgba(120,113,108,.9)'; c.beginPath(); c.ellipse(0, -22.4, 2, 1.6, 0, 0, 7); c.fill(); c.fillRect(-1.6, -24.8, 3.2, 0.8); }
 	if (o.stache) { c.fillStyle = o.hair; c.beginPath(); c.ellipse(0, -25, 2.6, 0.8, 0, 0, 7); c.fill(); }
 	if (o.beard) { c.fillStyle = 'rgba(40,30,25,.55)'; c.beginPath(); c.arc(0, -25.4, 4.8, 0.15, Math.PI - 0.15); c.fill(); }
 	// eyes + mouth
@@ -192,6 +212,9 @@ function person(c, x, by, k, o, t) {
 	if (o.name) { c.font = `800 ${Math.round(4.2 * k)}px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = 'rgba(0,0,0,.6)'; const tw = c.measureText(o.name).width + 6; c.fillRect(x - tw / 2, by + 2, tw, 5.4 * k); c.fillStyle = '#fff'; c.fillText(o.name, x, by + 2 + 2.7 * k); }
 }
 const CAST = {
+	shayan2: { skin: '#e3b08a', hair: '#151312', style: 'messy', top: '#1f2937', beard: true, polo: true, name: 'شایان' },
+	hossein: { skin: '#d9a684', hair: '#d1d5db', style: 'bald', top: '#78716c', pants: '#44403c', name: 'حسین' },
+	azizi: { skin: '#e8bf9a', hair: '#9ca3af', style: 'bald', top: '#556b2f', pants: '#3f3f46', glasses: true, goatee: true, name: 'آقای عزیزی' },
 	yousef: { skin: '#e6b993', hair: '#1c1917', style: 'quiff', top: '#18181b', name: 'یوسف' },
 	bakhshi: { skin: '#dcae8a', hair: '#6b7280', style: 'bald', top: '#374151', pants: '#1f2937', tie: true, stache: true, name: 'آقای بخشی' },
 	negar: { skin: '#e8b48f', hair: '#1e293b', style: 'shawl', top: '#0f172a', pants: '#1f2937', glasses: true, name: 'نگار' },
@@ -642,6 +665,34 @@ export function drawPanel(c, w, h, panel, t, worlds) {
 		burst(c, w * 0.62, h * 0.4, 16, 8, '#fef08a', t - 0.5, t);
 		sfx(c, 'زیپ ✓', w * 0.62, h * 0.4, 14, 0, '#16a34a', t - 0.5);
 		rainFx(c, w, h, t, 0.5);
+	} else if (sc === 'bio' || sc === 'articles' || sc === 'azizi' || sc === 'levelup') {
+		const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#ecfdf5'); g.addColorStop(1, '#a7f3d0'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+		c.fillStyle = '#6ee7b7'; c.fillRect(0, h * 0.8, w, h); c.fillStyle = '#065f46'; c.font = `900 10px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('شرکت بیورزونانس', w * 0.5, h * 0.07);
+		if (sc === 'bio') {
+			c.fillStyle = '#a16207'; c.fillRect(w * 0.08, h * 0.58, w * 0.36, 7);
+			for (let i = 0; i < 4; i++) { c.fillStyle = ['#dc2626', '#1d4ed8', '#15803d', '#7c3aed'][i]; c.fillRect(w * 0.1 + i * 13, h * 0.58 - 26 - (i % 2) * 4, 11, 26 + (i % 2) * 4); c.fillStyle = '#fff'; c.font = `900 6px serif`; c.fillText('РУС', w * 0.1 + i * 13 + 5.5, h * 0.58 - 12); }
+			laptop(c, w * 0.3, h * 0.58, 50, '#0b1220', t);
+			heroAt(w * 0.22, h * 0.8, 'stand', 1, 1.9, 0, 0.4);
+			drawMaedeh(c, w * 0.62, h * 0.8, 1.5, -1, 'happy', t);
+			drawPerson(c, w * 0.82, h * 0.8, 1.6, 'shayan2', { mood: 'smile' }, t);
+			sfx(c, 'Б → 6 ?!', w * 0.36, h * 0.24, 16, -0.1, '#ef4444', t - 0.4);
+		} else if (sc === 'articles') {
+			for (let i = 0; i < 12; i++) { c.fillStyle = i % 2 ? '#f8fafc' : '#e2e8f0'; c.strokeStyle = OL; c.lineWidth = 1; const x = w * 0.5 + Math.sin(i) * 6, y = h * 0.78 - i * 9; c.fillRect(x - 40, y, 80, 8); c.strokeRect(x - 40, y, 80, 8); }
+			sfx(c, '۲۵٬۰۰۰ مقاله', w * 0.5, h * 0.18, 18, -0.05, '#0f766e', t - 0.2);
+			heroAt(w * 0.24, h * 0.8, 'stand', 1, 1.9, 0, 0.6);
+			drawPerson(c, w * 0.8, h * 0.8, 1.7, 'hossein', { mood: 'angry' }, t);
+			sfx(c, 'هنوز تموم نشده؟!', w * 0.8, h * 0.32, 12, 0.08, '#dc2626', t - 0.8);
+		} else if (sc === 'azizi') {
+			drawPerson(c, w * 0.76, h * 0.8, 2, 'azizi', { mood: 'angry' }, t);
+			heroAt(w * 0.26, h * 0.8, 'stand', 1, 2, 0, 0);
+			['WP', 'PHP', 'JS'].forEach((b, i) => { c.save(); c.translate(w * 0.42 + i * 16, h * 0.62 - i * 4); c.rotate(-0.1 + i * 0.1); c.fillStyle = ['#2563eb', '#7c3aed', '#ca8a04'][i]; c.strokeStyle = OL; c.lineWidth = 1.2; c.fillRect(-7, -10, 14, 20); c.strokeRect(-7, -10, 14, 20); c.fillStyle = '#fff'; c.font = `900 5px ${FF}`; c.fillText(b, 0, 0); c.restore(); });
+			sfx(c, 'نتیجه می‌خوام!', w * 0.76, h * 0.2, 15, 0.08, '#dc2626', t - 0.3);
+		} else {
+			speed(c, w, h, w * 0.3, h * 0.55, 'rgba(16,185,129,.6)', t, true);
+			heroAt(w * 0.3, h * 0.8 - Math.abs(Math.sin(t * 4)) * 8, 'jump', 1, 2.1, 0.8, 0);
+			['WP', 'PHP', 'JS', 'SQL', 'CSS'].forEach((b, i) => { const a = t * 1.5 + i * 1.256, x = w * 0.3 + Math.cos(a) * 70, y = h * 0.45 + Math.sin(a) * 34; c.fillStyle = '#fff'; c.strokeStyle = OL; c.lineWidth = 1.5; c.beginPath(); c.roundRect(x - 14, y - 8, 28, 16, 4); c.fill(); c.stroke(); c.fillStyle = '#047857'; c.font = `900 8px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(b, x, y + 0.5); });
+			sfx(c, 'لول آپ!', w * 0.74, h * 0.3, 22, -0.1, '#10b981', t - 0.3);
+		}
 	} else if (sc === 'traffic') {
 		shake(2, 9);
 		const wd = worlds[8] || worlds[4];
@@ -735,6 +786,57 @@ export function drawPanel(c, w, h, panel, t, worlds) {
 	}
 	c.restore();
 	halftone(c, w, h);
+}
+
+/* ---------------- OCR puzzle (thinking stage): find the characters OCR swapped for look-alikes ---------------- */
+const OCR_LINES = [
+	['биорезонансная терапия', 'درمان بیورزونانس'], ['медицинская книга', 'کتاب پزشکی'], ['иммунная система', 'سیستم ایمنی'],
+	['кровяное давление', 'فشار خون'], ['головная боль', 'سردرد'], ['диагностика организма', 'تشخیص وضعیت بدن'], ['частота колебаний', 'فرکانس نوسان'],
+];
+const LOOKALIKE = { о: '0', з: '3', б: '6', ч: '4', и: 'u', п: 'n', г: 'r', т: '7', а: '@', л: 'JI' };
+/** Returns a close() function; done(points, passed) when the 5 pages are over. */
+export function showOCR(host, { done, sound }) {
+	const lines = OCR_LINES.slice().sort(() => Math.random() - 0.5).slice(0, 5);
+	const el = document.createElement('div');
+	el.className = 'kr-comic kr-ocr';
+	el.innerHTML = `<div class="kr-comic__box"><p class="kr-comic__k">بیورزونانس · OCR کتاب پزشکی روسی</p>
+		<div class="kr-ocr__page"><p class="kr-ocr__meta"><span data-o-n></span><span data-o-left></span></p><div class="kr-ocr__bar"><i data-o-bar></i></div>
+		<p class="kr-ocr__line" data-o-line dir="ltr" lang="ru"></p><p class="kr-ocr__fa" data-o-fa></p>
+		<p class="kr-ocr__hint">OCR بعضی حرف‌های روسی را با عدد یا حرف لاتین شبیهش عوض کرده؛ روی حرف‌های اشتباه بزن.</p></div>
+		<div class="kr-comic__bar"><span class="kr-comic__dots" data-o-score></span><button type="button" class="kr-comic__go" data-o-skip>صفحه بعد ◂</button></div></div>`;
+	host.appendChild(el);
+	const $ = (q) => el.querySelector(q);
+	let i = 0, pts = 0, found = 0, total = 0, left = 0, t = 0, raf = 0, last = 0, closed = false, wrongs = [];
+	const SEC = 18;
+	const page = () => {
+		const [ru, fa] = lines[i];
+		const chars = [...ru], idx = chars.map((ch, k) => (LOOKALIKE[ch] ? k : -1)).filter((k) => k >= 0).sort(() => Math.random() - 0.5).slice(0, 2 + (i > 1 ? 1 : 0));
+		wrongs = idx; left = idx.length; total += idx.length; t = SEC;
+		$('[data-o-line]').innerHTML = chars.map((ch, k) => `<button type="button" class="kr-ocr__ch${ch === ' ' ? ' is-sp' : ''}" data-k="${k}">${idx.includes(k) ? LOOKALIKE[ch] : ch === ' ' ? '&nbsp;' : ch}</button>`).join('');
+		$('[data-o-fa]').textContent = `ترجمه: ${fa}`;
+		$('[data-o-n]').textContent = `صفحه ${'۱۲۳۴۵'[i]} از ۵`;
+		upd();
+	};
+	const upd = () => { $('[data-o-left]').textContent = `${left} خطای باقی‌مانده`.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]); $('[data-o-score]').textContent = `امتیاز: ${pts}`.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]); };
+	const next = () => { if (closed) return; i++; if (i >= lines.length) return finish(); page(); };
+	const finish = () => { close(); done && done(pts, found >= Math.ceil(total * 0.7)); };
+	const tick = (now) => { const dt = Math.min(0.1, (now - last) / 1000); last = now; t -= dt; $('[data-o-bar]').style.transform = `scaleX(${Math.max(0, t / SEC)})`; if (t <= 0) next(); if (!closed) raf = requestAnimationFrame(tick); };
+	el.addEventListener('click', (e) => {
+		if (e.target.closest('[data-o-skip]')) return next();
+		const b = e.target.closest('.kr-ocr__ch');
+		if (!b || b.disabled) return;
+		const k = Number(b.dataset.k);
+		if (wrongs.includes(k)) {
+			b.disabled = true; b.classList.add('is-ok'); b.textContent = [...lines[i][0]][k];
+			found++; left--; pts += 150; sound && sound('coin');
+			if (!left) { pts += Math.round(t) * 20; sound && sound('level'); upd(); setTimeout(next, 650); }
+		} else { b.classList.remove('is-bad'); void b.offsetWidth; b.classList.add('is-bad'); t = Math.max(0.5, t - 2); sound && sound('wrong'); }
+		upd();
+	});
+	const close = () => { if (closed) return; closed = true; cancelAnimationFrame(raf); el.remove(); };
+	page();
+	last = performance.now(); raf = requestAnimationFrame(tick);
+	return close;
 }
 
 /**

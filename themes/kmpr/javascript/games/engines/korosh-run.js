@@ -15,7 +15,7 @@ import { createCanvas } from '../lib/canvas.js';
 import { store } from '../lib/store.js';
 import { fa, listeners, clamp } from '../lib/util.js';
 import { HERO_H, drawHero, OL } from '../lib/hero.js';
-import { INTRO, STAGES as STORY, OUTRO, CHAPTERS, GAME_NAME, showComic, drawBeetle, drawL90, drawMaedeh, SIDE_STORY, SIDE_OUTRO, SIDE_NAME, AWARD, WAR_NAME, WAR_OUTRO, RAIN_NAME, RAIN_OUTRO, PAND_NAME, PAND_STORY, PAND_OUTRO, drawPerson, drawYousef, drawShayan } from './korosh-story.js';
+import { INTRO, STAGES as STORY, OUTRO, CHAPTERS, GAME_NAME, showComic, drawBeetle, drawL90, drawMaedeh, SIDE_STORY, SIDE_OUTRO, SIDE_NAME, AWARD, WAR_NAME, WAR_OUTRO, RAIN_NAME, RAIN_OUTRO, PAND_NAME, PAND_STORY, PAND_OUTRO, BIO_NAME, BIO_STORY, BIO_OUTRO, showOCR, drawPerson, drawYousef, drawShayan } from './korosh-story.js';
 
 export const achievements = CATALOG['korosh-run'].achievements;
 
@@ -35,8 +35,11 @@ const WORLDS = [
 	{ name: 'صبح · ترافیک و پارکینگ', sky: ['#fbbf24', '#bae6fd'], dirt: '#3f3f46', dirtD: '#27272a', top: '#71717a', topD: '#fafafa', theme: 'drive', song: 'plains', foes: [] },
 	{ name: 'دفتر پند · QC ترلو', sky: ['#e0f2fe', '#f8fafc'], dirt: '#64748b', dirtD: '#475569', top: '#94a3b8', topD: '#cbd5e1', theme: 'office', song: 'room', foes: [] },
 	{ name: 'دفتر پند · آقای بخشی', sky: ['#cbd5e1', '#f1f5f9'], dirt: '#64748b', dirtD: '#475569', top: '#94a3b8', topD: '#cbd5e1', theme: 'office', song: 'boss', foes: [], boss: 'bakhshi', bossName: 'آقای بخشی' },
+	{ name: 'بیورزونانس · OCR', sky: ['#ecfdf5', '#a7f3d0'], dirt: '#0f766e', dirtD: '#115e59', top: '#5eead4', topD: '#99f6e4', theme: 'office', song: 'room', foes: [] },
+	{ name: 'بیورزونانس · ۲۵٬۰۰۰ مقاله', sky: ['#ecfdf5', '#d1fae5'], dirt: '#0f766e', dirtD: '#115e59', top: '#5eead4', topD: '#99f6e4', theme: 'office', song: 'plains', foes: [] },
+	{ name: 'بیورزونانس · آقای عزیزی', sky: ['#d1fae5', '#f0fdf4'], dirt: '#0f766e', dirtD: '#115e59', top: '#5eead4', topD: '#99f6e4', theme: 'office', song: 'boss', foes: [], boss: 'azizi', bossName: 'آقای عزیزی' },
 ];
-const MAIN_WORLDS = 4, SIDE0 = 100, WAR = 102, RAIN = 103, PAND0 = 104; // 104 parking · 105 Trello QC · 106 boss Bakhshi // side stages: 100 drive + 101 on foot (Maedeh), 102 the war-days mission
+const MAIN_WORLDS = 4, SIDE0 = 100, WAR = 102, RAIN = 103, PAND0 = 104, BIO0 = 107; // 107 OCR puzzle · 108 articles · 109 WordPress + boss Azizi · 104 parking · 105 Trello QC · 106 boss Bakhshi // side stages: 100 drive + 101 on foot (Maedeh), 102 the war-days mission
 const TOTAL = MAIN_WORLDS * STAGES_PER;
 const H_SMALL = 22, H_BIG = 32, P_W = 12;
 // programmer one-liners Korosh (or the hacker) says during play
@@ -63,6 +66,8 @@ const HERO_FIT = 0.74; // full drawing (afro included) ≈ hitbox height, so the
 const rng = (seed) => { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); };
 const SIDE_SAVE = 'kmpr_kr_side';
 const WAR_SAVE = 'kmpr_kr_war', RAIN_SAVE = 'kmpr_kr_rain', PAND_SAVE = 'kmpr_kr_pand';
+const BIO_SAVE = 'kmpr_kr_bio';
+const readBio = () => { try { return Number(localStorage.getItem(BIO_SAVE)) || 0; } catch (e) { return 0; } };
 const readPand = () => { try { return Number(localStorage.getItem(PAND_SAVE)) || 0; } catch (e) { return 0; } };
 const readRain = () => { try { return localStorage.getItem(RAIN_SAVE) === '1'; } catch (e) { return false; } };
 const TASKS = ['دکمه پرداخت کار نمی‌کنه', 'ارور ۵۰۰ موقع لاگین', 'فرم تماس ایمیل نمی‌فرسته', 'سایت کش شده، تغییر دیده نمی‌شه', 'ریدایرکت بی‌نهایت', 'عکس‌ها لود نمی‌شن', 'منو توی موبایل بازه'];
@@ -202,6 +207,8 @@ function buildLevel(n) {
 }
 function buildSide(n) {
 	if (n === RAIN) return buildRain(n);
+	if (n === BIO0 + 1) return buildArticles(n);
+	if (n === BIO0 + 2) return buildBioBoss();
 	if (n === PAND0 + 1) return buildQC(n);
 	if (n === PAND0 + 2) return buildPandBoss();
 	const war = n === WAR, drive = n === SIDE0 || n === PAND0 || war, r = rng(9001 + n * 31), W = war ? 210 : drive ? 230 : 170;
@@ -275,6 +282,37 @@ function buildQC(n) {
 	let cxT = Math.floor(W / 2);
 	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
 	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: 'qc' };
+}
+function buildArticles(n) {
+	const r = rng(2500 + n), W = 180;
+	const map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
+	const ents = [];
+	const set = (x, y, c) => x >= 0 && x < W && y >= 0 && y < ROWS && (map[y][x] = c);
+	let x = 0;
+	const flat = (len) => { for (let i = 0; i < len && x < W; i++, x++) for (let y = GY; y < ROWS; y++) set(x, y, '#'); };
+	flat(14);
+	while (x < W - 26) {
+		const k = r();
+		if (k < 0.3) { const y = GY - 3 - Math.floor(r() * 2), len = 3 + Math.floor(r() * 3); flat(2); for (let i = 0; i < len; i++) { set(x + i, y, '='); set(x + i, y - 1, 'o'); } flat(len + 3); }
+		else if (k < 0.45) { x += 2; flat(4); }
+		else if (k < 0.65) { ents.push({ t: 'hossein', x: (x + 6) * T, y: (GY - 1) * T }); flat(10); }
+		else if (k < 0.75) { for (let i = 0; i < 4; i++) set(x + 2 + i, GY - 2, 'o'); flat(8); }
+		else { ents.push({ t: 'bug', x: (x + 5) * T, y: (GY - 1) * T }); flat(8); }
+	}
+	flat(W - x);
+	let cxT = Math.floor(W / 2);
+	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
+	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: 'articles' };
+}
+function buildBioBoss() {
+	// a run with four skill books (power blocks) on the way, then the arena
+	const W = 96, map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
+	for (let x = 0; x < W; x++) for (let y = GY; y < ROWS; y++) map[y][x] = '#';
+	[10, 20, 30, 40].forEach((bx, i) => { map[GY - 4][bx] = 'P'; map[GY - 4][bx - 1] = 'B'; map[GY - 4][bx + 1] = 'B'; if (i % 2) for (let y = GY - 2; y < GY; y++) map[y][bx + 5] = '#'; });
+	const arena = { x0: 52, x1: 82 };
+	for (let y = 3; y < GY; y++) map[y][arena.x1 + 1] = '#';
+	for (let i = 0; i < 3; i++) map[GY - 4][arena.x0 + 7 + i * 8] = '=';
+	return { map, W, ents: [], warps: [], arena, goal: { x: (arena.x1 - 4) * T, y: GY * T }, check: 46 * T, isBoss: true, side: 'bio' };
 }
 function buildPandBoss() {
 	const W = 60, map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
@@ -405,6 +443,7 @@ export function mount(stage, api) {
 				return `<button type="button" class="kr-map__st${n === unlocked ? ' is-next' : ''}${boss ? ' is-boss' : ''}" data-st="${n}" ${open ? '' : 'disabled'} aria-label="دنیای ${fa(wi + 1)} مرحله ${fa(si + 1)}${boss ? ' (باس)' : ''}${open ? '' : ' (قفل)'}">${open ? (boss ? '👾 باس' : `مرحله ${fa(si + 1)}`) : '🔒'}</button>`;
 			}).join('<i aria-hidden="true"></i>')}</div></div>`).join('')}
 			${(() => { const open = unlocked >= 3, done = readSide(); return `<div class="kr-map__world kr-map__side" style="--a:#f472b6;--b:#7c3aed"><p class="kr-map__wn">💗 داستان فرعی · ${SIDE_NAME} <small>${open ? (done >= 2 ? 'مائده خوشحال است ✓' : 'مائده از اضافه‌کاری‌ها شاکی است؛ برو دیدنش!') : 'بعد از دنیای ۱ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${SIDE0}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: رانندگی با ال ۹۰">${open ? '🚗 ال ۹۰' : '🔒'}</button><i aria-hidden="true"></i><button type="button" class="kr-map__st" data-st="${SIDE0 + 1}" ${open && done >= 1 ? '' : 'disabled'} aria-label="داستان فرعی: کوچه مائده">${open && done >= 1 ? '🌹 کوچه مائده' : '🔒'}</button></div></div>`; })()}
+			${(() => { const done = readBio(); const st = (i, ic, lbl) => `<button type="button" class="kr-map__st${done === i ? ' is-next' : ''}${i === 2 ? ' is-boss' : ''}" data-st="${BIO0 + i}" ${done >= i ? '' : 'disabled'} aria-label="${BIO_NAME}: ${lbl}">${done >= i ? `${ic} ${lbl}` : '🔒'}</button>`; return `<div class="kr-map__world kr-map__side" style="--a:#34d399;--b:#0f766e"><p class="kr-map__wn">🧪 فصل اول · ${BIO_NAME} <small>${done >= 3 ? 'وردپرس یاد گرفته شد ✓' : 'OCR کتاب‌های روسی، ۲۵ هزار مقاله و آقای عزیزی'}</small></p><div class="kr-map__row">${st(0, '🔤', 'OCR')}<i aria-hidden="true"></i>${st(1, '📄', '۲۵ هزار مقاله')}<i aria-hidden="true"></i>${st(2, '📚', 'عزیزی')}</div></div>`; })()}
 			${(() => { const open = unlocked >= 3, done = readPand(); const st = (i, ic, lbl) => `<button type="button" class="kr-map__st${open && done === i ? ' is-next' : ''}${i === 2 ? ' is-boss' : ''}" data-st="${PAND0 + i}" ${open && done >= i ? '' : 'disabled'} aria-label="${PAND_NAME}: ${lbl}">${open && done >= i ? `${ic} ${lbl}` : '🔒'}</button>`; return `<div class="kr-map__world kr-map__side" style="--a:#a78bfa;--b:#0ea5e9"><p class="kr-map__wn">🗂 فصل ویژه · ${PAND_NAME} <small>${open ? (done >= 3 ? 'رتبه صفحه اول ✓ بخشی رفت' : 'ترافیک صبح، QCهای یوسف و آقای بخشی') : 'بعد از دنیای ۱ باز می‌شود'}</small></p><div class="kr-map__row">${st(0, '🚗', 'پارکینگ')}<i aria-hidden="true"></i>${st(1, '🗂', 'QC ترلو')}<i aria-hidden="true"></i>${st(2, '👔', 'بخشی')}</div></div>`; })()}
 			${(() => { const open = unlocked >= 4, done = readRain(); return `<div class="kr-map__world kr-map__side" style="--a:#60a5fa;--b:#334155"><p class="kr-map__wn">🎒 داستان فرعی · ${RAIN_NAME} <small>${open ? (done ? 'زیپ درست شد ✓' : 'زیپ کیف لپ‌تاپ خراب شده؛ زیر باران تا منوچهری برو') : 'بعد از مرحله ۵ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${RAIN}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: زیپ کیف">${open ? '☔ منوچهری' : '🔒'}</button></div></div>`; })()}
 			${(() => { const open = unlocked >= 6, done = readWar(); return `<div class="kr-map__world kr-map__side" style="--a:#fb923c;--b:#475569"><p class="kr-map__wn">🛰 ماموریت فرعی · ${WAR_NAME} <small>${open ? (done ? 'فایل‌های شبا نجات پیدا کرد ✓' : 'روزهای جنگ؛ فایل‌های سایت شبا را از شرکت بیاور') : 'بعد از دنیای ۲ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${WAR}" ${open ? '' : 'disabled'} aria-label="ماموریت فرعی: بومهن تا پاسداران">${open ? '🚙 ۲۰۷ پسرخاله' : '🔒'}</button></div></div>`; })()}
@@ -438,11 +477,25 @@ export function mount(stage, api) {
 		pad.hidden = true;
 		music.stop();
 		const side = n >= SIDE0, w = side ? MAIN_WORLDS + (n - SIDE0) : Math.floor(n / STAGES_PER), boss = !side && n % STAGES_PER === STAGES_PER - 1;
-		comic = showComic(stage, side ? (n >= PAND0 ? PAND_STORY[n - PAND0] : SIDE_STORY[n - SIDE0]).map((pn) => ({ ...pn, world: w })) : [{ ...STORY[n], world: w, boss, tired: boss ? 0 : 0.85 }], {
+		comic = showComic(stage, side ? (n >= BIO0 ? BIO_STORY[n - BIO0] : n >= PAND0 ? PAND_STORY[n - PAND0] : SIDE_STORY[n - SIDE0]).map((pn) => ({ ...pn, world: w })) : [{ ...STORY[n], world: w, boss, tired: boss ? 0 : 0.85 }], {
 			worlds: WORLDS, sound: (n) => api.sfx(n),
-			label: side ? `${n >= PAND0 ? PAND_NAME : n === RAIN ? RAIN_NAME : n === WAR ? WAR_NAME : `داستان فرعی · ${SIDE_NAME}`} · ${WORLDS[w].name}` : `${CHAPTERS[w]} · ${boss ? 'نبرد با باس' : `مرحله ${fa((n % STAGES_PER) + 1)}`}`,
+			label: side && n >= BIO0 ? `فصل اول · ${WORLDS[w].name}` : side ? `${n >= PAND0 ? PAND_NAME : n === RAIN ? RAIN_NAME : n === WAR ? WAR_NAME : `داستان فرعی · ${SIDE_NAME}`} · ${WORLDS[w].name}` : `${CHAPTERS[w]} · ${boss ? 'نبرد با باس' : `مرحله ${fa((n % STAGES_PER) + 1)}`}`,
 			skip: false,
-			done: () => { comic = null; if (!s || s.over) return; s.mode = 'play'; pad.hidden = !api.touch; loadStage(n, false); loop(); },
+			done: () => {
+				comic = null;
+				if (!s || s.over) return;
+				if (n === BIO0) { // the OCR stage is a thinking puzzle, not a platform level
+					comic = showOCR(stage, { sound: (k) => api.sfx(k), done: (pts, ok) => {
+						comic = null;
+						if (!s || s.over) return;
+						s.score += pts; api.setScore(s.score);
+						if (ok) { try { if (readBio() < 1) localStorage.setItem(BIO_SAVE, '1'); } catch (e) { /* ignore */ } s.banner = null; playStage(BIO0 + 1); }
+						else { s.mode = 'map'; mapEl.hidden = false; renderMap(); api.toast('OCR کامل نشد؛ دوباره امتحان کن 🔁'); }
+					} });
+					return;
+				}
+				s.mode = 'play'; pad.hidden = !api.touch; loadStage(n, false); loop();
+			},
 		});
 	};
 
@@ -458,7 +511,7 @@ export function mount(stage, api) {
 	const SOLID = new Set(['#', 'B', '?', 'M', 'P', '*', 'U', 'S', 's', 'W', 'w', '=', 'X']);
 	const solid = (c) => SOLID.has(c);
 	const BLOCKS = new Set(['?', 'M', 'P', '*', 'H']);
-	const FOE_W = { qc: [14, 10], car: [30, 14], cone: [12, 12], call: [12, 14], ping: [14, 12], mail: [14, 12], bug: [14, 14], clock: [14, 14], hopper: [14, 12], spam: [14, 12], virus: [14, 14], turret: [16, 16] };
+	const FOE_W = { hossein: [12, 24], qc: [14, 10], car: [30, 14], cone: [12, 12], call: [12, 14], ping: [14, 12], mail: [14, 12], bug: [14, 14], clock: [14, 14], hopper: [14, 12], spam: [14, 12], virus: [14, 14], turret: [16, 16] };
 
 	const loadStage = (n, fromCheckpoint) => {
 		const lv = n >= SIDE0 ? buildSide(n) : buildLevel(n);
@@ -470,7 +523,7 @@ export function mount(stage, api) {
 		s.ents = lv.ents.map((e) => {
 			if (e.t === 'mover' || e.item) return { ...e, alive: true };
 			const [w, h] = FOE_W[e.t];
-			return { ...e, w, h, y: e.y + 16 - h, vx: e.t === 'car' ? -1.3 : e.t === 'cone' ? 0 : e.t === 'clock' ? -1.1 : e.t === 'turret' ? 0 : -0.5, vy: 0, alive: true, y0: e.y, dead: 0, cd: 1 + Math.random() };
+			return { ...e, w, h, y: e.y + 16 - h, vx: e.t === 'hossein' ? -0.45 : e.t === 'car' ? -1.3 : e.t === 'cone' ? 0 : e.t === 'clock' ? -1.1 : e.t === 'turret' ? 0 : -0.5, vy: 0, alive: true, y0: e.y, dead: 0, cd: 1 + Math.random() };
 		});
 		s.beans = []; s.shots = []; s.parts = []; s.pops = []; s.multi = {}; s.crumble = {};
 		s.boss = lv.isBoss ? makeBoss(WORLDS[s.world].boss, lv.arena) : null;
@@ -497,7 +550,8 @@ export function mount(stage, api) {
 		if (n === PAND0) s.timeLeft = 110; // must park before 9:00
 		if (lv.side === 'date') { s.pat = 100; }
 		api.hud({ level: lv.side ? 'فرعی' : `${fa(n + 1)} از ${fa(TOTAL)}`, levelLabel: 'مرحله', lives: s.lives, extra: fa(s.coins), extraLabel: 'سکه' });
-		s.banner = { t: lv.side ? (lv.side === 'qc' ? '🗂 کارت‌های QC یوسف را بگیر؛ هرچه تندتر، او هم تندتر!' : lv.side === 'pand' ? '👔 آقای بخشی: با هر ضربه رتبه سایت بالاتر می‌رود' : n === PAND0 ? '🅿️ تا ساعت ۹ برس پارکینگ پند!' : lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
+		s.arts = 0;
+		s.banner = { t: lv.side ? (lv.side === 'articles' ? '📄 مقاله‌ها را جمع کن؛ حسین ایراد می‌گیرد، از رویش بپر!' : lv.side === 'bio' ? '📚 کتاب‌های مهارت را بگیر و قوی شو؛ آخرش آقای عزیزی!' : lv.side === 'qc' ? '🗂 کارت‌های QC یوسف را بگیر؛ هرچه تندتر، او هم تندتر!' : lv.side === 'pand' ? '👔 آقای بخشی: با هر ضربه رتبه سایت بالاتر می‌رود' : n === PAND0 ? '🅿️ تا ساعت ۹ برس پارکینگ پند!' : lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
 		music.play(songFor());
 	};
 	const addScore = (v, x, y) => { s.score += v; api.setScore(s.score); if (x !== undefined) s.pops.push({ x, y, t: `+${fa(v)}`, life: 0.8 }); };
@@ -576,6 +630,7 @@ export function mount(stage, api) {
 	const coin = (x, y) => {
 		s.coins++;
 		if (s.lv.side === 'date') s.pat = Math.min(100, s.pat + 5);
+		if (s.lv.side === 'articles') s.arts = Math.min(24900, s.arts + 300);
 		addScore(100, x, y);
 		snd('coin', 'coin');
 		api.hud({ extra: fa(s.coins) });
@@ -701,8 +756,8 @@ export function mount(stage, api) {
 
 	/* ---- bosses ---- */
 	function makeBoss(type, arena) {
-		const hp = { megabug: 8, server: 10, scorpion: 10, deadline: 14, bakhshi: 12 }[type];
-		const dims = { megabug: [40, 34], server: [36, 44], scorpion: [48, 26], deadline: [40, 40], bakhshi: [26, 44] }[type];
+		const hp = { megabug: 8, server: 10, scorpion: 10, deadline: 14, bakhshi: 12, azizi: 12 }[type];
+		const dims = { megabug: [40, 34], server: [36, 44], scorpion: [48, 26], deadline: [40, 40], bakhshi: [26, 44], azizi: [26, 44] }[type];
 		return { type, hp, max: hp, w: dims[0], h: dims[1], x: (arena.x1 - 6) * T, y: GY * T - dims[1], vx: -1, vy: 0, t: 0, inv: 0, active: false, arena, ground: false, dead: 0, dir: -1 };
 	}
 	const bossShot = (x, y, vx, vy, grav = 0.18) => s.shots.push({ x, y, vx, vy, w: 10, h: 10, grav, life: 4 });
@@ -739,7 +794,7 @@ export function mount(stage, api) {
 				b.vx = phase < 1.2 ? 0 : b.dir * 4;
 				if (phase < f / 60) b.dir = toward;
 				if (phase > 1.0 && phase < 1.0 + f / 60) bossShot(b.x + (b.dir > 0 ? b.w : 0), b.y + 4, b.dir * 3, -3.5);
-			} else if (b.type === 'bakhshi') {
+			} else if (b.type === 'bakhshi' || b.type === 'azizi') {
 				// paces, jumps, throws «اخطار» memos in a fan; summons a deadline clock now and then
 				b.vx = toward * 0.9;
 				if (b.ground && every(2.6)) b.vy = -7.5;
@@ -818,6 +873,14 @@ export function mount(stage, api) {
 				for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; s.parts.push({ k: 'fw', x: fx, y: fy, vx: Math.cos(a) * 1.6, vy: Math.sin(a) * 1.6, life: 0.9, c: `hsl(${hue} 90% 60%)` }); }
 			}
 			if (s.won <= 0) {
+				if (s.stageN >= BIO0) {
+					const step = s.stageN - BIO0 + 1;
+					try { if (step > readBio()) localStorage.setItem(BIO_SAVE, String(step)); } catch (e) { /* ignore */ }
+					if (step < 3) return playStage(s.stageN + 1);
+					s.mode = 'story'; music.stop(); pad.hidden = true; s.lives++; api.hud({ lives: s.lives });
+					comic = showComic(stage, BIO_OUTRO.map((pn) => ({ ...pn, world: s.world })), { worlds: WORLDS, sound: (n) => api.sfx(n), label: `${BIO_NAME} · پایان فصل · +۱ جان`, done: () => { comic = null; if (!s || s.over) return; s.mode = 'map'; mapEl.hidden = false; renderMap(); } });
+					return;
+				}
 				if (s.stageN >= PAND0) {
 					const step = s.stageN - PAND0 + 1;
 					try { if (step > readPand()) localStorage.setItem(PAND_SAVE, String(step)); } catch (e) { /* ignore */ }
@@ -1025,7 +1088,7 @@ export function mount(stage, api) {
 					e.vy = Math.min(8, (e.vy || 0) + G * f);
 					const ovy = e.vy; e.vy = ovy * f; moveY(e);
 					if (e.ground) e.vy = e.t === 'shield' ? -5 : 0; else e.vy = ovy;
-					if ((e.t === 'bug' || e.t === 'virus' || e.t === 'call') && e.ground && !solid(tileAt(e.vx > 0 ? e.x + e.w + 1 : e.x - 1, e.y + e.h + 2))) e.vx = -e.vx;
+					if ((e.t === 'bug' || e.t === 'virus' || e.t === 'call' || e.t === 'hossein') && e.ground && !solid(tileAt(e.vx > 0 ? e.x + e.w + 1 : e.x - 1, e.y + e.h + 2))) e.vx = -e.vx;
 					if (e.y > VH + 20) e.alive = false;
 				}
 				if (touching(p, e) && e.t === 'qc') {
@@ -1063,7 +1126,8 @@ export function mount(stage, api) {
 				if (perfect && !s.lv.side) cameo('perfect');
 				const bonus = Math.max(0, Math.round(s.timeLeft)) * 10 + (perfect ? 2000 : 0);
 				addScore(1000 + bonus, bx, by - 20);
-				s.banner = { t: s.lv.side === 'rain' ? 'رسیدی منوچهری! زیپ درست می‌شه 🎒' : s.lv.side === 'war' ? 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' : s.lv.side === 'drive' ? 'رسیدی! ال ۹۰ پارک شد 🅿️' : s.lv.side === 'date' ? 'مائده خوشحال شد! 💗' : perfect ? 'دیپلوی پرشی! +۲۰۰۰ ✨' : 'دیپلوی موفق! 🚀', life: 2.6 };
+				if (s.lv.side === 'articles') s.arts = 25000;
+				s.banner = { t: s.lv.side === 'articles' ? 'اسکریپت آپلود دسته‌ای! ۲۵٬۰۰۰ مقاله یکجا رفت بالا 🚀' : s.lv.side === 'rain' ? 'رسیدی منوچهری! زیپ درست می‌شه 🎒' : s.lv.side === 'war' ? 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' : s.lv.side === 'drive' ? 'رسیدی! ال ۹۰ پارک شد 🅿️' : s.lv.side === 'date' ? 'مائده خوشحال شد! 💗' : perfect ? 'دیپلوی پرشی! +۲۰۰۰ ✨' : 'دیپلوی موفق! 🚀', life: 2.6 };
 				music.stop();
 				snd('clear', 'level');
 				api.unlock('deploy');
@@ -1302,7 +1366,7 @@ export function mount(stage, api) {
 		if (b.hp <= 0) ctx.globalAlpha = Math.max(0, b.dead / 2);
 		const dir = s.p.x < b.x ? -1 : 1;
 		if (b.type === 'megabug') drawBug({ ...b, vx: dir }, 2.5);
-		else if (b.type === 'bakhshi') { ctx.save(); ctx.translate(b.x + b.w / 2, b.y + b.h); ctx.scale(dir < 0 ? 1 : -1, 1); drawPerson(ctx, 0, 0, 1.25, 'bakhshi', { mood: 'angry', name: '' }, s.t / 60); ctx.restore(); }
+		else if (b.type === 'bakhshi' || b.type === 'azizi') { ctx.save(); ctx.translate(b.x + b.w / 2, b.y + b.h); ctx.scale(dir < 0 ? 1 : -1, 1); drawPerson(ctx, 0, 0, 1.25, b.type, { mood: 'angry', name: '' }, s.t / 60); ctx.restore(); }
 		else if (b.type === 'deadline') { drawClock({ ...b, vx: dir }, 2.6); text('!', b.x + b.w / 2, b.y - 4, 14, '#ef4444'); }
 		else if (b.type === 'server') {
 			rr(b.x, b.y, b.w, b.h, 4, '#1e293b');
@@ -1496,11 +1560,11 @@ export function mount(stage, api) {
 				ctx.save();
 				if (!e.alive && !e.flip) { ctx.translate(e.x + 7, e.y + e.h); ctx.scale(1, 0.35); ctx.translate(-e.x - 7, -e.y - e.h); }
 				else if (!e.alive && e.flip) { ctx.translate(0, e.y * 2 + e.h); ctx.scale(1, -1); }
-				if (e.item) drawItem(e); else if (e.t === 'bug') drawBug(e); else if (e.t === 'clock') drawClock(e); else if (e.t === 'spam') drawSpam(e); else if (e.t === 'hopper') drawHopper(e); else if (e.t === 'virus') drawVirus(e); else if (e.t === 'turret') drawTurret(e); else if (e.t === 'qc') drawQC(e); else if (e.t === 'car') drawCarFoe(e); else if (e.t === 'cone') drawCone(e); else if (e.t === 'call') drawCall(e); else if (e.t === 'ping') drawPing(e); else if (e.t === 'mail') drawMail(e);
+				if (e.item) drawItem(e); else if (e.t === 'bug') drawBug(e); else if (e.t === 'clock') drawClock(e); else if (e.t === 'spam') drawSpam(e); else if (e.t === 'hopper') drawHopper(e); else if (e.t === 'virus') drawVirus(e); else if (e.t === 'turret') drawTurret(e); else if (e.t === 'qc') drawQC(e); else if (e.t === 'hossein') { ctx.save(); ctx.translate(e.x + 6, e.y + e.h); ctx.scale(e.vx < 0 ? 1 : -1, 1); drawPerson(ctx, 0, 0, 0.68, 'hossein', { mood: 'angry', name: '' }, s.t / 60); ctx.restore(); if (Math.floor(s.t / 40) % 3 === 0) text('ایراد!', e.x + 6, e.y - 4, 7, '#fecaca'); } else if (e.t === 'car') drawCarFoe(e); else if (e.t === 'cone') drawCone(e); else if (e.t === 'call') drawCall(e); else if (e.t === 'ping') drawPing(e); else if (e.t === 'mail') drawMail(e);
 				ctx.restore();
 			}
 			if (s.boss && (s.boss.hp > 0 || s.boss.dead > 0)) drawBoss(s.boss);
-			if (s.lv.side === 'pand') s.shots.forEach((q) => { rr(q.x, q.y + 1, 11, 9, 1, '#fff', OL, 1); R(q.x + 2, q.y + 3, 7, 1.5, '#dc2626'); R(q.x + 2, q.y + 6, 5, 1, '#94a3b8'); });
+			if (s.lv.side === 'pand' || s.lv.side === 'bio') s.shots.forEach((q) => { rr(q.x, q.y + 1, 11, 9, 1, '#fff', OL, 1); R(q.x + 2, q.y + 3, 7, 1.5, '#dc2626'); R(q.x + 2, q.y + 6, 5, 1, '#94a3b8'); });
 			else s.shots.forEach((q) => { circ(q.x + 5, q.y + 5, 5, '#ef4444'); ctx.fillStyle = '#fff'; ctx.font = '900 5px monospace'; ctx.textAlign = 'center'; ctx.fillText('ERR', q.x + 5, q.y + 7); });
 		}
 		s.beans.forEach((b) => { if (b.k === 'bean') { ctx.beginPath(); ctx.ellipse(b.x + 3, b.y + 3, 3.5, 2.6, s.t / 4, 0, 7); ctx.fillStyle = '#78350f'; ctx.fill(); ctx.strokeStyle = OL; ctx.lineWidth = 1; ctx.stroke(); } else text('</>', b.x + 6, b.y + 7, 9, '#22d3ee'); });
@@ -1531,6 +1595,7 @@ export function mount(stage, api) {
 			if (Math.floor(s.t) % 420 < 6) { ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(0, 0, view.vw, VIEW_H); }
 		}
 		hud();
+		if (s.lv.side === 'articles') { const tw = 150, tx2 = view.vw - tw - 4; panel(tx2, 26, tw, 16, '#10b981'); text(`📄 مقاله: ${fa(s.arts.toLocaleString('en-US'))} از ۲۵٬۰۰۰`, tx2 + tw / 2, 37.5, 8, '#fff'); }
 		if (s.lv.side === 'qc') {
 			const tw = 108, tx2 = view.vw - tw - 4; panel(tx2, 26, tw, 16, '#0ea5e9'); text(`🗂 QC: ${fa(s.qcDone)} از ۱۰۰`, tx2 + tw / 2, 37.5, 8, '#fff');
 			drawYousef(ctx, 34, VIEW_H + 4, 0.9, s.t / 60, s.yq ? Math.abs(Math.sin(s.t / 3)) : 0);
@@ -1557,7 +1622,7 @@ export function mount(stage, api) {
 		if (b && b.active && b.hp > 0) {
 			const w = Math.min(180, view.vw - 40), x = view.vw / 2 - w / 2;
 			rr(x, 26, w, 10, 4, '#1f2937'); rr(x + 1, 27, (w - 2) * (b.hp / b.max), 8, 3, '#ef4444', null);
-			text(b.type === 'bakhshi' ? `رتبه سایت: ${fa(1 + Math.round((b.hp / b.max) * 49))} · ${WORLDS[s.world].bossName}` : WORLDS[s.world].bossName, view.vw / 2, 48, 9, '#fecaca');
+			text(b.type === 'azizi' ? `اعتماد آقای عزیزی: ${fa(Math.round((1 - b.hp / b.max) * 100))}٪` : b.type === 'bakhshi' ? `رتبه سایت: ${fa(1 + Math.round((b.hp / b.max) * 49))} · ${WORLDS[s.world].bossName}` : WORLDS[s.world].bossName, view.vw / 2, 48, 9, '#fecaca');
 		}
 		if (s.banner && s.banner.life > 0) {
 			const by = b && b.active && b.hp > 0 ? 54 : 30;
