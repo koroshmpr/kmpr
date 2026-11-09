@@ -58,6 +58,15 @@ export const WAR_NAME = 'ماموریت پاسداران';
 export const WAR_OUTRO = [
 	{ scene: 'desk', tired: 0.6, mood: 'happy', cap: 'لپ‌تاپ برداشته شد و هر دو سالم برگشتند. همان شب، از خانه در بومهن، سایت شبا دوباره بالا آمد.', say: 'تسک: انجام شد ✓ … ولی دیگه نمی‌رم! 😮‍💨' },
 ];
+// third side mission (index 3 → stage 103): the laptop-bag zipper breaks → Manouchehri St. in the rain, tasks keep coming
+SIDE_STORY.push([
+	{ scene: 'zipper', mood: 'shock', cap: 'صبح. کوروش لپ‌تاپ را توی کیف می‌گذارد و زیپ جیبش… وا می‌رود!', say: 'نه! زیپ کیفم خراب شد؟!' },
+	{ mood: 'shock', cap: 'تنها جایی که درستش می‌کند خیابان منوچهری است. بیرون باران می‌بارد و تسک‌ها پشت سر هم می‌رسند؛ باید باگ هر تسک را سر راه دیباگ کند.', say: 'باشه باشه، اینم دیباگ می‌کنم… فقط کیفم!' },
+]);
+export const RAIN_NAME = 'زیپ کیف · منوچهری';
+export const RAIN_OUTRO = [
+	{ scene: 'shop', mood: 'happy', cap: 'خیابان منوچهری. استادکار زیپ را عوض می‌کند؛ تسک‌ها هم یکی‌یکی بسته شده‌اند.', say: 'زیپش مثل روز اول شد! حالا تسک بعدی… 😅' },
+];
 export const SIDE_OUTRO = [
 	{ scene: 'meet', who: 'maedeh', mood: 'happy', cap: 'بالاخره رسید؛ با یک دسته گل و یک قول: امشب لپ‌تاپ تعطیل است.', say: 'این دفعه رو می‌بخشمت… 😊' },
 ];
@@ -375,6 +384,11 @@ const desk = (c, w, h, red, t) => {
 	c.fillStyle = '#a16207'; c.fillRect(w * 0.46, h * 0.6, w * 0.5, 8); c.fillStyle = OL; c.fillRect(w * 0.48, h * 0.6 + 8, 5, h * 0.2); c.fillRect(w * 0.92, h * 0.6 + 8, 5, h * 0.2);
 	laptop(c, w * 0.62, h * 0.6, 74, red ? '#7f1d1d' : '#0b1220', t);
 };
+const rainFx = (c, w, h, t, a = 1) => {
+	c.save(); c.strokeStyle = `rgba(191,219,254,${0.55 * a})`; c.lineWidth = 1;
+	for (let i = 0; i < 60; i++) { const sd = (i * 7919) % 97 / 97, x = (i * 37 + t * 40) % (w + 20) - 10, y = (sd * h + t * 260) % (h + 20) - 10; c.beginPath(); c.moveTo(x, y); c.lineTo(x - 3, y + 9); c.stroke(); }
+	c.restore();
+};
 const scroller = (c, w, h, wd, t, sp = 1) => {
 	const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, wd.sky[0]); g.addColorStop(1, wd.sky[1]);
 	c.fillStyle = g; c.fillRect(0, 0, w, h);
@@ -539,6 +553,32 @@ export function drawPanel(c, w, h, panel, t, worlds) {
 			if (sc === 'gaffe') { c.strokeStyle = 'rgba(254,249,195,.5)'; c.lineWidth = 3; c.beginPath(); c.moveTo(w * 0.5, h * 0.05); c.lineTo(w * 0.84, h * 0.62); c.stroke(); burst(c, w * 0.84, h * 0.42, 20, 9, '#fde047', t - 0.6, t); sfx(c, '؟!', w * 0.84, h * 0.42, 18, 0.1, '#ef4444', t - 0.6); }
 			if (sc === 'laugh') { crowd(c, w, h + 30, t, true); sfx(c, 'هاهاهاها 😂', w * 0.5, h * 0.3, 24, -0.08, '#fde047', t - 0.1); sfx(c, 'قهقهه!', w * 0.16, h * 0.18, 13, -0.2, '#f472b6', t - 0.5); }
 		}
+	} else if (sc === 'zipper') {
+		shake(6, 0.8);
+		room(c, w, h, false, t);
+		heroAt(w * 0.3, h * 0.8, 'stand', 1, 2.3, 0, 0);
+		// laptop bag with the zipper splitting open, laptop sliding out
+		c.save(); c.translate(w * 0.56, h * 0.62); c.rotate(-0.08);
+		c.fillStyle = '#1f2937'; c.strokeStyle = OL; c.lineWidth = 2; c.beginPath(); c.roundRect(-34, -22, 68, 44, 6); c.fill(); c.stroke();
+		c.strokeStyle = '#9ca3af'; c.lineWidth = 1.5; c.beginPath(); for (let i = 0; i <= 12; i++) { const x = -30 + i * 5, open = i > 5 ? (i - 5) * 1.6 : 0; c.lineTo(x, -16 - open + (i % 2) * 2); } c.stroke();
+		const slide = Math.min(1, t * 1.4);
+		c.fillStyle = '#cbd5e1'; c.beginPath(); c.roundRect(4 + slide * 26, -34 - slide * 8, 40, 26, 3); c.fill(); c.strokeStyle = OL; c.lineWidth = 2; c.stroke();
+		c.restore();
+		burst(c, w * 0.8, h * 0.3, 26, 10, '#fde047', t - 0.2, t);
+		sfx(c, 'زیــپ… تق!', w * 0.8, h * 0.3, 18, 0.1, '#ef4444', t - 0.2);
+	} else if (sc === 'shop') {
+		const wd = worlds[7] || worlds[0];
+		scroller(c, w, h, wd, 0, 0);
+		c.fillStyle = '#78350f'; c.fillRect(w * 0.5, h * 0.22, w * 0.44, h * 0.58); c.strokeStyle = OL; c.lineWidth = 2; c.strokeRect(w * 0.5, h * 0.22, w * 0.44, h * 0.58);
+		c.fillStyle = '#fde68a'; c.fillRect(w * 0.53, h * 0.36, w * 0.38, h * 0.3);
+		c.fillStyle = '#7c2d12'; c.beginPath(); c.roundRect(w * 0.52, h * 0.12, w * 0.4, 16, 3); c.fill(); c.stroke();
+		c.fillStyle = '#fff'; c.font = `900 9px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('تعمیر کیف و چمدان · منوچهری', w * 0.72, h * 0.12 + 8);
+		person(c, w * 0.78, h * 0.8, 1.5, { skin: '#d6a27c', hair: '#e5e7eb', style: 'short', top: '#57534e', beard: true, mood: 'smile', name: 'استادکار' }, t);
+		heroAt(w * 0.3, h * 0.8, 'stand', 1, 2.3, 0, 0);
+		c.save(); c.translate(w * 0.62, h * 0.6); c.fillStyle = '#1f2937'; c.strokeStyle = OL; c.lineWidth = 2; c.beginPath(); c.roundRect(-18, -12, 36, 24, 4); c.fill(); c.stroke(); c.strokeStyle = '#fbbf24'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(-14, -8); c.lineTo(14, -8); c.stroke(); c.restore();
+		burst(c, w * 0.62, h * 0.4, 16, 8, '#fef08a', t - 0.5, t);
+		sfx(c, 'زیپ ✓', w * 0.62, h * 0.4, 14, 0, '#16a34a', t - 0.5);
+		rainFx(c, w, h, t, 0.5);
 	} else if (sc === 'win') {
 		const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#fde68a'); g.addColorStop(1, '#fb923c');
 		c.fillStyle = g; c.fillRect(0, 0, w, h);
@@ -584,6 +624,7 @@ export function drawPanel(c, w, h, panel, t, worlds) {
 		if (hit && cyc < 1.6) { burst(c, bx, by - 6, 24, 9, '#fde047', (cyc - 0.75), cyc * 3); sfx(c, 'پاق!', bx, by - 8, 18, 0.2, '#f97316', cyc - 0.75); }
 		bug(c, w * 0.95 - (t * 30) % 60, h * 0.8 - 8, 7, '#a855f7', t + 2);
 		heroAt(w * 0.22, h * 0.8 - Math.abs(Math.sin(t * 9)) * 3, 'run1', 1, 2.2, cyc > 0.3 && cyc < 0.6 ? 1 : 0, 0);
+		if (wd.theme === 'rain') rainFx(c, w, h, t);
 	}
 	c.restore();
 	halftone(c, w, h);

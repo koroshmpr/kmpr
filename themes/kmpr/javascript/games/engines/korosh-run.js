@@ -15,7 +15,7 @@ import { createCanvas } from '../lib/canvas.js';
 import { store } from '../lib/store.js';
 import { fa, listeners, clamp } from '../lib/util.js';
 import { HERO_H, drawHero, OL } from '../lib/hero.js';
-import { INTRO, STAGES as STORY, OUTRO, CHAPTERS, GAME_NAME, showComic, drawBeetle, drawL90, drawMaedeh, SIDE_STORY, SIDE_OUTRO, SIDE_NAME, AWARD, WAR_NAME, WAR_OUTRO, drawShayan } from './korosh-story.js';
+import { INTRO, STAGES as STORY, OUTRO, CHAPTERS, GAME_NAME, showComic, drawBeetle, drawL90, drawMaedeh, SIDE_STORY, SIDE_OUTRO, SIDE_NAME, AWARD, WAR_NAME, WAR_OUTRO, RAIN_NAME, RAIN_OUTRO, drawShayan } from './korosh-story.js';
 
 export const achievements = CATALOG['korosh-run'].achievements;
 
@@ -31,8 +31,9 @@ const WORLDS = [
 	{ name: 'ترافیک تهران', sky: ['#f97316', '#fde68a'], dirt: '#3f3f46', dirtD: '#27272a', top: '#71717a', topD: '#fafafa', theme: 'drive', song: 'plains', foes: [] },
 	{ name: 'کوچه مائده', sky: ['#4c1d95', '#f9a8d4'], dirt: '#78716c', dirtD: '#57534e', top: '#d6d3d1', topD: '#a8a29e', theme: 'date', song: 'night', foes: [] },
 	{ name: 'بومهن تا پاسداران', sky: ['#475569', '#fdba74'], dirt: '#3f3f46', dirtD: '#27272a', top: '#78716c', topD: '#e7e5e4', theme: 'war', song: 'boss', foes: [] },
+	{ name: 'باران منوچهری', sky: ['#1e293b', '#94a3b8'], dirt: '#57534e', dirtD: '#44403c', top: '#78716c', topD: '#a8a29e', theme: 'rain', song: 'under', foes: [] },
 ];
-const MAIN_WORLDS = 4, SIDE0 = 100, WAR = 102; // side stages: 100 drive + 101 on foot (Maedeh), 102 the war-days mission
+const MAIN_WORLDS = 4, SIDE0 = 100, WAR = 102, RAIN = 103; // side stages: 100 drive + 101 on foot (Maedeh), 102 the war-days mission
 const TOTAL = MAIN_WORLDS * STAGES_PER;
 const H_SMALL = 22, H_BIG = 32, P_W = 12;
 // programmer one-liners Korosh (or the hacker) says during play
@@ -58,7 +59,9 @@ const HERO_FIT = 0.74; // full drawing (afro included) ≈ hitbox height, so the
 
 const rng = (seed) => { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); };
 const SIDE_SAVE = 'kmpr_kr_side';
-const WAR_SAVE = 'kmpr_kr_war';
+const WAR_SAVE = 'kmpr_kr_war', RAIN_SAVE = 'kmpr_kr_rain';
+const readRain = () => { try { return localStorage.getItem(RAIN_SAVE) === '1'; } catch (e) { return false; } };
+const TASKS = ['دکمه پرداخت کار نمی‌کنه', 'ارور ۵۰۰ موقع لاگین', 'فرم تماس ایمیل نمی‌فرسته', 'سایت کش شده، تغییر دیده نمی‌شه', 'ریدایرکت بی‌نهایت', 'عکس‌ها لود نمی‌شن', 'منو توی موبایل بازه'];
 const readWar = () => { try { return localStorage.getItem(WAR_SAVE) === '1'; } catch (e) { return false; } };
 const readSide = () => { try { return Number(localStorage.getItem(SIDE_SAVE)) || 0; } catch (e) { return 0; } };
 const writeSide = (v) => { try { if (v > readSide()) localStorage.setItem(SIDE_SAVE, String(v)); } catch (e) { /* ignore */ } };
@@ -194,6 +197,7 @@ function buildLevel(n) {
 	return { map, W, ents, warps, arena, goal: { x: goalX, y: GY * T }, check: cxT * T, isBoss };
 }
 function buildSide(n) {
+	if (n === RAIN) return buildRain(n);
 	const war = n === WAR, drive = n === SIDE0 || war, r = rng(9001 + n * 31), W = war ? 210 : drive ? 230 : 170;
 	const map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
 	const ents = [];
@@ -223,6 +227,28 @@ function buildSide(n) {
 	let cxT = Math.floor(W / 2);
 	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
 	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: war ? 'war' : drive ? 'drive' : 'date' };
+}
+function buildRain(n) {
+	const r = rng(5150 + n), W = 190;
+	const map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
+	const ents = [], puddles = [];
+	const set = (x, y, c) => x >= 0 && x < W && y >= 0 && y < ROWS && (map[y][x] = c);
+	let x = 0;
+	const flat = (len) => { for (let i = 0; i < len && x < W; i++, x++) for (let y = GY; y < ROWS; y++) set(x, y, '#'); };
+	flat(16);
+	while (x < W - 30) {
+		const k = r();
+		if (k < 0.16) { x += 2 + (r() < 0.4 ? 1 : 0); flat(4); }
+		else if (k < 0.36) { puddles.push([x + 1, x + 5]); flat(8); } // puddle: slows you down
+		else if (k < 0.54) { const y = GY - 3 - Math.floor(r() * 2), len = 3 + Math.floor(r() * 3); flat(2); for (let i = 0; i < len; i++) { set(x + i, y, '='); if (i % 2) set(x + i, y - 1, 'o'); } flat(len + 3); }
+		else if (k < 0.72) { ents.push({ t: 'bug', x: (x + 6) * T, y: (GY - 1) * T }); flat(10); }
+		else if (k < 0.84) { for (let i = 0; i < 2; i++) for (let j = 0; j <= i; j++) set(x + 1 + i, GY - 1 - j, '#'); flat(6); }
+		else { for (let i = 0; i < 3; i++) set(x + 2 + i, GY - 2, 'o'); flat(8); }
+	}
+	flat(W - x);
+	let cxT = Math.floor(W / 2);
+	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
+	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: 'rain', puddles };
 }
 function buildRoom(n) {
 	const W = 32;
@@ -345,6 +371,7 @@ export function mount(stage, api) {
 				return `<button type="button" class="kr-map__st${n === unlocked ? ' is-next' : ''}${boss ? ' is-boss' : ''}" data-st="${n}" ${open ? '' : 'disabled'} aria-label="دنیای ${fa(wi + 1)} مرحله ${fa(si + 1)}${boss ? ' (باس)' : ''}${open ? '' : ' (قفل)'}">${open ? (boss ? '👾 باس' : `مرحله ${fa(si + 1)}`) : '🔒'}</button>`;
 			}).join('<i aria-hidden="true"></i>')}</div></div>`).join('')}
 			${(() => { const open = unlocked >= 3, done = readSide(); return `<div class="kr-map__world kr-map__side" style="--a:#f472b6;--b:#7c3aed"><p class="kr-map__wn">💗 داستان فرعی · ${SIDE_NAME} <small>${open ? (done >= 2 ? 'مائده خوشحال است ✓' : 'مائده از اضافه‌کاری‌ها شاکی است؛ برو دیدنش!') : 'بعد از دنیای ۱ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${SIDE0}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: رانندگی با ال ۹۰">${open ? '🚗 ال ۹۰' : '🔒'}</button><i aria-hidden="true"></i><button type="button" class="kr-map__st" data-st="${SIDE0 + 1}" ${open && done >= 1 ? '' : 'disabled'} aria-label="داستان فرعی: کوچه مائده">${open && done >= 1 ? '🌹 کوچه مائده' : '🔒'}</button></div></div>`; })()}
+			${(() => { const open = unlocked >= 4, done = readRain(); return `<div class="kr-map__world kr-map__side" style="--a:#60a5fa;--b:#334155"><p class="kr-map__wn">🎒 داستان فرعی · ${RAIN_NAME} <small>${open ? (done ? 'زیپ درست شد ✓' : 'زیپ کیف لپ‌تاپ خراب شده؛ زیر باران تا منوچهری برو') : 'بعد از مرحله ۵ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${RAIN}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: زیپ کیف">${open ? '☔ منوچهری' : '🔒'}</button></div></div>`; })()}
 			${(() => { const open = unlocked >= 6, done = readWar(); return `<div class="kr-map__world kr-map__side" style="--a:#fb923c;--b:#475569"><p class="kr-map__wn">🛰 ماموریت فرعی · ${WAR_NAME} <small>${open ? (done ? 'فایل‌های شبا نجات پیدا کرد ✓' : 'روزهای جنگ؛ فایل‌های سایت شبا را از شرکت بیاور') : 'بعد از دنیای ۲ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${WAR}" ${open ? '' : 'disabled'} aria-label="ماموریت فرعی: بومهن تا پاسداران">${open ? '🚙 ۲۰۷ پسرخاله' : '🔒'}</button></div></div>`; })()}
 			<p class="kr-map__h">${api.touch ? 'گوشی را افقی کن · ◀ ▶ حرکت · ⤒ پرش · ⚡ قدرت · ▼ سرور مخفی' : '← → حرکت · Space پرش · Shift دویدن · X قدرت · ↓ ورود به سرور مخفی'}</p>
 			<p class="kr-map__h">هر مرحله فقط یک جان اضافه دارد و خوب پنهان شده؛ به دیوارهای ترک‌خورده و سرورهای ▼ دقت کن 🤫</p>
@@ -378,7 +405,7 @@ export function mount(stage, api) {
 		const side = n >= SIDE0, w = side ? MAIN_WORLDS + (n - SIDE0) : Math.floor(n / STAGES_PER), boss = !side && n % STAGES_PER === STAGES_PER - 1;
 		comic = showComic(stage, side ? SIDE_STORY[n - SIDE0].map((pn) => ({ ...pn, world: w })) : [{ ...STORY[n], world: w, boss, tired: boss ? 0 : 0.85 }], {
 			worlds: WORLDS, sound: (n) => api.sfx(n),
-			label: side ? `${n === WAR ? WAR_NAME : `داستان فرعی · ${SIDE_NAME}`} · ${WORLDS[w].name}` : `${CHAPTERS[w]} · ${boss ? 'نبرد با باس' : `مرحله ${fa((n % STAGES_PER) + 1)}`}`,
+			label: side ? `${n === RAIN ? RAIN_NAME : n === WAR ? WAR_NAME : `داستان فرعی · ${SIDE_NAME}`} · ${WORLDS[w].name}` : `${CHAPTERS[w]} · ${boss ? 'نبرد با باس' : `مرحله ${fa((n % STAGES_PER) + 1)}`}`,
 			skip: false,
 			done: () => { comic = null; if (!s || s.over) return; s.mode = 'play'; pad.hidden = !api.touch; loadStage(n, false); loop(); },
 		});
@@ -430,9 +457,10 @@ export function mount(stage, api) {
 		s.shay = null;
 		if (lv.side === 'drive' || lv.side === 'war') { s.p.h = 16; s.p.w = 24; s.p.y = GY * T - 16; s.carHp = 3; }
 		s.bombs = []; s.bombT = 2.5; s.shake = 0;
+		s.task = null; s.taskT = 3; s.tasksDone = 0;
 		if (lv.side === 'date') { s.pat = 100; }
 		api.hud({ level: lv.side ? 'فرعی' : `${fa(n + 1)} از ${fa(TOTAL)}`, levelLabel: 'مرحله', lives: s.lives, extra: fa(s.coins), extraLabel: 'سکه' });
-		s.banner = { t: lv.side ? (lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
+		s.banner = { t: lv.side ? (lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
 		music.play(songFor());
 	};
 	const addScore = (v, x, y) => { s.score += v; api.setScore(s.score); if (x !== undefined) s.pops.push({ x, y, t: `+${fa(v)}`, life: 0.8 }); };
@@ -747,6 +775,12 @@ export function mount(stage, api) {
 				for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; s.parts.push({ k: 'fw', x: fx, y: fy, vx: Math.cos(a) * 1.6, vy: Math.sin(a) * 1.6, life: 0.9, c: `hsl(${hue} 90% 60%)` }); }
 			}
 			if (s.won <= 0) {
+				if (s.lv.side === 'rain') {
+					try { localStorage.setItem(RAIN_SAVE, '1'); } catch (e) { /* ignore */ }
+					s.mode = 'story'; music.stop(); pad.hidden = true; s.lives++; api.hud({ lives: s.lives });
+					comic = showComic(stage, RAIN_OUTRO, { worlds: WORLDS, sound: (n) => api.sfx(n), label: `${RAIN_NAME} · ${fa(s.tasksDone)} تسک بسته شد · +۱ جان`, done: () => { comic = null; if (!s || s.over) return; s.mode = 'map'; mapEl.hidden = false; renderMap(); } });
+					return;
+				}
 				if (s.lv.side === 'war') {
 					try { localStorage.setItem(WAR_SAVE, '1'); } catch (e) { /* ignore */ }
 					s.mode = 'story'; music.stop(); pad.hidden = true; s.lives++; api.hud({ lives: s.lives });
@@ -776,6 +810,28 @@ export function mount(stage, api) {
 		if (s.shield > 0) { s.shield -= f / 60; if (s.shield <= 0) { music.setSpeed(1); s.shield = 0; } }
 
 		if (s.lv.side === 'drive' && !s.won && !s.dying) { keys.right = true; keys.left = false; keys.run = true; firePressed = false; }
+		if (s.lv.side === 'rain' && !s.won && !s.dying) {
+			const tx = Math.floor((p.x + p.w / 2) / T);
+			s.inPuddle = p.ground && s.lv.puddles.some(([a, b]) => tx >= a && tx <= b);
+			if (s.inPuddle) { p.vx *= 0.9; if (Math.abs(p.vx) > 0.6 && Math.random() < 0.3) s.parts.push({ k: 'puff', x: p.x + p.w / 2, y: GY * T - 3, vx: 0, vy: -0.3, life: 0.4 }); }
+			if (!s.task) {
+				s.taskT -= f / 60;
+				if (s.taskT <= 0) {
+					const ax = p.x + 170 + Math.random() * 60, g = groundTop(ax, p.y);
+					if (g !== null && ax < s.lv.goal.x - 60) {
+						const ent = { t: 'bug', task: true, x: ax, y: g - 14, w: 14, h: 14, vx: -0.4, vy: 0, alive: true, y0: g - 14, dead: 0, cd: 1 };
+						s.ents.push(ent);
+						s.task = { name: TASKS[Math.floor(Math.random() * TASKS.length)], t: 11, ent };
+						s.banner = { t: `📌 تسک جدید: ${s.task.name}`, life: 1.8 };
+						snd('shot', 'click');
+					} else s.taskT = 1;
+				}
+			} else {
+				s.task.t -= f / 60;
+				if (!s.task.ent.alive) { s.tasksDone++; addScore(500, s.task.ent.x, s.task.ent.y - 10); s.banner = { t: `✓ تسک بسته شد: ${s.task.name}`, life: 1.6 }; s.task = null; s.taskT = 3.5; }
+				else if (s.task.t <= 0) { s.task.ent.alive = false; s.task.ent.dead = 0; s.banner = { t: 'تسک دیر شد! 😬', life: 1.6 }; s.task = null; s.taskT = 4.5; hurt(); }
+			}
+		}
 		if (s.lv.side === 'war' && !s.won && !s.dying) {
 			keys.run = true; if (p.vx < 0) p.vx = 0; p.face = 1;
 			s.bombT -= f / 60;
@@ -796,7 +852,7 @@ export function mount(stage, api) {
 		s.idle = Math.abs(p.vx) < 0.1 && p.ground ? (s.idle || 0) + f / 60 : Math.min(0, s.idle || 0);
 		if (s.idle > 7) { s.idle = -20; quip('idle'); }
 		updateHacker(f);
-		const wake = 1 - 0.45 * Math.min(1, (s.lazy || 0) / LAZY); // sleepy start: slow for a moment, then wakes up
+		const wake = (s.inPuddle ? 0.6 : 1) - 0.45 * Math.min(1, (s.lazy || 0) / LAZY); // sleepy start: slow for a moment, then wakes up
 		const accel = (p.ground ? 0.34 : 0.24) * wake, max = (keys.run ? 2.7 : 2.15) * wake;
 		if (keys.left && !keys.right) { p.vx = Math.max(-max, p.vx - accel * f); p.face = -1; }
 		else if (keys.right && !keys.left) { p.vx = Math.min(max, p.vx + accel * f); p.face = 1; }
@@ -940,7 +996,7 @@ export function mount(stage, api) {
 				if (perfect && !s.lv.side) cameo('perfect');
 				const bonus = Math.max(0, Math.round(s.timeLeft)) * 10 + (perfect ? 2000 : 0);
 				addScore(1000 + bonus, bx, by - 20);
-				s.banner = { t: s.lv.side === 'war' ? 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' : s.lv.side === 'drive' ? 'رسیدی! ال ۹۰ پارک شد 🅿️' : s.lv.side === 'date' ? 'مائده خوشحال شد! 💗' : perfect ? 'دیپلوی پرشی! +۲۰۰۰ ✨' : 'دیپلوی موفق! 🚀', life: 2.6 };
+				s.banner = { t: s.lv.side === 'rain' ? 'رسیدی منوچهری! زیپ درست می‌شه 🎒' : s.lv.side === 'war' ? 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' : s.lv.side === 'drive' ? 'رسیدی! ال ۹۰ پارک شد 🅿️' : s.lv.side === 'date' ? 'مائده خوشحال شد! 💗' : perfect ? 'دیپلوی پرشی! +۲۰۰۰ ✨' : 'دیپلوی موفق! 🚀', life: 2.6 };
 				music.stop();
 				snd('clear', 'level');
 				api.unlock('deploy');
@@ -1093,6 +1149,7 @@ export function mount(stage, api) {
 	};
 	const drawBug = (e, k = 1) => {
 		const dir = e.vx < 0 ? -1 : 1;
+		if (e.task) { const pl = 1 + Math.sin(s.t / 4) * 0.15; ctx.beginPath(); ctx.ellipse(e.x + e.w / 2, e.y + e.h / 2, 13 * pl, 10 * pl, 0, 0, 7); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.stroke(); text('📌', e.x + e.w / 2, e.y - 6, 9, '#fff'); }
 		drawBeetle(ctx, e.x + e.w / 2, e.y + e.h, k * 0.95, dir, s.t / 60 + e.x * 0.01, k > 1);
 		// brief glitch slices now and then
 		if ((Math.floor(s.t / 9) + Math.round(e.x / 16)) % 23 === 0) { R(e.x - 2, e.y + e.h * 0.35, e.w + 4, 1.5 * k, 'rgba(34,211,238,.8)'); R(e.x + 1, e.y + e.h * 0.6, e.w - 2, 1.2 * k, 'rgba(244,63,94,.8)'); }
@@ -1293,6 +1350,7 @@ export function mount(stage, api) {
 	const drawGoal = () => {
 		const g = s.lv.goal, bx = g.x, by = g.y;
 		if (s.lv.side === 'drive') { R(bx + 14, by - 46, 3, 46, '#94a3b8'); rr(bx - 6, by - 60, 44, 16, 3, '#1d4ed8', OL, 1.4); text('کوچه مائده', bx + 16, by - 49, 8, '#fff'); rr(bx + 2, by - 28, 16, 16, 3, '#2563eb', OL, 1.2); text('P', bx + 10, by - 16, 11, '#fff'); return; }
+		if (s.lv.side === 'rain') { rr(bx - 6, by - 70, 64, 70, 3, '#78350f', OL, 1.4); R(bx, by - 54, 52, 30, '#fde68a'); rr(bx - 8, by - 84, 68, 13, 3, '#7c2d12', OL, 1.2); text('تعمیر کیف · منوچهری', bx + 26, by - 75, 7, '#fff'); rr(bx + 16, by - 20, 18, 20, 2, '#451a03', OL, 1); rr(bx + 4, by - 50, 20, 14, 3, '#1f2937', OL, 1); return; }
 		if (s.lv.side === 'war') { rr(bx - 4, by - 92, 60, 92, 3, '#334155', OL, 1.4); for (let j = 0; j < 6; j++) for (let i = 0; i < 4; i++) R(bx + 2 + i * 13, by - 86 + j * 13, 8, 8, (i + j) % 3 ? '#fde68a' : '#1e293b'); rr(bx + 2, by - 106, 48, 13, 3, '#0f172a', '#fb923c', 1.2); text('شرکت · پاسداران', bx + 26, by - 97, 7, '#fff'); rr(bx + 18, by - 22, 16, 22, 2, '#78350f', OL, 1); return; }
 		if (s.lv.side === 'date') { drawMaedeh(ctx, bx + 20, by, 0.82, -1, s.won ? 'happy' : 'angry', s.t / 60); if (!s.won && Math.floor(s.t / 25) % 2) text('💗', bx + 20, by - 44, 10, '#fff'); return; }
 		rr(bx + 38, by - 70, 26, 70, 3, '#1e293b');
@@ -1380,6 +1438,7 @@ export function mount(stage, api) {
 			if (q.k === 'flash') { const k = q.life / 0.18; ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(s.t / 3); ctx.fillStyle = q.c; for (let i = 0; i < 6; i++) { ctx.rotate(Math.PI / 3); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(1.4, 6 * k + 2); ctx.lineTo(-1.4, 6 * k + 2); ctx.fill(); } ctx.beginPath(); ctx.arc(0, 0, 2.5 * k + 1, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore(); }
 			if (q.k === 'dust') circ(q.x, q.y, 2.5 + (0.35 - q.life) * 8, `rgba(226,232,240,${q.life})`, null);
 		});
+		if (s.lv.side === 'rain') s.lv.puddles.forEach(([a, b]) => { ctx.beginPath(); ctx.ellipse((a + b + 1) * T / 2, GY * T + 1, (b - a + 1) * T / 2, 3.5, 0, 0, 7); ctx.fillStyle = 'rgba(96,165,250,.55)'; ctx.fill(); ctx.strokeStyle = 'rgba(219,234,254,.7)'; ctx.lineWidth = 1; ctx.stroke(); });
 		(s.bombs || []).forEach((b) => {
 			const k = 1 - Math.max(0, b.t) / 1.25, gy = GY * T, pulse = 1 + Math.sin(s.t / 2) * 0.12;
 			ctx.save(); ctx.globalAlpha = 0.35 + k * 0.5; ctx.beginPath(); ctx.ellipse(b.x, gy - 1, 28 * pulse, 6 * pulse, 0, 0, 7); ctx.fillStyle = 'rgba(239,68,68,.35)'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#ef4444'; ctx.setLineDash([4, 3]); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
@@ -1391,7 +1450,13 @@ export function mount(stage, api) {
 		drawQuip();
 		s.pops.forEach((q) => text(q.t, q.x + 6, q.y, 9, '#fff'));
 		ctx.restore();
+		if (s.lv.side === 'rain') {
+			ctx.strokeStyle = 'rgba(191,219,254,.5)'; ctx.lineWidth = 1;
+			for (let i = 0; i < 70; i++) { const sd = (i * 7919) % 97 / 97, x = (i * 53 + s.t * 2) % (view.vw + 20) - 10, y = (sd * VIEW_H + s.t * 7) % (VIEW_H + 20) - 10; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 3, y + 10); ctx.stroke(); }
+			if (Math.floor(s.t) % 420 < 6) { ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(0, 0, view.vw, VIEW_H); }
+		}
 		hud();
+		if (s.task) { const tw = 150, tx2 = view.vw - tw - 4, ty2 = 26, low = s.task.t < 4; panel(tx2, ty2, tw, 16, low ? '#ef4444' : '#60a5fa'); text(`📌 ${s.task.name}`, tx2 + tw - 6, ty2 + 11.5, 7, '#fff', 'right'); text(`⏱ ${fa(Math.ceil(s.task.t))}`, tx2 + 18, ty2 + 11.5, 8, low && Math.floor(s.t / 8) % 2 ? '#fca5a5' : '#fde68a'); }
 		if (s.shay) {
 			// slides in from the bottom-right corner, talks, slides out
 			const u = s.shay.t, inK = Math.min(1, u / 0.25), outK = Math.max(0, (u - 2) / 0.3), k = inK * (1 - outK), ease = 1 - Math.pow(1 - k, 3);

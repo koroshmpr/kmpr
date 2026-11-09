@@ -80,3 +80,5 @@ Local testing: WP CLI-less — run PHP with Local's binary `~/Library/Applicatio
 - After stage 5 (Kaleh lottery boss): Makan party cutscene `AWARD` (Negar, Shayan, Maedeh, Mohammad-Hossein); replay «🏆 جشن ماکان» on the map.
 - Shayan corner cameo (`drawShayan` caricature, `cameo()`): ≤1 per stage, only at good moments (2nd power-up, 7 kills, hacker caught, perfect deploy, rarely at the sleepy start).
 - TODO (owner asked): in-engine stage-intro animations (getting out of bed + bag, working from home, coffee delivery → start).
+- Side 103 «زیپ کیف · منوچهری» (`buildRain`): rain + lightning, puddles slow you down, timed work tasks (📌 bug spawns ahead, 11 s to debug it, late = hurt). Unlocks at progress ≥4, save `kmpr_kr_rain`.
+- Article images (blog commit c4c3339): author photo + default cover are ACF options «تصاویر مقالات» (Media Library); pack covers are deleted from the theme on the server after import.
