@@ -15,7 +15,7 @@ import { createCanvas } from '../lib/canvas.js';
 import { store } from '../lib/store.js';
 import { fa, listeners, clamp } from '../lib/util.js';
 import { HERO_H, drawHero, OL } from '../lib/hero.js';
-import { INTRO, STAGES as STORY, OUTRO, CHAPTERS, GAME_NAME, showComic, drawBeetle, drawL90, drawMaedeh, SIDE_STORY, SIDE_OUTRO, SIDE_NAME, AWARD, WAR_NAME, WAR_OUTRO, RAIN_NAME, RAIN_OUTRO, drawShayan } from './korosh-story.js';
+import { INTRO, STAGES as STORY, OUTRO, CHAPTERS, GAME_NAME, showComic, drawBeetle, drawL90, drawMaedeh, SIDE_STORY, SIDE_OUTRO, SIDE_NAME, AWARD, WAR_NAME, WAR_OUTRO, RAIN_NAME, RAIN_OUTRO, PAND_NAME, PAND_STORY, PAND_OUTRO, drawPerson, drawYousef, drawShayan } from './korosh-story.js';
 
 export const achievements = CATALOG['korosh-run'].achievements;
 
@@ -32,8 +32,11 @@ const WORLDS = [
 	{ name: 'کوچه مائده', sky: ['#4c1d95', '#f9a8d4'], dirt: '#78716c', dirtD: '#57534e', top: '#d6d3d1', topD: '#a8a29e', theme: 'date', song: 'night', foes: [] },
 	{ name: 'بومهن تا پاسداران', sky: ['#475569', '#fdba74'], dirt: '#3f3f46', dirtD: '#27272a', top: '#78716c', topD: '#e7e5e4', theme: 'war', song: 'boss', foes: [] },
 	{ name: 'باران منوچهری', sky: ['#1e293b', '#94a3b8'], dirt: '#57534e', dirtD: '#44403c', top: '#78716c', topD: '#a8a29e', theme: 'rain', song: 'under', foes: [] },
+	{ name: 'صبح · ترافیک و پارکینگ', sky: ['#fbbf24', '#bae6fd'], dirt: '#3f3f46', dirtD: '#27272a', top: '#71717a', topD: '#fafafa', theme: 'drive', song: 'plains', foes: [] },
+	{ name: 'دفتر پند · QC ترلو', sky: ['#e0f2fe', '#f8fafc'], dirt: '#64748b', dirtD: '#475569', top: '#94a3b8', topD: '#cbd5e1', theme: 'office', song: 'room', foes: [] },
+	{ name: 'دفتر پند · آقای بخشی', sky: ['#cbd5e1', '#f1f5f9'], dirt: '#64748b', dirtD: '#475569', top: '#94a3b8', topD: '#cbd5e1', theme: 'office', song: 'boss', foes: [], boss: 'bakhshi', bossName: 'آقای بخشی' },
 ];
-const MAIN_WORLDS = 4, SIDE0 = 100, WAR = 102, RAIN = 103; // side stages: 100 drive + 101 on foot (Maedeh), 102 the war-days mission
+const MAIN_WORLDS = 4, SIDE0 = 100, WAR = 102, RAIN = 103, PAND0 = 104; // 104 parking · 105 Trello QC · 106 boss Bakhshi // side stages: 100 drive + 101 on foot (Maedeh), 102 the war-days mission
 const TOTAL = MAIN_WORLDS * STAGES_PER;
 const H_SMALL = 22, H_BIG = 32, P_W = 12;
 // programmer one-liners Korosh (or the hacker) says during play
@@ -50,7 +53,7 @@ const QUIPS = {
 	war: ['پسرخاله: نزدیک بود! 😰', 'فقط فایل‌ها رو برسونیم…', 'سرعت! سرعت!', 'خدا به خیر کنه…'],
 	die: ['از کد، بی‌کد شدم! 💀', 'Segmentation fault (core dumped)', '۴۰۴: کوروش پیدا نشد', 'Stack Overflow شدم!', 'try کردم، catch نشدم…', 'null شدم… undefined هم شدم', 'باگ، منو دیباگ کرد!', 'کامیت آخرم بدون تست بود…', 'process.exit(1) 😵'],
 };
-const BEH = { ping: 'spam', mail: 'hopper' }; // side-story foes reuse movement of the main ones
+const BEH = { ping: 'spam', mail: 'hopper', qc: 'spam' }; // side-story foes reuse movement of the main ones
 // Shayan's corner cameo: max once per stage, only at good moments (≈2 s)
 const SHAYAN_LINE = 'داری عشق می‌کنیا! 😎'; // his catchphrase, always the same
 const pickQ = (k) => QUIPS[k][Math.floor(Math.random() * QUIPS[k].length)];
@@ -59,7 +62,8 @@ const HERO_FIT = 0.74; // full drawing (afro included) ≈ hitbox height, so the
 
 const rng = (seed) => { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); };
 const SIDE_SAVE = 'kmpr_kr_side';
-const WAR_SAVE = 'kmpr_kr_war', RAIN_SAVE = 'kmpr_kr_rain';
+const WAR_SAVE = 'kmpr_kr_war', RAIN_SAVE = 'kmpr_kr_rain', PAND_SAVE = 'kmpr_kr_pand';
+const readPand = () => { try { return Number(localStorage.getItem(PAND_SAVE)) || 0; } catch (e) { return 0; } };
 const readRain = () => { try { return localStorage.getItem(RAIN_SAVE) === '1'; } catch (e) { return false; } };
 const TASKS = ['دکمه پرداخت کار نمی‌کنه', 'ارور ۵۰۰ موقع لاگین', 'فرم تماس ایمیل نمی‌فرسته', 'سایت کش شده، تغییر دیده نمی‌شه', 'ریدایرکت بی‌نهایت', 'عکس‌ها لود نمی‌شن', 'منو توی موبایل بازه'];
 const readWar = () => { try { return localStorage.getItem(WAR_SAVE) === '1'; } catch (e) { return false; } };
@@ -198,7 +202,9 @@ function buildLevel(n) {
 }
 function buildSide(n) {
 	if (n === RAIN) return buildRain(n);
-	const war = n === WAR, drive = n === SIDE0 || war, r = rng(9001 + n * 31), W = war ? 210 : drive ? 230 : 170;
+	if (n === PAND0 + 1) return buildQC(n);
+	if (n === PAND0 + 2) return buildPandBoss();
+	const war = n === WAR, drive = n === SIDE0 || n === PAND0 || war, r = rng(9001 + n * 31), W = war ? 210 : drive ? 230 : 170;
 	const map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
 	const ents = [];
 	const set = (x, y, c) => x >= 0 && x < W && y >= 0 && y < ROWS && (map[y][x] = c);
@@ -226,7 +232,7 @@ function buildSide(n) {
 	flat(W - x);
 	let cxT = Math.floor(W / 2);
 	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
-	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: war ? 'war' : drive ? 'drive' : 'date' };
+	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: war ? 'war' : drive ? 'drive' : 'date', goalLabel: n === PAND0 ? 'پارکینگ پند' : 'کوچه مائده' };
 }
 function buildRain(n) {
 	const r = rng(5150 + n), W = 190;
@@ -249,6 +255,34 @@ function buildRain(n) {
 	let cxT = Math.floor(W / 2);
 	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
 	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: 'rain', puddles };
+}
+function buildQC(n) {
+	const r = rng(777 + n), W = 170;
+	const map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
+	const ents = [];
+	const set = (x, y, c) => x >= 0 && x < W && y >= 0 && y < ROWS && (map[y][x] = c);
+	let x = 0;
+	const flat = (len) => { for (let i = 0; i < len && x < W; i++, x++) for (let y = GY; y < ROWS; y++) set(x, y, '#'); };
+	flat(14);
+	while (x < W - 26) {
+		const k = r();
+		if (k < 0.4) { const y = GY - 3 - Math.floor(r() * 2), len = 3 + Math.floor(r() * 3); flat(2); for (let i = 0; i < len; i++) set(x + i, y, '='); flat(len + 3); } // desks to jump on for high cards
+		else if (k < 0.55) { x += 2; flat(4); }
+		else if (k < 0.7) { ents.push({ t: 'bug', x: (x + 5) * T, y: (GY - 1) * T }); flat(9); }
+		else flat(7);
+	}
+	flat(W - x);
+	let cxT = Math.floor(W / 2);
+	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
+	return { map, W, ents, warps: [], arena: null, goal: { x: (W - 10) * T, y: GY * T }, check: cxT * T, isBoss: false, side: 'qc' };
+}
+function buildPandBoss() {
+	const W = 60, map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
+	for (let x = 0; x < W; x++) for (let y = GY; y < ROWS; y++) map[y][x] = '#';
+	const arena = { x0: 16, x1: 44 };
+	for (let y = 3; y < GY; y++) map[y][arena.x1 + 1] = '#';
+	for (let i = 0; i < 3; i++) map[GY - 4][arena.x0 + 6 + i * 8] = i === 1 ? 'P' : '=';
+	return { map, W, ents: [], warps: [], arena, goal: { x: (arena.x1 - 4) * T, y: GY * T }, check: 8 * T, isBoss: true, side: 'pand' };
 }
 function buildRoom(n) {
 	const W = 32;
@@ -371,6 +405,7 @@ export function mount(stage, api) {
 				return `<button type="button" class="kr-map__st${n === unlocked ? ' is-next' : ''}${boss ? ' is-boss' : ''}" data-st="${n}" ${open ? '' : 'disabled'} aria-label="دنیای ${fa(wi + 1)} مرحله ${fa(si + 1)}${boss ? ' (باس)' : ''}${open ? '' : ' (قفل)'}">${open ? (boss ? '👾 باس' : `مرحله ${fa(si + 1)}`) : '🔒'}</button>`;
 			}).join('<i aria-hidden="true"></i>')}</div></div>`).join('')}
 			${(() => { const open = unlocked >= 3, done = readSide(); return `<div class="kr-map__world kr-map__side" style="--a:#f472b6;--b:#7c3aed"><p class="kr-map__wn">💗 داستان فرعی · ${SIDE_NAME} <small>${open ? (done >= 2 ? 'مائده خوشحال است ✓' : 'مائده از اضافه‌کاری‌ها شاکی است؛ برو دیدنش!') : 'بعد از دنیای ۱ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${SIDE0}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: رانندگی با ال ۹۰">${open ? '🚗 ال ۹۰' : '🔒'}</button><i aria-hidden="true"></i><button type="button" class="kr-map__st" data-st="${SIDE0 + 1}" ${open && done >= 1 ? '' : 'disabled'} aria-label="داستان فرعی: کوچه مائده">${open && done >= 1 ? '🌹 کوچه مائده' : '🔒'}</button></div></div>`; })()}
+			${(() => { const open = unlocked >= 3, done = readPand(); const st = (i, ic, lbl) => `<button type="button" class="kr-map__st${open && done === i ? ' is-next' : ''}${i === 2 ? ' is-boss' : ''}" data-st="${PAND0 + i}" ${open && done >= i ? '' : 'disabled'} aria-label="${PAND_NAME}: ${lbl}">${open && done >= i ? `${ic} ${lbl}` : '🔒'}</button>`; return `<div class="kr-map__world kr-map__side" style="--a:#a78bfa;--b:#0ea5e9"><p class="kr-map__wn">🗂 فصل ویژه · ${PAND_NAME} <small>${open ? (done >= 3 ? 'رتبه صفحه اول ✓ بخشی رفت' : 'ترافیک صبح، QCهای یوسف و آقای بخشی') : 'بعد از دنیای ۱ باز می‌شود'}</small></p><div class="kr-map__row">${st(0, '🚗', 'پارکینگ')}<i aria-hidden="true"></i>${st(1, '🗂', 'QC ترلو')}<i aria-hidden="true"></i>${st(2, '👔', 'بخشی')}</div></div>`; })()}
 			${(() => { const open = unlocked >= 4, done = readRain(); return `<div class="kr-map__world kr-map__side" style="--a:#60a5fa;--b:#334155"><p class="kr-map__wn">🎒 داستان فرعی · ${RAIN_NAME} <small>${open ? (done ? 'زیپ درست شد ✓' : 'زیپ کیف لپ‌تاپ خراب شده؛ زیر باران تا منوچهری برو') : 'بعد از مرحله ۵ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${RAIN}" ${open ? '' : 'disabled'} aria-label="داستان فرعی: زیپ کیف">${open ? '☔ منوچهری' : '🔒'}</button></div></div>`; })()}
 			${(() => { const open = unlocked >= 6, done = readWar(); return `<div class="kr-map__world kr-map__side" style="--a:#fb923c;--b:#475569"><p class="kr-map__wn">🛰 ماموریت فرعی · ${WAR_NAME} <small>${open ? (done ? 'فایل‌های شبا نجات پیدا کرد ✓' : 'روزهای جنگ؛ فایل‌های سایت شبا را از شرکت بیاور') : 'بعد از دنیای ۲ باز می‌شود'}</small></p><div class="kr-map__row"><button type="button" class="kr-map__st${open && !done ? ' is-next' : ''}" data-st="${WAR}" ${open ? '' : 'disabled'} aria-label="ماموریت فرعی: بومهن تا پاسداران">${open ? '🚙 ۲۰۷ پسرخاله' : '🔒'}</button></div></div>`; })()}
 			<p class="kr-map__h">${api.touch ? 'گوشی را افقی کن · ◀ ▶ حرکت · ⤒ پرش · ⚡ قدرت · ▼ سرور مخفی' : '← → حرکت · Space پرش · Shift دویدن · X قدرت · ↓ ورود به سرور مخفی'}</p>
@@ -403,9 +438,9 @@ export function mount(stage, api) {
 		pad.hidden = true;
 		music.stop();
 		const side = n >= SIDE0, w = side ? MAIN_WORLDS + (n - SIDE0) : Math.floor(n / STAGES_PER), boss = !side && n % STAGES_PER === STAGES_PER - 1;
-		comic = showComic(stage, side ? SIDE_STORY[n - SIDE0].map((pn) => ({ ...pn, world: w })) : [{ ...STORY[n], world: w, boss, tired: boss ? 0 : 0.85 }], {
+		comic = showComic(stage, side ? (n >= PAND0 ? PAND_STORY[n - PAND0] : SIDE_STORY[n - SIDE0]).map((pn) => ({ ...pn, world: w })) : [{ ...STORY[n], world: w, boss, tired: boss ? 0 : 0.85 }], {
 			worlds: WORLDS, sound: (n) => api.sfx(n),
-			label: side ? `${n === RAIN ? RAIN_NAME : n === WAR ? WAR_NAME : `داستان فرعی · ${SIDE_NAME}`} · ${WORLDS[w].name}` : `${CHAPTERS[w]} · ${boss ? 'نبرد با باس' : `مرحله ${fa((n % STAGES_PER) + 1)}`}`,
+			label: side ? `${n >= PAND0 ? PAND_NAME : n === RAIN ? RAIN_NAME : n === WAR ? WAR_NAME : `داستان فرعی · ${SIDE_NAME}`} · ${WORLDS[w].name}` : `${CHAPTERS[w]} · ${boss ? 'نبرد با باس' : `مرحله ${fa((n % STAGES_PER) + 1)}`}`,
 			skip: false,
 			done: () => { comic = null; if (!s || s.over) return; s.mode = 'play'; pad.hidden = !api.touch; loadStage(n, false); loop(); },
 		});
@@ -423,7 +458,7 @@ export function mount(stage, api) {
 	const SOLID = new Set(['#', 'B', '?', 'M', 'P', '*', 'U', 'S', 's', 'W', 'w', '=', 'X']);
 	const solid = (c) => SOLID.has(c);
 	const BLOCKS = new Set(['?', 'M', 'P', '*', 'H']);
-	const FOE_W = { car: [30, 14], cone: [12, 12], call: [12, 14], ping: [14, 12], mail: [14, 12], bug: [14, 14], clock: [14, 14], hopper: [14, 12], spam: [14, 12], virus: [14, 14], turret: [16, 16] };
+	const FOE_W = { qc: [14, 10], car: [30, 14], cone: [12, 12], call: [12, 14], ping: [14, 12], mail: [14, 12], bug: [14, 14], clock: [14, 14], hopper: [14, 12], spam: [14, 12], virus: [14, 14], turret: [16, 16] };
 
 	const loadStage = (n, fromCheckpoint) => {
 		const lv = n >= SIDE0 ? buildSide(n) : buildLevel(n);
@@ -458,9 +493,11 @@ export function mount(stage, api) {
 		if (lv.side === 'drive' || lv.side === 'war') { s.p.h = 16; s.p.w = 24; s.p.y = GY * T - 16; s.carHp = 3; }
 		s.bombs = []; s.bombT = 2.5; s.shake = 0;
 		s.task = null; s.taskT = 3; s.tasksDone = 0;
+		s.qcDone = 0; s.qcMiss = 0; s.qcT = 1.5; s.yq = null;
+		if (n === PAND0) s.timeLeft = 110; // must park before 9:00
 		if (lv.side === 'date') { s.pat = 100; }
 		api.hud({ level: lv.side ? 'فرعی' : `${fa(n + 1)} از ${fa(TOTAL)}`, levelLabel: 'مرحله', lives: s.lives, extra: fa(s.coins), extraLabel: 'سکه' });
-		s.banner = { t: lv.side ? (lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
+		s.banner = { t: lv.side ? (lv.side === 'qc' ? '🗂 کارت‌های QC یوسف را بگیر؛ هرچه تندتر، او هم تندتر!' : lv.side === 'pand' ? '👔 آقای بخشی: با هر ضربه رتبه سایت بالاتر می‌رود' : n === PAND0 ? '🅿️ تا ساعت ۹ برس پارکینگ پند!' : lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
 		music.play(songFor());
 	};
 	const addScore = (v, x, y) => { s.score += v; api.setScore(s.score); if (x !== undefined) s.pops.push({ x, y, t: `+${fa(v)}`, life: 0.8 }); };
@@ -664,8 +701,8 @@ export function mount(stage, api) {
 
 	/* ---- bosses ---- */
 	function makeBoss(type, arena) {
-		const hp = { megabug: 8, server: 10, scorpion: 10, deadline: 14 }[type];
-		const dims = { megabug: [40, 34], server: [36, 44], scorpion: [48, 26], deadline: [40, 40] }[type];
+		const hp = { megabug: 8, server: 10, scorpion: 10, deadline: 14, bakhshi: 12 }[type];
+		const dims = { megabug: [40, 34], server: [36, 44], scorpion: [48, 26], deadline: [40, 40], bakhshi: [26, 44] }[type];
 		return { type, hp, max: hp, w: dims[0], h: dims[1], x: (arena.x1 - 6) * T, y: GY * T - dims[1], vx: -1, vy: 0, t: 0, inv: 0, active: false, arena, ground: false, dead: 0, dir: -1 };
 	}
 	const bossShot = (x, y, vx, vy, grav = 0.18) => s.shots.push({ x, y, vx, vy, w: 10, h: 10, grav, life: 4 });
@@ -702,6 +739,12 @@ export function mount(stage, api) {
 				b.vx = phase < 1.2 ? 0 : b.dir * 4;
 				if (phase < f / 60) b.dir = toward;
 				if (phase > 1.0 && phase < 1.0 + f / 60) bossShot(b.x + (b.dir > 0 ? b.w : 0), b.y + 4, b.dir * 3, -3.5);
+			} else if (b.type === 'bakhshi') {
+				// paces, jumps, throws «اخطار» memos in a fan; summons a deadline clock now and then
+				b.vx = toward * 0.9;
+				if (b.ground && every(2.6)) b.vy = -7.5;
+				if (every(1.6)) [-1, 0, 1].forEach((d) => bossShot(b.x + b.w / 2, b.y + 12, toward * 2.4 + d * 0.5, -2.6 + Math.abs(d) * 0.5));
+				if (every(6)) s.ents.push({ t: 'clock', x: b.x + b.w / 2, y: b.y, vx: toward * 1.1, vy: -2, w: 14, h: 14, alive: true, y0: b.y, dead: 0 });
 			} else if (b.type === 'deadline') {
 				b.vx = toward * 0.7;
 				if (b.ground && every(2.2)) b.vy = -9;
@@ -775,6 +818,14 @@ export function mount(stage, api) {
 				for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; s.parts.push({ k: 'fw', x: fx, y: fy, vx: Math.cos(a) * 1.6, vy: Math.sin(a) * 1.6, life: 0.9, c: `hsl(${hue} 90% 60%)` }); }
 			}
 			if (s.won <= 0) {
+				if (s.stageN >= PAND0) {
+					const step = s.stageN - PAND0 + 1;
+					try { if (step > readPand()) localStorage.setItem(PAND_SAVE, String(step)); } catch (e) { /* ignore */ }
+					if (step < 3) return playStage(s.stageN + 1);
+					s.mode = 'story'; music.stop(); pad.hidden = true; s.lives++; api.hud({ lives: s.lives });
+					comic = showComic(stage, PAND_OUTRO.map((pn) => ({ ...pn, world: s.world })), { worlds: WORLDS, sound: (n) => api.sfx(n), label: `${PAND_NAME} · پایان فصل · +۱ جان`, done: () => { comic = null; if (!s || s.over) return; s.mode = 'map'; mapEl.hidden = false; renderMap(); } });
+					return;
+				}
 				if (s.lv.side === 'rain') {
 					try { localStorage.setItem(RAIN_SAVE, '1'); } catch (e) { /* ignore */ }
 					s.mode = 'story'; music.stop(); pad.hidden = true; s.lives++; api.hud({ lives: s.lives });
@@ -810,6 +861,16 @@ export function mount(stage, api) {
 		if (s.shield > 0) { s.shield -= f / 60; if (s.shield <= 0) { music.setSpeed(1); s.shield = 0; } }
 
 		if (s.lv.side === 'drive' && !s.won && !s.dying) { keys.right = true; keys.left = false; keys.run = true; firePressed = false; }
+		if (s.lv.side === 'qc' && !s.won && !s.dying) {
+			s.qcT -= f / 60;
+			if (s.qcT <= 0) {
+				s.qcT = clamp(1.35 - s.qcDone * 0.014, 0.42, 1.35); // Yousef sees you closing cards fast… and sends faster
+				const y = GY * T - 20 - Math.random() * 70;
+				s.ents.push({ t: 'qc', x: s.cam + view.vw + 8, y, w: 14, h: 10, vx: -1.5 - Math.min(1.2, s.qcDone * 0.015), vy: 0, alive: true, y0: y, dead: 0 });
+			}
+			for (const e of s.ents) if (e.t === 'qc' && e.alive && e.x < s.cam - 20) { e.alive = false; s.qcMiss++; }
+			if (s.yq && (s.yq.life -= f / 60) <= 0) s.yq = null;
+		}
 		if (s.lv.side === 'rain' && !s.won && !s.dying) {
 			const tx = Math.floor((p.x + p.w / 2) / T);
 			s.inPuddle = p.ground && s.lv.puddles.some(([a, b]) => tx >= a && tx <= b);
@@ -967,6 +1028,12 @@ export function mount(stage, api) {
 					if ((e.t === 'bug' || e.t === 'virus' || e.t === 'call') && e.ground && !solid(tileAt(e.vx > 0 ? e.x + e.w + 1 : e.x - 1, e.y + e.h + 2))) e.vx = -e.vx;
 					if (e.y > VH + 20) e.alive = false;
 				}
+				if (touching(p, e) && e.t === 'qc') {
+					e.alive = false; e.dead = 0; s.qcDone++; addScore(80, e.x, e.y); snd('coin', 'coin');
+					if ([15, 35, 60, 90].includes(s.qcDone)) s.yq = { t: ['یوسف: دیدم تند می‌زنی، منم تندتر می‌فرستم 😏', 'یوسف: اینم ۱۰ تای دیگه!', 'یوسف: هنوز داری می‌رسی؟! 😳', 'یوسف: باشه… قبول دارم سریع‌تری 🙌'][[15, 35, 60, 90].indexOf(s.qcDone)], life: 2.4 };
+					if (s.qcDone === 50) cameo('power');
+					continue;
+				}
 				if (touching(p, e)) {
 					if (e.item) {
 						e.alive = false;
@@ -1062,6 +1129,7 @@ export function mount(stage, api) {
 		if (s.big && s.form === 'dev') { rr(p.x + p.w / 2 + p.face * 6 - 4, p.y + 21, 9, 6, 1, '#cbd5e1', OL, 1); R(p.x + p.w / 2 + p.face * 6 - 3, p.y + 22, 7, 4, '#22d3ee'); }
 		if (s.shield > 0) { ctx.strokeStyle = `hsl(${(s.t * 12) % 360} 90% 60%)`; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(p.x + p.w / 2, p.y + p.h / 2, 13, p.h / 2 + 4, 0, 0, 7); ctx.stroke(); }
 	};
+	const drawQC = (e) => { ctx.save(); ctx.translate(e.x + 7, e.y + 5); ctx.rotate(Math.sin(s.t / 6 + e.y) * 0.2); rr(-8, -6, 16, 12, 2, '#fff', OL, 1.2); R(-6, -4, 7, 2, '#ef4444'); R(-6, -0.5, 11, 1.5, '#94a3b8'); R(-6, 2.5, 8, 1.5, '#94a3b8'); text('QC', 4.5, -1.5, 4, '#0ea5e9'); ctx.restore(); };
 	// side-story foes
 	const drawCarFoe = (e) => { // oncoming yellow Pride
 		const x = e.x, y = e.y + e.h, bob = Math.abs(Math.sin(s.t / 4)) * 0.6;
@@ -1234,6 +1302,7 @@ export function mount(stage, api) {
 		if (b.hp <= 0) ctx.globalAlpha = Math.max(0, b.dead / 2);
 		const dir = s.p.x < b.x ? -1 : 1;
 		if (b.type === 'megabug') drawBug({ ...b, vx: dir }, 2.5);
+		else if (b.type === 'bakhshi') { ctx.save(); ctx.translate(b.x + b.w / 2, b.y + b.h); ctx.scale(dir < 0 ? 1 : -1, 1); drawPerson(ctx, 0, 0, 1.25, 'bakhshi', { mood: 'angry', name: '' }, s.t / 60); ctx.restore(); }
 		else if (b.type === 'deadline') { drawClock({ ...b, vx: dir }, 2.6); text('!', b.x + b.w / 2, b.y - 4, 14, '#ef4444'); }
 		else if (b.type === 'server') {
 			rr(b.x, b.y, b.w, b.h, 4, '#1e293b');
@@ -1258,6 +1327,11 @@ export function mount(stage, api) {
 		if (th === 'room') { g.addColorStop(0, '#0b1023'); g.addColorStop(1, '#1e1b4b'); } else { g.addColorStop(0, wd.sky[0]); g.addColorStop(1, wd.sky[1]); }
 		ctx.fillStyle = g; ctx.fillRect(0, 0, view.vw, VH);
 		const loopX = (par, span) => -((cam * par) % span);
+		if (th === 'office') {
+			for (let i = 0; i < 8; i++) { const x = ((i * 150 - cam * 0.3) % (view.vw + 150) + view.vw + 150) % (view.vw + 150) - 75; R(x, 70, 90, 80, '#bae6fd'); R(x, 70, 90, 3, '#94a3b8'); R(x + 44, 70, 3, 80, '#94a3b8'); for (let j = 0; j < 4; j++) R(x + 6 + j * 22, 120 - (j * 13) % 30, 14, 30 + (j * 13) % 30, 'rgba(100,116,139,.35)'); }
+			for (let i = 0; i < 5; i++) { const x = ((i * 260 + 90 - cam * 0.55) % (view.vw + 260) + view.vw + 260) % (view.vw + 260) - 130; rr(x, 158, 70, 6, 2, '#a16207', null); R(x + 4, 164, 4, 44, '#78350f'); R(x + 62, 164, 4, 44, '#78350f'); rr(x + 24, 140, 24, 16, 2, '#1e293b', null); R(x + 27, 143, 18, 10, '#38bdf8'); }
+			return;
+		}
 		if (th === 'drive' || th === 'date' || th === 'war') {
 			const night = th === 'date', war = th === 'war';
 			if (war) for (let i = 0; i < 4; i++) { const sx = ((i * 260 + 120 - cam * 0.1) % (view.vw + 200) + view.vw + 200) % (view.vw + 200) - 100; for (let j = 0; j < 6; j++) circ(sx + Math.sin(s.t / 30 + j) * 6, GY * T - 120 - j * 16, 14 + j * 4, `rgba(68,64,60,${0.32 - j * 0.04})`, null); }
@@ -1349,7 +1423,7 @@ export function mount(stage, api) {
 
 	const drawGoal = () => {
 		const g = s.lv.goal, bx = g.x, by = g.y;
-		if (s.lv.side === 'drive') { R(bx + 14, by - 46, 3, 46, '#94a3b8'); rr(bx - 6, by - 60, 44, 16, 3, '#1d4ed8', OL, 1.4); text('کوچه مائده', bx + 16, by - 49, 8, '#fff'); rr(bx + 2, by - 28, 16, 16, 3, '#2563eb', OL, 1.2); text('P', bx + 10, by - 16, 11, '#fff'); return; }
+		if (s.lv.side === 'drive') { R(bx + 14, by - 46, 3, 46, '#94a3b8'); rr(bx - 6, by - 60, 44, 16, 3, '#1d4ed8', OL, 1.4); text(s.lv.goalLabel || 'کوچه مائده', bx + 16, by - 49, 8, '#fff'); rr(bx + 2, by - 28, 16, 16, 3, '#2563eb', OL, 1.2); text('P', bx + 10, by - 16, 11, '#fff'); return; }
 		if (s.lv.side === 'rain') { rr(bx - 6, by - 70, 64, 70, 3, '#78350f', OL, 1.4); R(bx, by - 54, 52, 30, '#fde68a'); rr(bx - 8, by - 84, 68, 13, 3, '#7c2d12', OL, 1.2); text('تعمیر کیف · منوچهری', bx + 26, by - 75, 7, '#fff'); rr(bx + 16, by - 20, 18, 20, 2, '#451a03', OL, 1); rr(bx + 4, by - 50, 20, 14, 3, '#1f2937', OL, 1); return; }
 		if (s.lv.side === 'war') { rr(bx - 4, by - 92, 60, 92, 3, '#334155', OL, 1.4); for (let j = 0; j < 6; j++) for (let i = 0; i < 4; i++) R(bx + 2 + i * 13, by - 86 + j * 13, 8, 8, (i + j) % 3 ? '#fde68a' : '#1e293b'); rr(bx + 2, by - 106, 48, 13, 3, '#0f172a', '#fb923c', 1.2); text('شرکت · پاسداران', bx + 26, by - 97, 7, '#fff'); rr(bx + 18, by - 22, 16, 22, 2, '#78350f', OL, 1); return; }
 		if (s.lv.side === 'date') { drawMaedeh(ctx, bx + 20, by, 0.82, -1, s.won ? 'happy' : 'angry', s.t / 60); if (!s.won && Math.floor(s.t / 25) % 2) text('💗', bx + 20, by - 44, 10, '#fff'); return; }
@@ -1422,11 +1496,12 @@ export function mount(stage, api) {
 				ctx.save();
 				if (!e.alive && !e.flip) { ctx.translate(e.x + 7, e.y + e.h); ctx.scale(1, 0.35); ctx.translate(-e.x - 7, -e.y - e.h); }
 				else if (!e.alive && e.flip) { ctx.translate(0, e.y * 2 + e.h); ctx.scale(1, -1); }
-				if (e.item) drawItem(e); else if (e.t === 'bug') drawBug(e); else if (e.t === 'clock') drawClock(e); else if (e.t === 'spam') drawSpam(e); else if (e.t === 'hopper') drawHopper(e); else if (e.t === 'virus') drawVirus(e); else if (e.t === 'turret') drawTurret(e); else if (e.t === 'car') drawCarFoe(e); else if (e.t === 'cone') drawCone(e); else if (e.t === 'call') drawCall(e); else if (e.t === 'ping') drawPing(e); else if (e.t === 'mail') drawMail(e);
+				if (e.item) drawItem(e); else if (e.t === 'bug') drawBug(e); else if (e.t === 'clock') drawClock(e); else if (e.t === 'spam') drawSpam(e); else if (e.t === 'hopper') drawHopper(e); else if (e.t === 'virus') drawVirus(e); else if (e.t === 'turret') drawTurret(e); else if (e.t === 'qc') drawQC(e); else if (e.t === 'car') drawCarFoe(e); else if (e.t === 'cone') drawCone(e); else if (e.t === 'call') drawCall(e); else if (e.t === 'ping') drawPing(e); else if (e.t === 'mail') drawMail(e);
 				ctx.restore();
 			}
 			if (s.boss && (s.boss.hp > 0 || s.boss.dead > 0)) drawBoss(s.boss);
-			s.shots.forEach((q) => { circ(q.x + 5, q.y + 5, 5, '#ef4444'); ctx.fillStyle = '#fff'; ctx.font = '900 5px monospace'; ctx.textAlign = 'center'; ctx.fillText('ERR', q.x + 5, q.y + 7); });
+			if (s.lv.side === 'pand') s.shots.forEach((q) => { rr(q.x, q.y + 1, 11, 9, 1, '#fff', OL, 1); R(q.x + 2, q.y + 3, 7, 1.5, '#dc2626'); R(q.x + 2, q.y + 6, 5, 1, '#94a3b8'); });
+			else s.shots.forEach((q) => { circ(q.x + 5, q.y + 5, 5, '#ef4444'); ctx.fillStyle = '#fff'; ctx.font = '900 5px monospace'; ctx.textAlign = 'center'; ctx.fillText('ERR', q.x + 5, q.y + 7); });
 		}
 		s.beans.forEach((b) => { if (b.k === 'bean') { ctx.beginPath(); ctx.ellipse(b.x + 3, b.y + 3, 3.5, 2.6, s.t / 4, 0, 7); ctx.fillStyle = '#78350f'; ctx.fill(); ctx.strokeStyle = OL; ctx.lineWidth = 1; ctx.stroke(); } else text('</>', b.x + 6, b.y + 7, 9, '#22d3ee'); });
 		s.parts.forEach((q) => {
@@ -1456,6 +1531,11 @@ export function mount(stage, api) {
 			if (Math.floor(s.t) % 420 < 6) { ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(0, 0, view.vw, VIEW_H); }
 		}
 		hud();
+		if (s.lv.side === 'qc') {
+			const tw = 108, tx2 = view.vw - tw - 4; panel(tx2, 26, tw, 16, '#0ea5e9'); text(`🗂 QC: ${fa(s.qcDone)} از ۱۰۰`, tx2 + tw / 2, 37.5, 8, '#fff');
+			drawYousef(ctx, 34, VIEW_H + 4, 0.9, s.t / 60, s.yq ? Math.abs(Math.sin(s.t / 3)) : 0);
+			if (s.yq) { ctx.font = '900 8px yekanBakh, Tahoma'; const qw = ctx.measureText(s.yq.t).width + 14; rr(58, VIEW_H - 46, qw, 16, 8, '#fff', OL, 1.4); ctx.fillStyle = OL; ctx.textAlign = 'center'; ctx.fillText(s.yq.t, 58 + qw / 2, VIEW_H - 35); }
+		}
 		if (s.task) { const tw = 150, tx2 = view.vw - tw - 4, ty2 = 26, low = s.task.t < 4; panel(tx2, ty2, tw, 16, low ? '#ef4444' : '#60a5fa'); text(`📌 ${s.task.name}`, tx2 + tw - 6, ty2 + 11.5, 7, '#fff', 'right'); text(`⏱ ${fa(Math.ceil(s.task.t))}`, tx2 + 18, ty2 + 11.5, 8, low && Math.floor(s.t / 8) % 2 ? '#fca5a5' : '#fde68a'); }
 		if (s.shay) {
 			// slides in from the bottom-right corner, talks, slides out
@@ -1477,7 +1557,7 @@ export function mount(stage, api) {
 		if (b && b.active && b.hp > 0) {
 			const w = Math.min(180, view.vw - 40), x = view.vw / 2 - w / 2;
 			rr(x, 26, w, 10, 4, '#1f2937'); rr(x + 1, 27, (w - 2) * (b.hp / b.max), 8, 3, '#ef4444', null);
-			text(WORLDS[s.world].bossName, view.vw / 2, 48, 9, '#fecaca');
+			text(b.type === 'bakhshi' ? `رتبه سایت: ${fa(1 + Math.round((b.hp / b.max) * 49))} · ${WORLDS[s.world].bossName}` : WORLDS[s.world].bossName, view.vw / 2, 48, 9, '#fecaca');
 		}
 		if (s.banner && s.banner.life > 0) {
 			const by = b && b.active && b.hp > 0 ? 54 : 30;

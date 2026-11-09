@@ -67,6 +67,22 @@ export const RAIN_NAME = 'زیپ کیف · منوچهری';
 export const RAIN_OUTRO = [
 	{ scene: 'shop', mood: 'happy', cap: 'خیابان منوچهری. استادکار زیپ را عوض می‌کند؛ تسک‌ها هم یکی‌یکی بسته شده‌اند.', say: 'زیپش مثل روز اول شد! حالا تسک بعدی… 😅' },
 ];
+// chapter «پند پلاس» (stages 104–106): morning traffic & parking → Yousef's Trello QC storm → boss Mr. Bakhshi
+export const PAND_NAME = 'پند پلاس';
+export const PAND_STORY = [
+	[
+		{ scene: 'traffic', mood: 'shock', cap: 'آژانس تبلیغاتی پند. هر صبح یک ماموریت ثابت: ترافیک تهران و پیدا کردن جای پارک قبل از ساعت ۹.', say: 'باز همه جاپارک‌ها پره!' },
+	],
+	[
+		{ scene: 'trello', who: 'yousef', mood: 'happy', cap: 'یوسف از تیم UI/UX، QCها را تندتند در ترلو می‌فرستد؛ صد تا! کوروش هم تندتند می‌بندد… و یوسف که می‌بیند، سرعتش را بیشتر می‌کند.', say: 'یوسف: QC شماره ۹۹… و ۱۰۰ 😏' },
+	],
+	[
+		{ scene: 'bakhshi', mood: 'fire', cap: 'آقای بخشی، رئیس آژانس، می‌خواهد کوروش، شایان و یوسف را اخراج کند. تنها راه: بالا بردن رتبه سایت.', say: 'رتبه رو می‌بریم بالا. ببین!' },
+	],
+];
+export const PAND_OUTRO = [
+	{ scene: 'rank', mood: 'happy', cap: 'رتبه سایت رسید صفحه اول گوگل… و این بار آقای بخشی بود که وسایلش را جمع کرد و رفت.', say: 'شایان و یوسف: تیم‌ورک! 😎' },
+];
 export const SIDE_OUTRO = [
 	{ scene: 'meet', who: 'maedeh', mood: 'happy', cap: 'بالاخره رسید؛ با یک دسته گل و یک قول: امشب لپ‌تاپ تعطیل است.', say: 'این دفعه رو می‌بخشمت… 😊' },
 ];
@@ -153,14 +169,22 @@ function person(c, x, by, k, o, t) {
 	c.fillStyle = o.skin; c.lineWidth = 1; c.beginPath(); c.arc(0, -26.5, 5.4, 0, 7); c.fill(); c.stroke();
 	c.fillStyle = o.hair;
 	if (o.style === 'shawl') { c.beginPath(); c.arc(0, -27.5, 6.6, Math.PI * 0.95, Math.PI * 2.05); c.lineTo(6, -21); c.lineTo(4.4, -22); c.quadraticCurveTo(4.6, -30, 0, -30.4); c.quadraticCurveTo(-4.6, -30, -4.4, -22); c.lineTo(-6, -21); c.closePath(); c.fill(); c.stroke(); }
+	else if (o.style === 'quiff') { // side-part pompadour with faded sides (Yousef)
+		c.fillStyle = 'rgba(40,30,25,.45)'; [-1, 1].forEach((d) => { c.beginPath(); c.ellipse(d * 4.6, -27.6, 1.4, 3.2, 0, 0, 7); c.fill(); });
+		c.fillStyle = o.hair; c.beginPath(); c.moveTo(-5.4, -28); c.quadraticCurveTo(-6.4, -35, -0.6, -35.4); c.quadraticCurveTo(6.4, -35.8, 6, -29); c.quadraticCurveTo(3, -32.4, -1.6, -31.4); c.quadraticCurveTo(-4, -30.6, -5.4, -28); c.fill(); c.stroke();
+		c.strokeStyle = '#6b5a50'; c.lineWidth = 0.5; c.beginPath(); c.moveTo(-2.6, -34.6); c.quadraticCurveTo(-3.4, -32.6, -3.6, -30.8); c.stroke(); c.strokeStyle = OL;
+	}
+	else if (o.style === 'bald') { c.fillStyle = o.hair; [-1, 1].forEach((d) => { c.beginPath(); c.ellipse(d * 4.8, -27.4, 1.5, 2.6, 0, 0, 7); c.fill(); }); c.fillStyle = 'rgba(255,255,255,.4)'; c.beginPath(); c.ellipse(-1.6, -30.6, 1.8, 0.8, -0.3, 0, 7); c.fill(); }
 	else if (o.style === 'curly') { for (let i = 0; i < 9; i++) { const a = Math.PI + (i / 8) * Math.PI; c.beginPath(); c.arc(Math.cos(a) * 5, -27.5 + Math.sin(a) * 5, 2.1, 0, 7); c.fill(); } }
 	else { c.beginPath(); c.arc(0, -27.6, 5.6, Math.PI * 1.02, Math.PI * 1.98); c.quadraticCurveTo(3, -29.4, -5.4, -27.4); c.fill(); }
+	if (o.tie) { c.fillStyle = '#f8fafc'; c.beginPath(); c.moveTo(-2.4, -21); c.lineTo(0, -18); c.lineTo(2.4, -21); c.fill(); c.fillStyle = '#b91c1c'; c.beginPath(); c.moveTo(-0.9, -19.4); c.lineTo(0.9, -19.4); c.lineTo(1.3, -13); c.lineTo(0, -11.6); c.lineTo(-1.3, -13); c.closePath(); c.fill(); c.lineWidth = 0.5; c.stroke(); c.lineWidth = 1; }
+	if (o.stache) { c.fillStyle = o.hair; c.beginPath(); c.ellipse(0, -25, 2.6, 0.8, 0, 0, 7); c.fill(); }
 	if (o.beard) { c.fillStyle = 'rgba(40,30,25,.55)'; c.beginPath(); c.arc(0, -25.4, 4.8, 0.15, Math.PI - 0.15); c.fill(); }
 	// eyes + mouth
 	c.fillStyle = OL;
 	if (o.mood === 'laugh') { c.lineWidth = 0.8; [-2, 2].forEach((ex) => { c.beginPath(); c.arc(ex, -27, 0.9, Math.PI, 0); c.stroke(); }); c.fillStyle = '#7f1d1d'; c.beginPath(); c.arc(0, -24.6, 2, 0, Math.PI); c.fill(); }
 	else { [-2, 2].forEach((ex) => { c.beginPath(); c.arc(ex, -27, o.mood === 'shock' ? 0.9 : 0.65, 0, 7); c.fill(); }); c.lineWidth = 0.8; c.beginPath();
-		if (o.mood === 'shock') c.arc(0, -24.2, 1.1, 0, 7); else if (o.mood === 'meh') { c.moveTo(-1.6, -24.2); c.lineTo(1.6, -24.2); } else c.arc(0, -25.2, 1.8, 0.2, Math.PI - 0.2);
+		if (o.mood === 'shock') c.arc(0, -24.2, 1.1, 0, 7); else if (o.mood === 'angry') { c.moveTo(-1.8, -23.4); c.quadraticCurveTo(0, -24.8, 1.8, -23.4); c.moveTo(-3.6, -29.4); c.lineTo(-1, -28.4); c.moveTo(3.6, -29.4); c.lineTo(1, -28.4); } else if (o.mood === 'meh') { c.moveTo(-1.6, -24.2); c.lineTo(1.6, -24.2); } else c.arc(0, -25.2, 1.8, 0.2, Math.PI - 0.2);
 		c.stroke(); }
 	if (o.glasses) { c.lineWidth = 0.6; c.strokeRect(-3.4, -28, 2.6, 1.9); c.strokeRect(0.8, -28, 2.6, 1.9); }
 	if (o.q) { c.font = `900 7px ${FF}`; c.textAlign = 'center'; c.lineWidth = 2; c.strokeText('؟', 6, -33); c.fillStyle = '#fde047'; c.fillText('؟', 6, -33); }
@@ -168,6 +192,8 @@ function person(c, x, by, k, o, t) {
 	if (o.name) { c.font = `800 ${Math.round(4.2 * k)}px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = 'rgba(0,0,0,.6)'; const tw = c.measureText(o.name).width + 6; c.fillRect(x - tw / 2, by + 2, tw, 5.4 * k); c.fillStyle = '#fff'; c.fillText(o.name, x, by + 2 + 2.7 * k); }
 }
 const CAST = {
+	yousef: { skin: '#e6b993', hair: '#1c1917', style: 'quiff', top: '#18181b', name: 'یوسف' },
+	bakhshi: { skin: '#dcae8a', hair: '#6b7280', style: 'bald', top: '#374151', pants: '#1f2937', tie: true, stache: true, name: 'آقای بخشی' },
 	negar: { skin: '#e8b48f', hair: '#1e293b', style: 'shawl', top: '#0f172a', pants: '#1f2937', glasses: true, name: 'نگار' },
 	shayan: { skin: '#d9a07a', hair: '#1c1917', style: 'short', top: '#065f46', beard: true, name: 'شایان' },
 	mh: { skin: '#e0ac85', hair: '#3f2a1d', style: 'curly', top: '#9a3412', name: 'محمدحسین' },
@@ -183,6 +209,36 @@ const hall = (c, w, h, t) => {
 };
 const crowd = (c, w, h, t, laugh) => { for (let i = 0; i < 18; i++) { const x = (i / 17) * w, j = laugh ? Math.abs(Math.sin(t * 10 + i)) * 3 : 0; c.fillStyle = i % 2 ? '#1e1b4b' : '#312e81'; c.beginPath(); c.arc(x, h - 6 - j, 11, 0, 7); c.fill(); } };
 const trophy = (c, x, y, k) => { c.save(); c.translate(x, y); c.scale(k, k); c.fillStyle = '#facc15'; c.strokeStyle = OL; c.lineWidth = 1; c.beginPath(); c.moveTo(-4, -10); c.lineTo(4, -10); c.quadraticCurveTo(4, -3, 0, -2); c.quadraticCurveTo(-4, -3, -4, -10); c.fill(); c.stroke(); c.fillRect(-0.8, -2, 1.6, 3); c.fillRect(-3, 1, 6, 1.8); c.strokeRect(-3, 1, 6, 1.8); c.restore(); };
+export const drawPerson = (c, x, by, k, who, extra, t) => person(c, x, by, k, { ...CAST[who], ...extra }, t);
+/** Yousef (UI/UX) caricature bust: side-part pompadour with faded sides, thick brows, round face, black tee. */
+export function drawYousef(c, x, by, k, t, talk = 0) {
+	const SK = '#e6b993', SKD = '#cf9c76', HR = '#1c1917';
+	c.save(); c.translate(x, by); c.scale(k, k); c.lineJoin = 'round'; c.lineCap = 'round'; c.strokeStyle = OL;
+	c.rotate(Math.sin(t * 2.6) * 0.03);
+	c.fillStyle = '#18181b'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(-25, 0); c.quadraticCurveTo(-24, -15, -10, -17); c.lineTo(10, -17); c.quadraticCurveTo(24, -15, 25, 0); c.closePath(); c.fill(); c.stroke();
+	c.strokeStyle = '#3f3f46'; c.lineWidth = 1.2; c.beginPath(); c.moveTo(-7, -16.6); c.quadraticCurveTo(0, -12, 7, -16.6); c.stroke(); c.strokeStyle = OL;
+	c.fillStyle = SKD; c.fillRect(-4, -20, 8, 5);
+	c.fillStyle = SK; [-1, 1].forEach((d) => { c.beginPath(); c.ellipse(d * 12.6, -31, 2.2, 3.2, 0, 0, 7); c.fill(); c.lineWidth = 1; c.stroke(); });
+	c.beginPath(); c.moveTo(-12, -37); c.quadraticCurveTo(-13, -24, -9, -19.6); c.quadraticCurveTo(-4.6, -15.4, 0, -15.4); c.quadraticCurveTo(4.6, -15.4, 9, -19.6); c.quadraticCurveTo(13, -24, 12, -37); c.quadraticCurveTo(11, -46, 0, -46.5); c.quadraticCurveTo(-11, -46, -12, -37); c.closePath();
+	c.fillStyle = SK; c.fill(); c.lineWidth = 1.3; c.stroke();
+	c.fillStyle = 'rgba(40,30,25,.18)'; c.beginPath(); c.moveTo(-11, -28); c.quadraticCurveTo(-8, -17, 0, -16); c.quadraticCurveTo(8, -17, 11, -28); c.quadraticCurveTo(6, -21, 0, -21.4); c.quadraticCurveTo(-6, -21, -11, -28); c.fill(); // light stubble
+	// faded sides (short, greyish) + tall pompadour swept to one side, forehead visible, side part on the left
+	c.fillStyle = 'rgba(60,50,45,.45)'; [-1, 1].forEach((d) => { c.beginPath(); c.moveTo(d * 12.2, -35); c.quadraticCurveTo(d * 12.8, -42, d * 10, -45); c.lineTo(d * 7.6, -44); c.quadraticCurveTo(d * 10.4, -40.6, d * 10.8, -35.4); c.closePath(); c.fill(); });
+	c.fillStyle = HR; c.beginPath();
+	c.moveTo(-8.6, -44.2); c.quadraticCurveTo(-9.6, -52, -3, -55.6); c.quadraticCurveTo(5, -59, 11.4, -52.6); c.quadraticCurveTo(13.4, -49, 11.4, -44.6);
+	c.quadraticCurveTo(8, -46.8, 3.2, -46.4); c.quadraticCurveTo(-2.6, -46.2, -5.6, -45.2); c.quadraticCurveTo(-7.4, -44.6, -8.6, -44.2); c.closePath(); c.fill(); c.lineWidth = 1.2; c.stroke();
+	c.strokeStyle = '#a8a29e'; c.lineWidth = 0.9; c.beginPath(); c.moveTo(-5.2, -54); c.quadraticCurveTo(-6.6, -49.6, -6.4, -45.4); c.stroke(); // side part
+	c.strokeStyle = '#57534e'; c.lineWidth = 0.6; c.beginPath(); c.moveTo(-3.4, -52.6); c.quadraticCurveTo(4, -56, 10.6, -50.6); c.moveTo(-2.4, -49.4); c.quadraticCurveTo(4, -52.4, 11, -47.4); c.stroke();
+	c.fillStyle = HR; c.beginPath(); c.roundRect(-9.4, -37.4, 7.4, 2, 1); c.roundRect(2, -37.4, 7.4, 2, 1); c.fill(); // thick brows
+	c.fillStyle = '#fff'; [-5.2, 5.2].forEach((ex) => { c.beginPath(); c.ellipse(ex, -32.6, 2, 1.1, 0, 0, 7); c.fill(); });
+	c.fillStyle = '#2b1a12'; [-5, 5.4].forEach((ex) => { c.beginPath(); c.arc(ex, -32.2, 0.95, 0, 7); c.fill(); }); // looking slightly down
+	c.strokeStyle = OL; c.lineWidth = 0.8; [-5.2, 5.2].forEach((ex) => { c.beginPath(); c.moveTo(ex - 2.2, -33.4); c.quadraticCurveTo(ex, -34.2, ex + 2.2, -33.4); c.stroke(); });
+	c.strokeStyle = SKD; c.lineWidth = 1; c.beginPath(); c.moveTo(-0.4, -31.6); c.quadraticCurveTo(-1.6, -27.6, -2.6, -27); c.quadraticCurveTo(0, -26, 2.6, -27); c.stroke();
+	c.fillStyle = '#7f1d1d';
+	if (talk > 0.05) { c.beginPath(); c.ellipse(0.4, -22.6, 2.6, 0.6 + talk * 1.6, 0, 0, 7); c.fill(); }
+	else { c.strokeStyle = '#7f1d1d'; c.lineWidth = 1; c.beginPath(); c.moveTo(-2.6, -23.2); c.quadraticCurveTo(0.6, -21.6, 3.2, -23.6); c.stroke(); }
+	c.restore();
+}
 function heart(c, x, y, k, a = 1) {
 	c.save(); c.globalAlpha = a; c.translate(x, y); c.scale(k, k);
 	c.beginPath(); c.moveTo(0, 2); c.bezierCurveTo(-3, 0, -2.6, -2.6, 0, -1.2); c.bezierCurveTo(2.6, -2.6, 3, 0, 0, 2); c.fillStyle = '#f43f5e'; c.fill(); c.lineWidth = 0.5; c.strokeStyle = OL; c.stroke();
@@ -417,6 +473,13 @@ export function drawClose(c, w, h, mood, t, who) {
 	else if (mood === 'shock') { for (let i = 0; i < 26; i++) { const x = (i / 26) * w; c.fillStyle = '#111'; c.fillRect(x, 0, 2 + (i % 3), h * (0.35 + ((i * 37) % 10) / 40)); } }
 	else if (mood === 'happy') { for (let i = 0; i < 9; i++) { const a = i * 0.7 + t, r = 50 + (i % 3) * 14; const x = hx + Math.cos(a) * r, y = hy + Math.sin(a) * r * 0.8; c.fillStyle = '#111'; c.save(); c.translate(x, y); c.rotate(t); c.beginPath(); for (let k = 0; k < 8; k++) { const rr = k % 2 ? 2 : 6; c.lineTo(Math.cos(k * Math.PI / 4) * rr, Math.sin(k * Math.PI / 4) * rr); } c.fill(); c.restore(); } }
 	else halftone(c, w, h);
+	if (who === 'yousef') {
+		speed(c, w, h, 78, 110, 'rgba(0,0,0,.8)', t, true);
+		drawYousef(c, 78, h + 22, 2.6, t, Math.abs(Math.sin(t * 9)));
+		c.strokeStyle = '#111'; c.lineWidth = 3; c.strokeRect(1.5, 1.5, w - 3, h - 3);
+		c.restore();
+		return;
+	}
 	if (who === 'maedeh') {
 		if (mood === 'angry') { for (let i = 0; i < 26; i++) { c.fillStyle = '#111'; c.fillRect((i / 26) * w, 0, 2 + (i % 3), h * (0.3 + ((i * 37) % 10) / 40)); } }
 		else for (let i = 0; i < 7; i++) { const u = (t * 0.3 + i / 7) % 1; heart(c, 20 + i * 20, h - u * h, 2.4, 1 - u); }
@@ -579,6 +642,50 @@ export function drawPanel(c, w, h, panel, t, worlds) {
 		burst(c, w * 0.62, h * 0.4, 16, 8, '#fef08a', t - 0.5, t);
 		sfx(c, 'زیپ ✓', w * 0.62, h * 0.4, 14, 0, '#16a34a', t - 0.5);
 		rainFx(c, w, h, t, 0.5);
+	} else if (sc === 'traffic') {
+		shake(2, 9);
+		const wd = worlds[8] || worlds[4];
+		scroller(c, w, h, wd, 0, 0);
+		for (let i = 0; i < 6; i++) { const x = i * 62 - 20 + Math.sin(t * 2 + i) * 1.5; c.fillStyle = ['#facc15', '#e2e8f0', '#94a3b8', '#facc15', '#ef4444', '#e2e8f0'][i]; c.strokeStyle = OL; c.lineWidth = 2; c.beginPath(); c.roundRect(x, h * 0.8 - 20, 48, 15, 4); c.fill(); c.stroke(); c.fillStyle = '#111'; c.beginPath(); c.arc(x + 10, h * 0.8 - 4, 5, 0, 7); c.arc(x + 38, h * 0.8 - 4, 5, 0, 7); c.fill(); }
+		drawL90(c, w * 0.45, h * 0.8 + 2, 1.7, t, false);
+		c.fillStyle = '#1d4ed8'; c.strokeStyle = OL; c.lineWidth = 2; c.beginPath(); c.roundRect(w * 0.82, h * 0.18, 34, 34, 4); c.fill(); c.stroke(); c.fillStyle = '#fff'; c.font = `900 22px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('P', w * 0.82 + 17, h * 0.18 + 18);
+		sfx(c, 'پر است!', w * 0.86, h * 0.48, 13, 0.12, '#ef4444', t - 0.5);
+		sfx(c, '۸:۵۵', w * 0.14, h * 0.2, 20, -0.08, '#fde047', t - 0.1);
+		sfx(c, 'بوق! بوق!', w * 0.5, h * 0.32, 18, 0.06, '#f8fafc', t - 0.3);
+	} else if (sc === 'trello') {
+		c.fillStyle = '#0ea5e9'; c.fillRect(0, 0, w, h);
+		['To Do', 'QC', 'Done'].forEach((col, i) => { const x = w * 0.18 + i * w * 0.22; c.fillStyle = 'rgba(255,255,255,.85)'; c.beginPath(); c.roundRect(x, h * 0.1, w * 0.19, h * 0.62, 5); c.fill(); c.fillStyle = '#0f172a'; c.font = `900 9px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(col, x + w * 0.095, h * 0.16); for (let j = 0; j < 4; j++) { c.fillStyle = ['#fca5a5', '#fde68a', '#86efac'][i]; c.fillRect(x + 5, h * 0.22 + j * 16, w * 0.19 - 10, 11); } });
+		for (let i = 0; i < 6; i++) { const u = (t * 1.6 + i / 6) % 1, x = w * 0.08 + u * w * 0.72, y = h * 0.3 + Math.sin(u * Math.PI) * -30 + i * 6; c.save(); c.translate(x, y); c.rotate(u * 3); c.fillStyle = '#fff'; c.strokeStyle = OL; c.lineWidth = 1.2; c.beginPath(); c.roundRect(-9, -6, 18, 12, 2); c.fill(); c.stroke(); c.fillStyle = '#ef4444'; c.fillRect(-7, -4, 6, 2); c.restore(); }
+		drawPerson(c, w * 0.08, h * 0.98, 1.4, 'yousef', { mood: 'smile' }, t);
+		heroAt(w * 0.9, h * 0.98, 'stand', -1, 1.7, 0.5, 0);
+		sfx(c, 'QC: ۹۸… ۹۹… ۱۰۰!', w * 0.5, h * 0.86, 15, -0.04, '#fde047', t - 0.2);
+		sfx(c, 'تق تق تق', w * 0.78, h * 0.08, 12, 0.1, '#fff', t - 0.5);
+	} else if (sc === 'bakhshi' || sc === 'rank') {
+		const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#e2e8f0'); g.addColorStop(1, '#94a3b8'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+		c.fillStyle = '#cbd5e1'; c.fillRect(w * 0.05, h * 0.1, w * 0.3, h * 0.38); c.fillStyle = '#64748b'; c.fillRect(0, h * 0.8, w, h);
+		c.fillStyle = '#1e293b'; c.font = `900 10px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('آژانس تبلیغاتی پند', w * 0.2, h * 0.07);
+		if (sc === 'bakhshi') {
+			shake(4, 1);
+			drawPerson(c, w * 0.78, h * 0.8, 1.9, 'bakhshi', { mood: 'angry' }, t);
+			c.save(); c.translate(w * 0.66, h * 0.44); c.rotate(-0.15); c.fillStyle = '#fff'; c.strokeStyle = OL; c.lineWidth = 1.5; c.beginPath(); c.rect(-14, -18, 28, 34); c.fill(); c.stroke(); c.fillStyle = '#dc2626'; c.font = `900 9px ${FF}`; c.fillText('اخراج!', 0, -6); c.fillStyle = '#94a3b8'; for (let i = 0; i < 3; i++) c.fillRect(-10, 2 + i * 5, 20, 2); c.restore();
+			heroAt(w * 0.16, h * 0.8, 'stand', 1, 2, 0, 0);
+			drawPerson(c, w * 0.32, h * 0.8, 1.5, 'shayan', { mood: 'shock' }, t);
+			drawPerson(c, w * 0.45, h * 0.8, 1.5, 'yousef', { mood: 'shock' }, t);
+			burst(c, w * 0.66, h * 0.2, 22, 10, '#fecaca', t - 0.3, t);
+			sfx(c, 'اخراجید!', w * 0.66, h * 0.2, 16, 0.1, '#dc2626', t - 0.3);
+		} else {
+			// ranking chart shooting up to #1
+			c.strokeStyle = '#16a34a'; c.lineWidth = 3; c.beginPath(); const k = Math.min(1, t * 0.8);
+			for (let i = 0; i <= 20 * k; i++) { const x = w * 0.08 + (i / 20) * w * 0.26, y = h * 0.44 - Math.pow(i / 20, 2) * h * 0.3; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke();
+			if (k >= 1) { burst(c, w * 0.34, h * 0.14, 16, 9, '#fde047', t - 1.25, t); sfx(c, '#1', w * 0.34, h * 0.14, 14, 0, '#16a34a', t - 1.25); }
+			const leave = Math.min(1, t * 0.35);
+			drawPerson(c, w * (0.7 + leave * 0.35), h * 0.8, 1.7, 'bakhshi', { mood: 'meh' }, t);
+			c.fillStyle = '#a16207'; c.strokeStyle = OL; c.lineWidth = 1.5; c.beginPath(); c.rect(w * (0.7 + leave * 0.35) - 12, h * 0.8 - 30, 24, 14); c.fill(); c.stroke(); // carrying a box
+			heroAt(w * 0.36, h * 0.8 - Math.abs(Math.sin(t * 5)) * 6, 'jump', 1, 1.9, 0.8, 0);
+			drawPerson(c, w * 0.5, h * 0.8, 1.5, 'shayan', { mood: 'laugh', clap: true }, t);
+			drawPerson(c, w * 0.6, h * 0.8, 1.5, 'yousef', { mood: 'laugh', clap: true }, t);
+			sfx(c, 'صفحه اول گوگل!', w * 0.5, h * 0.3, 18, -0.06, '#16a34a', t - 0.6);
+		}
 	} else if (sc === 'win') {
 		const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#fde68a'); g.addColorStop(1, '#fb923c');
 		c.fillStyle = g; c.fillRect(0, 0, w, h);
