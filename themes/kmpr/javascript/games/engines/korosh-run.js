@@ -866,10 +866,15 @@ export function mount(stage, api) {
 			b.vy = Math.min(9, b.vy + G * f);
 			const ovy = b.vy; b.vy = ovy * f; moveY(b); if (b.ground) b.vy = 0; else b.vy = ovy;
 		}
-		if (p.x < b.x + b.w && p.x + p.w > b.x && p.y < b.y + b.h && p.y + p.h > b.y) {
+		if (b.hp > 0 && p.x < b.x + b.w && p.x + p.w > b.x && p.y < b.y + b.h && p.y + p.h > b.y) { // a defeated (sinking) boss never hurts
 			if (s.shield > 0) damageBoss(1);
-			else if (p.vy > 0.4 && p.y + p.h - b.y < 14) { damageBoss(2); p.vy = keys.jump ? -8 : -6; }
-			else hurt();
+			else {
+				// generous head-stomp: feet in the top third while falling — or while the boss jumps up into you
+				const onHead = p.y + p.h - b.y < Math.max(14, b.h * 0.35);
+				if (onHead && (p.vy > 0.4 || (b.vy || 0) < -0.5)) { damageBoss(2); p.vy = keys.jump ? -8 : -6; p.stompT = 0.35; } // no position snap: it could push you through a ceiling
+				else if (onHead || (p.stompT || 0) > 0) { p.vy = Math.min(p.vy, -3); } // just bounce off his head, never a hit
+				else hurt();
+			}
 		}
 	};
 	const damageBoss = (d) => {
@@ -897,6 +902,7 @@ export function mount(stage, api) {
 		const p = s.p;
 		if (s.banner) s.banner.life -= f / 60;
 		if (s.shake > 0) s.shake -= f / 60;
+		if (s.p && s.p.stompT > 0) s.p.stompT -= f / 60;
 		if (s.shay && (s.shay.t += f / 60) > 2.3) s.shay = null;
 		if (s.quipCd > 0) s.quipCd -= f / 60;
 		if (s.quip && (s.quip.life -= f / 60) <= 0) s.quip = null;
@@ -1179,9 +1185,9 @@ export function mount(stage, api) {
 						else if (e.t === 'shield') { s.shield = 9; music.setSpeed(1.25); snd('power', 'level'); s.banner = { t: '🛡️ فایروال فعال!', life: 1.4 }; api.unlock('shield'); }
 					} else if (s.shield > 0) kill(e, true);
 					else if (e.t !== 'virus' && p.vy > 0.4 && p.y + p.h - e.y < 11) {
-						if (e.t === 'turret') { p.vy = keys.jump ? -7.5 : -5; }
+						if (e.t === 'turret') { p.y = e.y - p.h - 1; p.vy = keys.jump ? -7.5 : -5; p.stompT = 0.3; }
 						else { kill(e, e.t === 'spam'); p.vy = keys.jump ? -7.2 : -4.6; }
-					} else hurt();
+					} else if (!((p.stompT || 0) > 0)) hurt();
 				}
 			}
 			if (s.boss) updateBoss(f);
