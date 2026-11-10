@@ -10540,6 +10540,41 @@ html.is-standalone .gh {
 .kr-mini__btns button[data-m="back"] {
   background: #e2e8f0;
 }
+.kr-tomap {
+  position: absolute;
+  z-index: 10;
+  top: 13%;
+  left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 40px;
+  padding: 0.3rem 0.8rem;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #fff;
+  background: rgb(2 6 23 / 0.72);
+  border: 1.5px solid rgb(255 255 255 / 0.3);
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+.kr-tomap:hover {
+  background: rgb(2 6 23 / 0.9);
+  border-color: #fde047;
+}
+.kr-tomap[hidden] {
+  display: none;
+}
+@container (max-width: 600px) {
+  .kr-tomap span {
+    display: none;
+  }
+  .kr-tomap {
+    padding: 0.3rem 0.6rem;
+  }
+}
 .gc-top {
   margin-top: 1.5rem;
   display: flex;

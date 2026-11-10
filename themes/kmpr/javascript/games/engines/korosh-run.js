@@ -74,6 +74,7 @@ const AZIZI_QUIZ = [
 	['قبل از آپدیت افزونه‌ها؟', ['بکاپ کامل', 'شانسی آپدیت کن', 'فقط جمعه‌ها']],
 	['پنل مدیریت وردپرس کجاست؟', ['wp-admin', 'wp-coffee', 'Ctrl+Alt+Del']],
 ];
+const QUIZ_COL = ['#0ea5e9', '#f59e0b', '#ec4899'];
 const SEO_KINDS = [['🔑', '#fde047', 'کلمه کلیدی'], ['🔗', '#60a5fa', 'بک‌لینک'], ['⚡', '#4ade80', 'سرعت'], ['📝', '#f9a8d4', 'محتوا']];
 const pickQ = (k) => QUIPS[k][Math.floor(Math.random() * QUIPS[k].length)];
 const LAZY = 2.6; // seconds of sleepy start at each stage
@@ -350,7 +351,7 @@ function buildBioBoss() {
 	// a run with four skill books (power blocks) on the way, then the arena
 	const W = 96, map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
 	for (let x = 0; x < W; x++) for (let y = GY; y < ROWS; y++) map[y][x] = '#';
-	[10, 20, 30, 40].forEach((bx, i) => { map[GY - 4][bx] = 'P'; map[GY - 4][bx - 1] = 'B'; map[GY - 4][bx + 1] = 'B'; if (i % 2) for (let y = GY - 2; y < GY; y++) map[y][bx + 5] = '#'; });
+	[16, 34].forEach((bx) => { map[GY - 4][bx] = 'P'; }); // two «skill book» blocks (WordPress / PHP) on the way to Azizi
 	const arena = { x0: 52, x1: 82 };
 	for (let y = 3; y < GY; y++) map[y][arena.x1 + 1] = '#';
 	const quiz = [0, 1, 2].map((i) => arena.x0 + 5 + i * 8); // three answer blocks, hit from below
@@ -473,6 +474,11 @@ export function mount(stage, api) {
 		<div class="kr-pad__r"><button type="button" data-k="fire" class="kr-pad__b" aria-label="قدرت">⚡</button><button type="button" data-k="jump" class="kr-pad__a" aria-label="پرش">⤒</button></div>`;
 	stage.appendChild(pad);
 
+	// «🗺️ نقشه»: leave any stage / comic / mini-game and go back to the chapter map (progress is kept)
+	const mapBtn = document.createElement('button');
+	mapBtn.type = 'button'; mapBtn.className = 'kr-tomap'; mapBtn.hidden = true;
+	mapBtn.innerHTML = '🗺️ <span>نقشه</span>'; mapBtn.setAttribute('aria-label', 'برگشت به نقشه مرحله‌ها');
+	stage.appendChild(mapBtn);
 	const mapEl = document.createElement('div');
 	mapEl.className = 'kr-map';
 	mapEl.hidden = true;
@@ -575,6 +581,17 @@ export function mount(stage, api) {
 		});
 	};
 
+	const goMap = () => {
+		if (!s || s.over) return;
+		cancelAnimationFrame(raf); music.stop();
+		comic && comic(); comic = null;
+		stage.querySelectorAll('.kr-comic, .kr-mini').forEach((e) => e.remove());
+		Object.keys(keys).forEach((k) => (keys[k] = false));
+		s.mode = 'map'; s.boss = null; pad.hidden = true;
+		mapEl.hidden = false; renderMap();
+	};
+	L.on(mapBtn, 'click', (e) => { e.preventDefault(); goMap(); mapBtn.blur(); });
+	const syncMapBtn = setInterval(() => { mapBtn.hidden = !s || !mapEl.hidden || s.over || s.mode === 'attract'; }, 250);
 	const keys = { left: false, right: false, jump: false, fire: false, run: false, down: false };
 	let jumpPressed = 0, firePressed = false;
 
@@ -875,7 +892,7 @@ export function mount(stage, api) {
 				s.camMin = a.x0 * T - 8;
 				s.checkpoint = true; s.lv.check = (a.x0 - 3) * T; s.bossCheck = s.lv.check; // die here → restart at the boss, not the whole stage
 				for (let y = 3; y < GY; y++) s.lv.map[y][a.x0 - 1] = '#';
-				s.banner = { t: `👾 ${WORLDS[s.world].bossName}`, life: 2 };
+				s.banner = { t: b.type === 'azizi' ? '📘 جواب درست را از زیر بزن' : b.type === 'bakhshi' ? '🔑 سئو جمع کن، از «اخراج» فرار کن' : `👾 ${WORLDS[s.world].bossName}`, life: 2.4 };
 				snd('boss');
 				setTimeout(() => s && !s.over && b.hp > 0 && music.play('boss'), 700);
 			}
@@ -1280,7 +1297,8 @@ export function mount(stage, api) {
 		}
 
 		const target = clamp(p.x - view.vw * 0.4, 0, s.lv.W * T - view.vw);
-		if (target > s.cam || s.lv.side === 'courier') s.cam += (target - s.cam) * Math.min(1, 0.16 * f);
+		s.cam += (target - s.cam) * Math.min(1, 0.16 * f); // follows both ways: you can always walk back
+		s.cam = Math.max(s.cam, s.camMin || 0);
 		if (s.boss && s.boss.active && s.boss.hp > 0) s.cam = clamp(s.cam, s.camMin, s.boss.arena.x1 * T + 2 * T - view.vw);
 	};
 
@@ -1598,7 +1616,7 @@ export function mount(stage, api) {
 	};
 
 	const drawTile = (c, x, y, wd) => {
-		if (c === 'Q') { const px = x * T, py = y * T, blk = s.lv.quiz ? s.lv.quiz.findIndex((q) => x === q || x === q + 1) : -1; rr(px, py, T, T, 2, '#2563eb', OL, 1.4); if (s.lv.quiz && x === s.lv.quiz[blk]) text(['A', 'B', 'C'][blk], px + T, py + 12, 9, '#fff'); return; }
+		if (c === 'Q') { const px = x * T, py = y * T, blk = s.lv.quiz ? s.lv.quiz.findIndex((q) => x === q || x === q + 1) : -1, first = s.lv.quiz && x === s.lv.quiz[blk]; rr(px, py, T, T, first ? [3, 0, 0, 3] : [0, 3, 3, 0], QUIZ_COL[Math.max(0, blk)], OL, 1.4); R(px + 2, py + 2, T - 4, 2, 'rgba(255,255,255,.35)'); if (!first && blk >= 0) text(['A', 'B', 'C'][blk], px, py + 12, 10, '#fff'); return; }
 		const px = x * T;
 		let py = y * T;
 		if (s.parts.some((q) => q.k === 'bump' && q.x === x && q.y === y)) py -= 4;
@@ -1779,17 +1797,23 @@ export function mount(stage, api) {
 			ctx.restore();
 		}
 		if (s.boss && s.boss.type === 'azizi' && s.boss.active && s.boss.hp > 0 && s.quiz) {
-			// the question in a speech panel + each answer over its block (screen space)
-			const [q, ans] = AZIZI_QUIZ[s.quiz.qi];
-			ctx.font = '900 9px yekanBakh, Tahoma'; const qw = Math.min(view.vw - 20, ctx.measureText(q).width + 34);
-			rr(view.vw / 2 - qw / 2, 60, qw, 20, 8, '#fff', OL, 1.6); text(`📘 ${q}`, view.vw / 2, 74, 9, OL);
-			s.lv.quiz.forEach((x, i) => { const sx2 = (x + 1) * T - s.cam, label = ans[s.quiz.order[i]]; ctx.font = '900 7px yekanBakh, Tahoma'; const w2 = ctx.measureText(label).width + 10; rr(sx2 - w2 / 2, (GY - 6) * T - CAM_TOP - 6, w2, 13, 5, 'rgba(15,23,42,.88)', '#93c5fd', 1.1); text(label, sx2, (GY - 6) * T - CAM_TOP + 3.5, 7, '#fff'); });
+			// one compact card under the boss bar: question + the three answers with the colours/letters of their blocks
+			const [q, ans] = AZIZI_QUIZ[s.quiz.qi], cw = Math.min(view.vw - 16, 250), cx2 = view.vw / 2 - cw / 2, cy2 = 54;
+			rr(cx2, cy2, cw, 30, 8, 'rgba(2,6,23,.78)', 'rgba(147,197,253,.6)', 1);
+			text(q, view.vw / 2, cy2 + 10.5, 8, '#fff');
+			const colW = cw / 3;
+			[0, 1, 2].forEach((i) => {
+				const x0 = cx2 + colW * i, label = ans[s.quiz.order[i]]; // same left→right order as the blocks
+				circ(x0 + 8, cy2 + 21.5, 4.6, QUIZ_COL[i], null);
+				ctx.font = '900 5.5px yekanBakh, Tahoma'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(['A', 'B', 'C'][i], x0 + 8, cy2 + 23.4);
+				ctx.font = '700 6.5px yekanBakh, Tahoma'; ctx.fillStyle = '#e2e8f0'; ctx.textAlign = 'left'; ctx.fillText(label, x0 + 15, cy2 + 23.8, colW - 18);
+			});
 		}
 		const b = s.boss;
 		if (b && b.active && b.hp > 0) {
 			const w = Math.min(180, view.vw - 40), x = view.vw / 2 - w / 2;
 			rr(x, 26, w, 10, 4, '#1f2937'); rr(x + 1, 27, (w - 2) * (b.hp / b.max), 8, 3, '#ef4444', null);
-			text(b.type === 'azizi' ? `اعتماد آقای عزیزی: ${fa(Math.round((1 - b.hp / b.max) * 100))}٪ · جواب درست را از زیر بزن` : b.type === 'bakhshi' ? `رتبه سایت: ${fa(1 + Math.round((b.hp / b.max) * 49))} · سئو جمع کن، از «اخراج» فرار کن` : b.type === 'bakhshi' ? `رتبه سایت: ${fa(1 + Math.round((b.hp / b.max) * 49))} · ${WORLDS[s.world].bossName}` : WORLDS[s.world].bossName, view.vw / 2, 48, 9, '#fecaca');
+			text(b.type === 'azizi' ? `اعتماد عزیزی ${fa(Math.round((1 - b.hp / b.max) * 100))}٪` : b.type === 'bakhshi' ? `رتبه سایت #${fa(1 + Math.round((b.hp / b.max) * 49))}` : b.type === 'bakhshi' ? `رتبه سایت: ${fa(1 + Math.round((b.hp / b.max) * 49))} · ${WORLDS[s.world].bossName}` : WORLDS[s.world].bossName, view.vw / 2, 48, 9, '#fecaca');
 		}
 		if (s.banner && s.banner.life > 0) {
 			const by = b && b.active && b.hp > 0 ? 54 : 30;
@@ -1847,7 +1871,7 @@ export function mount(stage, api) {
 		},
 		pause() { if (comic && comic.pause) comic.pause(); cancelAnimationFrame(raf); music.stop(); Object.keys(keys).forEach((k) => (keys[k] = false)); },
 		resume() { if (comic && comic.resume) comic.resume(); if (s && !s.over && s.mode === 'play') { loop(); music.play(songFor(), s.shield > 0 ? 1.25 : 1); } },
-		destroy() { cancelAnimationFrame(raf); music.stop(); comic && comic(); L.off(); cv.destroy(); pad.remove(); mapEl.remove(); },
+		destroy() { clearInterval(syncMapBtn); cancelAnimationFrame(raf); music.stop(); comic && comic(); L.off(); mapBtn.remove(); cv.destroy(); pad.remove(); mapEl.remove(); },
 	};
 	current = inst;
 	// test hooks (QC bot): load a stage without its comic and step the simulation synchronously
