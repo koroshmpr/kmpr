@@ -37,7 +37,7 @@ if (file_exists(__DIR__ . '/games-rooms-extra.php')) {
 function kmpr_game_engines()
 {
     return array(
-        'korosh-run'   => array('label' => 'کوروش دیباگر (پلتفرمر)', 'max' => 600000, 'pps' => 1500, 'min_ms' => 8000),
+        'korosh-run'   => array('label' => 'کوروش دیباگر (پلتفرمر)', 'max' => 1500000, 'pps' => 1500, 'min_ms' => 8000),
         'jota'         => array('label' => 'سفر فضانورد (JotA)', 'max' => 500000, 'pps' => 900, 'min_ms' => 4000),
         'bug-hunter'   => array('label' => 'شکارچی باگ', 'max' => 200000, 'pps' => 600, 'min_ms' => 4000),
         'type-code'    => array('label' => 'تایپ کد', 'max' => 3000, 'pps' => 60, 'min_ms' => 20000),

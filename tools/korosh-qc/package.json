@@ -1,0 +1,1 @@
+{ "name": "korosh-qc", "private": true, "description": "QC bots for «کوروش دیباگر» (headless Chrome)", "dependencies": { "puppeteer-core": "^23.0.0" } }

@@ -1,0 +1,17 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="theme/public/css/style.css">
+<style>html,body{margin:0;background:#020617;overflow:hidden}#stage{position:relative;margin:0 auto;container-type:size}#stage canvas{display:block}</style></head>
+<body><div id="stage" class="gs-stage"></div>
+<script type="module">
+const list = await (await fetch('theme/public/js/games/chunks/')).text();
+const file = list.match(/korosh-run-[A-Z0-9]+\.js/)[0];
+const eng = await import('./theme/public/js/games/chunks/' + file);
+const touch = matchMedia('(pointer: coarse)').matches;
+const api = { setRatio() {}, setScore(v) { window.__score = v; }, hud() {}, sfx() {}, toast(t) { window.__toast = t; }, unlock(id) { (window.__ach ||= []).push(id); }, over(o) { window.__over = o; }, running: true, touch, reducedMotion: false };
+// size the stage like the site shell: 16:9 inside the viewport minus the header bar
+const hb = Number(new URLSearchParams(location.search).get('hb') || 64), st = document.getElementById('stage');
+const W = Math.min(innerWidth, (innerHeight - hb) * 16 / 9); st.style.width = W + 'px'; st.style.height = (W * 9 / 16) + 'px'; st.style.marginTop = hb + 'px';
+window.inst = eng.mount(document.getElementById('stage'), api);
+window.inst.start();
+window.__ready = true;
+</script></body></html>

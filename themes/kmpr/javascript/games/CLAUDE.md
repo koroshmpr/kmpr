@@ -1,6 +1,6 @@
 # Game Center (گیم‌سنتر) — context for agents
 
-**Before creating or changing any game, read and follow [GAME-RULES.md](GAME-RULES.md) (theme/identity, categories, characters, controls, sound, stability, performance, 6-place registration, mandatory browser test).**
+**Before creating or changing any game, read and follow [GAME-RULES.md](GAME-RULES.md) (theme/identity, categories, characters, controls, sound, stability, performance, 6-place registration, mandatory browser test). For «کوروش دیباگر» also read [KOROSH-DEBUGGER.md](KOROSH-DEBUGGER.md).**
 
 ## Map
 - PHP: `inc/games.php` (CPT `game`, engine registry `kmpr_game_engines()`, scores REST `kmpr/v1`, anti-cheat caps, one-time post seeder `kmpr_games_seed`), `games-online.php`/`games-rooms-extra.php` (online rooms), `games-pwa.php`, `games-admin-players.php`, `play-nudge.php`.
@@ -69,20 +69,5 @@ Local testing: WP CLI-less — run PHP with Local's binary `~/Library/Applicatio
 - More Iranian games: «اسم‌فامیل» (needs word lists), «منچ» (match engine), «حافظ‌خوان» daily, «پرسپولیس/استقلال پنالتی».
 - Optional WooCommerce bridge only if WooCommerce ever gets installed.
 
-## 2026-11-10 (story)
-- `korosh-run` renamed «کوروش دیباگر» (slug kept, seeder `$ver = 7`). Comic story in `engines/korosh-story.js`: INTRO (4 panels, first play only, flag `kmpr_kr_intro`; «📖 داستان» on the map), one panel before each of the 12 stages (`STAGES`), OUTRO before the win screen. Panels = canvas scenes + DOM caption/bubble (`.kr-comic` in sport-puzzle.css).
-- Hero (lib/hero.js) now: afro with round coil texture, defined face (straight nose, natural lips, proper ear), shirt-collar with shadow/top-stitch, flared sleeves, long loose shirt with curved shirt-tail hem that sways, coffee held upright with a bent elbow (cup counter-rotated).
-- Story uses the owner's real projects (Kaleh «ماست سون» night/lottery, Rozha treasure map, X-Vision contest, Khanesarmaye live prices); worlds renamed: سایت کاله / سرورهای قرعه‌کشی / کویر نقشه گنج / برج قیمت‌های زنده.
-- In game the hero is drawn at `HERO_FIT = 0.74` around the feet so the afro fits the 32px hitbox (no clipping into ceilings). No ear (owner's choice). `drawHero(..., tired)` 12th arg: glasses slide down, half-closed eye, droop, yawns; each stage starts sleepy for `LAZY` = 2.6 s (slower), comic panels show him tired.
-- Comic = manga page (B/W action panel + reaction close-up `drawClose`, page-turn, typewriter captions, SFX lettering). Enemies: bug = side-view glitch beetle `drawBeetle` (shared with comics); new virus/turret art.
-- Hacker (`s.hk`, updateHacker): warns 1.6 s, runs across, steals ≤10 coins + plants a bug; stomp/shoot = +1000 & coins back. Programmer one-liners `QUIPS` (speech bubble, cooldown); death = spin + halo ghost + `die` quip.
-- Side stories (not in progress; n ≥ 100): 100 L90 drive (auto-run, 3 car HP), 101 Maedeh's street (roses refill «حوصله مائده»), 102 war mission Bumehen→Pasdaran in the cousin's 207 (brake/gas, bomb warnings). Map cards unlock at progress ≥3 / ≥6; saves `kmpr_kr_side`, `kmpr_kr_war`.
-- After stage 5 (Kaleh lottery boss): Makan party cutscene `AWARD` (Negar, Shayan, Maedeh, Mohammad-Hossein); replay «🏆 جشن ماکان» on the map.
-- Shayan corner cameo (`drawShayan` caricature, `cameo()`): ≤1 per stage, only at good moments (2nd power-up, 7 kills, hacker caught, perfect deploy, rarely at the sleepy start).
-- TODO (owner asked): in-engine stage-intro animations (getting out of bed + bag, working from home, coffee delivery → start).
-- Side 103 «زیپ کیف · منوچهری» (`buildRain`): rain + lightning, puddles slow you down, timed work tasks (📌 bug spawns ahead, 11 s to debug it, late = hurt). Unlocks at progress ≥4, save `kmpr_kr_rain`.
-- Article images (blog commit c4c3339): author photo + default cover are ACF options «تصاویر مقالات» (Media Library); pack covers are deleted from the theme on the server after import.
-- Chapter «پند پلاس» (104–106, save `kmpr_kr_pand` 0..3, unlocks at progress ≥3): 104 morning traffic → «پارکینگ پند» (drive, 110 s), 105 Trello QC (`buildQC`, Yousef's QC cards fly in — collect them; spawn rate rises with `qcDone`, Yousef bust + lines bottom-left), 106 boss «آقای بخشی» (`buildPandBoss`, boss type `bakhshi`, bar shows «رتبه سایت»). Cast in korosh-story.js: `drawYousef`, `drawPerson(…,'bakhshi'|'yousef'|'shayan'|'negar'|'mh')`.
-- Chapter «بیورزونانس» (107–109, save `kmpr_kr_bio`): 107 `showOCR` = scan mini-game (press in the green zone ×3) then spot-the-difference (book line above OCR output, 4 pages, hint after 10 s, pass ≥60%), 108 «۲۵٬۰۰۰ مقاله» (`buildArticles`, Hossein walker foe, article counter, bulk-upload finale), 109 skill books + boss «آقای عزیزی» (`buildBioBoss`, bar = trust %). Cast: `shayan2` (second friend Shayan), `hossein`, `azizi`.
-- Chapter «سربازی» (110–112, save `kmpr_kr_army`): 110 courier (`buildCourier`, 3 garrison gates with mailboxes, goal locked until all delivered, olive uniform form `army`), 111 Shahriar fuel bluff dialog `showDialog` (2 slips = fail), 112 bus run to «پادگان ۲۲۱ مراغه» (drive, model `bus`) → outro: teacher's 100/100 (real 130).
-- MAP ORDER = owner's real chronology (renderMap `mainW()`): ۱ سربازی → ۲ بیورزونانس → ۳ پند پلاس → ۴ ماکان (Kaleh worlds 1–2 + Maedeh) → ۵ گیلدا → ۶ خانه سرمایه → ۷ جنگ و شبا (Pasdaran mission) → ۸ زیپ کیف. Chapters 2/3 unlock after the previous one; war after main progress ≥9; zip after war. Main worlds stay open from the start.
+## «کوروش دیباگر» (korosh-run)
+**Single source of truth: [KOROSH-DEBUGGER.md](KOROSH-DEBUGGER.md)** — real-life chronology of chapters/stages, cast (from the owner's photos), systems & code map, the «add a chapter» checklist and the QC bots in `tools/korosh-qc/`. Read it before touching the game; update it with every new chapter.

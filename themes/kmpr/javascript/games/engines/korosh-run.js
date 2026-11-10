@@ -88,7 +88,7 @@ function buildLevel(n) {
 	const world = Math.floor(n / STAGES_PER), st = n % STAGES_PER, isBoss = st === 2;
 	const wd = WORLDS[world];
 	const r = rng(4242 + n * 7919);
-	const W = isBoss ? 120 : 180 + st * 25 + world * 12;
+	const W = isBoss ? 140 : 180 + st * 25 + world * 12; // boss maps leave room so the 26-tile arena + its wall always fit
 	const map = Array.from({ length: ROWS }, () => Array(W).fill('.'));
 	const ents = [], warps = [];
 	const set = (x, y, c) => x >= 0 && x < W && y >= 0 && y < ROWS && (map[y][x] = c);
@@ -97,7 +97,7 @@ function buildLevel(n) {
 	const enemy = (t, tx, ty = GY - 1) => { if (calm <= 0) ents.push({ t, x: tx * T, y: ty * T }); };
 	const foe = () => wd.foes[Math.floor(r() * wd.foes.length)];
 	const diff = Math.min(1, (n + 1) / TOTAL);
-	const endX = isBoss ? W - 34 : W - 30;
+	const endX = isBoss ? 86 : W - 30;
 	let power = 0, shield = r() < 0.5, secret = false, oneUp = false, alcove = false;
 	flat(14);
 	set(8, GY - 4, 'P'); power++;
@@ -548,7 +548,8 @@ export function mount(stage, api) {
 	const tileAt = (px, py) => {
 		const tx = Math.floor(px / T), ty = Math.floor(py / T);
 		if (ty < 0) return '.';
-		if (ty >= ROWS || tx < 0 || tx >= s.lv.W) return tx < 0 ? '#' : '.';
+		if (ty >= ROWS) return '.';
+		if (tx < 0 || tx >= s.lv.W) return '#'; // the level edges are solid: you can never walk off the map
 		return s.lv.map[ty][tx];
 	};
 	const SOLID = new Set(['#', 'B', '?', 'M', 'P', '*', 'U', 'S', 's', 'W', 'w', '=', 'X']);
@@ -827,7 +828,9 @@ export function mount(stage, api) {
 		if (b.type === 'server') {
 			b.x += b.vx * f;
 			if (b.x < lx || b.x > rx) { b.vx *= -1; b.x = clamp(b.x, lx, rx); }
-			b.y = 6 * T + Math.sin(b.t * 2) * 18;
+			// hovers, but swoops down near the floor every 6 s so beans / code shots can reach it too
+			const sw = b.t % 6 > 4.4 ? Math.sin(((b.t % 6) - 4.4) / 1.6 * Math.PI) : 0;
+			b.y = 6 * T + Math.sin(b.t * 2) * 18 * (1 - sw) + sw * (GY * T - b.h - 6 * T - 2);
 			if (every(1.4)) bossShot(b.x + b.w / 2, b.y + b.h, (p.x - b.x) / 60, -2.5);
 		} else {
 			if (b.type === 'megabug') {
@@ -1697,8 +1700,13 @@ export function mount(stage, api) {
 		if (s.banner && s.banner.life > 0) {
 			const by = b && b.active && b.hp > 0 ? 54 : 30;
 			ctx.globalAlpha = Math.min(1, s.banner.life * 1.5);
-			rr(view.vw / 2 - 110, by, 220, 26, 8, 'rgba(2,6,23,.75)', '#fbbf24', 1.5);
-			text(s.banner.t, view.vw / 2, by + 18, 12, '#fde68a');
+			// the pill grows with the text and the font shrinks if the text is wider than the view
+			let fs = 12; ctx.font = `900 ${fs}px yekanBakh, Tahoma`;
+			let tw = ctx.measureText(s.banner.t).width; const maxW = view.vw - 24;
+			if (tw + 28 > maxW) { fs = Math.max(8, Math.floor(fs * (maxW - 28) / tw)); ctx.font = `900 ${fs}px yekanBakh, Tahoma`; tw = ctx.measureText(s.banner.t).width; }
+			const bw = Math.min(maxW, Math.max(220, tw + 28));
+			rr(view.vw / 2 - bw / 2, by, bw, 26, 8, 'rgba(2,6,23,.75)', '#fbbf24', 1.5);
+			text(s.banner.t, view.vw / 2, by + 13 + fs * 0.42, fs, '#fde68a');
 			ctx.globalAlpha = 1;
 		}
 	};
@@ -1748,7 +1756,13 @@ export function mount(stage, api) {
 		destroy() { cancelAnimationFrame(raf); music.stop(); comic && comic(); L.off(); cv.destroy(); pad.remove(); mapEl.remove(); },
 	};
 	current = inst;
-	stage.kmprDebug = { get s() { return s; }, playStage, cameo: (k) => cameo(k), setForm, enterRoom, damageBoss, buildLevel };
+	// test hooks (QC bot): load a stage without its comic and step the simulation synchronously
+	stage.kmprDebug = {
+		get s() { return s; }, playStage, cameo: (k) => cameo(k), setForm, enterRoom, damageBoss, buildLevel, buildSide, keys,
+		press: (k, d) => press(k, d),
+		load: (n) => { comic && comic(); comic = null; mapEl.hidden = true; if (!s) s = { ...blank() }; s.mode = 'play'; loadStage(n, false); },
+		sim: (frames, bot) => { for (let i = 0; i < frames && s && !s.over && s.mode === 'play'; i++) { if (bot) bot(s, keys, press); update(1); } return s; },
+	};
 	return inst;
 }
 

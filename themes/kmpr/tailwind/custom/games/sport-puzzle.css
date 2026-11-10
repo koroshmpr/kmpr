@@ -561,3 +561,11 @@
 .kr-ocr__bk { min-width: 1.6rem; text-align: center; font-size: clamp(1.15rem, 3.6cqw, 1.7rem); color: #44403c; }
 .kr-ocr__ch.is-hint { animation: kr-ocr-hint 1s infinite; }
 @keyframes kr-ocr-hint { 50% { background: rgb(239 68 68 / 0.2); } }
+/* short screens (phones in landscape): picture and answers side by side so the dialog fits the stage */
+@container (max-height: 470px) {
+	.kr-dlg .kr-comic__box { width: min(100%, 54rem); display: grid; grid-template-columns: 1.1fr 1fr; gap: 0.5rem; align-items: center; }
+	.kr-dlg .kr-comic__k, .kr-dlg .kr-comic__bar { grid-column: 1 / -1; }
+	.kr-dlg__opts { gap: 0.3rem; }
+	.kr-dlg__opt { min-height: 40px; padding: 0.4rem 0.7rem; font-size: 0.8rem; box-shadow: 3px 3px 0 #111; }
+	.kr-dlg .kr-comic__say { font-size: 0.72rem; max-width: 80%; }
+}
