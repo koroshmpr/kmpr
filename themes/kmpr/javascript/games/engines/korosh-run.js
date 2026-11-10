@@ -597,7 +597,7 @@ export function mount(stage, api) {
 		if (lv.side === 'date') { s.pat = 100; }
 		api.hud({ level: lv.side ? 'فرعی' : `${fa(n + 1)} از ${fa(TOTAL)}`, levelLabel: 'مرحله', lives: s.lives, extra: fa(s.coins), extraLabel: 'سکه' });
 		s.arts = 0;
-		s.banner = { t: lv.side ? (lv.side === 'courier' ? '📨 ماموریت غیرممکن: سه نامه را به سه پادگان برسان!' : n === ARMY0 + 2 ? '🚌 تا مراغه و برگشت؛ قبل از کلاس فردا شب!' : lv.side === 'articles' ? '📄 مقاله‌ها را جمع کن؛ حسین ایراد می‌گیرد، از رویش بپر!' : lv.side === 'bio' ? '📚 کتاب‌های مهارت را بگیر و قوی شو؛ آخرش آقای عزیزی!' : lv.side === 'qc' ? '🗂 کارت‌های QC یوسف را بگیر؛ هرچه تندتر، او هم تندتر!' : lv.side === 'pand' ? '👔 آقای بخشی: با هر ضربه رتبه سایت بالاتر می‌رود' : n === PAND0 ? '🅿️ تا ساعت ۹ برس پارکینگ پند!' : lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
+		s.banner = { t: lv.side ? (lv.side === 'courier' ? '📨 سه نامه، سه پادگان: از زیر هر راهبند رد شو تا نامه تحویل شود!' : n === ARMY0 + 2 ? '🚌 تا مراغه و برگشت؛ قبل از کلاس فردا شب!' : lv.side === 'articles' ? '📄 مقاله‌ها را جمع کن؛ حسین ایراد می‌گیرد، از رویش بپر!' : lv.side === 'bio' ? '📚 کتاب‌های مهارت را بگیر و قوی شو؛ آخرش آقای عزیزی!' : lv.side === 'qc' ? '🗂 کارت‌های QC یوسف را بگیر؛ هرچه تندتر، او هم تندتر!' : lv.side === 'pand' ? '👔 آقای بخشی: با هر ضربه رتبه سایت بالاتر می‌رود' : n === PAND0 ? '🅿️ تا ساعت ۹ برس پارکینگ پند!' : lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
 		music.play(songFor());
 	};
 	const addScore = (v, x, y) => { s.score += v; api.setScore(s.score); if (x !== undefined) s.pops.push({ x, y, t: `+${fa(v)}`, life: 0.8 }); };
@@ -981,7 +981,8 @@ export function mount(stage, api) {
 
 		if (s.lv.side === 'drive' && !s.won && !s.dying) { keys.right = true; keys.left = false; keys.run = true; firePressed = false; }
 		if (s.lv.side === 'courier' && !s.won && !s.dying) {
-			for (const g of s.lv.gates) if (!g.done && Math.abs(p.x + p.w / 2 - (g.x + 3) * T) < 14 && p.ground) {
+			const pc = p.x + p.w / 2;
+			for (const g of s.lv.gates) if (!g.done && pc > g.x * T - 4 && pc < (g.x + 6.5) * T) {
 				g.done = true; s.delivered++; addScore(800, (g.x + 3) * T, GY * T - 50); snd('level', 'level');
 				s.banner = { t: `📨 نامه ${fa(s.delivered)} از ۳ تحویل شد ✓`, life: 1.6 };
 				for (let i = 0; i < 8; i++) s.parts.push({ k: 'brick', x: (g.x + 3) * T, y: GY * T - 30, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 3, life: 0.7, c: '#fde68a' });
@@ -1180,7 +1181,7 @@ export function mount(stage, api) {
 		}
 
 		// goal: the DEPLOY button (step on it)
-		if (s.lv.side === 'courier' && s.delivered < 3 && p.x > s.lv.goal.x - 40) { p.x = s.lv.goal.x - 40; p.vx = Math.min(0, p.vx); if (!s.banner || s.banner.life <= 0) s.banner = { t: `هنوز ${fa(3 - s.delivered)} نامه مانده! برگرد 📨`, life: 1.4 }; }
+		if (s.lv.side === 'courier' && s.delivered < 3 && p.x > s.lv.goal.x - 40) { p.x = s.lv.goal.x - 40; p.vx = Math.min(0, p.vx); if (!s.banner || s.banner.life <= 0) { const miss = s.lv.gates.findIndex((g) => !g.done); s.banner = { t: `نامه پادگان ${['۰۱', '۰۶', '۲۱'][miss]} جا ماند! به چپ برگرد ← 📨`, life: 1.6 }; } }
 		if (s.goalOn && !s.lv.isRoom && !s.won) {
 			const g = s.lv.goal, bx = g.x, by = g.y - 30;
 			if (p.x + p.w > bx + 2 && p.x < bx + 30 && p.y + p.h >= by - 2) {
@@ -1201,7 +1202,7 @@ export function mount(stage, api) {
 		}
 
 		const target = clamp(p.x - view.vw * 0.4, 0, s.lv.W * T - view.vw);
-		if (target > s.cam) s.cam += (target - s.cam) * Math.min(1, 0.16 * f);
+		if (target > s.cam || s.lv.side === 'courier') s.cam += (target - s.cam) * Math.min(1, 0.16 * f);
 		if (s.boss && s.boss.active && s.boss.hp > 0) s.cam = clamp(s.cam, s.camMin, s.boss.arena.x1 * T + 2 * T - view.vw);
 	};
 
@@ -1648,6 +1649,7 @@ export function mount(stage, api) {
 			rr(gx + 64, gy - 36, 22, 36, 2, '#4d5d3a', OL, 1.2); R(gx + 68, gy - 30, 14, 9, '#bae6fd');
 			rr(gx + 40, gy - 18, 14, 18, 2, g.done ? '#16a34a' : '#b45309', OL, 1.2); text(g.done ? '✓' : '📨', gx + 47, gy - 6, 8, '#fff');
 			text(`پادگان ${['۰۱', '۰۶', '۲۱'][s.lv.gates.indexOf(g)]}`, gx + 48, gy - 58, 7, '#1c1917');
+			if (!g.done) text('📨 ▼', gx + 48, gy - 70 - Math.abs(Math.sin(s.t / 8)) * 6, 10, '#fde047');
 		});
 		if (s.lv.side === 'rain') s.lv.puddles.forEach(([a, b]) => { ctx.beginPath(); ctx.ellipse((a + b + 1) * T / 2, GY * T + 1, (b - a + 1) * T / 2, 3.5, 0, 0, 7); ctx.fillStyle = 'rgba(96,165,250,.55)'; ctx.fill(); ctx.strokeStyle = 'rgba(219,234,254,.7)'; ctx.lineWidth = 1; ctx.stroke(); });
 		(s.bombs || []).forEach((b) => {

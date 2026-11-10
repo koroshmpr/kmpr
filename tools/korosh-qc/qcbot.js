@@ -1,6 +1,6 @@
 const pp = require('puppeteer-core');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const STAGES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100, 101, 102, 103, 104, 105, 106, 108, 109, 110, 112];
+const STAGES = (process.env.ST || "0,1,2,3,4,5,6,7,8,9,10,11,100,101,102,103,104,105,106,108,109,110,112").split(",").map(Number);
 const SEEDS = Number(process.argv[2] || 1);
 (async () => {
   const br = await pp.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: 'new' });
