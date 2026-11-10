@@ -1227,6 +1227,9 @@ export function mount(stage, api) {
 	const text = (t, x, y, size, color, align = 'center') => { ctx.font = `900 ${size}px yekanBakh, Tahoma`; ctx.textAlign = align; ctx.lineWidth = 3; ctx.strokeStyle = OL; ctx.strokeText(t, x, y); ctx.fillStyle = color; ctx.fillText(t, x, y); };
 
 	const heroFrame = (p, air) => (air ? 'jump' : Math.abs(p.vx) < 0.15 ? 'stand2' : 'run');
+	// what Korosh carries in this stage (the dev laptop power-up replaces it)
+	const HOLD_SIDE = { date: 'flowers', rain: 'umbrella', courier: 'letter', articles: 'papers', bio: 'book', qc: 'laptop', pand: 'laptop' };
+	const holdFor = () => (s.big && s.form === 'dev' ? 'none' : s.lv.side ? HOLD_SIDE[s.lv.side] || 'coffee' : ['coffee', 'yogurt', 'bag', 'phone'][s.world] || 'coffee');
 	const drawPlayer = () => {
 		const p = s.p, air = !p.ground && !s.won;
 		if (p.inv > 0 && Math.floor(s.t / 4) % 2) return;
@@ -1253,7 +1256,7 @@ export function mount(stage, api) {
 		ctx.save(); ctx.translate(fx0, fy0); ctx.scale(HERO_FIT, HERO_FIT);
 		if (s.dying) { ctx.translate(0, -p.h / 2); ctx.rotate((2.4 - s.dying) * 7); ctx.translate(0, p.h / 2); }
 		ctx.translate(-fx0, -fy0);
-		drawHero(ctx, p.x + p.w / 2, p.y + oy + p.h - HERO_H[size], size, form, s.won ? (Math.sin(s.t / 7) > 0 ? 'jump' : 'stand') : heroFrame(p, air), p.face, sx, sy, p.anim / 4, p.shoot > 0 ? p.shoot / 0.24 : 0, Math.min(1, (s.lazy || 0) / LAZY));
+		drawHero(ctx, p.x + p.w / 2, p.y + oy + p.h - HERO_H[size], size, form, s.won ? (Math.sin(s.t / 7) > 0 ? 'jump' : 'stand') : heroFrame(p, air), p.face, sx, sy, p.anim / 4, p.shoot > 0 ? p.shoot / 0.24 : 0, Math.min(1, (s.lazy || 0) / LAZY), holdFor());
 		ctx.restore();
 		if (s.big && s.form === 'dev') { rr(p.x + p.w / 2 + p.face * 6 - 4, p.y + 21, 9, 6, 1, '#cbd5e1', OL, 1); R(p.x + p.w / 2 + p.face * 6 - 3, p.y + 22, 7, 4, '#22d3ee'); }
 		if (s.shield > 0) { ctx.strokeStyle = `hsl(${(s.t * 12) % 360} 90% 60%)`; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(p.x + p.w / 2, p.y + p.h / 2, 13, p.h / 2 + 4, 0, 0, 7); ctx.stroke(); }

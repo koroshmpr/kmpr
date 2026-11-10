@@ -60,6 +60,7 @@
 - **`lv.side`** رفتار ویژه را روشن می‌کند: `drive` (حرکت خودکار، `model: l90|bus`، `goalLabel`)، `war`، `date`، `rain`، `qc`، `pand`، `articles`، `bio`، `courier`.
 - **کمیک:** `showComic(host, panels, {worlds, label, done, sound})`. هر پنل این فیلدها را دارد: `{scene?, cap, say, mood (shock|fire|happy|tired|angry), who? (maedeh|yousef), tired?, world, boss?}`. صحنه‌ها داخل `drawPanel` هستند: `desk alarm army dive win phone drive meet party award gaffe laugh zipper shop traffic trello bakhshi rank bio articles azizi levelup army fuel class grade`. اگر `scene` نداشته باشد، صحنه پیش‌فرض دویدن با تم همان world است (و برای باس، صحنه VS).
 - **پازل‌ها:** `showOCR` (اسکن و پیدا کردن تفاوت) و `showDialog` (دیالوگ بنزین؛ سؤال‌ها در `FUEL_Q`).
+- **چیزی که در دست کوروش است** (`drawHero(..., hold)` و `holdFor()` / `HOLD_SIDE` در موتور): کاله ☕ قهوه · قرعه‌کشی 🥛 ماست سون · گیلدا 👜 کیف · خانه سرمایه 📱 گوشی با نمودار · مائده 💐 دسته گل · زیپ ☂️ چتر بالای سر · نامه‌رسانی ✉️ نامه · مقاله‌ها 📄 کاغذ · عزیزی 📘 کتاب WP · QC و بخشی 💻 لپ‌تاپ. با پاورآپ لپ‌تاپ (`dev`) دست خالی می‌شود. برای فصل جدید، آیتمش را در `drawHeld` و `HOLD_SIDE` اضافه کن.
 - **جمله‌ها:** `QUIPS` (کوروش؛ با فاصله زمانی)، `SHAYAN_LINE`، و جمله‌های یوسف داخل مرحله QC.
 - **مسیر برد:** در `update` → بلوک `if (s.won <= 0)` به ترتیب `ARMY0 → BIO0 → PAND0 → rain → war → side(مائده) → main` بررسی می‌شود.
 - **تصمیم‌های فنی که نباید برگردند:**

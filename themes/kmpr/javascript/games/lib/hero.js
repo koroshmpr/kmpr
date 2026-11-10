@@ -44,6 +44,62 @@ const sleeve = (ctx, fill, hem) => {
 	ctx.fillStyle = fill; ctx.fill(); ctx.lineWidth = 0.9; ctx.strokeStyle = OL; ctx.stroke();
 	ctx.beginPath(); ctx.moveTo(-2.5, 2.8); ctx.quadraticCurveTo(0, 3.4, 2.5, 2.8); ctx.lineWidth = 0.4; ctx.strokeStyle = hem; ctx.stroke();
 };
+let umbrellaT = null;
+function drawCanopy(ctx, now) {
+	ctx.save(); ctx.setTransform(umbrellaT); ctx.rotate(Math.sin(now * 2) * 0.05);
+	ctx.beginPath(); ctx.moveTo(-13, -32); ctx.quadraticCurveTo(0.8, -46, 14.6, -32);
+	for (let i = 0; i < 4; i++) ctx.quadraticCurveTo(11.15 - i * 6.9, -34, 7.7 - i * 6.9, -32);
+	ctx.closePath(); ctx.fillStyle = '#2563eb'; ctx.fill(); ctx.lineWidth = 0.9; ctx.strokeStyle = OL; ctx.stroke();
+	ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 0.5; ctx.beginPath(); ctx.moveTo(0.8, -39.4); ctx.lineTo(-5.2, -32.6); ctx.moveTo(0.8, -39.4); ctx.lineTo(7, -32.6); ctx.stroke();
+	ctx.fillStyle = OL; ctx.beginPath(); ctx.arc(0.8, -39.6, 0.6, 0, 7); ctx.fill();
+	ctx.restore();
+}
+/** stage-themed item in the front hand (frame: fist at 0,0, always upright). */
+function drawHeld(ctx, hold, now, run, shoot) {
+	const thumb = () => rr(ctx, -0.2, -0.9, 1.6, 1.8, 0.8, SKIN, 0.6);
+	switch (hold) {
+		case 'none': return;
+		case 'yogurt': // the «ماست سون» cup
+			ctx.beginPath(); ctx.moveTo(0.2, -3.6); ctx.lineTo(4.4, -3.6); ctx.lineTo(3.9, 1.4); ctx.lineTo(0.7, 1.4); ctx.closePath(); ctx.fillStyle = '#f8fafc'; ctx.fill(); ctx.lineWidth = 0.8; ctx.strokeStyle = OL; ctx.stroke();
+			ctx.fillStyle = '#1d4ed8'; ctx.fillRect(0.6, -2.2, 3.4, 1.6); ctx.fillStyle = '#fff'; ctx.font = '900 1.3px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('7', 2.3, -0.9);
+			rr(ctx, 0, -4.3, 4.6, 0.9, 0.4, '#e5e7eb', 0.6); thumb(); return;
+		case 'bag': // Gilda handbag hanging from the fist
+			ctx.strokeStyle = OL; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.arc(1.2, 0.6, 1.6, Math.PI, 0); ctx.stroke();
+			rr(ctx, -1.2, 0.8, 5, 4, 1.2, '#be185d', 0.8); ctx.fillStyle = '#fbcfe8'; ctx.fillRect(-0.6, 2, 3.8, 0.6); thumb(); return;
+		case 'phone': // phone with a live price chart
+			rr(ctx, 0.2, -4.6, 3, 5.4, 0.6, '#0f172a', 0.7); ctx.fillStyle = '#022c22'; ctx.fillRect(0.6, -4.1, 2.2, 4.2);
+			ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 0.35; ctx.beginPath(); ctx.moveTo(0.7, -0.6); ctx.lineTo(1.3, -1.6); ctx.lineTo(1.8, -1.1); ctx.lineTo(2.7, -3.4); ctx.stroke(); thumb(); return;
+		case 'flowers': // bouquet for Maedeh
+			ctx.strokeStyle = '#15803d'; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(1.4, 0.4); ctx.lineTo(0.8, -3.4); ctx.moveTo(1.4, 0.4); ctx.lineTo(2.2, -3.6); ctx.moveTo(1.4, 0.4); ctx.lineTo(3.2, -3); ctx.stroke();
+			[[0.8, -3.8, '#e11d48'], [2.2, -4.2, '#f43f5e'], [3.3, -3.3, '#be123c']].forEach(([x, y, c]) => { ctx.beginPath(); ctx.arc(x, y, 0.95, 0, 7); ctx.fillStyle = c; ctx.fill(); ctx.lineWidth = 0.4; ctx.strokeStyle = OL; ctx.stroke(); });
+			ctx.fillStyle = '#fde68a'; ctx.beginPath(); ctx.moveTo(0.2, -1.4); ctx.lineTo(3.2, -1.4); ctx.lineTo(1.9, 0.9); ctx.closePath(); ctx.fill(); thumb(); return;
+		case 'umbrella': // shaft in the hand; the canopy is drawn after the head (see drawCanopy) so the afro never hides it
+			ctx.strokeStyle = OL; ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(0.8, 1.2); ctx.lineTo(0.8, -35); ctx.stroke();
+			ctx.beginPath(); ctx.arc(0.2, 1.2, 0.7, 0, Math.PI); ctx.stroke();
+			umbrellaT = ctx.getTransform();
+			thumb(); return;
+		case 'letter': // sealed envelope
+			rr(ctx, -0.2, -3.2, 5, 3.4, 0.4, '#fef3c7', 0.7); ctx.strokeStyle = OL; ctx.lineWidth = 0.5; ctx.beginPath(); ctx.moveTo(-0.2, -3.2); ctx.lineTo(2.3, -1.4); ctx.lineTo(4.8, -3.2); ctx.stroke();
+			ctx.fillStyle = '#b91c1c'; ctx.beginPath(); ctx.arc(2.3, -1.2, 0.6, 0, 7); ctx.fill(); thumb(); return;
+		case 'papers': // stack of articles
+			for (let i = 2; i >= 0; i--) rr(ctx, 0 + i * 0.4, -3.4 - i * 0.5, 4.2, 4.6, 0.3, i ? '#e2e8f0' : '#fff', 0.5);
+			ctx.fillStyle = '#94a3b8'; for (let i = 0; i < 3; i++) ctx.fillRect(0.6, -2.6 + i * 1.1, 3 - (i % 2), 0.4); thumb(); return;
+		case 'book': // WordPress book
+			rr(ctx, -0.2, -4.2, 4.6, 5.6, 0.5, '#2563eb', 0.7); ctx.fillStyle = '#fff'; ctx.font = '900 1.6px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('WP', 2.1, -1.3); ctx.fillStyle = '#1e3a8a'; ctx.fillRect(-0.2, -4.2, 0.8, 5.6); thumb(); return;
+		case 'laptop': // closed laptop under the hand
+			rr(ctx, -1, -1.2, 6.4, 3.6, 0.6, '#94a3b8', 0.7); ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.arc(2.2, 0.6, 0.5, 0, 7); ctx.fill(); thumb(); return;
+		default: // coffee to go (steaming when standing)
+			rr(ctx, 0.4, -3.4, 3.6, 4.8, 0.8, '#fafaf5', 0.8);
+			ctx.fillStyle = '#b45309'; ctx.fillRect(0.6, -1.6, 3.2, 1.3);
+			rr(ctx, 0.1, -4.2, 4.2, 1.1, 0.5, '#e7e5e4', 0.7);
+			thumb();
+			if (!run && shoot <= 0) {
+				ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 0.45;
+				const st = now * 2;
+				ctx.beginPath(); ctx.moveTo(2.2, -4.6); ctx.bezierCurveTo(1.4 + Math.sin(st) * 0.5, -5.6, 3 + Math.sin(st) * 0.5, -6.4, 2.2, -7.4); ctx.stroke();
+			}
+	}
+}
 const rr = (ctx, x, y, w, h, r, fill, lw = 1) => {
 	ctx.beginPath();
 	ctx.roundRect(x, y, w, h, r);
@@ -55,7 +111,8 @@ const rr = (ctx, x, y, w, h, r, fill, lw = 1) => {
 };
 
 /** tired 0..1: glasses slide down, heavy eyelid, slumped head, yawns (late-night programmer). */
-export function drawHero(ctx, cx, top, size, form, frame, face = 1, sx = 1, sy = 1, phase = null, shoot = 0, tired = 0) {
+/** hold: what is in his hand (stage themed) — coffee | yogurt | bag | phone | flowers | umbrella | letter | papers | book | laptop | none */
+export function drawHero(ctx, cx, top, size, form, frame, face = 1, sx = 1, sy = 1, phase = null, shoot = 0, tired = 0, hold = 'coffee') {
 	const [shirt, shirtL] = SHIRT[form] || SHIRT.none;
 	const k = size === 'small' ? HERO_H.small / HERO_H.big : 1;
 	const now = performance.now() / 1000;
@@ -152,16 +209,8 @@ export function drawHero(ctx, cx, top, size, form, frame, face = 1, sx = 1, sy =
 	rr(ctx, -1.6, 3, 3.2, 1.3, 0.6, '#1f2937', 0.6); // watch
 	ctx.translate(0, 5.4);
 	ctx.rotate(-(armFront + fore) - lean); // cup stays upright whatever the arm does
-	ctx.beginPath(); ctx.arc(0.2, 0, 1.4, 0, 7); ctx.fillStyle = SKIN; ctx.fill(); ctx.lineWidth = 0.8; ctx.strokeStyle = OL; ctx.stroke(); // fist behind the cup
-	rr(ctx, 0.4, -3.4, 3.6, 4.8, 0.8, '#fafaf5', 0.8); // cup
-	ctx.fillStyle = '#b45309'; ctx.fillRect(0.6, -1.6, 3.2, 1.3); // sleeve
-	rr(ctx, 0.1, -4.2, 4.2, 1.1, 0.5, '#e7e5e4', 0.7); // lid
-	rr(ctx, -0.2, -0.9, 1.6, 1.8, 0.8, SKIN, 0.6); // thumb over the cup
-	if (!run && shoot <= 0) {
-		ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 0.45;
-		const st = now * 2;
-		ctx.beginPath(); ctx.moveTo(2.2, -4.6); ctx.bezierCurveTo(1.4 + Math.sin(st) * 0.5, -5.6, 3 + Math.sin(st) * 0.5, -6.4, 2.2, -7.4); ctx.stroke();
-	}
+	ctx.beginPath(); ctx.arc(0.2, 0, 1.4, 0, 7); ctx.fillStyle = SKIN; ctx.fill(); ctx.lineWidth = 0.8; ctx.strokeStyle = OL; ctx.stroke(); // fist
+	drawHeld(ctx, hold, now, run, shoot);
 	ctx.restore();
 	sleeve(ctx, shirt, shirtL); // sleeve over the shoulder
 	ctx.restore();
@@ -277,5 +326,6 @@ export function drawHero(ctx, cx, top, size, form, frame, face = 1, sx = 1, sy =
 	ctx.fillStyle = 'rgba(160,190,230,.6)'; ctx.fillRect(3.4, -1.9, 1.5, 0.5);
 	// a few curls falling over the forehead
 	ctx.restore();
+	if (hold === 'umbrella' && umbrellaT) { drawCanopy(ctx, now); umbrellaT = null; }
 	ctx.restore();
 }
