@@ -570,12 +570,16 @@ export function mount(stage, api) {
 			return { ...e, w, h, y: e.y + 16 - h, vx: e.t === 'hossein' ? -0.45 : e.t === 'car' ? -1.3 : e.t === 'cone' ? 0 : e.t === 'clock' ? -1.1 : e.t === 'turret' ? 0 : -0.5, vy: 0, alive: true, y0: e.y, dead: 0, cd: 1 + Math.random() };
 		});
 		s.beans = []; s.shots = []; s.parts = []; s.pops = []; s.multi = {}; s.crumble = {};
+		if (!fromCheckpoint) { s.bossTries = 0; s.bossCheck = 0; }
+		if (fromCheckpoint && lv.isBoss && s.bossCheck) lv.check = s.bossCheck;
 		s.boss = lv.isBoss ? makeBoss(WORLDS[s.world].boss, lv.arena) : null;
+		if (s.boss && fromCheckpoint && s.bossTries) { const k = Math.max(0.5, 1 - 0.15 * s.bossTries); s.boss.hp = s.boss.max = Math.max(3, Math.ceil(s.boss.max * k)); }
 		s.goalOn = !lv.isBoss;
 		s.camMin = 0;
 		if (!fromCheckpoint) s.checkpoint = false;
 		const sx = fromCheckpoint && s.checkpoint ? lv.check : 3 * T;
 		s.p = { x: sx, y: GY * T - (s.big ? H_BIG : H_SMALL), vx: 0, vy: 0, w: P_W, h: s.big ? H_BIG : H_SMALL, face: 1, ground: true, coyote: 0, inv: fromCheckpoint ? 2 : 0, anim: 0, jumps: 0, fuel: 0.8 };
+		if (fromCheckpoint && lv.isBoss && s.bossCheck && !lv.side?.match(/^(drive|war)$/)) { if (!s.big) setForm('coffee'); setTimeout(() => s && (s.banner = { t: `دوباره! ${WORLDS[s.world].bossName} این بار خسته‌تره 😏`, life: 2 }), 50); }
 		// safe respawn: no enemy waiting on (or right next to) the spawn point
 		if (fromCheckpoint) s.ents = s.ents.filter((e) => e.item || e.t === 'mover' || Math.abs(e.x - sx) > 6 * T);
 		s.cam = clamp(sx - 80, 0, lv.W * T - view.vw);
@@ -708,6 +712,7 @@ export function mount(stage, api) {
 		} else die();
 	};
 	const die = () => {
+		if (s.lv.isBoss && s.boss && s.boss.active && s.boss.hp > 0) s.bossTries = (s.bossTries || 0) + 1;
 		if (s.dying) return;
 		s.dying = 2.4; s.p.vy = -6.5; s.flawless = false; s.shield = 0;
 		s.ghost = { x: s.p.x + s.p.w / 2, y: s.p.y + s.p.h };
@@ -802,7 +807,7 @@ export function mount(stage, api) {
 
 	/* ---- bosses ---- */
 	function makeBoss(type, arena) {
-		const hp = { megabug: 8, server: 10, scorpion: 10, deadline: 14, bakhshi: 12, azizi: 12 }[type];
+		const hp = { megabug: 8, server: 10, scorpion: 10, deadline: 14, bakhshi: 12, azizi: 9 }[type];
 		const dims = { megabug: [40, 34], server: [36, 44], scorpion: [48, 26], deadline: [40, 40], bakhshi: [26, 44], azizi: [26, 44] }[type];
 		return { type, hp, max: hp, w: dims[0], h: dims[1], x: (arena.x1 - 6) * T, y: GY * T - dims[1], vx: -1, vy: 0, t: 0, inv: 0, active: false, arena, ground: false, dead: 0, dir: -1 };
 	}
@@ -813,6 +818,7 @@ export function mount(stage, api) {
 			if (p.x > a.x0 * T + 24) {
 				b.active = true;
 				s.camMin = a.x0 * T - 8;
+				s.checkpoint = true; s.lv.check = (a.x0 - 3) * T; s.bossCheck = s.lv.check; // die here → restart at the boss, not the whole stage
 				for (let y = 3; y < GY; y++) s.lv.map[y][a.x0 - 1] = '#';
 				s.banner = { t: `👾 ${WORLDS[s.world].bossName}`, life: 2 };
 				snd('boss');
@@ -846,8 +852,9 @@ export function mount(stage, api) {
 				// paces, jumps, throws «اخطار» memos in a fan; summons a deadline clock now and then
 				b.vx = toward * 0.9;
 				if (b.ground && every(2.6)) b.vy = -7.5;
-				if (every(1.6)) [-1, 0, 1].forEach((d) => bossShot(b.x + b.w / 2, b.y + 12, toward * 2.4 + d * 0.5, -2.6 + Math.abs(d) * 0.5));
-				if (every(6)) s.ents.push({ t: 'clock', x: b.x + b.w / 2, y: b.y, vx: toward * 1.1, vy: -2, w: 14, h: 14, alive: true, y0: b.y, dead: 0 });
+				if (b.type === 'azizi') { if (every(2.3)) [-0.5, 0.5].forEach((d) => bossShot(b.x + b.w / 2, b.y + 12, toward * 2.1 + d * 0.5, -2.4)); }
+				else if (every(1.6)) [-1, 0, 1].forEach((d) => bossShot(b.x + b.w / 2, b.y + 12, toward * 2.4 + d * 0.5, -2.6 + Math.abs(d) * 0.5));
+				if (b.type === 'bakhshi' && every(6)) s.ents.push({ t: 'clock', x: b.x + b.w / 2, y: b.y, vx: toward * 1.1, vy: -2, w: 14, h: 14, alive: true, y0: b.y, dead: 0 });
 			} else if (b.type === 'deadline') {
 				b.vx = toward * 0.7;
 				if (b.ground && every(2.2)) b.vy = -9;
