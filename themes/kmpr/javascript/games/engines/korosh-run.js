@@ -862,7 +862,7 @@ export function mount(stage, api) {
 
 	/* ---- bosses ---- */
 	function makeBoss(type, arena) {
-		const hp = { megabug: 8, server: 10, scorpion: 10, deadline: 14, bakhshi: 10, azizi: 5 }[type];
+		const hp = { megabug: 8, server: 10, scorpion: 10, deadline: 14, bakhshi: 8, azizi: 5 }[type];
 		const dims = { megabug: [40, 34], server: [36, 44], scorpion: [48, 26], deadline: [40, 40], bakhshi: [26, 44], azizi: [26, 44] }[type];
 		return { type, hp, max: hp, w: dims[0], h: dims[1], x: (arena.x1 - 6) * T, y: GY * T - dims[1], vx: -1, vy: 0, t: 0, inv: 0, active: false, arena, ground: false, dead: 0, dir: -1 };
 	}
@@ -911,8 +911,8 @@ export function mount(stage, api) {
 				// patrols, throws «اخراج» slips; Shayan / Yousef throw SEO boosts into the arena — collect them
 				b.vx = toward * 0.7;
 				if (b.ground && every(3.2)) b.vy = -6.5;
-				if (every(2.2)) [-1, 1].forEach((d) => bossShot(b.x + b.w / 2, b.y + 12, toward * 2.2 + d * 0.4, -2.6));
-				if (every(2.3)) {
+				if (every(3)) bossShot(b.x + b.w / 2, b.y + 12, toward * 1.9, -2.4); // one «اخراج» slip at a time
+				if (every(1.6)) {
 					const a = b.arena, k = Math.floor(Math.random() * SEO_KINDS.length), tx = (a.x0 + 4 + Math.random() * (a.x1 - a.x0 - 8)) * T;
 					s.ents.push({ t: 'seo', k, x: (a.x0 + 2) * T, y: GY * T - 40, vx: (tx - (a.x0 + 2) * T) / 70, vy: -5.5, w: 12, h: 12, alive: true, item: true });
 				}
