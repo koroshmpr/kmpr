@@ -12,7 +12,7 @@
  */
 import { CATALOG } from '../catalog.js';
 import { createCanvas } from '../lib/canvas.js';
-import { showDrive, showQC } from './korosh-minis.js';
+import { showDrive, showQC, showDesk } from './korosh-minis.js';
 import { store } from '../lib/store.js';
 import { fa, listeners, clamp } from '../lib/util.js';
 import { HERO_H, drawHero, OL } from '../lib/hero.js';
@@ -544,17 +544,17 @@ export function mount(stage, api) {
 					[WAR]: { car: '207', theme: 'war', length: 3800, bombs: true, density: 0.6, goal: '🏢', hint: 'دایره قرمز = انفجار! لاین عوض کن · ⚡ گاز · 🛑 ترمز', winText: 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' },
 					[ARMY0 + 2]: { car: 'bus', theme: 'road', length: 4600, patience: 60, patienceLabel: 'تا کلاس فردا شب ⏳', trucks: true, density: 0.9, goal: '🎖', hint: 'اتوبوس سنگین است! ◀ ▶ آرام فرمان بده · ⚡ گاز · کامیون‌ها کندند', winText: 'رسیدیم مراغه! تسویه ✓', lateText: 'به کلاس نرسیدی… ⏳' },
 				};
-				if (DRIVES[n] || n === PAND0 + 1) {
+				if (DRIVES[n] || n === PAND0 + 1 || n === BIO0 + 2) {
 					const finishMini = (ok, pts) => {
 						comic = null;
 						if (!s || s.over) return;
 						if (!ok) { s.mode = 'map'; mapEl.hidden = false; renderMap(); return; }
 						s.score += pts; api.setScore(s.score);
-						s.stageN = n; s.world = w; s.lv = { side: n === WAR ? 'war' : n === PAND0 + 1 ? 'qc' : 'drive', map: [], ents: [], W: 1, goal: { x: 0, y: 0 } };
+						s.stageN = n; s.world = w; s.lv = { side: n === WAR ? 'war' : n === PAND0 + 1 ? 'qc' : n === BIO0 + 2 ? 'bio' : 'drive', map: [], ents: [], W: 1, goal: { x: 0, y: 0 } };
 						afterWin();
 					};
-					s.mode = 'story'; pad.hidden = true; music.play(n === WAR ? 'boss' : 'plains');
-					comic = n === PAND0 + 1 ? showQC(stage, { goal: 36, maxMiss: 6, sound: (k) => api.sfx(k), done: finishMini }) : showDrive(stage, { ...DRIVES[n], sound: (k) => api.sfx(k), done: finishMini });
+					s.mode = 'story'; pad.hidden = true; music.play(n === WAR || n === BIO0 + 2 ? 'boss' : 'plains');
+					comic = n === BIO0 + 2 ? showDesk(stage, { rounds: 6, maxMiss: 3, sound: (k) => api.sfx(k), done: finishMini }) : n === PAND0 + 1 ? showQC(stage, { goal: 36, maxMiss: 6, sound: (k) => api.sfx(k), done: finishMini }) : showDrive(stage, { ...DRIVES[n], sound: (k) => api.sfx(k), done: finishMini });
 					return;
 				}
 				if (n === ARMY0 + 1) { // the fuel bluff is a dialog, not a platform level
@@ -607,6 +607,7 @@ export function mount(stage, api) {
 	const BLOCKS = new Set(['?', 'M', 'P', '*', 'H']);
 	const FOE_W = { hossein: [12, 24], qc: [14, 10], car: [30, 14], cone: [12, 12], call: [12, 14], ping: [14, 12], mail: [14, 12], bug: [14, 14], clock: [14, 14], hopper: [14, 12], spam: [14, 12], virus: [14, 14], turret: [16, 16] };
 
+	const stageLabel = (n) => (n >= ARMY0 ? `سربازی ${fa(n - ARMY0 + 1)}` : n >= BIO0 ? `بیورزونانس ${fa(n - BIO0 + 1)}` : n >= PAND0 ? `پند ${fa(n - PAND0 + 1)}` : n === RAIN ? 'زیپ کیف' : n === WAR ? 'جنگ' : n >= SIDE0 ? `مائده ${fa(n - SIDE0 + 1)}` : `${fa(n + 1)} از ${fa(TOTAL)}`);
 	const loadStage = (n, fromCheckpoint) => {
 		const lv = n >= SIDE0 ? buildSide(n) : buildLevel(n);
 		s.stageN = n;
@@ -650,7 +651,7 @@ export function mount(stage, api) {
 		if (n === ARMY0) { s.timeLeft = 160; s.delivered = 0; }
 		if (n === ARMY0 + 2) s.timeLeft = 120; // must park before 9:00
 		if (lv.side === 'date') { s.pat = 100; }
-		api.hud({ level: lv.side ? 'فرعی' : `${fa(n + 1)} از ${fa(TOTAL)}`, levelLabel: 'مرحله', lives: s.lives, extra: fa(s.coins), extraLabel: 'سکه' });
+		api.hud({ level: stageLabel(n), levelLabel: 'مرحله', lives: s.lives, extra: fa(s.coins), extraLabel: 'سکه' });
 		s.arts = 0;
 		s.banner = { t: lv.side ? (lv.side === 'courier' ? '📨 سه نامه، سه پادگان: از زیر هر راهبند رد شو تا نامه تحویل شود!' : n === ARMY0 + 2 ? '🚌 تا مراغه و برگشت؛ قبل از کلاس فردا شب!' : lv.side === 'articles' ? '📄 مقاله‌ها را جمع کن؛ حسین ایراد می‌گیرد، از رویش بپر!' : lv.side === 'bio' ? '📚 کتاب‌های مهارت را بگیر و قوی شو؛ آخرش آقای عزیزی!' : lv.side === 'qc' ? '🗂 کارت‌های QC یوسف را بگیر؛ هرچه تندتر، او هم تندتر!' : lv.side === 'pand' ? '👔 آقای بخشی: با هر ضربه رتبه سایت بالاتر می‌رود' : n === PAND0 ? '🅿️ تا ساعت ۹ برس پارکینگ پند!' : lv.side === 'rain' ? '📌 تسک که رسید، باگش را قبل از تمام شدن وقت دیباگ کن!' : lv.side === 'war' ? '⚠ دایره قرمز = خطر! ← ترمز · → گاز · پرش هم داری' : lv.side === 'drive' ? '🚗 فقط بپر! ال ۹۰ خودش می‌رود' : '🌹 گل جمع کن؛ حوصله مائده دارد تمام می‌شود') : lv.isBoss ? `${WORLDS[s.world].name} · نبرد با باس` : `${WORLDS[s.world].name} · مرحله ${fa((n % STAGES_PER) + 1)}`, life: 2.6 };
 		music.play(songFor());
@@ -1682,14 +1683,8 @@ export function mount(stage, api) {
 	};
 	const hud = () => {
 		const y = 4, h = 17;
-		// left: lives + coins (+ current power)
-		const lw = s.big ? 98 : 82;
-		panel(4, y, lw, h);
-		pixelHeart(11, y + 5);
-		text(fa(s.lives), 22, y + 13, 10, '#fecaca', 'left');
-		ctx.save(); ctx.translate(40, y + 1); ctx.scale(0.8, 0.8); drawCoin(0, 1); ctx.restore();
-		text(fa(s.coins), 55, y + 13, 9, '#fde68a', 'left');
-		if (s.big) text({ coffee: '☕', dev: '💻', jet: '🚀' }[s.form] || '', 88, y + 13, 9, '#fff');
+		// lives / coins / score live in the site's game bar above the canvas — only the current power is shown here
+		if (s.big && s.form) { panel(4, y, 26, h); text({ coffee: '☕', dev: '💻', jet: '🚀' }[s.form] || '', 17, y + 13, 9, '#fff'); }
 		// centre: world badge
 		const wd = WORLDS[s.world];
 		const label = s.lv.isRoom ? 'اتاق مخفی 🤫' : `${wd.name} · ${s.lv.isBoss ? 'باس' : `مرحله ${fa((s.stageN % STAGES_PER) + 1)}`}`;

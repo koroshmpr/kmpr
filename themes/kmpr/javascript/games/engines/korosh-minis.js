@@ -4,7 +4,7 @@
  *  - showQC:    Yousef's Trello QC storm — sort falling QC cards into the right fix column
  * Each returns close(); calls done(ok, points). Own canvas + rAF loop + keyboard/touch input.
  */
-import { drawYousef } from './korosh-story.js';
+import { drawYousef, drawPerson } from './korosh-story.js';
 
 const OL = '#16120f';
 const fa = (v) => String(v).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
@@ -301,6 +301,120 @@ export function showQC(host, cfg) {
 	reset();
 	raf = requestAnimationFrame(tick);
 	close.state = () => st; close.send = send;
+	close.pause = () => { paused = true; }; close.resume = () => { paused = false; last = performance.now(); };
+	return close;
+}
+
+/* ------------------------------------------------------------------ Azizi's desk exam (puzzle) */
+const DESK_PICK = [
+	['برای فرم تماس چی نصب کنیم؟', ['Gravity Forms', 'فتوشاپ', 'اکسل']],
+	['۲۵ هزار مقاله رو چطور یکجا وارد کنیم؟', ['ایمپورت CSV', 'کپی‌پیست دستی', 'فکس']],
+	['سایت کند شده؛ اول چی؟', ['کش و فشرده‌سازی عکس', 'عوض کردن رنگ لوگو', 'خاموش‌روشن مانیتور']],
+	['زبان اصلی وردپرس چیه؟', ['PHP', 'Swift', 'Excel']],
+	['برای سئو چه افزونه‌ای؟', ['Yoast SEO', 'WinRAR', 'Paint']],
+	['قالب اختصاصی رو کجا می‌سازیم؟', ['wp-content/themes', 'Desktop', 'سطل زباله']],
+	['پنل مدیریت وردپرس کجاست؟', ['wp-admin', 'wp-coffee', 'Ctrl+Alt+Del']],
+];
+const DESK_ORDER = [
+	['مراحل نصب وردپرس را به ترتیب بچین', ['ساخت دیتابیس', 'آپلود فایل‌ها', 'اجرای نصب']],
+	['قبل از آپدیت سایت، به ترتیب؟', ['بکاپ کامل', 'تست روی استیج', 'آپدیت سایت اصلی']],
+	['انتشار یک مقاله، به ترتیب؟', ['نوشتن متن', 'بهینه‌سازی سئو', 'انتشار']],
+];
+/** cfg: { rounds = 6, maxMiss = 3, sec = 22, sound, done(ok, pts) } */
+export function showDesk(host, cfg) {
+	if (typeof document !== 'undefined') FF = getComputedStyle(document.body).fontFamily || FF;
+	const ROUNDS = cfg.rounds || 6, MAXM = cfg.maxMiss || 3, SEC = cfg.sec || 22;
+	const el = document.createElement('div');
+	el.className = 'kr-mini kr-desk';
+	el.innerHTML = `<div class="kr-desk__top"><canvas aria-hidden="true"></canvas><p class="kr-desk__q" data-q aria-live="polite"></p></div>
+		<div class="kr-desk__meters"><span class="kr-desk__m">اعتماد عزیزی <b data-trust>۰٪</b><i><u data-trustbar></u></i></span><span class="kr-desk__m is-pat">حوصله <b data-pat></b></span></div>
+		<div class="kr-desk__time"><i data-time></i></div>
+		<div class="kr-desk__table"><div class="kr-desk__laptop" data-laptop>💻 <span data-slot>جواب را انتخاب کن</span></div><div class="kr-desk__cards" data-cards role="group" aria-label="کارت‌های جواب"></div></div>
+		<div class="kr-mini__end" hidden></div>`;
+	host.appendChild(el);
+	const $ = (q) => el.querySelector(q), cv = el.querySelector('canvas'), c = cv.getContext('2d');
+	let st, raf = 0, closed = false, paused = false, last = performance.now();
+	const fit = () => { const r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1); cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); };
+	const reset = () => {
+		const picks = DESK_PICK.slice().sort(() => Math.random() - 0.5).slice(0, ROUNDS - 2).map((q) => ({ type: 'pick', q: q[0], a: q[1] }));
+		const orders = DESK_ORDER.slice().sort(() => Math.random() - 0.5).slice(0, 2).map((q) => ({ type: 'order', q: q[0], a: q[1] }));
+		const list = picks.concat(orders).sort(() => Math.random() - 0.5);
+		st = { list, i: 0, ok: 0, miss: 0, t: SEC, mood: 'meh', moodT: 0, pts: 0, picked: [], over: false, lock: false, clock: 0 };
+		round();
+	};
+	const round = () => {
+		const r = st.list[st.i];
+		st.t = SEC; st.picked = []; st.lock = false;
+		$('[data-q]').textContent = r.q;
+		$('[data-slot]').textContent = r.type === 'order' ? 'به ترتیب بزن (اول، دوم، سوم)' : 'جواب درست را بزن';
+		const cards = r.a.map((txt, k) => [txt, k]).sort(() => Math.random() - 0.5);
+		$('[data-cards]').innerHTML = cards.map(([txt, k], j) => `<button type="button" class="kr-desk__card" data-k="${k}" style="--r:${(j - 1) * 4}deg">${txt}<em></em></button>`).join('');
+		meters();
+	};
+	const meters = () => {
+		const tr = Math.round((st.ok / ROUNDS) * 100);
+		$('[data-trust]').textContent = `${fa(tr)}٪`; $('[data-trustbar]').style.width = `${tr}%`;
+		$('[data-pat]').textContent = `${'❤'.repeat(MAXM - st.miss)}${'·'.repeat(st.miss)}`;
+	};
+	const judge = (good) => {
+		st.lock = true;
+		if (good) { st.ok++; st.pts += 300 + Math.round(st.t) * 15; st.mood = 'smile'; cfg.sound && cfg.sound('level'); }
+		else { st.miss++; st.mood = 'angry'; cfg.sound && cfg.sound('wrong'); }
+		st.moodT = 1.2; meters();
+		$('[data-slot]').textContent = good ? 'آقای عزیزی: درسته! ✓' : 'آقای عزیزی: نه! 😠';
+		setTimeout(() => {
+			if (closed) return;
+			if (st.miss >= MAXM) return finish(false);
+			st.i++; if (st.i >= st.list.length) return finish(true);
+			round();
+		}, 900);
+	};
+	const pick = (btn) => {
+		if (!btn || st.lock || st.over || paused || btn.disabled) return;
+		const r = st.list[st.i], k = Number(btn.dataset.k);
+		if (r.type === 'pick') { btn.classList.add('is-sent'); el.querySelectorAll('.kr-desk__card').forEach((b) => (b.disabled = true)); judge(k === 0); return; }
+		st.picked.push(k); btn.disabled = true; btn.querySelector('em').textContent = fa(st.picked.length); btn.classList.add('is-num');
+		cfg.sound && cfg.sound('click');
+		if (st.picked.length === r.a.length) judge(st.picked.every((v, j) => v === j));
+	};
+	el.addEventListener('click', (e) => pick(e.target.closest('.kr-desk__card')));
+	const kd = (e) => { const n = '123۱۲۳'.indexOf(e.key); if (n < 0 || st.over || paused) return; e.preventDefault(); e.stopPropagation(); pick(el.querySelectorAll('.kr-desk__card')[n % 3]); };
+	window.addEventListener('keydown', kd, true);
+	const draw = (t) => {
+		const w = cv.width, h = cv.height, k = h / 70;
+		c.setTransform(1, 0, 0, 1, 0, 0);
+		const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#ccfbf1'); g.addColorStop(1, '#99f6e4'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+		c.fillStyle = 'rgba(15,118,110,.15)'; for (let i = 0; i < 6; i++) c.fillRect((i * w) / 6 + 6 * k, 6 * k, w / 9, 30 * k); // office windows
+		const mood = st.moodT > 0 ? st.mood : 'meh';
+		// big bust behind his desk (he sits across from you), desk edge in front of him
+		const bk = k * 3.1;
+		c.save(); c.translate(w * 0.5, h + 15 * bk); c.scale(bk, bk); drawPerson(c, 0, 0, 1, 'azizi', { mood, name: '' }, t); c.restore();
+		c.fillStyle = '#5b3a1a'; c.fillRect(0, h - 7 * k, w, 7 * k); c.fillStyle = '#7c4f25'; c.fillRect(0, h - 7 * k, w, 2 * k);
+		if (st.moodT > 0 && st.mood === 'angry') { c.fillStyle = 'rgba(220,38,38,.12)'; c.fillRect(0, 0, w, h); }
+	};
+	const tick = (now) => {
+		if (closed) return;
+		const dt = Math.min(0.05, (now - last) / 1000); last = now;
+		if (!st.over && !paused) {
+			st.clock += dt;
+			if (st.moodT > 0) st.moodT -= dt;
+			if (!st.lock) { st.t -= dt; if (st.t <= 0) { st.t = 0; judge(false); } }
+			$('[data-time]').style.transform = `scaleX(${Math.max(0, st.t / SEC)})`;
+		}
+		draw(st.clock);
+		raf = requestAnimationFrame(tick);
+	};
+	const finish = (ok) => {
+		if (st.over) return; st.over = true; cfg.sound && cfg.sound(ok ? 'level' : 'over');
+		const total = st.pts + (ok ? 1500 : 0);
+		endScreen(el, ok, ok ? 'آقای عزیزی: قبول! به تو اعتماد دارم ✓' : 'آقای عزیزی: هنوز آماده نیستی…', [`جواب درست ${fa(st.ok)} از ${fa(ROUNDS)}`, `امتیاز ${fa(total)}`],
+			() => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? total : 0); });
+	};
+	const onResize = () => fit(); window.addEventListener('resize', onResize);
+	const close = () => { if (closed) return; closed = true; cancelAnimationFrame(raf); window.removeEventListener('keydown', kd, true); window.removeEventListener('resize', onResize); el.remove(); };
+	fit(); reset();
+	raf = requestAnimationFrame(tick);
+	close.state = () => st; close.pick = (i) => pick(el.querySelectorAll('.kr-desk__card')[i]);
 	close.pause = () => { paused = true; }; close.resume = () => { paused = false; last = performance.now(); };
 	return close;
 }
