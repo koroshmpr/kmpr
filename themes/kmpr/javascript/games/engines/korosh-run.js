@@ -629,7 +629,11 @@ export function mount(stage, api) {
 		s.camMin = 0;
 		if (!fromCheckpoint) s.checkpoint = false;
 		s.quiz = null; s.quizUsed = [];
-		const sx = fromCheckpoint && s.checkpoint ? lv.check : 3 * T;
+		let sx = fromCheckpoint && s.checkpoint ? lv.check : 3 * T;
+		// never spawn inside blocks (e.g. a checkpoint next to a brick pyramid): slide forward to free ground
+		const cellSolid = (x, ty) => SOLID.has((lv.map[ty] || [])[Math.floor(x / T)]);
+		const spawnBlocked = (x) => [x + 1, x + P_W - 1].some((xx) => !cellSolid(xx, GY) || cellSolid(xx, GY - 1) || cellSolid(xx, GY - 2) || cellSolid(xx, GY - 3));
+		for (let i = 0; i < 60 && spawnBlocked(sx); i++) sx += T / 2;
 		s.p = { x: sx, y: GY * T - (s.big ? H_BIG : H_SMALL), vx: 0, vy: 0, w: P_W, h: s.big ? H_BIG : H_SMALL, face: 1, ground: true, coyote: 0, inv: fromCheckpoint ? 2 : 0, anim: 0, jumps: 0, fuel: 0.8 };
 		if (fromCheckpoint && lv.isBoss && s.bossCheck && !lv.side?.match(/^(drive|war)$/)) { if (!s.big) setForm('coffee'); setTimeout(() => s && (s.banner = { t: `دوباره! ${WORLDS[s.world].bossName} این بار خسته‌تره 😏`, life: 2 }), 50); }
 		// safe respawn: no enemy waiting on (or right next to) the spawn point
