@@ -4,7 +4,7 @@
 - Escapes everything inside <pre><code>…</code></pre> (code is written raw in the .html files).
 - Banners: 1st before the 3rd <h2>; 2nd before the last-but-one <h2> when the lesson has 6+ <h2> (AGENTS.md §6).
 - Validates Yoast lengths and that every internal /blog/<slug>/ link exists (this course or the live site list).
-Usage: python3 assemble.py [--known slug1,slug2,...]
+Usage: python3 tools/content/assemble.py <course dir> [--known slug1,slug2,...]  (dir holds meta.py + src/<order>-<slug>.html)
 """
 import html
 import json
@@ -12,7 +12,7 @@ import os
 import re
 import sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.abspath(sys.argv[1])
 sys.path.insert(0, HERE)
 from meta import COURSE, LESSONS  # noqa: E402
 
@@ -35,7 +35,7 @@ for l in LESSONS:
     if l['focuskw'] not in content: problems.append(f"{l['slug']}: focus keyword missing from content")
     for s in re.findall(r'href="/blog/([^/"]+)/"', content):
         if s not in known: problems.append(f"{l['slug']}: unknown link /blog/{s}/")
-    if not l.get('is_pillar') and '/blog/nextjs-business-guide/' not in content: problems.append(f"{l['slug']}: no pillar link")
+    if not l.get('is_pillar') and f"/blog/{LESSONS[0]['slug']}/" not in content: problems.append(f"{l['slug']}: no pillar link")
     if l.get('is_pillar'):
         for o in LESSONS[1:]:
             if f"/blog/{o['slug']}/" not in content: problems.append(f"pillar does not link {o['slug']}")
