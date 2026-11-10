@@ -14,6 +14,7 @@ import { CATALOG } from '../catalog.js';
 import { createCanvas } from '../lib/canvas.js';
 import { showDrive, showQC, showDesk } from './korosh-minis.js';
 import { showLogHunt, showCodeFix, showDomainRace, showCrowd, showCues } from './korosh-makan.js';
+import { showBazaar, showStudio, showGateway } from './korosh-gilda.js';
 import { store } from '../lib/store.js';
 import { fa, listeners, clamp } from '../lib/util.js';
 import { HERO_H, drawHero, OL } from '../lib/hero.js';
@@ -77,6 +78,33 @@ const AZIZI_QUIZ = [
 ];
 const QUIZ_COL = ['#0ea5e9', '#f59e0b', '#ec4899'];
 const SEO_KINDS = [['🔑', '#fde047', 'کلمه کلیدی'], ['🔗', '#60a5fa', 'بک‌لینک'], ['⚡', '#4ade80', 'سرعت'], ['📝', '#f9a8d4', 'محتوا']];
+const STAR_SAVE = 'kmpr_kr_stars';
+const readStars = () => { try { return JSON.parse(localStorage.getItem(STAR_SAVE) || '{}'); } catch (e) { return {}; } };
+const CHALLENGE = {
+	0: ['هیچ خط سالمی را نبند و هیچ لوپی رد نشود', (s) => s.leaked <= 3, (s) => !s.wrong && !s.leaked],
+	1: ['بدون اشتباه تا ۱ بامداد', (s) => s.miss <= 1, (s) => s.miss === 0],
+	2: ['دامنه را زیر ۲۰ ثانیه پس بگیر', (s) => s.t < 35, (s) => s.t < 20],
+	3: ['بدون از دست دادن حتی یک ❤', (s) => s.hearts >= 2, (s) => s.hearts === 3],
+	4: ['۳۰ قرعه‌کشی بدون خطا', (s) => s.miss <= 1, (s) => s.miss === 0],
+	6: ['۲۰ کیف، ۴ مدل، زیر ۸۵٪ بودجه', (s) => s.spent <= s.budget * 0.95, (s) => s.spent <= s.budget * 0.85 && s.types >= 4],
+	7: ['همه انتخاب‌ها مطابق بریف', (s) => s.score >= s.max - 2, (s) => s.score === s.max],
+	8: ['درگاه وصل شود و هیچ مشتری‌ای نرود', (s) => s.lost <= 1, (s) => s.lost === 0],
+	5: ['ری‌استارت بدون مردن', (s) => s.bossTries <= 1, (s) => !s.bossTries],
+	100: ['بدون تصادف تا کوچه مائده', (s) => s.crashes <= 2, (s) => s.crashes === 0],
+	101: ['حوصله مائده بالای نصف بماند', (s) => s.pat >= 25, (s) => s.pat >= 50],
+	102: ['بدون آسیب از انفجارها', (s) => s.hp >= 2, (s) => s.hp === 3],
+	103: ['همه تسک‌ها به موقع', (s) => s.tasksDone >= 3, (s) => s.tasksDone >= 3 && !s.taskFails],
+	104: ['قبل از ۷:۵۰ برسید', (s) => s.clock < 477, (s) => s.clock < 470],
+	105: ['زنجیره ×۱۵ بدون خطا', (s) => s.miss <= 3, (s) => s.best >= 15],
+	106: ['رتبه ۱ بدون مردن', (s) => s.bossTries <= 1, (s) => !s.bossTries],
+	107: ['همه غلط‌های OCR را پیدا کن', (s) => s.found >= s.total * 0.8, (s) => s.found === s.total],
+	108: ['بدون آسیب', (s) => s.timeLeft > 100, (s) => s.flawless],
+	109: ['۶ از ۶ جواب درست', (s) => s.miss <= 1, (s) => s.ok === 6],
+	110: ['ماموریت زیر ۹۰ ثانیه', (s) => s.timeLeft > 40, (s) => s.timeLeft > 70],
+	111: ['بدون اینکه مسئول پمپ شک کند', () => true, (s) => !s.sus],
+	112: ['بدون تصادف تا مراغه', (s) => s.crashes <= 2, (s) => s.crashes === 0],
+};
+const challengeOf = (n) => CHALLENGE[n] || ['بدون آسیب', (s) => s.timeLeft > 120, (s) => s.flawless];
 const pickQ = (k) => QUIPS[k][Math.floor(Math.random() * QUIPS[k].length)];
 const LAZY = 2.6; // seconds of sleepy start at each stage
 const HERO_FIT = 0.74; // full drawing (afro included) ≈ hitbox height, so the hair never clips into ceilings
@@ -506,6 +534,8 @@ export function mount(stage, api) {
 			<p class="kr-map__h">${api.touch ? 'گوشی را افقی کن · ◀ ▶ حرکت · ⤒ پرش · ⚡ قدرت · ▼ سرور مخفی' : '← → حرکت · Space پرش · Shift دویدن · X قدرت · ↓ ورود به سرور مخفی'}</p>
 			<p class="kr-map__h">هر مرحله فقط یک جان اضافه دارد و خوب پنهان شده؛ به دیوارهای ترک‌خورده و سرورهای ▼ دقت کن 🤫</p>
 		</div>`;
+		const stars = readStars();
+		mapEl.querySelectorAll('[data-st]').forEach((b) => { const v = stars[b.dataset.st]; if (v && !b.disabled) b.insertAdjacentHTML('beforeend', `<small class="kr-stars">${'★'.repeat(v)}${'☆'.repeat(3 - v)}</small>`); });
 		const face = mapEl.querySelector('.kr-map__face');
 		if (face) {
 			const c = document.createElement('canvas');
@@ -540,28 +570,31 @@ export function mount(stage, api) {
 			done: () => {
 				comic = null;
 				if (!s || s.over) return;
+				api.toast(`🎯 چالش ویژه: ${challengeOf(n)[0]} (⭐⭐⭐)`);
 				const DRIVES = {
 					[PAND0]: { car: 'l90', theme: 'day', length: 4200, clock: { start: 7 * 60 + 20, deadline: 8 * 60, rate: 0.85 }, stops: [{ at: 0.3, who: 'مائده', color: '#f472b6' }, { at: 0.64, who: 'شایان', color: '#22c55e' }], goal: '🅿️', hint: '◀ ▶ لایی بکش · ⚡ گاز · 🛑 کنار خط سبز بایست تا سوار شوند · قبل از ۸!', winText: 'قبل از ساعت ۸ رسیدیم؛ بدون تاخیر! ✓', lateText: 'ساعت ۸ شد… تاخیر خوردیم! ⏰' },
 					[SIDE0]: { car: 'l90', theme: 'night', length: 3800, patience: 46, patienceLabel: 'حوصله مائده 💗', density: 1.15, goal: '💗', hint: '◀ ▶ بین ماشین‌ها لایی بکش · ⚡ گاز · قبل از تمام شدن حوصله مائده برس', winText: 'رسیدی کوچه مائده! 🅿️', lateText: 'مائده قهر کرد… 😤' },
 					[WAR]: { car: '207', theme: 'war', length: 3800, bombs: true, density: 0.6, goal: '🏢', hint: 'دایره قرمز = انفجار! لاین عوض کن · ⚡ گاز · 🛑 ترمز', winText: 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' },
 					[ARMY0 + 2]: { car: 'bus', theme: 'road', length: 4600, patience: 60, patienceLabel: 'تا کلاس فردا شب ⏳', trucks: true, density: 0.9, goal: '🎖', hint: 'اتوبوس سنگین است! ◀ ▶ آرام فرمان بده · ⚡ گاز · کامیون‌ها کندند', winText: 'رسیدیم مراغه! تسویه ✓', lateText: 'به کلاس نرسیدی… ⏳' },
 				};
-				const MAKAN = { 0: showLogHunt, 1: showCodeFix, 2: showDomainRace, 3: showCrowd, 4: showCues };
+				const MAKAN = { 0: showLogHunt, 1: showCodeFix, 2: showDomainRace, 3: showCrowd, 4: showCues, 6: showBazaar, 7: showStudio, 8: showGateway };
 				if (DRIVES[n] || MAKAN[n] || n === PAND0 + 1 || n === BIO0 + 2) {
-					const finishMini = (ok, pts) => {
+					const finishMini = (ok, pts, stats) => {
+						s.lastStats = stats || null;
 						comic = null;
 						if (!s || s.over) return;
 						if (!ok) { s.mode = 'map'; mapEl.hidden = false; renderMap(); return; }
 						s.score += pts; api.setScore(s.score);
-						s.stageN = n; s.world = w; s.lv = { side: MAKAN[n] ? null : n === WAR ? 'war' : n === PAND0 + 1 ? 'qc' : n === BIO0 + 2 ? 'bio' : 'drive', isBoss: n === 2, map: [], ents: [], W: 1, goal: { x: 0, y: 0 } };
+						s.stageN = n; s.world = w; s.lv = { side: MAKAN[n] ? null : n === WAR ? 'war' : n === PAND0 + 1 ? 'qc' : n === BIO0 + 2 ? 'bio' : 'drive', isBoss: n === 2 || n === 8, map: [], ents: [], W: 1, goal: { x: 0, y: 0 } };
 						afterWin();
 					};
-					s.mode = 'story'; pad.hidden = true; music.play(n === WAR || n === BIO0 + 2 || n === 2 ? 'boss' : n === 4 ? 'night' : 'plains');
+					s.mode = 'story'; pad.hidden = true; music.play(n === WAR || n === BIO0 + 2 || n === 2 || n === 8 ? 'boss' : n === 4 ? 'night' : n === 6 ? 'desert' : 'plains');
 					comic = MAKAN[n] ? MAKAN[n](stage, { sound: (k) => api.sfx(k), done: finishMini }) : n === BIO0 + 2 ? showDesk(stage, { rounds: 6, maxMiss: 3, sound: (k) => api.sfx(k), done: finishMini }) : n === PAND0 + 1 ? showQC(stage, { goal: 36, maxMiss: 6, sound: (k) => api.sfx(k), done: finishMini }) : showDrive(stage, { ...DRIVES[n], sound: (k) => api.sfx(k), done: finishMini });
 					return;
 				}
 				if (n === ARMY0 + 1) { // the fuel bluff is a dialog, not a platform level
-					comic = showDialog(stage, { sound: (k) => api.sfx(k), done: (ok) => {
+					comic = showDialog(stage, { sound: (k) => api.sfx(k), done: (ok, stats) => {
+						if (ok) awardStars(ARMY0 + 1, stats || {});
 						comic = null;
 						if (!s || s.over) return;
 						if (ok) { s.score += 1500; api.setScore(s.score); try { if (readArmy() < 2) localStorage.setItem(ARMY_SAVE, '2'); } catch (e) { /* ignore */ } playStage(ARMY0 + 2); }
@@ -570,7 +603,8 @@ export function mount(stage, api) {
 					return;
 				}
 				if (n === BIO0) { // the OCR stage is a thinking puzzle, not a platform level
-					comic = showOCR(stage, { sound: (k) => api.sfx(k), done: (pts, ok) => {
+					comic = showOCR(stage, { sound: (k) => api.sfx(k), done: (pts, ok, stats) => {
+						if (ok) awardStars(BIO0, stats || {});
 						comic = null;
 						if (!s || s.over) return;
 						s.score += pts; api.setScore(s.score);
@@ -653,7 +687,7 @@ export function mount(stage, api) {
 		s.shay = null;
 		if (lv.side === 'drive' || lv.side === 'war') { s.p.h = 16; s.p.w = 24; s.p.y = GY * T - 16; s.carHp = 3; }
 		s.bombs = []; s.bombT = 2.5; s.shake = 0;
-		s.task = null; s.taskT = 3; s.tasksDone = 0;
+		s.task = null; s.taskT = 3; s.tasksDone = 0; s.taskFails = 0;
 		s.qcDone = 0; s.qcMiss = 0; s.qcT = 1.5; s.yq = null;
 		if (n === PAND0) s.timeLeft = 110;
 		if (n === ARMY0) { s.timeLeft = 160; s.delivered = 0; }
@@ -997,7 +1031,16 @@ export function mount(stage, api) {
 	/* ---- update ---- */
 	const touching = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 	// what happens after a stage is won (shared by platform stages and the mini-games)
+	const awardStars = (n, stats) => {
+		const [goal, good, best] = challengeOf(n);
+		let st = 1; try { if (good(stats)) st = 2; if (best(stats)) st = 3; } catch (e) { /* missing stat */ }
+		const all = readStars(); if (!(all[n] >= st)) { all[n] = st; try { localStorage.setItem(STAR_SAVE, JSON.stringify(all)); } catch (e) { /* ignore */ } }
+		api.toast(`${'⭐'.repeat(st)}${'☆'.repeat(3 - st)} · ${st === 3 ? `چالش ویژه ✓ ${goal}` : `🎯 چالش ویژه: ${goal}`}`);
+		return st;
+	};
+	const platformStats = () => ({ flawless: s.flawless, timeLeft: s.timeLeft, pat: s.pat, tasksDone: s.tasksDone, taskFails: s.taskFails || 0, bossTries: s.bossTries || 0 });
 	const afterWin = () => {
+		awardStars(s.stageN, s.lastStats || platformStats()); s.lastStats = null;
 		if (s.stageN >= ARMY0) {
 			const step = s.stageN - ARMY0 + 1;
 			try { if (step > readArmy()) localStorage.setItem(ARMY_SAVE, String(step)); } catch (e) { /* ignore */ }
@@ -1130,7 +1173,7 @@ export function mount(stage, api) {
 			} else {
 				s.task.t -= f / 60;
 				if (!s.task.ent.alive) { s.tasksDone++; addScore(500, s.task.ent.x, s.task.ent.y - 10); s.banner = { t: `✓ تسک بسته شد: ${s.task.name}`, life: 1.6 }; s.task = null; s.taskT = 3.5; }
-				else if (s.task.t <= 0) { s.task.ent.alive = false; s.task.ent.dead = 0; s.banner = { t: 'تسک دیر شد! 😬', life: 1.6 }; s.task = null; s.taskT = 4.5; hurt(); }
+				else if (s.task.t <= 0) { s.taskFails = (s.taskFails || 0) + 1; s.task.ent.alive = false; s.task.ent.dead = 0; s.banner = { t: 'تسک دیر شد! 😬', life: 1.6 }; s.task = null; s.taskT = 4.5; hurt(); }
 			}
 		}
 		if (s.lv.side === 'war' && !s.won && !s.dying) {

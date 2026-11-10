@@ -25,6 +25,12 @@ export const STAGES = [
 	{ scene: 'bam', mood: 'shock', cap: 'بام تهران، قرعه‌کشی زنده و جمعیت زیاد. کوروش و نگار استرس دارند که سایت قطع شود یا باگی قرعه‌کشی را خراب کند.', say: 'نگار: فقط تا لحظه قرعه‌کشی دووم بیار…' },
 	{ scene: 'akhgari', mood: 'fire', cap: 'ظهر جمعه. آقای اخگری (قدبلند، مثل بابالنگ‌دراز): «قرعه‌کشی کاله داریم؛ ۳۰ تا، توی تالار جشن!» کوروش در اتاق فنی پشت سن است و مجری را نمی‌بیند؛ نگار مثل کارگردان جایی ایستاده که هر دو را ببیند.', say: 'نگار: آماده… الان بزن!' },
 	{ mood: 'shock', cap: 'قرعه‌کشی آخر، بزرگ‌ترین جایزه… و سرور زیر بار هنگ می‌کند! سه کلید ری‌استارت را به ترتیبی که نشان داده می‌شود بزن.', say: 'نه الان!… ری‌استارت!' },
+	{ scene: 'bazaar', mood: 'fire', cap: 'روزهای جنگ بود و کوروش بیکار شده بود. با اینترنت قطع‌ووصل و بدون هیچ منبع و AI، سایت فروشگاه گیلدا را تنهایی کدنویسی و طراحی کرد. حالا جنس لازم است: بازار عمده کیف‌فروش‌ها، پایین بهارستان.', say: '۲۰ تا کیف با همین بودجه… چونه می‌زنیم!' },
+	{ scene: 'studio', mood: 'happy', cap: 'اینترنت برگشت. عکس‌های ساده‌ای که از کیف‌ها روی تخت گرفته بود را با جمینای به عکس‌های صنعتی تبدیل می‌کند، چند تیزر می‌سازد و مقاله می‌نویسد تا سایت کامل سرپا شود.', say: 'روی تخت عکس گرفتم… جمینای، معجزه کن! ✨' },
+	{ mood: 'shock', cap: 'مشتری‌ها آمدند… و درگاه پرداخت قطع است! هر مشکلی که حل می‌شد، یکی دیگر سبز می‌شد. مسیر پرداخت را از سبد خرید تا بانک وصل کن، قبل از اینکه مشتری‌ها بروند.', say: 'امروز این درگاه وصل می‌شه!' },
+	{ cap: 'پرونده خانه سرمایه. قیمت دلار و طلا هر ثانیه عوض می‌شود و افزونه قیمت روز نباید یک لحظه قطع شود.', say: 'قیمت‌ها باید زنده بمونن.' },
+	{ cap: 'وبینار تا چند ساعت دیگر شروع می‌شود و لندینگ ثبت‌نامش هنوز بالا نیامده.', say: 'آخرین لندینگ. تمرکز!' },
+	{ cap: 'ارباب ددلاین: پشت همه این شب‌های بی‌خوابی، همیشه یک نفر بود.', say: 'ددلاین یا نه، امشب دیپلوی می‌کنیم!' },
 ];
 
 export const OUTRO = [
@@ -112,7 +118,7 @@ export function showDialog(host, { done, sound }) {
 		else { sus++; sound && sound('wrong'); react = a[2]; }
 		if (sus >= 2) { el.querySelector('[data-d-q]').textContent = `${a[2]} برو بیرون! 😠`; el.querySelector('[data-d-opts]').innerHTML = ''; meter(); return setTimeout(() => { close(); done && done(false); }, 1600); }
 		i++;
-		if (i >= FUEL_Q.length) { el.querySelector('[data-d-q]').textContent = 'باشه بابا، برو بزن… ⛽ باک پر شد!'; el.querySelector('[data-d-opts]').innerHTML = ''; sound && sound('level'); return setTimeout(() => { close(); done && done(true); }, 1500); }
+		if (i >= FUEL_Q.length) { el.querySelector('[data-d-q]').textContent = 'باشه بابا، برو بزن… ⛽ باک پر شد!'; el.querySelector('[data-d-opts]').innerHTML = ''; sound && sound('level'); return setTimeout(() => { close(); done && done(true, { sus }); }, 1500); }
 		ask();
 	});
 	const close = () => { if (closed) return; closed = true; cancelAnimationFrame(raf); el.remove(); };
@@ -785,6 +791,19 @@ export function drawPanel(c, w, h, panel, t, worlds) {
 			['WP', 'PHP', 'JS', 'SQL', 'CSS'].forEach((b, i) => { const a = t * 1.5 + i * 1.256, x = w * 0.3 + Math.cos(a) * 70, y = h * 0.45 + Math.sin(a) * 34; c.fillStyle = '#fff'; c.strokeStyle = OL; c.lineWidth = 1.5; c.beginPath(); c.roundRect(x - 14, y - 8, 28, 16, 4); c.fill(); c.stroke(); c.fillStyle = '#047857'; c.font = `900 8px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(b, x, y + 0.5); });
 			sfx(c, 'لول آپ!', w * 0.74, h * 0.3, 22, -0.1, '#10b981', t - 0.3);
 		}
+	} else if (sc === 'bazaar') {
+		const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#fcd34d'); g.addColorStop(1, '#fde68a'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+		for (let i = 0; i < 4; i++) { const x = i * 84 - 10; c.fillStyle = ['#b45309', '#92400e', '#78350f', '#a16207'][i]; c.fillRect(x, 20, 78, 90); c.fillStyle = '#7f1d1d'; c.fillRect(x, 20, 78, 10); c.fillStyle = '#fef3c7'; c.fillRect(x + 6, 36, 66, 60); for (let j = 0; j < 3; j++) { c.save(); c.translate(x + 18 + j * 20, 70); c.fillStyle = ['#1f2937', '#be185d', '#0f766e'][(i + j) % 3]; c.strokeStyle = OL; c.lineWidth = 1.2; c.beginPath(); c.moveTo(-7, -6); c.lineTo(7, -6); c.lineTo(8, 6); c.lineTo(-8, 6); c.closePath(); c.fill(); c.stroke(); c.restore(); } }
+		c.fillStyle = '#a8a29e'; c.fillRect(0, h * 0.8, w, h);
+		heroAt(w * 0.32, h * 0.8, 'stand', 1, 1.9, 0, 0); drawPerson(c, w * 0.62, h * 0.8, 1.7, 'mh', { mood: 'smile', name: 'فروشنده', hair: '#57534e', style: 'bald', stache: true, top: '#78350f' }, t);
+		sfx(c, 'چند؟!', w * 0.62, h * 0.18, 18, 0.1, '#7c2d12', t - 0.3);
+		sfx(c, 'پایین بهارستان', w * 0.22, h * 0.1, 11, -0.05, '#fff', t - 0.1);
+	} else if (sc === 'studio') {
+		c.fillStyle = '#e0e7ff'; c.fillRect(0, 0, w * 0.5, h);
+		const g = c.createRadialGradient(w * 0.75, h * 0.5, 4, w * 0.75, h * 0.5, w * 0.4); g.addColorStop(0, '#fff'); g.addColorStop(1, '#d6b98c'); c.fillStyle = g; c.fillRect(w * 0.5, 0, w * 0.5, h);
+		c.strokeStyle = OL; c.lineWidth = 3; c.beginPath(); c.moveTo(w * 0.5, 0); c.lineTo(w * 0.5, h); c.stroke();
+		[[w * 0.25, 1.6], [w * 0.75, 2]].forEach(([x, k2]) => { c.save(); c.translate(x, h * 0.6); c.scale(k2, k2); c.fillStyle = '#111827'; c.strokeStyle = OL; c.lineWidth = 1.2; c.beginPath(); c.moveTo(-11, -8); c.lineTo(11, -8); c.lineTo(13, 8); c.lineTo(-13, 8); c.closePath(); c.fill(); c.stroke(); c.beginPath(); c.moveTo(-5, -8); c.quadraticCurveTo(0, -17, 5, -8); c.stroke(); c.restore(); });
+		sfx(c, 'قبل 🛏', w * 0.25, h * 0.14, 13, -0.05, '#475569', t - 0.1); sfx(c, 'بعد ✨', w * 0.75, h * 0.14, 15, 0.05, '#ca8a04', t - 0.5);
 	} else if (sc === 'bam') {
 		const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#0b1033'); g.addColorStop(1, '#4c1d95'); c.fillStyle = g; c.fillRect(0, 0, w, h);
 		for (let i = 0; i < 40; i++) { c.fillStyle = '#fde68a'; c.fillRect((i * 37) % w, h * 0.42 + ((i * 53) % 30), 2, 2); }
@@ -947,7 +966,7 @@ export function showOCR(host, { done, sound }) {
 	};
 	const upd = () => { const l = $('[data-o-left]'); if (l) l.textContent = `${faNum(left)} اشتباه مانده`; score(); };
 	const next = () => { if (closed) return; i++; if (i >= lines.length) return finish(); page(); };
-	const finish = () => { close(); done && done(pts, found >= Math.ceil(total * 0.6)); };
+	const finish = () => { close(); done && done(pts, found >= Math.ceil(total * 0.6), { found, total }); };
 	const tick = (now) => {
 		const dt = Math.min(0.1, (now - last) / 1000); last = now;
 		if (phase === 'scan') {

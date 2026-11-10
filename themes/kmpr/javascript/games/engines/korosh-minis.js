@@ -199,7 +199,7 @@ export function showDrive(host, cfg) {
 		const total = st.pts + bonus + (ok ? 800 : 0);
 		cfg.sound && cfg.sound(ok ? 'level' : 'over');
 		endScreen(el, ok, ok ? cfg.winText || 'رسیدی! ✓' : why, [ok && cfg.clock ? `زمان رسیدن ${fa(Math.floor(st.clock / 60))}:${fa(String(Math.floor(st.clock) % 60).padStart(2, '0'))}` : '', `امتیاز ${fa(total)} · تصادف ${fa(st.crashes)}`].filter(Boolean),
-			() => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? total : 0); });
+			() => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? total : 0, st); });
 	};
 	// input
 	const KM = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', ArrowUp: 'gas', KeyW: 'gas', ArrowDown: 'brake', KeyS: 'brake', Space: 'brake' };
@@ -291,7 +291,7 @@ export function showQC(host, cfg) {
 		if (st.over) return; st.over = true; cfg.sound && cfg.sound(ok ? 'level' : 'over');
 		const total = st.pts + (ok ? 1000 : 0);
 		endScreen(el, ok, ok ? 'همه QCها بسته شد! ✓' : 'یوسف برنده شد… 😏', [`بسته‌شده ${fa(st.fixed)} · بهترین زنجیره ×${fa(st.best)}`, `امتیاز ${fa(total)}`],
-			() => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? total : 0); });
+			() => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? total : 0, st); });
 	};
 	const KM = { ArrowLeft: 0, KeyA: 0, ArrowDown: 1, KeyS: 1, ArrowRight: 2, KeyD: 2 };
 	const kd = (e) => { if (!(e.code in KM) || st.over || paused) return; e.preventDefault(); e.stopPropagation(); if (!e.repeat) send(KM[e.code]); };
@@ -409,7 +409,7 @@ export function showDesk(host, cfg) {
 		if (st.over) return; st.over = true; cfg.sound && cfg.sound(ok ? 'level' : 'over');
 		const total = st.pts + (ok ? 1500 : 0);
 		endScreen(el, ok, ok ? 'آقای عزیزی: قبول! به تو اعتماد دارم ✓' : 'آقای عزیزی: هنوز آماده نیستی…', [`جواب درست ${fa(st.ok)} از ${fa(ROUNDS)}`, `امتیاز ${fa(total)}`],
-			() => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? total : 0); });
+			() => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? total : 0, st); });
 	};
 	const onResize = () => fit(); window.addEventListener('resize', onResize);
 	const close = () => { if (closed) return; closed = true; cancelAnimationFrame(raf); window.removeEventListener('keydown', kd, true); window.removeEventListener('resize', onResize); el.remove(); };

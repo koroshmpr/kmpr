@@ -57,7 +57,7 @@ export function showLogHunt(host, cfg) {
 		const l = st.lines.find((x) => !x.hit && Math.abs(x.y - py) < LINE / 2 + 1);
 		if (!l) return;
 		if (l.bad) { l.hit = 1; st.blocked++; st.load = Math.max(0, st.load - 6); cfg.sound && cfg.sound('coin'); if (st.blocked % 3 === 0) st.say = { t: NEGAR_LOG[Math.floor(Math.random() * NEGAR_LOG.length)], life: 2 }; if (st.blocked >= GOAL) finish(true); }
-		else { l.hit = 2; st.load = Math.min(100, st.load + 7); cfg.sound && cfg.sound('wrong'); st.say = { t: 'نگار: اون که سالمه! 😅', life: 1.4 }; }
+		else { l.hit = 2; st.wrong = (st.wrong || 0) + 1; st.load = Math.min(100, st.load + 7); cfg.sound && cfg.sound('wrong'); st.say = { t: 'نگار: اون که سالمه! 😅', life: 1.4 }; }
 	};
 	const draw = () => {
 		c.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0);
@@ -90,7 +90,7 @@ export function showLogHunt(host, cfg) {
 	const finish = (ok) => {
 		if (st.over) return; st.over = true; cfg.sound && cfg.sound(ok ? 'level' : 'over');
 		const pts = st.blocked * 120 + (ok ? 1000 : 0);
-		endScreen(el, ok, ok ? 'مقصر پیدا شد: پلاگین لاگین ✓' : 'سرور از کار افتاد… 💥', ok ? ['ساعت ۱۱ شب؛ پلاگین غیرفعال شد ولی سایت باید از نو ساخته شود.', `امتیاز ${fa(pts)}`] : [`${fa(st.blocked)} خط بسته شد`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? pts : 0); });
+		endScreen(el, ok, ok ? 'مقصر پیدا شد: پلاگین لاگین ✓' : 'سرور از کار افتاد… 💥', ok ? ['ساعت ۱۱ شب؛ پلاگین غیرفعال شد ولی سایت باید از نو ساخته شود.', `امتیاز ${fa(pts)}`] : [`${fa(st.blocked)} خط بسته شد`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? pts : 0, st); });
 	};
 	reset();
 	const lp = loop(update, draw);
@@ -143,7 +143,7 @@ export function showCodeFix(host, cfg) {
 	const finish = (ok) => {
 		if (st.over) return; st.over = true; cfg.sound && cfg.sound(ok ? 'level' : 'over');
 		const pts = st.pts + (ok ? Math.max(0, Math.round(25 * 60 - st.clock)) * 10 + 800 : 0);
-		endScreen(el, ok, ok ? `ساعت ${clockStr(st.clock)}؛ لندینگ روی دامنه جدید بالا رفت 🚀` : 'ساعت از ۱ گذشت… خوابت برد 😴', [`اشتباه ${fa(st.miss)} · امتیاز ${fa(pts)}`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? pts : 0); });
+		endScreen(el, ok, ok ? `ساعت ${clockStr(st.clock)}؛ لندینگ روی دامنه جدید بالا رفت 🚀` : 'ساعت از ۱ گذشت… خوابت برد 😴', [`اشتباه ${fa(st.miss)} · امتیاز ${fa(pts)}`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, ok ? pts : 0, st); });
 	};
 	reset();
 	const lp = loop(update, draw);
@@ -201,7 +201,7 @@ export function showDomainRace(host, cfg) {
 	const finish = (ok) => {
 		if (st.over) return; st.over = true; cfg.sound && cfg.sound(ok ? 'level' : 'over');
 		const pts = ok ? Math.round(3000 - st.t * 20) : 0;
-		endScreen(el, ok, ok ? 'دامنه برگشت؛ سایت قرعه‌کشی در دسترس است ✓' : 'ربات دامنه را گرفت… دوباره!', [`زمان ${fa(Math.round(st.t))} ثانیه`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, Math.max(800, pts)); });
+		endScreen(el, ok, ok ? 'دامنه برگشت؛ سایت قرعه‌کشی در دسترس است ✓' : 'ربات دامنه را گرفت… دوباره!', [`زمان ${fa(Math.round(st.t))} ثانیه`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, Math.max(800, pts), st); });
 	};
 	reset();
 	const lp = loop(update, draw);
@@ -270,7 +270,7 @@ export function showCrowd(host, cfg) {
 	const finish = (ok) => {
 		if (st.over) return; st.over = true; cfg.sound && cfg.sound(ok ? 'level' : 'over');
 		const pts = ok ? 1500 + st.hearts * 500 : 0;
-		endScreen(el, ok, ok ? 'سایت تا لحظه قرعه‌کشی بالا ماند! 🎉' : 'سایت وسط قرعه‌کشی رفت… 😵', [ok ? 'جمعیت بام تهران قرعه‌کشی را زنده دید.' : 'بار را بین سرورها پخش کن و باگ‌ها را بزن.', `امتیاز ${fa(pts)}`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, pts); });
+		endScreen(el, ok, ok ? 'سایت تا لحظه قرعه‌کشی بالا ماند! 🎉' : 'سایت وسط قرعه‌کشی رفت… 😵', [ok ? 'جمعیت بام تهران قرعه‌کشی را زنده دید.' : 'بار را بین سرورها پخش کن و باگ‌ها را بزن.', `امتیاز ${fa(pts)}`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); }, () => { close(); cfg.done && cfg.done(ok, pts, st); });
 	};
 	reset();
 	const lp = loop(update, draw);
@@ -338,7 +338,7 @@ export function showCues(host, cfg) {
 	const finish = (ok) => {
 		if (st.over) return; st.over = true; cfg.sound && cfg.sound(ok ? 'level' : 'over');
 		const pts = st.pts + (ok ? 1500 : 0);
-		endScreen(el, ok, ok ? 'هر ۳۰ قرعه‌کشی اجرا شد! 👏 همه تشویق کردند' : 'هماهنگی به هم ریخت… دوباره!', [`امتیاز ${fa(pts)}`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); next(); }, () => { close(); cfg.done && cfg.done(ok, ok ? pts : 0); });
+		endScreen(el, ok, ok ? 'هر ۳۰ قرعه‌کشی اجرا شد! 👏 همه تشویق کردند' : 'هماهنگی به هم ریخت… دوباره!', [`امتیاز ${fa(pts)}`], () => { el.querySelector('.kr-mini__end').hidden = true; reset(); next(); }, () => { close(); cfg.done && cfg.done(ok, ok ? pts : 0, st); });
 	};
 	reset(); next();
 	const lp = loop(update, draw);
