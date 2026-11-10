@@ -1,0 +1,466 @@
+{
+ "batch": "course-modern-frontend-react-nextjs",
+ "terms": [
+  {
+   "taxonomy": "category",
+   "match": "modern-frontend-react-nextjs",
+   "slug": "modern-frontend-react-nextjs",
+   "name": "فرانت‌اند مدرن و ری‌اکت",
+   "description": "دوره عملی React و Next.js به زبان فارسی؛ از کامپوننت و App Router تا کش، اتصال به API، دیپلوی و هوش مصنوعی.",
+   "acf": {
+    "course_title": "دوره Next.js و React: از قالب وردپرس تا ساخت وب‌اپلیکیشن",
+    "course_intro": "این دوره مسیری است که خودم از وردپرس به Next.js رفتم: پایه‌های React، مسیریابی App Router، رندرینگ و کش، اتصال به API و داده زنده، دیپلوی روی سرور و استفاده درست از هوش مصنوعی در برنامه‌نویسی. هدف این است که بدانید Next.js کجا انتخاب درستی است و بتوانید یک وب‌اپ واقعی را پایدار بسازید و اجرا کنید.",
+    "course_color": "sky"
+   },
+   "yoast": {
+    "title": "دوره آموزش Next.js و React از صفر | کوروش محمدپور",
+    "desc": "دوره رایگان آموزش Next.js و ری‌اکت: کامپوننت و state، App Router، رندرینگ و کش، اتصال به API و داده زنده، دیپلوی روی سرور و کار با هوش مصنوعی."
+   }
+  }
+ ],
+ "media": [
+  {
+   "file": "nextjs-business-guide.webp",
+   "alt": "کاور راهنمای آموزش Next.js برای کسب‌وکار و مقایسه آن با وردپرس",
+   "title": "آموزش Next.js برای کسب‌وکار در ۱۴۰۵: کی Next.js، کی وردپرس و مسیر یادگیری از صفر"
+  },
+  {
+   "file": "react-for-wordpress-developers.webp",
+   "alt": "کاور آموزش ری‌اکت برای توسعه‌دهنده وردپرس با کامپوننت، props و state",
+   "title": "ری‌اکت برای توسعه‌دهنده وردپرس: کامپوننت، props، state و فرم به زبان ساده"
+  },
+  {
+   "file": "nextjs-app-router-routing.webp",
+   "alt": "کاور آموزش App Router در Next.js با ساختار پوشه‌ها، layout و مسیر پویا",
+   "title": "App Router در Next.js: صفحه، layout، مسیر پویا، متادیتا و Route Handler"
+  },
+  {
+   "file": "nextjs-rendering-caching.webp",
+   "alt": "کاور آموزش رندرینگ و کش در Next.js با Server Component و ISR",
+   "title": "رندرینگ و کش در Next.js: Server Component، صفحه ثابت و پویا، ISR و revalidate"
+  },
+  {
+   "file": "nextjs-api-live-data.webp",
+   "alt": "کاور آموزش اتصال Next.js به API برای قیمت‌های زنده با کش و اعتبارسنجی",
+   "title": "اتصال Next.js به API: داده زنده، کش سمت سرور، خطای ۴۲۹ و اعتبارسنجی پاسخ"
+  },
+  {
+   "file": "nextjs-deploy-server.webp",
+   "alt": "کاور راهنمای دیپلوی Next.js روی سرور با PM2، Docker و Nginx",
+   "title": "دیپلوی Next.js روی سرور: خروجی standalone، PM2، Docker، Nginx و دیپلوی خودکار"
+  },
+  {
+   "file": "ai-assisted-web-development.webp",
+   "alt": "کاور راهنمای استفاده از هوش مصنوعی در برنامه‌نویسی وب با چک‌لیست بازبینی کد",
+   "title": "هوش مصنوعی در برنامه‌نویسی وب: سرعت بیشتر بدون باگ بیشتر، با چک‌لیست بازبینی"
+  }
+ ],
+ "posts": [
+  {
+   "type": "post",
+   "slug": "nextjs-business-guide",
+   "status": "publish",
+   "title": "آموزش Next.js برای کسب‌وکار در ۱۴۰۵: کی Next.js، کی وردپرس و مسیر یادگیری از صفر",
+   "excerpt": "Next.js چیست، کجا از وردپرس بهتر است و کجا نه، و از کجا باید یادگیری‌اش را شروع کرد؛ نقشه کامل دوره از React پایه تا دیپلوی و هوش مصنوعی.",
+   "content": "<p>من هم مثل خیلی از توسعه‌دهنده‌های ایرانی کار را با وردپرس شروع کردم: قالب، افزونه، کمی PHP و بعد قالب اختصاصی. نقطه‌ای رسید که پروژه‌ها دیگر «سایت محتوایی» نبودند؛ قیمت‌هایی که هر چند ثانیه عوض می‌شدند، داشبوردی که هر کاربر چیز متفاوتی در آن می‌دید و صفحه‌هایی که باید به چند API وصل می‌شدند. آنجا بود که Next.js را جدی یاد گرفتم. این مقاله نقشه همان مسیر است: <strong>آموزش Next.js</strong> برای کسی که می‌خواهد بداند این فریم‌ورک کجا به درد کسب‌وکار می‌خورد، کجا نمی‌خورد و از کجا باید شروعش کرد.</p>\n\n<p>این صفحه ستون دوره <strong>فرانت‌اند مدرن با React و Next.js</strong> است. هر بخش به یک درس کامل‌تر لینک می‌دهد؛ اگر عجله دارید، همین مقاله تصویر کلی را می‌دهد و بعد می‌توانید فقط درس‌هایی را بخوانید که لازم دارید.</p>\n\n<h2>Next.js دقیقاً چیست؟</h2>\n\n<p>React یک کتابخانه برای ساختن رابط کاربری از قطعه‌های کوچک به اسم کامپوننت است. React به‌تنهایی به شما نمی‌گوید صفحه‌ها چطور مسیر بگیرند، داده از کجا و کی خوانده شود، HTML کجا ساخته شود یا سایت چطور روی سرور اجرا شود. Next.js همین جاهای خالی را پر می‌کند: یک فریم‌ورک روی React که مسیریابی بر اساس پوشه‌ها، رندر سمت سرور، تولید صفحه ثابت، API داخلی، بهینه‌سازی تصویر و فونت و ابزار ساخت را یک‌جا می‌دهد.</p>\n\n<p>تفاوت مهم با یک اپ React ساده این است که در Next.js صفحه می‌تواند روی سرور ساخته شود و HTML کامل به مرورگر برسد. یعنی موتور جست‌وجو و کاربر با اینترنت کند، محتوا را بدون منتظر ماندن برای اجرای کل جاوااسکریپت می‌بینند. این همان نقطه‌ای است که Next.js را برای سایت‌های تجاری، نه فقط پنل‌های داخلی، قابل استفاده می‌کند.</p>\n\n<h2>کی Next.js و کی وردپرس؟</h2>\n\n<p>این سؤالی است که بیشتر از همه از من می‌پرسند و جواب صادقانه‌اش این است که «بستگی دارد»، ولی نه به سلیقه؛ به نوع پروژه. خلاصه معیارهایی که خودم استفاده می‌کنم:</p>\n\n<table>\n<thead><tr><th>نیاز پروژه</th><th>انتخاب معمول</th><th>دلیل</th></tr></thead>\n<tbody>\n<tr><td>سایت شرکتی، وبلاگ، محتوای زیاد با ویرایش مداوم</td><td>وردپرس (ترجیحاً قالب اختصاصی)</td><td>پنل مدیریت آماده، تیم محتوا مستقل کار می‌کند، هزینه نگهداری کمتر</td></tr>\n<tr><td>داده زنده، قیمت، داشبورد، حساب کاربری پیچیده</td><td>Next.js</td><td>کنترل کامل روی دریافت داده، کش و رابط تعاملی</td></tr>\n<tr><td>محتوای زیاد + بخش‌های اپ‌مانند</td><td>وردپرس هدلس + Next.js</td><td>وردپرس برای محتوا، Next.js برای نمایش و منطق</td></tr>\n<tr><td>لندینگ کمپین با عمر کوتاه</td><td>هر دو؛ بسته به تیم</td><td>سرعت ساخت و تحویل مهم‌تر از معماری است</td></tr>\n<tr><td>مینی‌اپ تلگرام یا وب‌اپ شبیه اپلیکیشن</td><td>Next.js یا React</td><td>تجربه اپ‌مانند و کنترل کامل روی رابط</td></tr>\n</tbody>\n</table>\n\n<p>اشتباه رایج این است که Next.js را «نسخه بهتر وردپرس» بدانیم. این دو ابزار مسئله‌های متفاوتی را حل می‌کنند. اگر کارفرما هر روز مقاله و صفحه اضافه می‌کند و تیم فنی ندارد، Next.js بدون یک CMS پشت آن کار او را سخت‌تر می‌کند. اگر هم پروژه یک داشبورد معاملاتی است، تلاش برای ساختنش با افزونه‌های وردپرس معمولاً به سایتی کند و شکننده می‌رسد. برای ترکیب این دو، <a href=\"/blog/headless-wordpress-with-nextjs-guide/\">راهنمای وردپرس هدلس با Next.js</a> را بخوانید.</p>\n\n<h2>پیش‌نیازها: قبل از Next.js چه چیزهایی بلد باشیم؟</h2>\n\n<p>بزرگ‌ترین دلیل گیر کردن در یادگیری Next.js، شروع کردن از Next.js است. پیش‌نیازهایی که واقعاً لازم‌اند:</p>\n\n<ul>\n<li><strong>HTML و CSS درست:</strong> ساختار معنایی، Flexbox و Grid. اگر با Tailwind کار می‌کنید، باید بدانید هر کلاس چه CSSی می‌سازد.</li>\n<li><strong>جاوااسکریپت مدرن:</strong> <code>const</code> و <code>let</code>، توابع پیکانی، destructuring، ماژول‌ها (<code>import</code>/<code>export</code>)، <code>Promise</code> و <code>async/await</code>، و متدهای آرایه مثل <code>map</code> و <code>filter</code>.</li>\n<li><strong>مفاهیم HTTP:</strong> درخواست و پاسخ، کدهای وضعیت (۲۰۰، ۴۰۴، ۴۲۹، ۵۰۰)، هدرها و JSON.</li>\n<li><strong>React پایه:</strong> کامپوننت، props، state و رویدادها. این‌ها را در <a href=\"/blog/react-for-wordpress-developers/\">درس اول: ری‌اکت برای توسعه‌دهنده وردپرس</a> توضیح داده‌ام.</li>\n<li><strong>کمی TypeScript:</strong> لازم نیست حرفه‌ای باشید، ولی تعریف نوع برای props و پاسخ API جلوی بخش بزرگی از باگ‌ها را می‌گیرد.</li>\n</ul>\n\n<h2>App Router: سایت از روی پوشه‌ها ساخته می‌شود</h2>\n\n<p>در Next.js مسیر هر صفحه از ساختار پوشه‌ها می‌آید. فایل <code>app/page.tsx</code> صفحه اصلی است، <code>app/about/page.tsx</code> صفحه «درباره ما» و <code>app/blog/[slug]/page.tsx</code> هر مقاله وبلاگ. فایل <code>layout.tsx</code> قالب مشترک صفحه‌ها (هدر، فوتر، فونت) را نگه می‌دارد و فایل‌هایی مثل <code>loading.tsx</code>، <code>error.tsx</code> و <code>not-found.tsx</code> حالت‌های بارگذاری، خطا و صفحه ۴۰۴ را مشخص می‌کنند.</p>\n\n<pre><code>app/\n├─ layout.tsx          // هدر و فوتر مشترک\n├─ page.tsx            // صفحه اصلی  →  /\n├─ about/page.tsx      // →  /about\n├─ blog/\n│  ├─ page.tsx         // فهرست مقاله‌ها  →  /blog\n│  └─ [slug]/page.tsx  // هر مقاله  →  /blog/nextjs-guide\n└─ api/prices/route.ts // API داخلی  →  /api/prices</code></pre>\n\n<p>برای کسی که از وردپرس می‌آید، این ساختار شبیه سلسله‌مراتب قالب است، با این فرق که خودتان آن را می‌سازید و هیچ فایلی «جادویی» انتخاب نمی‌شود. جزئیات مسیرهای پویا، گروه‌بندی مسیرها، متادیتا و Route Handlerها در <a href=\"/blog/nextjs-app-router-routing/\">درس App Router و مسیریابی</a> آمده است.</p>\n\n<h2>Server Component و Client Component</h2>\n\n<p>مهم‌ترین مفهوم Next.js جدید همین است و بیشتر سردرگمی‌ها از آن شروع می‌شود. در App Router همه کامپوننت‌ها به‌طور پیش‌فرض <strong>Server Component</strong> هستند: روی سرور اجرا می‌شوند، می‌توانند مستقیم از دیتابیس یا API بخوانند و جاوااسکریپت آن‌ها به مرورگر فرستاده نمی‌شود. هر جا به تعامل در مرورگر نیاز دارید، مثل دکمه، فرم با state یا تایمر، بالای فایل <code>'use client'</code> می‌نویسید و آن کامپوننت <strong>Client Component</strong> می‌شود.</p>\n\n<p>قاعده‌ای که به آن رسیده‌ام: صفحه را سرور بسازد و فقط «جزیره‌های» تعاملی در مرورگر اجرا شوند. اگر <code>'use client'</code> را بالای کل صفحه بگذارید، عملاً مزیت Next.js را از دست داده‌اید و یک اپ React سنگین ساخته‌اید.</p>\n\n<h2>رندرینگ و کش: صفحه کی ساخته می‌شود؟</h2>\n\n<p>هر صفحه در Next.js یکی از این حالت‌ها را دارد:</p>\n\n<ul>\n<li><strong>ثابت (Static):</strong> یک بار هنگام build ساخته می‌شود و برای همه یکسان است؛ مثل صفحه «درباره ما».</li>\n<li><strong>بازسازی دوره‌ای (ISR):</strong> صفحه ثابت است ولی هر چند ثانیه یا با یک رویداد دوباره ساخته می‌شود؛ مثل فهرست مقاله‌ها.</li>\n<li><strong>پویا (Dynamic):</strong> برای هر درخواست ساخته می‌شود؛ مثل داشبورد کاربر یا صفحه‌ای که به کوکی وابسته است.</li>\n</ul>\n\n<p>انتخاب درست بین این‌ها هم سرعت سایت را تعیین می‌کند و هم هزینه سرور را. قیمتی که هر ده ثانیه عوض می‌شود نباید یک ساعت در کش بماند و صفحه «درباره ما» هم نباید با هر بازدید دوباره ساخته شود. درس <a href=\"/blog/nextjs-rendering-caching/\">رندرینگ و کش در Next.js</a> این تصمیم‌ها را با مثال توضیح می‌دهد.</p>\n\n<h2>اتصال به API و داده زنده</h2>\n\n<p>جایی که Next.js بیشترین ارزش را نشان می‌دهد، کار با داده بیرونی است. چند اصل که در پروژه‌های قیمت زنده یاد گرفتم:</p>\n\n<ul>\n<li>کلید API هرگز به مرورگر نمی‌رسد؛ درخواست از سرور (Server Component یا Route Handler) زده می‌شود.</li>\n<li>هر منبع داده نرخ مجاز درخواست دارد. اگر هر بازدیدکننده مستقیم API بیرونی را صدا بزند، دیر یا زود خطای ۴۲۹ می‌گیرید؛ پس پاسخ را در سرور کش کنید.</li>\n<li>فرمت پاسخ API بدون خبر عوض می‌شود. پاسخ را قبل از استفاده اعتبارسنجی کنید تا به‌جای صفحه سفید، پیام خطای قابل‌فهم یا آخرین داده سالم نمایش داده شود.</li>\n<li>برای هر داده مشخص کنید چقدر «کهنه» قابل قبول است و کش را با همان عدد تنظیم کنید.</li>\n</ul>\n\n<p>این الگوها با کد در <a href=\"/blog/nextjs-api-live-data/\">درس اتصال Next.js به API و داده زنده</a> آمده‌اند. اگر سمت وردپرس هم API می‌سازید، درس <a href=\"/blog/wordpress-rest-api-integrations/\">REST API وردپرس و یکپارچه‌سازی</a> مکمل آن است.</p>\n\n<h2>سئو در Next.js</h2>\n\n<p>Next.js به‌خاطر رندر سمت سرور برای سئو مناسب است، ولی سئو را خودکار انجام نمی‌دهد. چیزهایی که باید خودتان بسازید:</p>\n\n<ul>\n<li>عنوان و توضیحات هر صفحه با <code>metadata</code> یا <code>generateMetadata</code>.</li>\n<li>آدرس canonical، نقشه سایت (<code>app/sitemap.ts</code>) و <code>robots.ts</code>.</li>\n<li>داده ساختاریافته JSON-LD برای مقاله، محصول یا سؤالات متداول؛ الگوهایش در <a href=\"/blog/schema-structured-data-guide/\">راهنمای اسکیما</a> آمده است.</li>\n<li>ریدایرکت ۳۰۱ آدرس‌های قدیمی وقتی از وردپرس مهاجرت می‌کنید؛ بدون آن رتبه‌های قبلی از دست می‌روند.</li>\n</ul>\n\n<h2>دیپلوی: سایت Next.js کجا اجرا شود؟</h2>\n\n<p>وردپرس روی تقریباً هر هاست اشتراکی اجرا می‌شود، ولی Next.js برای بخش‌های پویا به Node.js نیاز دارد. برای کسب‌وکارهای ایرانی معمولاً این گزینه‌ها مطرح است: سرور مجازی با Node.js و یک مدیر فرایند، کانتینر Docker، سرویس‌های ابری داخلی که از Node پشتیبانی می‌کنند، یا خروجی کاملاً ثابت (static export) برای سایت‌هایی که بخش پویا ندارند. سرویس‌های خارجی مثل Vercel راحت‌اند، ولی قبل از انتخابشان دسترسی کاربران ایرانی، روش پرداخت و جای داده‌ها را بسنجید. جزئیات در <a href=\"/blog/nextjs-deploy-server/\">درس دیپلوی Next.js روی سرور</a> آمده است.</p>\n\n<h2>هوش مصنوعی: شتاب‌دهنده، نه جایگزین فهم</h2>\n\n<p>بخش بزرگی از سرعت امروز من در ساختن اپ‌ها از ابزارهای هوش مصنوعی می‌آید، ولی فقط به این دلیل که کدی را که تولید می‌کنند می‌فهمم و بازبینی می‌کنم. هوش مصنوعی خیلی راحت <code>'use client'</code> را بالای همه‌چیز می‌گذارد، کلید API را در کد سمت مرورگر می‌نویسد یا از الگوهای نسخه‌های قدیمی Next.js استفاده می‌کند. روش کار و چک‌لیست بازبینی من در <a href=\"/blog/ai-assisted-web-development/\">درس هوش مصنوعی در برنامه‌نویسی وب</a> آمده است.</p>\n\n<h2>مسیر یادگیری پیشنهادی</h2>\n\n<p>درس‌های این دوره به همین ترتیب نوشته شده‌اند و هر کدام روی قبلی ساخته می‌شود:</p>\n\n<ol>\n<li><a href=\"/blog/react-for-wordpress-developers/\">ری‌اکت برای توسعه‌دهنده وردپرس: کامپوننت، props، state و فرم</a></li>\n<li><a href=\"/blog/nextjs-app-router-routing/\">App Router در Next.js: صفحه، layout، مسیر پویا و Route Handler</a></li>\n<li><a href=\"/blog/nextjs-rendering-caching/\">رندرینگ و کش در Next.js: Server Component، ISR و revalidate</a></li>\n<li><a href=\"/blog/nextjs-api-live-data/\">اتصال Next.js به API: داده زنده، کش، خطای ۴۲۹ و اعتبارسنجی پاسخ</a></li>\n<li><a href=\"/blog/nextjs-deploy-server/\">دیپلوی Next.js روی سرور: Node.js، PM2، Docker و Nginx</a></li>\n<li><a href=\"/blog/ai-assisted-web-development/\">هوش مصنوعی در برنامه‌نویسی وب: سرعت بیشتر بدون باگ بیشتر</a></li>\n</ol>\n\n<p>پیشنهادم این است که هم‌زمان با خواندن، یک پروژه کوچک واقعی بسازید؛ مثلاً صفحه‌ای که چند قیمت را از یک API عمومی می‌خواند، هر دقیقه به‌روز می‌شود و یک فرم تماس دارد. همین پروژه کوچک تقریباً همه مفاهیم دوره را درگیر می‌کند.</p>\n\n<h2>جمع‌بندی</h2>\n\n<p>Next.js ابزار درستی برای پروژه‌هایی است که داده زنده، منطق پیچیده یا تجربه اپ‌مانند دارند و برای سایت‌های محتوایی ساده لزوماً بهتر از وردپرس نیست. اگر React پایه را بلدید، با فهم سه مفهوم (مسیریابی با پوشه‌ها، مرز Server و Client Component و استراتژی کش) بیشترین بخش راه را رفته‌اید و بقیه تمرین است.</p>\n\n<p>اگر برای کسب‌وکارتان وب‌اپ، داشبورد یا سایتی با داده زنده لازم دارید و نمی‌دانید Next.js انتخاب درستی است یا وردپرس، <a href=\"/contact-us/#smart-configurator\">فرم درخواست پروژه</a> را پر کنید تا با هم بررسی کنیم.</p>",
+   "date": "2026-11-08 08:00:00",
+   "terms": {
+    "category": [
+     "modern-frontend-react-nextjs"
+    ]
+   },
+   "meta": {
+    "_yoast_wpseo_primary_category": "term:category:modern-frontend-react-nextjs"
+   },
+   "acf": {
+    "is_pillar": true,
+    "lesson_order": 0,
+    "difficulty": "beginner",
+    "tldr": "Next.js فریم‌ورکی روی React است که مسیریابی، رندر سمت سرور، کش و API داخلی را یک‌جا می‌دهد. برای داده زنده، داشبورد و وب‌اپ انتخاب خوبی است و برای سایت محتوایی ساده لزوماً بهتر از وردپرس نیست. سه مفهوم کلیدی‌اش مسیریابی با پوشه‌ها، مرز Server و Client Component و استراتژی کش است.",
+    "key_takeaways": "Next.js جایگزین وردپرس نیست؛ مسئله متفاوتی را حل می‌کند.\nبرای داده زنده، داشبورد و تجربه اپ‌مانند Next.js مناسب‌تر است؛ برای محتوای زیاد با تیم غیرفنی وردپرس.\nقبل از Next.js، جاوااسکریپت مدرن، HTTP و React پایه را یاد بگیرید.\nدر App Router کامپوننت‌ها به‌طور پیش‌فرض روی سرور اجرا می‌شوند؛ فقط بخش‌های تعاملی 'use client' می‌گیرند.\nبرای هر داده تصمیم بگیرید چقدر می‌تواند قدیمی باشد و کش را با همان تنظیم کنید.\nکلید API هرگز به مرورگر نمی‌رسد.\nNext.js برای بخش‌های پویا به Node.js روی سرور نیاز دارد.",
+    "post_faq": [
+     {
+      "question": "Next.js بهتر است یا وردپرس؟",
+      "answer": "بستگی به پروژه دارد. برای سایت محتوایی که تیم غیرفنی مرتب ویرایشش می‌کند وردپرس مناسب‌تر است. برای داده زنده، داشبورد، حساب کاربری پیچیده و وب‌اپ، Next.js. ترکیب هر دو به شکل وردپرس هدلس هم ممکن است."
+     },
+     {
+      "question": "برای یادگیری Next.js باید React بلد باشم؟",
+      "answer": "بله. Next.js روی React ساخته شده و بدون فهم کامپوننت، props و state، مفاهیم آن گیج‌کننده می‌شود. جاوااسکریپت مدرن و مفاهیم پایه HTTP هم پیش‌نیازند."
+     },
+     {
+      "question": "آیا سایت Next.js برای سئو مناسب است؟",
+      "answer": "بله، چون صفحه می‌تواند روی سرور به HTML کامل تبدیل شود. ولی عنوان، توضیحات، canonical، نقشه سایت، اسکیما و ریدایرکت‌ها را باید خودتان پیاده کنید."
+     },
+     {
+      "question": "Next.js روی هاست اشتراکی اجرا می‌شود؟",
+      "answer": "اگر خروجی کاملاً ثابت بگیرید بله. برای بخش‌های پویا مثل API داخلی و بازسازی صفحه، به سروری با Node.js نیاز دارید."
+     }
+    ]
+   },
+   "yoast": {
+    "title": "آموزش Next.js در ۱۴۰۵: کی Next.js و کی وردپرس؟",
+    "desc": "آموزش Next.js برای کسب‌وکار: تفاوت با وردپرس، App Router، Server Component، کش، اتصال به API، دیپلوی و مسیر یادگیری قدم‌به‌قدم از صفر.",
+    "focuskw": "آموزش Next.js"
+   },
+   "thumbnail": "media:nextjs-business-guide.webp",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"web-app-development\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"portfolio\" item=\"traders-dastyar\"]",
+     "before_h2": 11
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "react-for-wordpress-developers",
+   "status": "publish",
+   "title": "ری‌اکت برای توسعه‌دهنده وردپرس: کامپوننت، props، state و فرم به زبان ساده",
+   "excerpt": "مفاهیم پایه React با معادل‌هایشان در وردپرس: کامپوننت، props، state، فرم‌ها، فهرست‌ها و useEffect؛ با مثال‌های TypeScript.",
+   "content": "<p>وقتی از وردپرس به React آمدم، سخت‌ترین بخش سینتکس نبود؛ عوض کردن طرز فکر بود. در PHP صفحه را از بالا به پایین می‌سازید و تمام. در React رابط کاربری «تابعی از داده» است: داده عوض می‌شود و React خودش تصمیم می‌گیرد کدام قسمت صفحه دوباره ساخته شود. در این درس <strong>آموزش ری‌اکت</strong> را از همان زاویه‌ای شروع می‌کنم که برای یک توسعه‌دهنده وردپرس آشناست.</p>\n\n<p>این درس اول دوره <a href=\"/blog/nextjs-business-guide/\">آموزش Next.js برای کسب‌وکار</a> است. اگر React را بلدید، مستقیم به <a href=\"/blog/nextjs-app-router-routing/\">درس App Router</a> بروید.</p>\n\n<h2>کامپوننت: همان template-part، ولی با ورودی مشخص</h2>\n\n<p>در قالب وردپرس با <code>get_template_part()</code> یک تکه از صفحه را جدا می‌کنید و با آرگومان سوم داده به آن می‌دهید. کامپوننت React همین ایده است، با این فرق که یک تابع جاوااسکریپت است که JSX برمی‌گرداند:</p>\n\n<pre><code>type PriceCardProps = { title: string; price: number; unit?: string };\n\nexport function PriceCard({ title, price, unit = 'تومان' }: PriceCardProps) {\n  return (\n    &lt;article className=\"rounded-2xl border p-4\"&gt;\n      &lt;h3 className=\"font-bold\"&gt;{title}&lt;/h3&gt;\n      &lt;p&gt;{price.toLocaleString('fa-IR')} {unit}&lt;/p&gt;\n    &lt;/article&gt;\n  );\n}\n\n// استفاده:\n&lt;PriceCard title=\"طلای ۱۸ عیار\" price={6250000} /&gt;</code></pre>\n\n<p>سه نکته که تازه‌کارها معمولاً جا می‌اندازند:</p>\n\n<ul>\n<li>نام کامپوننت با حرف بزرگ شروع می‌شود؛ <code>priceCard</code> به‌عنوان تگ HTML ناشناخته تفسیر می‌شود.</li>\n<li>در JSX به‌جای <code>class</code> از <code>className</code> و به‌جای <code>for</code> از <code>htmlFor</code> استفاده می‌شود.</li>\n<li>هر چیزی داخل <code>{}</code> عبارت جاوااسکریپت است. <code>if</code> مستقیم داخل JSX کار نمی‌کند؛ از عملگر سه‌تایی یا <code>&&</code> استفاده کنید.</li>\n</ul>\n\n<h2>props: داده از بالا به پایین</h2>\n\n<p>props ورودی‌های کامپوننت‌اند و فقط‌خواندنی هستند. کامپوننت فرزند نباید props را تغییر دهد؛ اگر داده باید عوض شود، صاحب آن داده (کامپوننت والد) تغییرش می‌دهد. این قاعده «جریان یک‌طرفه داده» است و دلیل اینکه اپ‌های React با بزرگ شدن قابل‌فهم می‌مانند.</p>\n\n<p>با TypeScript نوع props را تعریف کنید. هزینه‌اش چند خط است و در عوض اگر جایی <code>price</code> را به‌صورت رشته بفرستید، قبل از اجرا خطا می‌گیرید، نه وقتی کاربر عدد اشتباه می‌بیند.</p>\n\n<h2>state: داده‌ای که کامپوننت خودش نگه می‌دارد</h2>\n\n<p>هر چیزی که با تعامل کاربر عوض می‌شود و باید روی صفحه دیده شود، state است. با هوک <code>useState</code> تعریف می‌شود:</p>\n\n<pre><code>'use client';\nimport { useState } from 'react';\n\nexport function Counter() {\n  const [count, setCount] = useState(0);\n  return (\n    &lt;button type=\"button\" onClick={() =&gt; setCount((c) =&gt; c + 1)}&gt;\n      تعداد کلیک: {count}\n    &lt;/button&gt;\n  );\n}</code></pre>\n\n<p>چند قاعده که خیلی از باگ‌ها را حذف می‌کند:</p>\n\n<ul>\n<li>state را مستقیم تغییر ندهید (<code>count++</code> یا <code>items.push()</code>)؛ همیشه با تابع set و یک مقدار جدید.</li>\n<li>وقتی مقدار جدید به مقدار قبلی وابسته است، از شکل تابعی استفاده کنید: <code>setCount((c) => c + 1)</code>.</li>\n<li>چیزی را که می‌شود از state یا props محاسبه کرد، در state جدا نگه ندارید. مثلاً جمع سبد خرید را از فهرست اقلام حساب کنید.</li>\n<li><code>'use client'</code> در Next.js لازم است، چون state فقط در مرورگر معنا دارد.</li>\n</ul>\n\n<h2>رویدادها و فرم‌ها</h2>\n\n<p>فرم‌ها جایی است که توسعه‌دهنده وردپرس بیشترین تفاوت را حس می‌کند. در React معمولاً مقدار هر فیلد در state نگه داشته می‌شود (فیلد «کنترل‌شده»):</p>\n\n<pre><code>'use client';\nimport { useState } from 'react';\n\nexport function LeadForm() {\n  const [phone, setPhone] = useState('');\n  const [status, setStatus] = useState&lt;'idle' | 'sending' | 'done' | 'error'&gt;('idle');\n  const valid = /^09\\d{9}$/.test(phone);\n\n  async function onSubmit(e: React.FormEvent) {\n    e.preventDefault();\n    if (!valid) return;\n    setStatus('sending');\n    const res = await fetch('/api/leads', { method: 'POST', body: JSON.stringify({ phone }) });\n    setStatus(res.ok ? 'done' : 'error');\n  }\n\n  return (\n    &lt;form onSubmit={onSubmit}&gt;\n      &lt;label htmlFor=\"phone\"&gt;شماره موبایل&lt;/label&gt;\n      &lt;input id=\"phone\" inputMode=\"numeric\" value={phone} onChange={(e) =&gt; setPhone(e.target.value)} /&gt;\n      &lt;button type=\"submit\" disabled={!valid || status === 'sending'}&gt;ثبت&lt;/button&gt;\n      {status === 'error' &amp;&amp; &lt;p role=\"alert\"&gt;ارسال نشد؛ دوباره تلاش کنید.&lt;/p&gt;}\n    &lt;/form&gt;\n  );\n}</code></pre>\n\n<p>اعتبارسنجی سمت مرورگر فقط برای تجربه کاربر است. همان قاعده‌ها را سمت سرور هم دوباره بررسی کنید؛ هر کسی می‌تواند بدون فرم شما مستقیم به <code>/api/leads</code> درخواست بفرستد.</p>\n\n<h2>فهرست‌ها و key</h2>\n\n<p>برای نمایش فهرست از <code>map</code> استفاده می‌شود و هر آیتم یک <code>key</code> یکتا و پایدار می‌خواهد:</p>\n\n<pre><code>{prices.map((p) =&gt; (\n  &lt;PriceCard key={p.symbol} title={p.title} price={p.price} /&gt;\n))}</code></pre>\n\n<p>از اندیس آرایه به‌عنوان key استفاده نکنید، مگر فهرست هیچ‌وقت مرتب یا فیلتر نشود. اگر ترتیب عوض شود و key اندیس باشد، React ممکن است state یک آیتم (مثلاً مقدار یک فیلد) را به آیتم دیگری بچسباند؛ باگی که پیدا کردنش ساعت‌ها طول می‌کشد.</p>\n\n<h2>useEffect: کمتر از آنچه فکر می‌کنید</h2>\n\n<p><code>useEffect</code> برای همگام شدن با چیزی بیرون از React است: تایمر، اتصال WebSocket یا گوش دادن به رویداد پنجره. اشتباه رایج، استفاده از آن برای دریافت داده اولیه صفحه یا محاسبه یک مقدار از state است. در Next.js داده اولیه را در Server Component بخوانید و مقدارهای مشتق‌شده را مستقیم هنگام رندر حساب کنید.</p>\n\n<pre><code>useEffect(() =&gt; {\n  const id = setInterval(refresh, 30_000);\n  return () =&gt; clearInterval(id); // پاک‌سازی: بدون آن با هر رندر یک تایمر جدید اضافه می‌شود\n}, []);</code></pre>\n\n<p>تابعی که از effect برمی‌گردد پاک‌سازی است. هر effectی که چیزی را «روشن» می‌کند (تایمر، اتصال، listener) باید آن را خاموش هم بکند.</p>\n\n<h2>استایل‌دهی: Tailwind و دیزاین سیستم کوچک</h2>\n\n<p>اگر در وردپرس با Tailwind کار کرده‌اید، در React هم همان کلاس‌ها را می‌نویسید. تفاوت این است که حالا کامپوننت‌ها خودشان واحد دیزاین سیستم‌اند: یک <code>Button</code> با چند حالت مشخص، به‌جای کپی کردن ده کلاس روی هر دکمه. قاعده من این است که هر الگویی که سه بار تکرار شد، کامپوننت شود. گردش کار ساخت Tailwind را در درس <a href=\"/blog/wordpress-tailwind-build-workflow/\">گردش کار مدرن وردپرس با Tailwind و esbuild</a> از دوره وردپرس توضیح داده‌ام.</p>\n\n<h2>از وردپرس به React: نقشه ذهنی</h2>\n\n<table>\n<thead><tr><th>در وردپرس</th><th>معادل نزدیک در React/Next.js</th></tr></thead>\n<tbody>\n<tr><td><code>get_template_part()</code></td><td>کامپوننت</td></tr>\n<tr><td>آرگومان‌های template-part</td><td>props</td></tr>\n<tr><td>فیلدهای ACF یک پست</td><td>داده‌ای که از API یا CMS خوانده می‌شود</td></tr>\n<tr><td>jQuery روی رویداد کلیک</td><td><code>onClick</code> و state</td></tr>\n<tr><td>هوک‌های <code>add_action</code></td><td>مفهوم متفاوت؛ هوک‌های React (<code>useState</code>، <code>useEffect</code>) برای state و اثرهای جانبی‌اند</td></tr>\n<tr><td>سلسله‌مراتب قالب</td><td>مسیریابی پوشه‌ای App Router</td></tr>\n</tbody>\n</table>\n\n<h2>جمع‌بندی</h2>\n\n<p>React بر چند ایده ساده بنا شده: کامپوننت‌های کوچک، props فقط‌خواندنی، state حداقلی و رابط کاربری‌ای که از داده ساخته می‌شود. اگر این‌ها را درست جا بیندازید، Next.js فقط لایه‌ای است که مشخص می‌کند کدام کامپوننت روی سرور و کدام در مرورگر اجرا شود.</p>\n\n<p>درس بعدی، <a href=\"/blog/nextjs-app-router-routing/\">App Router در Next.js</a>، این کامپوننت‌ها را به صفحه و مسیر تبدیل می‌کند. برای نقشه کامل دوره به <a href=\"/blog/nextjs-business-guide/\">راهنمای Next.js برای کسب‌وکار</a> برگردید.</p>\n\n<p>اگر پنل یا وب‌اپی لازم دارید که روی React ساخته شود، <a href=\"/contact-us/#smart-configurator\">فرم درخواست پروژه</a> را پر کنید.</p>",
+   "date": "2026-11-08 14:00:00",
+   "terms": {
+    "category": [
+     "modern-frontend-react-nextjs"
+    ]
+   },
+   "meta": {
+    "_yoast_wpseo_primary_category": "term:category:modern-frontend-react-nextjs"
+   },
+   "acf": {
+    "is_pillar": false,
+    "lesson_order": 1,
+    "difficulty": "beginner",
+    "tldr": "در React رابط کاربری تابعی از داده است. کامپوننت‌ها مثل template-part هستند ولی ورودی مشخص (props) دارند. داده‌ای که با تعامل کاربر عوض می‌شود state است و فقط با تابع set تغییر می‌کند. فرم‌ها معمولاً کنترل‌شده‌اند، فهرست‌ها key پایدار می‌خواهند و useEffect فقط برای همگام شدن با سیستم‌های بیرونی است.",
+    "key_takeaways": "کامپوننت تابعی است که JSX برمی‌گرداند و نامش با حرف بزرگ شروع می‌شود.\nprops فقط‌خواندنی‌اند؛ داده از والد به فرزند جریان دارد.\nstate را مستقیم تغییر ندهید؛ همیشه با تابع set و مقدار جدید.\nمقدارهای قابل محاسبه را در state جدا نگه ندارید.\nاعتبارسنجی فرم در مرورگر برای تجربه کاربر است؛ سمت سرور دوباره بررسی کنید.\nاز اندیس آرایه به‌عنوان key استفاده نکنید.\nهر effectی که چیزی را روشن می‌کند باید تابع پاک‌سازی داشته باشد.",
+    "post_faq": [
+     {
+      "question": "برای یادگیری React باید وردپرس را کنار بگذارم؟",
+      "answer": "نه. بسیاری از پروژه‌ها هر دو را ترکیب می‌کنند؛ مثلاً وردپرس برای محتوا و React یا Next.js برای بخش‌های تعاملی. خود ویرایشگر بلوک وردپرس هم با React ساخته شده است."
+     },
+     {
+      "question": "TypeScript برای شروع React لازم است؟",
+      "answer": "اجباری نیست، ولی تعریف نوع برای props و پاسخ API از ابتدا جلوی بسیاری از باگ‌ها را می‌گیرد و هزینه یادگیری‌اش کم است."
+     },
+     {
+      "question": "useEffect را برای گرفتن داده استفاده کنم؟",
+      "answer": "در Next.js داده اولیه را در Server Component بخوانید. useEffect برای همگام شدن با سیستم‌های بیرونی مثل تایمر، WebSocket یا رویدادهای پنجره مناسب است."
+     },
+     {
+      "question": "چرا key در فهرست مهم است؟",
+      "answer": "React با key تشخیص می‌دهد کدام آیتم عوض، اضافه یا حذف شده است. key ناپایدار مثل اندیس آرایه باعث می‌شود state یک آیتم به آیتم دیگری منتقل شود."
+     }
+    ]
+   },
+   "yoast": {
+    "title": "آموزش ری‌اکت برای توسعه‌دهنده وردپرس",
+    "desc": "آموزش ری‌اکت از زاویه یک توسعه‌دهنده وردپرس: کامپوننت به‌جای template-part، props، state، فرم کنترل‌شده، key در فهرست‌ها و استفاده درست از useEffect.",
+    "focuskw": "آموزش ری‌اکت"
+   },
+   "thumbnail": "media:react-for-wordpress-developers.webp",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"web-app-development\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"game\" item=\"type-code\"]",
+     "before_h2": 8
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "nextjs-app-router-routing",
+   "status": "publish",
+   "title": "App Router در Next.js: صفحه، layout، مسیر پویا، متادیتا و Route Handler",
+   "excerpt": "مسیریابی پوشه‌ای Next.js از صفر: page، layout، مسیرهای پویا و generateStaticParams، گروه‌بندی مسیرها، Link، متادیتا، Route Handler و حالت‌های loading و error.",
+   "content": "<p>اولین باری که پروژه Next.js را باز کردم، دنبال فایلی می‌گشتم که «آدرس‌ها» را تعریف کند؛ چیزی شبیه تنظیمات پیوندهای یکتا در وردپرس. چنین فایلی وجود ندارد. در <strong>App Router در Next.js</strong> خود پوشه‌ها آدرس‌اند و چند نام فایل رزروشده تعیین می‌کنند هر آدرس چه چیزی نمایش بدهد. این درس همه آن‌ها را با یک مثال واقعی (سایتی با صفحه اصلی، وبلاگ و API قیمت) توضیح می‌دهد.</p>\n\n<p>این درس دوم دوره <a href=\"/blog/nextjs-business-guide/\">آموزش Next.js برای کسب‌وکار</a> است و فرض می‌کند <a href=\"/blog/react-for-wordpress-developers/\">مفاهیم پایه React</a> را می‌دانید.</p>\n\n<h2>قاعده اصلی: پوشه = بخش آدرس، page = صفحه</h2>\n\n<p>هر پوشه داخل <code>app/</code> یک بخش از آدرس است، ولی فقط وقتی فایل <code>page.tsx</code> داشته باشد آن آدرس قابل بازدید می‌شود. یعنی می‌توانید پوشه‌ای برای نگه داشتن کامپوننت‌ها داشته باشید بدون اینکه آدرس عمومی بسازد.</p>\n\n<pre><code>app/\n├─ layout.tsx              // ریشه: html، body، هدر و فوتر\n├─ page.tsx                // /\n├─ about/page.tsx          // /about\n├─ blog/\n│  ├─ page.tsx             // /blog\n│  └─ [slug]/\n│     ├─ page.tsx          // /blog/هر-مقاله\n│     └─ loading.tsx       // اسکلت بارگذاری مقاله\n├─ (marketing)/\n│  └─ webinar/page.tsx     // /webinar  — پرانتز در آدرس نمی‌آید\n├─ api/prices/route.ts     // /api/prices\n└─ not-found.tsx           // صفحه ۴۰۴ سفارشی</code></pre>\n\n<p>فایل‌های رزروشده‌ای که بیشتر از همه استفاده می‌شوند:</p>\n\n<ul>\n<li><code>page.tsx</code>: محتوای خود صفحه.</li>\n<li><code>layout.tsx</code>: قالبی که دور صفحه‌های آن پوشه و زیرپوشه‌ها می‌پیچد و هنگام جابه‌جایی بین آن‌ها دوباره ساخته نمی‌شود.</li>\n<li><code>loading.tsx</code>: چیزی که تا آماده شدن صفحه نمایش داده می‌شود.</li>\n<li><code>error.tsx</code>: رابط خطا برای آن بخش؛ باید Client Component باشد.</li>\n<li><code>not-found.tsx</code>: صفحه وقتی محتوا پیدا نشد.</li>\n<li><code>route.ts</code>: پاسخ‌دهنده API به‌جای صفحه.</li>\n</ul>\n\n<h2>layout: قالب مشترکی که دوباره بارگذاری نمی‌شود</h2>\n\n<p>layout ریشه اجباری است و تگ‌های <code>html</code> و <code>body</code> را می‌سازد. برای سایت فارسی، جهت و زبان همین‌جا تنظیم می‌شود:</p>\n\n<pre><code>// app/layout.tsx\nimport type { Metadata } from 'next';\nimport './globals.css';\n\nexport const metadata: Metadata = {\n  title: { default: 'نام کسب‌وکار', template: '%s | نام کسب‌وکار' },\n  description: 'توضیح کوتاه سایت',\n};\n\nexport default function RootLayout({ children }: { children: React.ReactNode }) {\n  return (\n    &lt;html lang=\"fa\" dir=\"rtl\"&gt;\n      &lt;body&gt;\n        &lt;Header /&gt;\n        &lt;main&gt;{children}&lt;/main&gt;\n        &lt;Footer /&gt;\n      &lt;/body&gt;\n    &lt;/html&gt;\n  );\n}</code></pre>\n\n<p>layoutها تو در تو هستند. اگر بخش وبلاگ ستون کناری دارد، <code>app/blog/layout.tsx</code> فقط دور صفحه‌های وبلاگ می‌پیچد و layout ریشه همچنان بیرون آن است. چون layout هنگام رفتن از یک مقاله به مقاله دیگر حفظ می‌شود، state داخل آن (مثلاً منوی بازشده) هم از بین نمی‌رود.</p>\n\n<h2>مسیرهای پویا: [slug] و generateStaticParams</h2>\n\n<p>پوشه‌ای که نامش داخل کروشه است، بخش متغیر آدرس را می‌گیرد. در صفحه مقاله، مقدار <code>slug</code> از <code>params</code> خوانده می‌شود:</p>\n\n<pre><code>// app/blog/[slug]/page.tsx\nimport { notFound } from 'next/navigation';\nimport { getPost, getAllSlugs } from '@/lib/posts';\n\nexport async function generateStaticParams() {\n  const slugs = await getAllSlugs();\n  return slugs.map((slug) =&gt; ({ slug }));\n}\n\nexport default async function PostPage({ params }: { params: Promise&lt;{ slug: string }&gt; }) {\n  const { slug } = await params;\n  const post = await getPost(slug);\n  if (!post) notFound();\n  return &lt;article&gt;&lt;h1&gt;{post.title}&lt;/h1&gt;{/* ... */}&lt;/article&gt;;\n}</code></pre>\n\n<p>در نسخه‌های جدید Next.js، <code>params</code> یک Promise است و باید <code>await</code> شود؛ اگر مثال‌های قدیمی را کپی کنید، این تفاوت را ببینید. <code>generateStaticParams</code> به Next.js می‌گوید کدام مقاله‌ها را هنگام build بسازد. اگر بعداً مقاله جدیدی اضافه شود، بسته به تنظیمات کش در اولین درخواست ساخته می‌شود؛ این را در <a href=\"/blog/nextjs-rendering-caching/\">درس رندرینگ و کش</a> توضیح داده‌ام.</p>\n\n<p>چند شکل دیگر مسیر پویا:</p>\n\n<ul>\n<li><code>[...slug]</code> همه بخش‌های بعدی را می‌گیرد؛ مثلاً <code>/docs/a/b/c</code>.</li>\n<li><code>[[...slug]]</code> همان است ولی آدرس بدون بخش اضافه را هم پوشش می‌دهد.</li>\n</ul>\n\n<h2>گروه‌بندی مسیرها و پوشه‌های خصوصی</h2>\n\n<p>پوشه‌ای که نامش داخل پرانتز است، مثل <code>(marketing)</code>، در آدرس ظاهر نمی‌شود. از آن برای دو کار استفاده می‌کنم: مرتب کردن فایل‌ها و دادن layout جدا به یک گروه صفحه. مثلاً صفحه‌های لندینگ کمپین بدون هدر و فوتر اصلی، و صفحه‌های داشبورد با منوی کناری.</p>\n\n<p>پوشه‌ای که با زیرخط شروع شود، مثل <code>_components</code>، اصلاً مسیر نمی‌سازد و جای خوبی برای کامپوننت‌هایی است که فقط همان بخش استفاده می‌کند.</p>\n\n<h2>لینک و جابه‌جایی بین صفحه‌ها</h2>\n\n<p>برای لینک داخلی از <code>Link</code> استفاده کنید، نه تگ <code>a</code> ساده. <code>Link</code> صفحه مقصد را بدون بارگذاری کامل عوض می‌کند و لینک‌هایی را که در دید کاربر هستند از قبل آماده می‌کند:</p>\n\n<pre><code>import Link from 'next/link';\n\n&lt;Link href={`/blog/${post.slug}`}&gt;{post.title}&lt;/Link&gt;</code></pre>\n\n<p>خروجی <code>Link</code> همچنان یک تگ <code>a</code> واقعی با <code>href</code> است، پس برای موتور جست‌وجو قابل خزش است. برای جابه‌جایی از داخل کد، مثلاً بعد از ثبت فرم، از <code>useRouter</code> در Client Component یا <code>redirect</code> در سمت سرور استفاده می‌شود.</p>\n\n<h2>متادیتا و سئو هر صفحه</h2>\n\n<p>عنوان و توضیحات ثابت با <code>export const metadata</code> و عنوان وابسته به داده با <code>generateMetadata</code> ساخته می‌شود:</p>\n\n<pre><code>export async function generateMetadata({ params }: { params: Promise&lt;{ slug: string }&gt; }) {\n  const { slug } = await params;\n  const post = await getPost(slug);\n  return {\n    title: post?.seoTitle ?? 'مقاله',\n    description: post?.excerpt,\n    alternates: { canonical: `/blog/${slug}` },\n    openGraph: { images: post?.cover ? [post.cover] : [] },\n  };\n}</code></pre>\n\n<p>Next.js درخواست‌های تکراری <code>fetch</code> با آدرس و تنظیمات یکسان را در یک رندر یک بار اجرا می‌کند، پس خواندن مقاله هم در <code>generateMetadata</code> و هم در صفحه دو درخواست به API نمی‌زند. اگر داده را مستقیم از دیتابیس می‌خوانید، تابع را با <code>cache</code> از React بپیچید تا همین رفتار را داشته باشد. نقشه سایت هم با فایل <code>app/sitemap.ts</code> ساخته می‌شود. چک‌لیست کامل سئو داخلی را در <a href=\"/blog/on-page-seo-checklist/\">چک‌لیست سئو داخلی</a> از دوره سئو ببینید.</p>\n\n<h2>Route Handler: API داخل همان پروژه</h2>\n\n<p>فایل <code>route.ts</code> به‌جای صفحه، پاسخ HTTP برمی‌گرداند. برای فرم‌ها، وب‌هوک‌ها و پراکسی کردن APIهای بیرونی (تا کلید API در مرورگر دیده نشود) از آن استفاده می‌کنم:</p>\n\n<pre><code>// app/api/leads/route.ts\nimport { NextResponse } from 'next/server';\n\nexport async function POST(req: Request) {\n  const body = await req.json().catch(() =&gt; null);\n  const phone = typeof body?.phone === 'string' ? body.phone : '';\n  if (!/^09\\d{9}$/.test(phone)) {\n    return NextResponse.json({ error: 'شماره نامعتبر است' }, { status: 422 });\n  }\n  await saveLead(phone); // ذخیره یا ارسال به CRM\n  return NextResponse.json({ ok: true }, { status: 201 });\n}</code></pre>\n\n<p>هر متد HTTP یک تابع جدا با همان نام است (<code>GET</code>، <code>POST</code> و غیره). همان قواعد امنیتی REST API وردپرس اینجا هم صدق می‌کند: ورودی را اعتبارسنجی کنید، کد وضعیت درست برگردانید و برای مسیرهای عمومی محدودیت نرخ بگذارید.</p>\n\n<h2>loading و error: حالت‌هایی که اغلب فراموش می‌شوند</h2>\n\n<p>صفحه‌ای که به API وابسته است، دو حالت دیگر هم دارد: «در حال بارگذاری» و «خطا». <code>loading.tsx</code> به‌طور خودکار دور صفحه یک مرز Suspense می‌سازد و تا آماده شدن داده، اسکلت صفحه را نشان می‌دهد. <code>error.tsx</code> خطاهای آن بخش را می‌گیرد و دکمه «تلاش دوباره» می‌دهد، به‌جای اینکه کل سایت از کار بیفتد:</p>\n\n<pre><code>'use client';\nexport default function Error({ reset }: { error: Error; reset: () =&gt; void }) {\n  return (\n    &lt;div role=\"alert\"&gt;\n      &lt;p&gt;این بخش الان بارگذاری نشد.&lt;/p&gt;\n      &lt;button type=\"button\" onClick={() =&gt; reset()}&gt;تلاش دوباره&lt;/button&gt;\n    &lt;/div&gt;\n  );\n}</code></pre>\n\n<h2>جمع‌بندی</h2>\n\n<p>App Router با چند قاعده ساده کار می‌کند: پوشه‌ها آدرس‌اند، <code>page</code> صفحه را می‌سازد، <code>layout</code> قالب مشترک را نگه می‌دارد، کروشه یعنی بخش پویا، پرانتز یعنی گروه بدون آدرس و <code>route.ts</code> یعنی API. اگر این ساختار را از اول درست بچینید، اضافه کردن بخش‌های جدید به پروژه ساده می‌ماند.</p>\n\n<p>درس قبل <a href=\"/blog/react-for-wordpress-developers/\">ری‌اکت برای توسعه‌دهنده وردپرس</a> بود. در درس بعد، <a href=\"/blog/nextjs-rendering-caching/\">رندرینگ و کش در Next.js</a>، می‌بینیم هر کدام از این صفحه‌ها کی و کجا ساخته می‌شوند. برای نقشه کامل دوره به <a href=\"/blog/nextjs-business-guide/\">راهنمای Next.js</a> برگردید.</p>\n\n<p>اگر می‌خواهید سایت یا وب‌اپتان با Next.js و ساختاری قابل توسعه ساخته شود، <a href=\"/contact-us/#smart-configurator\">فرم درخواست پروژه</a> را پر کنید.</p>",
+   "date": "2026-11-08 20:00:00",
+   "terms": {
+    "category": [
+     "modern-frontend-react-nextjs"
+    ]
+   },
+   "meta": {
+    "_yoast_wpseo_primary_category": "term:category:modern-frontend-react-nextjs"
+   },
+   "acf": {
+    "is_pillar": false,
+    "lesson_order": 2,
+    "difficulty": "intermediate",
+    "tldr": "در App Router هر پوشه یک بخش آدرس است و فایل page.tsx آن را قابل بازدید می‌کند. layout قالب مشترک را نگه می‌دارد، پوشه داخل کروشه بخش پویا و پوشه داخل پرانتز گروه بدون آدرس است. route.ts به‌جای صفحه پاسخ API می‌دهد و loading و error حالت‌های بارگذاری و خطا را مدیریت می‌کنند.",
+    "key_takeaways": "پوشه بخش آدرس است؛ فقط با page.tsx قابل بازدید می‌شود.\nlayout هنگام جابه‌جایی بین صفحه‌ها حفظ می‌شود و lang و dir سایت فارسی را همان‌جا تنظیم کنید.\nدر نسخه‌های جدید params یک Promise است و باید await شود.\nپوشه داخل پرانتز در آدرس نمی‌آید و برای layout جدا مفید است.\nبرای لینک داخلی از Link استفاده کنید؛ خروجی آن تگ a قابل خزش است.\nعنوان و توضیحات وابسته به داده با generateMetadata ساخته می‌شود.\nRoute Handler همان قواعد امنیتی هر API را می‌خواهد: اعتبارسنجی، کد وضعیت و محدودیت نرخ.",
+    "post_faq": [
+     {
+      "question": "تفاوت App Router و Pages Router چیست؟",
+      "answer": "Pages Router روش قدیمی‌تر Next.js با پوشه pages است. App Router با پوشه app کار می‌کند و Server Component، layoutهای تو در تو، streaming و مدل جدید دریافت داده را دارد. پروژه‌های جدید را با App Router شروع کنید."
+     },
+     {
+      "question": "چطور در App Router صفحه ۴۰۴ سفارشی بسازم؟",
+      "answer": "فایل not-found.tsx را در پوشه app بسازید و در صفحه‌های پویا وقتی داده پیدا نشد تابع notFound را صدا بزنید."
+     },
+     {
+      "question": "Route Handler جای بک‌اند جدا را می‌گیرد؟",
+      "answer": "برای فرم‌ها، وب‌هوک‌ها و پراکسی کردن APIهای بیرونی کافی است. برای منطق سنگین، صف کار یا سرویسی که چند کلاینت از آن استفاده می‌کنند، بک‌اند جدا معمولاً بهتر است."
+     },
+     {
+      "question": "آیا لینک‌های Link برای سئو مشکلی دارند؟",
+      "answer": "نه. Link در خروجی یک تگ a واقعی با href می‌سازد که موتور جست‌وجو آن را دنبال می‌کند."
+     }
+    ]
+   },
+   "yoast": {
+    "title": "App Router در Next.js: مسیریابی، layout و API",
+    "desc": "آموزش App Router در Next.js با مثال: ساختار پوشه‌ها، page و layout، مسیر پویا با [slug]، گروه مسیرها، متادیتا، Route Handler و صفحه‌های loading و error.",
+    "focuskw": "App Router در Next.js"
+   },
+   "thumbnail": "media:nextjs-app-router-routing.webp",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"website\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"portfolio\" item=\"khanesarmaye-webinar-landings\"]",
+     "before_h2": 8
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "nextjs-rendering-caching",
+   "status": "publish",
+   "title": "رندرینگ و کش در Next.js: Server Component، صفحه ثابت و پویا، ISR و revalidate",
+   "excerpt": "کی صفحه ساخته می‌شود و داده چقدر کش می‌شود؟ Server و Client Component، صفحه ثابت و پویا، revalidate و ISR، بازسازی با رویداد، Streaming و اشتباه‌های رایج.",
+   "content": "<p>بیشتر مشکلاتی که در پروژه‌های Next.js دیده‌ام، از جنس «چرا این صفحه به‌روز نمی‌شود؟» یا برعکس «چرا این صفحه این‌قدر کند است؟» بوده‌اند. هر دو یک ریشه دارند: تصمیم نگرفتن درباره اینکه صفحه کی ساخته شود و داده‌اش چقدر کش شود. در این درس <strong>رندرینگ در Next.js</strong> را از زاویه همین تصمیم‌ها توضیح می‌دهم: Server Component و Client Component، صفحه ثابت و پویا، ISR و revalidate.</p>\n\n<p>این درس سوم دوره <a href=\"/blog/nextjs-business-guide/\">آموزش Next.js برای کسب‌وکار</a> است و بعد از <a href=\"/blog/nextjs-app-router-routing/\">درس App Router</a> می‌آید.</p>\n\n<h2>Server Component: پیش‌فرضی که باید نگهش دارید</h2>\n\n<p>در App Router هر کامپوننتی که <code>'use client'</code> نداشته باشد، Server Component است. یعنی:</p>\n\n<ul>\n<li>روی سرور اجرا می‌شود و می‌تواند <code>async</code> باشد و مستقیم داده بخواند.</li>\n<li>کد آن به مرورگر فرستاده نمی‌شود؛ کتابخانه‌های سنگین (مثلاً برای تبدیل Markdown یا فرمت تاریخ) حجم جاوااسکریپت سایت را بالا نمی‌برند.</li>\n<li>به رازها (کلید API، رمز دیتابیس) دسترسی دارد، چون هیچ‌وقت در مرورگر اجرا نمی‌شود.</li>\n<li>نمی‌تواند state، رویداد کلیک یا هوک‌هایی مثل <code>useEffect</code> داشته باشد.</li>\n</ul>\n\n<pre><code>// Server Component: بدون 'use client'\nexport default async function PricesPage() {\n  const prices = await getPrices(); // روی سرور، با کلید مخفی\n  return (\n    &lt;section&gt;\n      &lt;h1&gt;قیمت‌های امروز&lt;/h1&gt;\n      &lt;PriceTable rows={prices} /&gt;\n      &lt;RefreshButton /&gt; {/* فقط این تکه Client Component است */}\n    &lt;/section&gt;\n  );\n}</code></pre>\n\n<h2>Client Component: جزیره‌های تعاملی</h2>\n\n<p><code>'use client'</code> مرز را مشخص می‌کند: آن فایل و هر چیزی که import می‌کند در مرورگر هم اجرا می‌شود. سه قاعده که رعایتشان حجم سایت را پایین نگه می‌دارد:</p>\n\n<ol>\n<li><strong>مرز را تا جای ممکن پایین ببرید.</strong> به‌جای Client کردن کل صفحه به‌خاطر یک دکمه، فقط همان دکمه را Client Component کنید.</li>\n<li><strong>داده را از سرور به‌عنوان props پاس بدهید.</strong> Client Component لازم نیست داده اولیه را خودش با <code>useEffect</code> بگیرد؛ این کار یک رفت‌وبرگشت اضافه و یک صفحه خالی اولیه می‌سازد.</li>\n<li><strong>props باید قابل سریال شدن باشند.</strong> رشته، عدد، آرایه و آبجکت ساده مشکلی ندارند؛ تابع معمولی را نمی‌شود از سرور به کلاینت پاس داد.</li>\n</ol>\n\n<p>یک نکته که خیلی‌ها را گیج می‌کند: Client Component هم در اولین بارگذاری روی سرور به HTML تبدیل می‌شود و بعد در مرورگر «زنده» (hydrate) می‌شود. «Client» یعنی کدش به مرورگر هم می‌رود، نه اینکه فقط در مرورگر رندر شود.</p>\n\n<h2>صفحه ثابت یا پویا؟</h2>\n\n<p>Next.js هنگام build برای هر مسیر تصمیم می‌گیرد آن را از قبل بسازد یا برای هر درخواست. اگر صفحه از چیزی وابسته به درخواست استفاده کند، مثل <code>cookies()</code>، <code>headers()</code> یا <code>searchParams</code>، پویا می‌شود. در غیر این صورت می‌تواند ثابت باشد. خروجی دستور <code>next build</code> نوع هر مسیر را نشان می‌دهد؛ عادت کنید بعد از هر تغییر مهم آن را نگاه کنید. صفحه‌ای که انتظار دارید ثابت باشد ولی پویا شده، معمولاً یعنی جایی ناخواسته کوکی یا هدر خوانده شده است.</p>\n\n<h2>کش داده: fetch و revalidate</h2>\n\n<p>در نسخه‌های جدید Next.js (از ۱۵ به بعد) <code>fetch</code> به‌طور پیش‌فرض کش نمی‌شود و باید صریح بگویید هر داده چقدر معتبر است. این تغییر نسبت به نسخه ۱۴ است و مثال‌های قدیمی اینترنت را گمراه‌کننده می‌کند:</p>\n\n<pre><code>// هر ۶۰ ثانیه حداکثر یک بار از منبع خوانده می‌شود\nconst res = await fetch('https://api.example.com/prices', {\n  next: { revalidate: 60, tags: ['prices'] },\n});\n\n// همیشه تازه؛ برای داده‌ای که به کاربر وابسته است\nconst me = await fetch('https://api.example.com/me', { cache: 'no-store' });</code></pre>\n\n<p>برای تنظیم کل صفحه هم می‌توانید در فایل صفحه بنویسید <code>export const revalidate = 300;</code>. انتخاب عدد یک تصمیم کسب‌وکاری است، نه فنی؛ از خودتان بپرسید «کاربر اگر داده‌ای ببیند که N ثانیه قدیمی است، مشکلی پیش می‌آید؟»</p>\n\n<table>\n<thead><tr><th>نوع داده</th><th>پیشنهاد</th></tr></thead>\n<tbody>\n<tr><td>صفحه «درباره ما»، قوانین</td><td>ثابت؛ بدون revalidate</td></tr>\n<tr><td>فهرست مقاله‌ها، صفحه محصول</td><td>revalidate چند دقیقه‌ای یا بازسازی با رویداد</td></tr>\n<tr><td>قیمت‌های بازار</td><td>چند ثانیه تا یک دقیقه، بسته به منبع و نرخ مجاز API</td></tr>\n<tr><td>سبد خرید، حساب کاربری</td><td><code>no-store</code>؛ هرگز کش مشترک</td></tr>\n</tbody>\n</table>\n\n<h2>ISR و بازسازی با رویداد</h2>\n\n<p>ISR یعنی صفحه ثابت می‌ماند و سریع سرو می‌شود، ولی بعد از گذشت زمان revalidate، اولین درخواست بعدی نسخه قدیمی را می‌گیرد و هم‌زمان نسخه جدید در پس‌زمینه ساخته می‌شود. این الگو برای وبلاگ و فروشگاه ایده‌آل است.</p>\n\n<p>بهتر از انتظار برای زمان، بازسازی با رویداد است. وقتی مقاله‌ای در CMS ذخیره شد، CMS یک وب‌هوک به سایت Next.js می‌فرستد و همان صفحه بلافاصله بازسازی می‌شود:</p>\n\n<pre><code>// app/api/revalidate/route.ts\nimport { revalidatePath, revalidateTag } from 'next/cache';\n\nexport async function POST(req: Request) {\n  if (req.headers.get('x-secret') !== process.env.REVALIDATE_SECRET) {\n    return new Response('forbidden', { status: 403 });\n  }\n  const { slug } = await req.json();\n  revalidatePath(`/blog/${slug}`);\n  revalidateTag('posts');\n  return Response.json({ revalidated: true });\n}</code></pre>\n\n<p>در وردپرس هدلس، این وب‌هوک روی هوک <code>save_post</code> فرستاده می‌شود؛ جزئیاتش در <a href=\"/blog/headless-wordpress-with-nextjs-guide/\">راهنمای وردپرس هدلس با Next.js</a> آمده است. حتماً مسیر را با یک راز محافظت کنید، وگرنه هر کسی می‌تواند با درخواست‌های پشت‌سرهم سرور شما را مشغول بازسازی کند.</p>\n\n<h2>Streaming و Suspense: همه صفحه منتظر کندترین بخش نماند</h2>\n\n<p>اگر صفحه‌ای از سه منبع داده می‌خواند و یکی کند است، لازم نیست کل صفحه منتظر بماند. بخش کند را داخل <code>Suspense</code> بگذارید تا بقیه صفحه فوراً نمایش داده شود و آن بخش وقتی آماده شد برسد:</p>\n\n<pre><code>import { Suspense } from 'react';\n\nexport default function Dashboard() {\n  return (\n    &lt;&gt;\n      &lt;Summary /&gt;                       {/* سریع */}\n      &lt;Suspense fallback={&lt;ChartSkeleton /&gt;}&gt;\n        &lt;SlowChart /&gt;                   {/* کند؛ جدا استریم می‌شود */}\n      &lt;/Suspense&gt;\n    &lt;/&gt;\n  );\n}</code></pre>\n\n<p>اسکلت جایگزین را هم‌اندازه محتوای نهایی بسازید تا وقتی داده رسید صفحه جابه‌جا نشود. این جابه‌جایی همان CLS است که در <a href=\"/blog/core-web-vitals-complete-guide/\">راهنمای Core Web Vitals</a> توضیح داده‌ام.</p>\n\n<h2>اشتباه‌های رایج کش</h2>\n\n<ul>\n<li><strong>کش کردن داده کاربر در کش مشترک:</strong> اگر پاسخی که به کوکی کاربر وابسته است کش شود، ممکن است کاربر دیگری آن را ببیند. داده شخصی همیشه <code>no-store</code>.</li>\n<li><strong>Client کردن کل صفحه برای یک تایمر:</strong> نتیجه‌اش جاوااسکریپت سنگین و صفحه‌ای است که موتور جست‌وجو ممکن است خالی ببیند.</li>\n<li><strong>revalidate صفر برای همه‌چیز «برای اطمینان»:</strong> هر بازدید به API بیرونی می‌رسد و با ترافیک بالا هم سرور کند می‌شود و هم به سقف درخواست API می‌خورید.</li>\n<li><strong>تست نکردن build تولید:</strong> رفتار کش در <code>next dev</code> با <code>next build</code> و <code>next start</code> فرق دارد. قبل از دیپلوی، نسخه تولید را محلی اجرا کنید.</li>\n</ul>\n\n<h2>جمع‌بندی</h2>\n\n<p>رندرینگ در Next.js با سه سؤال تعیین می‌شود: این کامپوننت به تعامل در مرورگر نیاز دارد؟ این صفحه به درخواست کاربر وابسته است؟ این داده چقدر می‌تواند قدیمی باشد؟ جواب درست به این سه، هم سایت را سریع می‌کند و هم هزینه سرور و API را پایین نگه می‌دارد.</p>\n\n<p>درس بعد، <a href=\"/blog/nextjs-api-live-data/\">اتصال Next.js به API و داده زنده</a>، همین مفاهیم را روی یک داشبورد قیمت زنده پیاده می‌کند. درس قبل <a href=\"/blog/nextjs-app-router-routing/\">App Router</a> بود و نقشه کامل دوره در <a href=\"/blog/nextjs-business-guide/\">راهنمای Next.js</a> است.</p>\n\n<p>اگر سایت Next.js دارید که کند است یا داده‌هایش درست به‌روز نمی‌شوند، <a href=\"/contact-us/#smart-configurator\">فرم درخواست پروژه</a> را پر کنید تا بررسی‌اش کنیم.</p>",
+   "date": "2026-11-09 02:00:00",
+   "terms": {
+    "category": [
+     "modern-frontend-react-nextjs"
+    ]
+   },
+   "meta": {
+    "_yoast_wpseo_primary_category": "term:category:modern-frontend-react-nextjs"
+   },
+   "acf": {
+    "is_pillar": false,
+    "lesson_order": 3,
+    "difficulty": "advanced",
+    "tldr": "کامپوننت‌ها به‌طور پیش‌فرض روی سرور اجرا می‌شوند و فقط بخش‌های تعاملی باید Client Component باشند. صفحه‌ای که کوکی، هدر یا searchParams بخواند پویا می‌شود. در نسخه‌های جدید fetch پیش‌فرض کش نمی‌شود و باید با revalidate یا no-store صریح تنظیم شود. ISR و بازسازی با وب‌هوک سرعت صفحه ثابت را با تازگی داده جمع می‌کنند.",
+    "key_takeaways": "Server Component پیش‌فرض است؛ مرز 'use client' را تا جای ممکن پایین ببرید.\nداده اولیه را از سرور به‌عنوان props به Client Component بدهید.\nخواندن cookies، headers یا searchParams صفحه را پویا می‌کند.\nاز Next.js ۱۵ به بعد fetch به‌طور پیش‌فرض کش نمی‌شود.\nعدد revalidate یک تصمیم کسب‌وکاری درباره کهنگی قابل قبول داده است.\nمسیر بازسازی با وب‌هوک را با راز محافظت کنید.\nداده شخصی کاربر هرگز در کش مشترک قرار نمی‌گیرد.",
+    "post_faq": [
+     {
+      "question": "ISR چیست؟",
+      "answer": "بازسازی تدریجی صفحه ثابت. صفحه از قبل ساخته شده و سریع سرو می‌شود، ولی بعد از گذشت زمان revalidate یا با یک رویداد، در پس‌زمینه دوباره ساخته می‌شود."
+     },
+     {
+      "question": "Client Component فقط در مرورگر رندر می‌شود؟",
+      "answer": "نه. در اولین بارگذاری روی سرور به HTML تبدیل می‌شود و بعد در مرورگر hydrate می‌شود. تفاوتش این است که کدش به مرورگر هم فرستاده می‌شود."
+     },
+     {
+      "question": "چرا صفحه Next.js من بعد از تغییر داده به‌روز نمی‌شود؟",
+      "answer": "احتمالاً صفحه ثابت ساخته شده یا داده کش شده است. revalidate مناسب بگذارید یا هنگام تغییر داده با revalidatePath یا revalidateTag بازسازی کنید."
+     },
+     {
+      "question": "چطور بفهمم یک مسیر ثابت است یا پویا؟",
+      "answer": "خروجی دستور next build نوع هر مسیر را نشان می‌دهد. بعد از هر تغییر مهم آن را بررسی کنید."
+     }
+    ]
+   },
+   "yoast": {
+    "title": "رندرینگ در Next.js: Server Component، ISR و کش",
+    "desc": "رندرینگ در Next.js به زبان ساده: Server و Client Component، صفحه ثابت و پویا، کش fetch و revalidate، ISR و بازسازی با وب‌هوک، Suspense و خطاهای رایج کش.",
+    "focuskw": "رندرینگ در Next.js"
+   },
+   "thumbnail": "media:nextjs-rendering-caching.webp",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"speed-optimization\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"course\" item=\"performance-and-technical-seo\"]",
+     "before_h2": 7
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "nextjs-api-live-data",
+   "status": "publish",
+   "title": "اتصال Next.js به API: داده زنده، کش سمت سرور، خطای ۴۲۹ و اعتبارسنجی پاسخ",
+   "excerpt": "الگوهای اتصال پایدار Next.js به APIهای بیرونی با مثال قیمت زنده: کلید مخفی، ماژول داده سمت سرور، اعتبارسنجی، نرخ مجاز درخواست، داده جایگزین و به‌روزرسانی در مرورگر.",
+   "content": "<p>سایتی که قیمت طلا، سکه یا ارز نشان می‌دهد، فقط وقتی ارزش دارد که قیمت‌هایش درست و تازه باشند. در کار روی این سایت‌ها سه مشکل را بارها دیدم: صفحه‌ای که با هر بازدید API بیرونی را صدا می‌زد و با بالا رفتن ترافیک خطای ۴۲۹ می‌گرفت، کلید API که در کد سمت مرورگر پیدا می‌شد، و صفحه‌ای که وقتی منبع داده فرمت پاسخش را عوض کرد، کاملاً سفید شد. این درس الگوهایی را نشان می‌دهد که برای <strong>اتصال Next.js به API</strong> استفاده می‌کنم تا هیچ‌کدام از این‌ها تکرار نشود.</p>\n\n<p>این درس چهارم دوره <a href=\"/blog/nextjs-business-guide/\">آموزش Next.js برای کسب‌وکار</a> است و بر پایه مفاهیم <a href=\"/blog/nextjs-rendering-caching/\">درس رندرینگ و کش</a> ساخته شده است.</p>\n\n<h2>معماری: مرورگر هرگز مستقیم به API بیرونی وصل نمی‌شود</h2>\n\n<p>ساختاری که برای داده بیرونی استفاده می‌کنم سه لایه دارد:</p>\n\n<ol>\n<li><strong>یک ماژول سمت سرور</strong> (مثلاً <code>lib/prices.ts</code>) تنها جایی است که API بیرونی را صدا می‌زند. کلید، timeout، کش و اعتبارسنجی همه همین‌جاست.</li>\n<li><strong>Server Componentها</strong> برای نمایش اولیه صفحه از همین ماژول می‌خوانند.</li>\n<li><strong>یک Route Handler</strong> (مثلاً <code>/api/prices</code>) همان داده را برای به‌روزرسانی‌های بعدی در مرورگر سرو می‌کند.</li>\n</ol>\n\n<p>نتیجه این است که هزار بازدیدکننده هم‌زمان، به هزار درخواست به API بیرونی تبدیل نمی‌شوند؛ همه از کش سرور شما می‌خوانند و فقط سرور، با نرخ کنترل‌شده، به منبع وصل می‌شود.</p>\n\n<h2>کلید API: فقط در متغیر محیطی سرور</h2>\n\n<p>در Next.js هر متغیر محیطی که با <code>NEXT_PUBLIC_</code> شروع شود، داخل کد مرورگر قرار می‌گیرد و هر کسی می‌تواند آن را ببیند. کلید API هرگز نباید این پیشوند را داشته باشد:</p>\n\n<pre><code># .env.local  (در git کامیت نمی‌شود)\nPRICES_API_URL=https://api.example.com/v1\nPRICES_API_KEY=xxxxxxxx\n\n# درست نیست: این مقدار در مرورگر دیده می‌شود\n# NEXT_PUBLIC_PRICES_API_KEY=xxxxxxxx</code></pre>\n\n<p>برای اطمینان بیشتر، بالای ماژول سمت سرور <code>import 'server-only';</code> بنویسید. اگر کسی اشتباهی این ماژول را در یک Client Component استفاده کند، build با خطا متوقف می‌شود.</p>\n\n<h2>ماژول داده: timeout، کد وضعیت و اعتبارسنجی</h2>\n\n<p>هر منبع داده دیر یا زود کند می‌شود، خطا می‌دهد یا فرمت پاسخش را عوض می‌کند. ماژول داده باید هر سه حالت را مدیریت کند:</p>\n\n<pre><code>// lib/prices.ts\nimport 'server-only';\nimport { z } from 'zod';\n\nconst PriceSchema = z.object({\n  symbol: z.string(),\n  title: z.string(),\n  buy: z.number(),\n  sell: z.number(),\n  updated_at: z.string(),\n});\nconst ResponseSchema = z.object({ data: z.array(PriceSchema) });\nexport type Price = z.infer&lt;typeof PriceSchema&gt;;\n\nexport async function getPrices(): Promise&lt;Price[]&gt; {\n  const res = await fetch(`${process.env.PRICES_API_URL}/prices`, {\n    headers: { Authorization: `Bearer ${process.env.PRICES_API_KEY}` },\n    next: { revalidate: 30, tags: ['prices'] },\n    signal: AbortSignal.timeout(5000), // بیش از ۵ ثانیه منتظر نمان\n  });\n  if (!res.ok) throw new Error(`prices api ${res.status}`);\n  const parsed = ResponseSchema.safeParse(await res.json());\n  if (!parsed.success) {\n    console.error('[prices] unexpected format', parsed.error.issues);\n    throw new Error('prices api format changed');\n  }\n  return parsed.data.data;\n}</code></pre>\n\n<p>اعتبارسنجی با کتابخانه‌ای مثل zod دو فایده دارد: نوع TypeScript مستقیم از همان طرح ساخته می‌شود و وقتی منبع داده مثلاً <code>sell</code> را به‌صورت رشته یا داخل یک آبجکت تو در تو فرستاد، خطا دقیقاً در لاگ مشخص است، نه به شکل «undefined» در وسط صفحه.</p>\n\n<h2>نرخ مجاز درخواست و خطای ۴۲۹</h2>\n\n<p>تقریباً همه APIهای قیمت محدودیت تعداد درخواست دارند. اگر از آن بگذرید، پاسخ <code>429 Too Many Requests</code> می‌گیرید و گاهی تا مدتی کامل مسدود می‌شوید. راه‌حل‌ها به ترتیب اهمیت:</p>\n\n<ul>\n<li><strong>کش سمت سرور با عددی که با سقف API جور باشد.</strong> اگر API در دقیقه ۶۰ درخواست اجازه می‌دهد و چهار نماد دارید که جدا خوانده می‌شوند، revalidate کمتر از ۴ ثانیه برای هر نماد شما را به سقف می‌رساند.</li>\n<li><strong>یک درخواست به‌جای چند درخواست.</strong> اگر API امکان گرفتن چند نماد در یک درخواست را دارد، از آن استفاده کنید.</li>\n<li><strong>احترام به هدر <code>Retry-After</code>.</strong> وقتی ۴۲۹ گرفتید، تا زمانی که API گفته دوباره درخواست نزنید.</li>\n<li><strong>تلاش دوباره با فاصله افزایشی</strong> (exponential backoff) برای خطاهای موقت مثل ۵۰۲ و ۵۰۳، با سقف تعداد تلاش. برای ۴۰۰ و ۴۰۱ تلاش دوباره فایده‌ای ندارد.</li>\n</ul>\n\n<h2>وقتی منبع داده از کار افتاد: آخرین داده سالم</h2>\n\n<p>برای کاربر، قیمتی که یک دقیقه قدیمی است و برچسب زمان دارد، خیلی بهتر از صفحه خطاست. الگوی ساده من نگه داشتن آخرین پاسخ سالم و نمایش آن با هشدار است:</p>\n\n<pre><code>let lastGood: { at: number; rows: Price[] } | null = null;\n\nexport async function getPricesSafe() {\n  try {\n    const rows = await getPrices();\n    lastGood = { at: Date.now(), rows };\n    return { rows, stale: false };\n  } catch (e) {\n    if (lastGood) return { rows: lastGood.rows, stale: true, at: lastGood.at };\n    throw e; // هیچ داده‌ای نداریم؛ error.tsx نمایش داده می‌شود\n  }\n}</code></pre>\n\n<p>این حافظه فقط در همان پردازش سرور می‌ماند. اگر چند نمونه از سایت اجرا می‌شود یا سرور ری‌استارت می‌شود، آخرین داده سالم را در Redis یا دیتابیس نگه دارید. در رابط کاربری هم وقتی <code>stale</code> برقرار است، زمان آخرین به‌روزرسانی را نشان دهید تا کاربر بداند به چه داده‌ای نگاه می‌کند.</p>\n\n<h2>به‌روزرسانی در مرورگر: polling، SSE یا WebSocket</h2>\n\n<p>بعد از بارگذاری اولیه، قیمت‌ها باید در صفحه باز هم تازه شوند. سه روش رایج:</p>\n\n<table>\n<thead><tr><th>روش</th><th>کی مناسب است</th><th>هزینه</th></tr></thead>\n<tbody>\n<tr><td>Polling (درخواست دوره‌ای)</td><td>به‌روزرسانی هر چند ثانیه کافی است</td><td>ساده‌ترین؛ با کش سرور سبک است</td></tr>\n<tr><td>Server-Sent Events</td><td>جریان یک‌طرفه از سرور، تغییرات مکرر</td><td>اتصال باز برای هر کاربر</td></tr>\n<tr><td>WebSocket</td><td>ارتباط دوطرفه، مثل چت یا سفارش‌گذاری</td><td>پیچیده‌تر؛ معمولاً سرویس جدا می‌خواهد</td></tr>\n</tbody>\n</table>\n\n<p>برای بیشتر سایت‌های قیمت، polling با فاصله‌ای برابر revalidate سرور کافی است. نکته مهم این است که وقتی تب در پس‌زمینه است، درخواست نزنید:</p>\n\n<pre><code>'use client';\nimport { useEffect, useState } from 'react';\n\nexport function LivePrices({ initial }: { initial: Price[] }) {\n  const [rows, setRows] = useState(initial);\n  useEffect(() =&gt; {\n    const tick = async () =&gt; {\n      if (document.hidden) return; // تب دیده نمی‌شود؛ درخواست نزن\n      const res = await fetch('/api/prices');\n      if (res.ok) setRows((await res.json()).rows);\n    };\n    const id = setInterval(tick, 30_000);\n    return () =&gt; clearInterval(id);\n  }, []);\n  return &lt;PriceTable rows={rows} /&gt;;\n}</code></pre>\n\n<p>داده اولیه از Server Component به‌عنوان <code>initial</code> می‌آید؛ پس صفحه از اول پر است و موتور جست‌وجو هم قیمت‌ها را در HTML می‌بیند.</p>\n\n<h2>نمایش عدد و تاریخ برای کاربر فارسی‌زبان</h2>\n\n<ul>\n<li>برای اعداد از <code>toLocaleString('fa-IR')</code> یا <code>Intl.NumberFormat('fa-IR')</code> استفاده کنید تا ارقام فارسی و جداکننده هزارگان درست باشند.</li>\n<li>تاریخ را با <code>Intl.DateTimeFormat('fa-IR-u-ca-persian', …)</code> شمسی کنید؛ برای بیشتر نیازها کتابخانه جدا لازم نیست.</li>\n<li>داده را همیشه به شکل عدد لاتین نگه دارید و فقط هنگام نمایش فارسی کنید. محاسبه روی رشته‌ای با ارقام فارسی، منبع باگ‌های عجیب است.</li>\n<li>تغییر قیمت را فقط با رنگ نشان ندهید؛ فلش یا علامت مثبت و منفی هم بگذارید تا برای همه کاربران قابل فهم باشد.</li>\n</ul>\n\n<h2>پایش: قبل از کاربر بفهمید</h2>\n\n<p>یکپارچه‌سازی با API بیرونی بدون پایش، بی‌صدا خراب می‌شود. حداقل‌ها: لاگ با پیشوند مشخص برای هر خطا، هشدار وقتی داده بیش از حد مجاز کهنه شد و یک مسیر سلامت (<code>/api/health</code>) که سرویس مانیتورینگ آن را بررسی کند. روش‌های پایش را در درس <a href=\"/blog/website-monitoring-uptime/\">مانیتورینگ سایت</a> از دوره امنیت و نگهداری توضیح داده‌ام.</p>\n\n<h2>جمع‌بندی</h2>\n\n<p>اتصال درست به API یعنی کلید فقط روی سرور، یک ماژول داده با timeout و اعتبارسنجی، کشی که با سقف درخواست API هماهنگ است، آخرین داده سالم برای زمان قطعی و به‌روزرسانی سبک در مرورگر. این الگوها هم برای قیمت‌های بازار کار می‌کنند و هم برای هر داده بیرونی دیگر، از وضعیت سفارش تا موجودی انبار.</p>\n\n<p>درس قبل <a href=\"/blog/nextjs-rendering-caching/\">رندرینگ و کش در Next.js</a> بود. درس بعد، <a href=\"/blog/nextjs-deploy-server/\">دیپلوی Next.js روی سرور</a>، این پروژه را روی سرور واقعی می‌برد. نقشه کامل دوره در <a href=\"/blog/nextjs-business-guide/\">راهنمای Next.js</a> است.</p>\n\n<p>اگر سایتتان باید به API قیمت، درگاه یا CRM وصل شود و این اتصال باید پایدار بماند، <a href=\"/contact-us/#smart-configurator\">فرم درخواست پروژه</a> را پر کنید.</p>",
+   "date": "2026-11-09 08:00:00",
+   "terms": {
+    "category": [
+     "modern-frontend-react-nextjs"
+    ]
+   },
+   "meta": {
+    "_yoast_wpseo_primary_category": "term:category:modern-frontend-react-nextjs"
+   },
+   "acf": {
+    "is_pillar": false,
+    "lesson_order": 4,
+    "difficulty": "advanced",
+    "tldr": "مرورگر هرگز مستقیم به API بیرونی وصل نمی‌شود؛ یک ماژول سمت سرور با کلید مخفی، timeout و اعتبارسنجی پاسخ تنها نقطه اتصال است. کش سرور با سقف درخواست API هماهنگ می‌شود تا خطای ۴۲۹ نگیرید، آخرین داده سالم در زمان قطعی نمایش داده می‌شود و مرورگر با polling سبک داده را تازه می‌کند.",
+    "key_takeaways": "کلید API هرگز پیشوند NEXT_PUBLIC_ نمی‌گیرد.\nبا import 'server-only' از استفاده اشتباه ماژول داده در مرورگر جلوگیری کنید.\nهر fetch بیرونی timeout و بررسی کد وضعیت می‌خواهد.\nپاسخ API را قبل از استفاده اعتبارسنجی کنید؛ فرمت بدون خبر عوض می‌شود.\nکش سرور را با سقف درخواست API هماهنگ کنید و به Retry-After احترام بگذارید.\nداده کمی قدیمی با برچسب زمان، بهتر از صفحه خطاست.\nوقتی تب در پس‌زمینه است، درخواست به‌روزرسانی نزنید.",
+    "post_faq": [
+     {
+      "question": "خطای ۴۲۹ در API یعنی چه؟",
+      "answer": "یعنی از تعداد درخواست مجاز در یک بازه زمانی گذشته‌اید. راه‌حل اصلی کش سمت سرور است تا بازدیدهای زیاد به درخواست‌های زیاد به API تبدیل نشوند."
+     },
+     {
+      "question": "چرا API را مستقیم از مرورگر صدا نزنم؟",
+      "answer": "چون کلید API دیده می‌شود، هر بازدیدکننده یک درخواست جدا به منبع می‌فرستد و کنترلی روی کش، خطا و فرمت پاسخ ندارید."
+     },
+     {
+      "question": "برای قیمت زنده WebSocket لازم است؟",
+      "answer": "برای بیشتر سایت‌های قیمت، polling هر چند ثانیه با کش سمت سرور کافی است. WebSocket برای ارتباط دوطرفه و تغییرات خیلی سریع مناسب‌تر است."
+     },
+     {
+      "question": "اگر API بیرونی قطع شد چه نمایش بدهم؟",
+      "answer": "آخرین داده سالم را با زمان به‌روزرسانی و یک هشدار نمایش دهید. اگر هیچ داده‌ای ندارید، صفحه خطای قابل‌فهم با دکمه تلاش دوباره."
+     }
+    ]
+   },
+   "yoast": {
+    "title": "اتصال Next.js به API: داده زنده و خطای ۴۲۹",
+    "desc": "اتصال Next.js به API برای داده زنده مثل قیمت‌ها: کلید فقط روی سرور، timeout و اعتبارسنجی با zod، کش و خطای ۴۲۹، آخرین داده سالم و polling در مرورگر.",
+    "focuskw": "اتصال Next.js به API"
+   },
+   "thumbnail": "media:nextjs-api-live-data.webp",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"api-integration\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"portfolio\" item=\"tetherchand-app\"]",
+     "before_h2": 8
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "nextjs-deploy-server",
+   "status": "publish",
+   "title": "دیپلوی Next.js روی سرور: خروجی standalone، PM2، Docker، Nginx و دیپلوی خودکار",
+   "excerpt": "چطور یک پروژه Next.js را پایدار روی سرور اجرا کنیم: انتخاب بین خروجی ثابت و سرور Node، standalone، PM2، Docker، Nginx، متغیرهای محیطی و دیپلوی خودکار.",
+   "content": "<p>ساختن پروژه Next.js روی لپ‌تاپ یک چیز است و اجرای پایدارش روی سرور چیز دیگر. وردپرس را تقریباً روی هر هاست اشتراکی می‌شود بالا آورد، ولی Next.js برای بخش‌های پویا یک پردازش Node.js می‌خواهد که همیشه روشن بماند، بعد از خطا دوباره بالا بیاید و پشت یک وب‌سرور قرار بگیرد. در این درس روشی را توضیح می‌دهم که برای <strong>دیپلوی Next.js</strong> روی سرور مجازی استفاده می‌کنم، به‌همراه گزینه‌های دیگر و معیار انتخاب بینشان.</p>\n\n<p>این درس پنجم دوره <a href=\"/blog/nextjs-business-guide/\">آموزش Next.js برای کسب‌وکار</a> است و بعد از <a href=\"/blog/nextjs-api-live-data/\">درس اتصال به API</a> می‌آید.</p>\n\n<h2>اول تصمیم بگیرید: سایت شما واقعاً سرور لازم دارد؟</h2>\n\n<p>اگر سایت هیچ بخش پویایی ندارد (نه Route Handler، نه صفحه وابسته به کوکی، نه ISR)، می‌توانید با <code>output: 'export'</code> خروجی کاملاً ثابت بگیرید و پوشه <code>out</code> را روی هر هاست یا CDN بگذارید. ساده‌ترین و ارزان‌ترین حالت است.</p>\n\n<p>به محض اینکه API داخلی، فرم سمت سرور، داده زنده یا بازسازی صفحه دارید، به پردازش Node.js نیاز است. گزینه‌ها:</p>\n\n<table>\n<thead><tr><th>گزینه</th><th>مزیت</th><th>چیزی که باید بسنجید</th></tr></thead>\n<tbody>\n<tr><td>سرور مجازی + Node.js + PM2</td><td>کنترل کامل، هزینه قابل پیش‌بینی</td><td>نگهداری سرور، به‌روزرسانی و امنیت با خود شماست</td></tr>\n<tr><td>Docker روی سرور مجازی</td><td>محیط یکسان در توسعه و تولید، جابه‌جایی آسان</td><td>کمی پیچیدگی بیشتر در شروع</td></tr>\n<tr><td>سرویس ابری داخلی با پشتیبانی Node.js</td><td>بدون نگهداری سرور، دسترسی خوب برای کاربران ایران</td><td>محدودیت‌های سرویس و هزینه با رشد ترافیک</td></tr>\n<tr><td>سرویس‌های خارجی مثل Vercel</td><td>ساده‌ترین تجربه دیپلوی</td><td>دسترسی کاربران ایرانی، روش پرداخت، محل نگهداری داده و وابستگی به سرویس خارجی</td></tr>\n</tbody>\n</table>\n\n<h2>خروجی standalone: سبک‌ترین بسته برای سرور</h2>\n\n<p>با تنظیم <code>output: 'standalone'</code>، Next.js هنگام build یک پوشه می‌سازد که فقط فایل‌ها و وابستگی‌های لازم برای اجرا را دارد. لازم نیست کل <code>node_modules</code> را روی سرور نصب کنید:</p>\n\n<pre><code>// next.config.ts\nimport type { NextConfig } from 'next';\n\nconst nextConfig: NextConfig = {\n  output: 'standalone',\n  poweredByHeader: false,\n};\nexport default nextConfig;</code></pre>\n\n<p>بعد از <code>next build</code>، پوشه <code>.next/standalone</code> شامل یک <code>server.js</code> است. دو پوشه را باید کنارش کپی کنید، چون به‌طور خودکار داخلش نیستند: <code>public</code> و <code>.next/static</code>.</p>\n\n<pre><code>cp -r public .next/standalone/\ncp -r .next/static .next/standalone/.next/\nnode .next/standalone/server.js   # روی پورت 3000</code></pre>\n\n<h2>همیشه روشن: PM2</h2>\n\n<p>اگر پردازش Node را مستقیم اجرا کنید، با بسته شدن ترمینال یا اولین خطای جدی، سایت می‌خوابد. PM2 پردازش را مدیریت می‌کند، بعد از خطا دوباره بالا می‌آورد و بعد از ری‌استارت سرور هم اجرایش می‌کند:</p>\n\n<pre><code>// ecosystem.config.js\nmodule.exports = {\n  apps: [{\n    name: 'site',\n    script: '.next/standalone/server.js',\n    env: { NODE_ENV: 'production', PORT: 3000, HOSTNAME: '127.0.0.1' },\n    max_memory_restart: '600M',\n  }],\n};</code></pre>\n\n<pre><code>pm2 start ecosystem.config.js\npm2 save &amp;&amp; pm2 startup   # اجرا بعد از ری‌استارت سرور\npm2 logs site             # دیدن لاگ‌ها</code></pre>\n\n<p><code>HOSTNAME: '127.0.0.1'</code> باعث می‌شود Node فقط از داخل خود سرور در دسترس باشد و ترافیک بیرونی فقط از مسیر Nginx برسد.</p>\n\n<h2>Nginx جلوی Node.js</h2>\n\n<p>Nginx گواهی SSL، فشرده‌سازی، کش فایل‌های ثابت و محدودیت نرخ را مدیریت می‌کند و درخواست‌ها را به Node می‌رساند:</p>\n\n<pre><code>server {\n    listen 443 ssl http2;\n    server_name example.ir;\n    # ssl_certificate ... ; ssl_certificate_key ... ;\n\n    location /_next/static/ {\n        alias /var/www/site/.next/standalone/.next/static/;\n        expires 1y;\n        add_header Cache-Control \"public, immutable\";\n    }\n\n    location / {\n        proxy_pass http://127.0.0.1:3000;\n        proxy_set_header Host $host;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}</code></pre>\n\n<p>فایل‌های داخل <code>/_next/static/</code> نام هش‌شده دارند و با هر build عوض می‌شوند؛ برای همین می‌شود آن‌ها را یک سال کش کرد. صفحه‌ها را با این کش طولانی سرو نکنید.</p>\n\n<h2>Docker: وقتی محیط یکسان مهم است</h2>\n\n<p>اگر چند سرور یا چند نفر در تیم دارید، Docker تضمین می‌کند نسخه Node و وابستگی‌ها همه‌جا یکی باشد. یک Dockerfile چندمرحله‌ای ساده:</p>\n\n<pre><code>FROM node:22-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM node:22-alpine\nWORKDIR /app\nENV NODE_ENV=production\nCOPY --from=build /app/.next/standalone ./\nCOPY --from=build /app/.next/static ./.next/static\nCOPY --from=build /app/public ./public\nEXPOSE 3000\nCMD [\"node\", \"server.js\"]</code></pre>\n\n<p>در سرورهای داخل ایران، دسترسی به مخزن‌های رسمی Docker و npm ممکن است محدود یا کند باشد. یا build را در CI بیرون از سرور انجام دهید و فقط ایمیج یا خروجی نهایی را منتقل کنید، یا از میرورهای داخلی معتبر استفاده کنید.</p>\n\n<h2>متغیرهای محیطی در تولید</h2>\n\n<ul>\n<li>متغیرهای <code>NEXT_PUBLIC_</code> هنگام <strong>build</strong> داخل کد قرار می‌گیرند؛ تغییرشان روی سرور بدون build دوباره اثری ندارد.</li>\n<li>متغیرهای سمت سرور (کلیدها، آدرس دیتابیس) هنگام <strong>اجرا</strong> خوانده می‌شوند و در PM2 یا Docker تعریف می‌شوند.</li>\n<li>فایل <code>.env</code> تولید را در git نگذارید و دسترسی خواندنش روی سرور را محدود کنید.</li>\n</ul>\n\n<h2>دیپلوی خودکار با GitHub Actions</h2>\n\n<p>دیپلوی دستی با SSH دیر یا زود یک مرحله را جا می‌اندازد. گردش کاری که استفاده می‌کنم: با هر push به شاخه اصلی، CI وابستگی‌ها را نصب می‌کند، lint و build را اجرا می‌کند و اگر همه موفق بود، خروجی را به سرور می‌فرستد و PM2 را با <code>pm2 reload</code> بدون قطعی دوباره بالا می‌آورد. همان منطق دیپلوی خودکاری که در <a href=\"/blog/wordpress-tailwind-build-workflow/\">گردش کار مدرن وردپرس</a> برای قالب وردپرس توضیح داده‌ام، اینجا هم صدق می‌کند: build در CI، نه روی سرور تولید.</p>\n\n<p>دو نکته که از تجربه یاد گرفتم: نسخه قبلی را نگه دارید تا در صورت مشکل با یک دستور برگردید، و بعد از هر دیپلوی یک درخواست ساده به صفحه اصلی و مسیر سلامت بزنید تا اگر سایت بالا نیامده، همان لحظه بفهمید.</p>\n\n<h2>امنیت و نگهداری بعد از دیپلوی</h2>\n\n<ul>\n<li>Next.js و وابستگی‌ها را مرتب به‌روز کنید؛ هشدارهای امنیتی فریم‌ورک را دنبال کنید.</li>\n<li>هدرهای امنیتی (CSP، HSTS، X-Content-Type-Options) را در Nginx یا <code>next.config</code> تنظیم کنید.</li>\n<li>برای Route Handlerهای عمومی در Nginx محدودیت نرخ بگذارید.</li>\n<li>لاگ‌ها را بچرخانید (log rotation) تا دیسک سرور پر نشود.</li>\n<li>از سرور و دیتابیس بکاپ منظم بگیرید و ریستور را تست کنید.</li>\n</ul>\n\n<p>بیشتر این موارد بین وردپرس و Next.js مشترک‌اند؛ نسخه کاملشان در <a href=\"/blog/website-security-maintenance-guide/\">راهنمای امنیت و نگهداری سایت</a> آمده است.</p>\n\n<h2>جمع‌بندی</h2>\n\n<p>اگر سایت بخش پویا ندارد، خروجی ثابت بگیرید. اگر دارد، الگوی قابل‌اعتماد این است: build با <code>standalone</code> در CI، اجرا با PM2 یا Docker، Nginx جلوی آن برای SSL و فایل‌های ثابت، و دیپلوی خودکار با امکان برگشت. انتخاب بین سرور خودتان و سرویس‌های آماده را بر اساس دسترسی کاربران، هزینه و توان نگهداری تیمتان انجام دهید.</p>\n\n<p>درس قبل <a href=\"/blog/nextjs-api-live-data/\">اتصال Next.js به API</a> بود. درس پایانی دوره، <a href=\"/blog/ai-assisted-web-development/\">هوش مصنوعی در برنامه‌نویسی وب</a>، درباره سریع‌تر ساختن همه این‌ها بدون فدا کردن کیفیت است. نقشه دوره در <a href=\"/blog/nextjs-business-guide/\">راهنمای Next.js</a> است.</p>\n\n<p>اگر پروژه Next.js دارید و برای راه‌اندازی یا نگهداری پایدارش روی سرور کمک می‌خواهید، <a href=\"/contact-us/#smart-configurator\">فرم درخواست پروژه</a> را پر کنید.</p>",
+   "date": "2026-11-09 14:00:00",
+   "terms": {
+    "category": [
+     "modern-frontend-react-nextjs"
+    ]
+   },
+   "meta": {
+    "_yoast_wpseo_primary_category": "term:category:modern-frontend-react-nextjs"
+   },
+   "acf": {
+    "is_pillar": false,
+    "lesson_order": 5,
+    "difficulty": "intermediate",
+    "tldr": "اگر سایت بخش پویا ندارد، با output export خروجی ثابت بگیرید. در غیر این صورت با output standalone در CI build کنید، با PM2 یا Docker اجرا کنید و Nginx را برای SSL و فایل‌های ثابت جلوی آن بگذارید. متغیرهای NEXT_PUBLIC_ هنگام build ثابت می‌شوند و دیپلوی باید خودکار و قابل برگشت باشد.",
+    "key_takeaways": "سایت بدون بخش پویا را با خروجی ثابت روی هر هاستی بگذارید.\noutput standalone بسته سبکی برای اجرا روی سرور می‌سازد؛ public و .next/static را کنارش کپی کنید.\nPM2 پردازش را بعد از خطا و ری‌استارت سرور دوباره بالا می‌آورد.\nNode را فقط روی 127.0.0.1 اجرا کنید و ترافیک را از Nginx عبور دهید.\nفایل‌های /_next/static/ را طولانی کش کنید، صفحه‌ها را نه.\nمتغیرهای NEXT_PUBLIC_ هنگام build در کد قرار می‌گیرند.\nbuild در CI انجام شود، نه روی سرور تولید، و نسخه قبلی برای برگشت بماند.",
+    "post_faq": [
+     {
+      "question": "Next.js را روی هاست سی‌پنل می‌شود اجرا کرد؟",
+      "answer": "خروجی ثابت را بله. برای بخش‌های پویا هاست باید از اجرای Node.js پشتیبانی کند؛ بعضی هاست‌های سی‌پنل این امکان را دارند ولی سرور مجازی کنترل بیشتری می‌دهد."
+     },
+     {
+      "question": "PM2 چیست؟",
+      "answer": "مدیر فرایند Node.js که برنامه را همیشه روشن نگه می‌دارد، بعد از خطا یا ری‌استارت سرور دوباره اجرایش می‌کند و لاگ‌ها را مدیریت می‌کند."
+     },
+     {
+      "question": "Vercel برای سایت ایرانی مناسب است؟",
+      "answer": "از نظر فنی ساده‌ترین گزینه است، ولی قبل از انتخاب، دسترسی کاربران ایرانی، روش پرداخت و محل نگهداری داده را بسنجید. سرور داخلی یا سرور مجازی معمولاً کنترل بیشتری می‌دهد."
+     },
+     {
+      "question": "چرا تغییر متغیر NEXT_PUBLIC_ روی سرور اثری ندارد؟",
+      "answer": "چون این متغیرها هنگام build در کد مرورگر نوشته می‌شوند. بعد از تغییرشان باید دوباره build بگیرید."
+     }
+    ]
+   },
+   "yoast": {
+    "title": "دیپلوی Next.js روی سرور با PM2، Docker و Nginx",
+    "desc": "راهنمای دیپلوی Next.js روی سرور مجازی: خروجی ثابت یا standalone، اجرای پایدار با PM2، Docker، Nginx و SSL، متغیرهای محیطی و دیپلوی با GitHub Actions.",
+    "focuskw": "دیپلوی Next.js"
+   },
+   "thumbnail": "media:nextjs-deploy-server.webp",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"website-support\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"course\" item=\"website-security-maintenance\"]",
+     "before_h2": 8
+    }
+   ]
+  },
+  {
+   "type": "post",
+   "slug": "ai-assisted-web-development",
+   "status": "publish",
+   "title": "هوش مصنوعی در برنامه‌نویسی وب: سرعت بیشتر بدون باگ بیشتر، با چک‌لیست بازبینی",
+   "excerpt": "روش کار با ابزارهای هوش مصنوعی در ساخت سایت و وب‌اپ: کاربردهای واقعی، خطاهای رایج کد تولیدی، نوشتن درخواست با زمینه، چک‌لیست بازبینی، تست و حریم خصوصی.",
+   "content": "<p>اولین باری که برای یک پروژه واقعی از ChatGPT کد گرفتم، کد کار کرد و همین مشکل بود. چند هفته بعد معلوم شد بخشی از آن ورودی کاربر را بدون بررسی ذخیره می‌کند. امروز بخش بزرگی از سرعت من در ساختن سایت و اپلیکیشن از ابزارهای هوش مصنوعی می‌آید، ولی با یک قاعده سفت: هیچ کدی وارد پروژه نمی‌شود که خودم نفهمیده و بازبینی نکرده باشم. این درس روش کار من با <strong>هوش مصنوعی در برنامه‌نویسی</strong> وب است؛ جاهایی که واقعاً سرعت می‌دهد، جاهایی که خطرناک است و چک‌لیستی که قبل از قبول هر خروجی استفاده می‌کنم.</p>\n\n<p>این درس پایانی دوره <a href=\"/blog/nextjs-business-guide/\">آموزش Next.js برای کسب‌وکار</a> است و به همه درس‌های قبل ارجاع می‌دهد؛ چون بازبینی خروجی هوش مصنوعی بدون فهم همان مفاهیم ممکن نیست.</p>\n\n<h2>هوش مصنوعی کجا واقعاً سرعت می‌دهد؟</h2>\n\n<ul>\n<li><strong>کد تکراری و قالبی:</strong> اسکلت کامپوننت، طرح اعتبارسنجی برای یک پاسخ JSON، فرم با چند فیلد، تست‌های ساده.</li>\n<li><strong>ترجمه بین زبان‌ها و نسخه‌ها:</strong> تبدیل یک تابع PHP به TypeScript، یا یک کامپوننت از Pages Router به App Router.</li>\n<li><strong>توضیح کد ناآشنا:</strong> وقتی پروژه‌ای را تحویل می‌گیرید و باید سریع بفهمید هر بخش چه می‌کند.</li>\n<li><strong>پیدا کردن علت خطا:</strong> با دادن پیام خطا، کد مرتبط و رفتار مورد انتظار.</li>\n<li><strong>نوشتن متن‌های فنی:</strong> توضیح Pull Request، مستند API و پیام‌های خطای قابل‌فهم برای کاربر.</li>\n</ul>\n\n<h2>کجا خطرناک است؟</h2>\n\n<p>مدل‌های زبانی کدی تولید می‌کنند که <em>محتمل</em> به نظر برسد، نه کدی که لزوماً درست، امن یا مناسب پروژه شما باشد. اشتباه‌هایی که بیشتر از همه در خروجی‌ها دیده‌ام:</p>\n\n<ul>\n<li><strong>الگوهای نسخه قدیمی:</strong> استفاده از <code>getServerSideProps</code> در App Router، یا <code>params</code> بدون <code>await</code> در نسخه‌های جدید Next.js.</li>\n<li><strong>رازها در سمت مرورگر:</strong> کلید API با پیشوند <code>NEXT_PUBLIC_</code> یا فراخوانی مستقیم API بیرونی از Client Component. چرایی‌اش را در <a href=\"/blog/nextjs-api-live-data/\">درس اتصال به API</a> توضیح داده‌ام.</li>\n<li><strong><code>'use client'</code> بالای همه‌چیز:</strong> چون ساده‌ترین راه برای «کار کردن» است. نتیجه، از دست رفتن مزیت Server Component است؛ <a href=\"/blog/nextjs-rendering-caching/\">درس رندرینگ</a> را ببینید.</li>\n<li><strong>اعتبارسنجی فقط سمت کاربر:</strong> فرمی که در مرورگر بررسی می‌شود ولی مسیر API هر ورودی را قبول می‌کند.</li>\n<li><strong>کتابخانه یا تابع خیالی:</strong> اسم پکیج یا متدی که وجود ندارد، یا بدتر، پکیجی با اسم مشابه که کسی دیگر منتشر کرده است.</li>\n<li><strong>مدیریت نکردن خطا:</strong> <code>fetch</code> بدون timeout و بدون بررسی <code>res.ok</code>.</li>\n</ul>\n\n<h2>چطور درخواست بدهیم تا خروجی بهتر بگیریم؟</h2>\n\n<p>کیفیت خروجی بیشتر از هر چیز به زمینه‌ای بستگی دارد که می‌دهید. درخواست «یک فرم تماس بساز» نتیجه‌ای عمومی می‌دهد. درخواستی که خودم می‌نویسم چیزی شبیه این است:</p>\n\n<pre><code>پروژه: Next.js 15 با App Router، TypeScript، Tailwind، سایت فارسی RTL.\nقواعد: داده اولیه در Server Component؛ فقط بخش تعاملی 'use client'.\nکلیدها فقط در متغیر محیطی سرور. اعتبارسنجی ورودی با zod هم در فرم و هم در route.ts.\nکار: فرم درخواست مشاوره با فیلدهای نام و موبایل (09xxxxxxxxx)،\nارسال به app/api/leads/route.ts که 422 برای ورودی نامعتبر و 201 برای موفقیت برمی‌گرداند.\nکد موجود مرتبط: [فایل‌های مرتبط را اینجا می‌گذارم]\nخروجی: فقط فایل‌های تغییرکرده، با توضیح کوتاه هر تصمیم.</code></pre>\n\n<p>چند عادت دیگر که نتیجه را بهتر کرده‌اند:</p>\n\n<ul>\n<li>کار بزرگ را به قدم‌های کوچک قابل‌بررسی تقسیم کنید؛ یک کامپوننت، یک مسیر، یک تست.</li>\n<li>کد واقعی پروژه را بدهید تا الگوها و نام‌گذاری‌ها با بقیه کد یکی باشد.</li>\n<li>از مدل بخواهید فرض‌هایش را بنویسد. فرض اشتباه را زودتر از کد اشتباه پیدا می‌کنید.</li>\n<li>هیچ‌وقت کلید، رمز، اطلاعات مشتری یا داده محرمانه کارفرما را در درخواست نگذارید.</li>\n</ul>\n\n<h2>چک‌لیست بازبینی قبل از قبول هر خروجی</h2>\n\n<p>این چک‌لیست را برای هر کدی که از هوش مصنوعی می‌گیرم، مثل کد یک همکار تازه‌کار، اجرا می‌کنم:</p>\n\n<ol>\n<li><strong>می‌فهمم هر خط چه می‌کند؟</strong> اگر نه، یا توضیح می‌خواهم یا آن بخش را خودم می‌نویسم.</li>\n<li><strong>ورودی‌ها کجا بررسی می‌شوند؟</strong> سمت سرور، با نوع و محدوده مشخص.</li>\n<li><strong>چه چیزی به مرورگر می‌رسد؟</strong> هیچ راز، توکن یا داده‌ای که کاربر نباید ببیند.</li>\n<li><strong>خطاها کجا مدیریت می‌شوند؟</strong> timeout، کد وضعیت، پاسخ با فرمت غیرمنتظره، شبکه قطع.</li>\n<li><strong>با نسخه فریم‌ورک پروژه سازگار است؟</strong> مستندات رسمی را برای هر API ناآشنا چک می‌کنم.</li>\n<li><strong>پکیج جدیدی اضافه شده؟</strong> نام دقیق، تعداد نگهدارنده‌ها، آخرین به‌روزرسانی و اینکه واقعاً لازم است.</li>\n<li><strong>تست یا حداقل اجرای دستی سناریوهای خطا انجام شده؟</strong> نه فقط مسیر موفق.</li>\n<li><strong>build تولید و lint بدون خطاست؟</strong></li>\n</ol>\n\n<h2>تست: جایی که هوش مصنوعی بیشترین ارزش را دارد</h2>\n\n<p>یکی از بهترین استفاده‌ها، نوشتن تست برای کدی است که خودتان نوشته‌اید. از مدل بخواهید حالت‌های مرزی را پیدا کند: رشته خالی، شماره با ارقام فارسی، پاسخ API با فیلد گم‌شده، کاربر بدون دسترسی. حتی اگر همه تست‌های پیشنهادی را نگه ندارید، فهرست حالت‌ها خودش ارزشمند است. برعکس آن، یعنی گرفتن کد و تست از یک منبع و قبول هر دو بدون بازبینی، فقط به شما اطمینان کاذب می‌دهد.</p>\n\n<h2>حریم خصوصی و مالکیت کد</h2>\n\n<p>قبل از استفاده از هر ابزار هوش مصنوعی روی پروژه کارفرما، سه چیز را روشن کنید: قرارداد اجازه ارسال کد به سرویس بیرونی را می‌دهد یا نه، سرویس از داده شما برای آموزش استفاده می‌کند یا نه، و کدهای حساس (احراز هویت، پرداخت، داده مشتری) را با چه دقتی بازبینی می‌کنید. بسیاری از سرویس‌ها تنظیماتی برای خاموش کردن استفاده از داده در آموزش دارند؛ آن را بررسی کنید.</p>\n\n<h2>مهارتی که با هوش مصنوعی مهم‌تر شده</h2>\n\n<p>بیشترین تغییری که در کارم دیدم این است که وقت کمتری صرف تایپ و وقت بیشتری صرف تصمیم‌گیری و بازبینی می‌شود: معماری داده، مرز سرور و کلاینت، استراتژی کش، امنیت. این‌ها دقیقاً همان مفاهیم درس‌های این دوره‌اند. هوش مصنوعی کسی را که این‌ها را می‌فهمد خیلی سریع‌تر می‌کند و کسی را که نمی‌فهمد، سریع‌تر به باگ می‌رساند.</p>\n\n<p>اگر می‌خواهید این چالش را به شکل بازی تجربه کنید، مرحله «ددلاین و AI» در بازی کوروش دیباگر دقیقاً همین است: تیکت‌ها را با کمک هوش مصنوعی سریع‌تر می‌بندید، ولی اگر خروجی باگ‌دار را بدون بازبینی قبول کنید، باگ به پروداکشن می‌رسد.</p>\n\n<h2>جمع‌بندی</h2>\n\n<p>هوش مصنوعی برای کد قالبی، توضیح، رفع خطا و تست شتاب‌دهنده‌ای واقعی است، به شرطی که زمینه کامل بدهید، کار را کوچک کنید و هر خروجی را با چک‌لیست بازبینی کنید. مسئولیت کدی که وارد پروژه می‌شود با شماست، نه با ابزاری که آن را نوشته است.</p>\n\n<p>این آخرین درس دوره بود. درس قبل، <a href=\"/blog/nextjs-deploy-server/\">دیپلوی Next.js روی سرور</a>، و برای مرور کل مسیر <a href=\"/blog/nextjs-business-guide/\">راهنمای Next.js برای کسب‌وکار</a> را ببینید. اگر کد پروژه‌تان را با کمک هوش مصنوعی یا بدون آن می‌نویسید، رعایت اصول <a href=\"/blog/software-engineering-standards-vs-freelance/\">استانداردهای مهندسی نرم‌افزار</a> همچنان تعیین می‌کند پروژه بعد از یک سال قابل نگهداری باشد یا نه.</p>\n\n<p>اگر برای ساخت وب‌اپ یا سایتی که سریع ساخته شود ولی کیفیت و امنیتش قابل اتکا باشد کمک می‌خواهید، <a href=\"/contact-us/#smart-configurator\">فرم درخواست پروژه</a> را پر کنید.</p>",
+   "date": "2026-11-09 20:00:00",
+   "terms": {
+    "category": [
+     "modern-frontend-react-nextjs"
+    ]
+   },
+   "meta": {
+    "_yoast_wpseo_primary_category": "term:category:modern-frontend-react-nextjs"
+   },
+   "acf": {
+    "is_pillar": false,
+    "lesson_order": 6,
+    "difficulty": "intermediate",
+    "tldr": "هوش مصنوعی برای کد قالبی، ترجمه بین نسخه‌ها، توضیح کد، رفع خطا و نوشتن تست سرعت واقعی می‌دهد، ولی کد محتمل تولید می‌کند، نه لزوماً درست و امن. با زمینه کامل درخواست بدهید، کار را کوچک کنید، هیچ راز یا داده مشتری را ارسال نکنید و هر خروجی را با چک‌لیست بازبینی کنید.",
+    "key_takeaways": "هیچ کدی که نفهمیده و بازبینی نکرده‌اید وارد پروژه نکنید.\nخطاهای رایج: الگوی نسخه قدیمی، راز در مرورگر، 'use client' همه‌جا و اعتبارسنجی فقط سمت کاربر.\nدرخواست خوب نسخه فریم‌ورک، قواعد پروژه و کد مرتبط را دارد.\nکار بزرگ را به قدم‌های کوچک قابل‌بررسی تقسیم کنید.\nپکیج‌های پیشنهادی را از نظر وجود، نام دقیق و نگهداری بررسی کنید.\nاز هوش مصنوعی برای پیدا کردن حالت‌های مرزی و نوشتن تست استفاده کنید.\nکلید، رمز و داده محرمانه مشتری را هرگز در درخواست نگذارید.",
+    "post_faq": [
+     {
+      "question": "آیا با هوش مصنوعی می‌شود بدون دانش برنامه‌نویسی سایت ساخت؟",
+      "answer": "یک نمونه ساده بله، ولی برای سایت یا اپی که امن، پایدار و قابل نگهداری باشد باید بتوانید خروجی را بفهمید و بازبینی کنید. هوش مصنوعی کسی را که مفاهیم را می‌داند سریع‌تر می‌کند."
+     },
+     {
+      "question": "رایج‌ترین اشتباه کد تولیدشده با هوش مصنوعی در Next.js چیست؟",
+      "answer": "استفاده از الگوهای نسخه‌های قدیمی، گذاشتن کلید API در کد سمت مرورگر و Client کردن کل صفحه با 'use client'."
+     },
+     {
+      "question": "ارسال کد پروژه کارفرما به ابزار هوش مصنوعی مجاز است؟",
+      "answer": "به قرارداد و سیاست کارفرما بستگی دارد. قبل از استفاده، اجازه بگیرید، تنظیمات استفاده از داده برای آموزش را بررسی کنید و هیچ راز یا داده مشتری ارسال نکنید."
+     },
+     {
+      "question": "چطور خروجی هوش مصنوعی را بازبینی کنم؟",
+      "answer": "مثل کد یک همکار تازه‌کار: هر خط را بفهمید، ورودی‌ها و خطاها را بررسی کنید، ببینید چه چیزی به مرورگر می‌رسد، سازگاری با نسخه فریم‌ورک را با مستندات چک کنید و build و تست را اجرا کنید."
+     }
+    ]
+   },
+   "yoast": {
+    "title": "هوش مصنوعی در برنامه‌نویسی وب: روش و چک‌لیست",
+    "desc": "استفاده درست از هوش مصنوعی در برنامه‌نویسی وب: کجا سرعت می‌دهد، اشتباه‌های رایج کد تولیدی در Next.js، نوشتن درخواست با زمینه کامل و چک‌لیست بازبینی کد.",
+    "focuskw": "هوش مصنوعی در برنامه‌نویسی"
+   },
+   "thumbnail": "media:ai-assisted-web-development.webp",
+   "inject": [
+    {
+     "html": "[kmpr_banner type=\"service\" item=\"web-app-development\"]",
+     "before_h2": 3
+    },
+    {
+     "html": "[kmpr_banner type=\"game\" item=\"korosh-run\"]",
+     "before_h2": 7
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,139 @@
+<p>ساختن پروژه Next.js روی لپ‌تاپ یک چیز است و اجرای پایدارش روی سرور چیز دیگر. وردپرس را تقریباً روی هر هاست اشتراکی می‌شود بالا آورد، ولی Next.js برای بخش‌های پویا یک پردازش Node.js می‌خواهد که همیشه روشن بماند، بعد از خطا دوباره بالا بیاید و پشت یک وب‌سرور قرار بگیرد. در این درس روشی را توضیح می‌دهم که برای <strong>دیپلوی Next.js</strong> روی سرور مجازی استفاده می‌کنم، به‌همراه گزینه‌های دیگر و معیار انتخاب بینشان.</p>
+
+<p>این درس پنجم دوره <a href="/blog/nextjs-business-guide/">آموزش Next.js برای کسب‌وکار</a> است و بعد از <a href="/blog/nextjs-api-live-data/">درس اتصال به API</a> می‌آید.</p>
+
+<h2>اول تصمیم بگیرید: سایت شما واقعاً سرور لازم دارد؟</h2>
+
+<p>اگر سایت هیچ بخش پویایی ندارد (نه Route Handler، نه صفحه وابسته به کوکی، نه ISR)، می‌توانید با <code>output: 'export'</code> خروجی کاملاً ثابت بگیرید و پوشه <code>out</code> را روی هر هاست یا CDN بگذارید. ساده‌ترین و ارزان‌ترین حالت است.</p>
+
+<p>به محض اینکه API داخلی، فرم سمت سرور، داده زنده یا بازسازی صفحه دارید، به پردازش Node.js نیاز است. گزینه‌ها:</p>
+
+<table>
+<thead><tr><th>گزینه</th><th>مزیت</th><th>چیزی که باید بسنجید</th></tr></thead>
+<tbody>
+<tr><td>سرور مجازی + Node.js + PM2</td><td>کنترل کامل، هزینه قابل پیش‌بینی</td><td>نگهداری سرور، به‌روزرسانی و امنیت با خود شماست</td></tr>
+<tr><td>Docker روی سرور مجازی</td><td>محیط یکسان در توسعه و تولید، جابه‌جایی آسان</td><td>کمی پیچیدگی بیشتر در شروع</td></tr>
+<tr><td>سرویس ابری داخلی با پشتیبانی Node.js</td><td>بدون نگهداری سرور، دسترسی خوب برای کاربران ایران</td><td>محدودیت‌های سرویس و هزینه با رشد ترافیک</td></tr>
+<tr><td>سرویس‌های خارجی مثل Vercel</td><td>ساده‌ترین تجربه دیپلوی</td><td>دسترسی کاربران ایرانی، روش پرداخت، محل نگهداری داده و وابستگی به سرویس خارجی</td></tr>
+</tbody>
+</table>
+
+<h2>خروجی standalone: سبک‌ترین بسته برای سرور</h2>
+
+<p>با تنظیم <code>output: 'standalone'</code>، Next.js هنگام build یک پوشه می‌سازد که فقط فایل‌ها و وابستگی‌های لازم برای اجرا را دارد. لازم نیست کل <code>node_modules</code> را روی سرور نصب کنید:</p>
+
+<pre><code>// next.config.ts
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  output: 'standalone',
+  poweredByHeader: false,
+};
+export default nextConfig;</code></pre>
+
+<p>بعد از <code>next build</code>، پوشه <code>.next/standalone</code> شامل یک <code>server.js</code> است. دو پوشه را باید کنارش کپی کنید، چون به‌طور خودکار داخلش نیستند: <code>public</code> و <code>.next/static</code>.</p>
+
+<pre><code>cp -r public .next/standalone/
+cp -r .next/static .next/standalone/.next/
+node .next/standalone/server.js   # روی پورت 3000</code></pre>
+
+<h2>همیشه روشن: PM2</h2>
+
+<p>اگر پردازش Node را مستقیم اجرا کنید، با بسته شدن ترمینال یا اولین خطای جدی، سایت می‌خوابد. PM2 پردازش را مدیریت می‌کند، بعد از خطا دوباره بالا می‌آورد و بعد از ری‌استارت سرور هم اجرایش می‌کند:</p>
+
+<pre><code>// ecosystem.config.js
+module.exports = {
+  apps: [{
+    name: 'site',
+    script: '.next/standalone/server.js',
+    env: { NODE_ENV: 'production', PORT: 3000, HOSTNAME: '127.0.0.1' },
+    max_memory_restart: '600M',
+  }],
+};</code></pre>
+
+<pre><code>pm2 start ecosystem.config.js
+pm2 save && pm2 startup   # اجرا بعد از ری‌استارت سرور
+pm2 logs site             # دیدن لاگ‌ها</code></pre>
+
+<p><code>HOSTNAME: '127.0.0.1'</code> باعث می‌شود Node فقط از داخل خود سرور در دسترس باشد و ترافیک بیرونی فقط از مسیر Nginx برسد.</p>
+
+<h2>Nginx جلوی Node.js</h2>
+
+<p>Nginx گواهی SSL، فشرده‌سازی، کش فایل‌های ثابت و محدودیت نرخ را مدیریت می‌کند و درخواست‌ها را به Node می‌رساند:</p>
+
+<pre><code>server {
+    listen 443 ssl http2;
+    server_name example.ir;
+    # ssl_certificate ... ; ssl_certificate_key ... ;
+
+    location /_next/static/ {
+        alias /var/www/site/.next/standalone/.next/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</code></pre>
+
+<p>فایل‌های داخل <code>/_next/static/</code> نام هش‌شده دارند و با هر build عوض می‌شوند؛ برای همین می‌شود آن‌ها را یک سال کش کرد. صفحه‌ها را با این کش طولانی سرو نکنید.</p>
+
+<h2>Docker: وقتی محیط یکسان مهم است</h2>
+
+<p>اگر چند سرور یا چند نفر در تیم دارید، Docker تضمین می‌کند نسخه Node و وابستگی‌ها همه‌جا یکی باشد. یک Dockerfile چندمرحله‌ای ساده:</p>
+
+<pre><code>FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+EXPOSE 3000
+CMD ["node", "server.js"]</code></pre>
+
+<p>در سرورهای داخل ایران، دسترسی به مخزن‌های رسمی Docker و npm ممکن است محدود یا کند باشد. یا build را در CI بیرون از سرور انجام دهید و فقط ایمیج یا خروجی نهایی را منتقل کنید، یا از میرورهای داخلی معتبر استفاده کنید.</p>
+
+<h2>متغیرهای محیطی در تولید</h2>
+
+<ul>
+<li>متغیرهای <code>NEXT_PUBLIC_</code> هنگام <strong>build</strong> داخل کد قرار می‌گیرند؛ تغییرشان روی سرور بدون build دوباره اثری ندارد.</li>
+<li>متغیرهای سمت سرور (کلیدها، آدرس دیتابیس) هنگام <strong>اجرا</strong> خوانده می‌شوند و در PM2 یا Docker تعریف می‌شوند.</li>
+<li>فایل <code>.env</code> تولید را در git نگذارید و دسترسی خواندنش روی سرور را محدود کنید.</li>
+</ul>
+
+<h2>دیپلوی خودکار با GitHub Actions</h2>
+
+<p>دیپلوی دستی با SSH دیر یا زود یک مرحله را جا می‌اندازد. گردش کاری که استفاده می‌کنم: با هر push به شاخه اصلی، CI وابستگی‌ها را نصب می‌کند، lint و build را اجرا می‌کند و اگر همه موفق بود، خروجی را به سرور می‌فرستد و PM2 را با <code>pm2 reload</code> بدون قطعی دوباره بالا می‌آورد. همان منطق دیپلوی خودکاری که در <a href="/blog/wordpress-tailwind-build-workflow/">گردش کار مدرن وردپرس</a> برای قالب وردپرس توضیح داده‌ام، اینجا هم صدق می‌کند: build در CI، نه روی سرور تولید.</p>
+
+<p>دو نکته که از تجربه یاد گرفتم: نسخه قبلی را نگه دارید تا در صورت مشکل با یک دستور برگردید، و بعد از هر دیپلوی یک درخواست ساده به صفحه اصلی و مسیر سلامت بزنید تا اگر سایت بالا نیامده، همان لحظه بفهمید.</p>
+
+<h2>امنیت و نگهداری بعد از دیپلوی</h2>
+
+<ul>
+<li>Next.js و وابستگی‌ها را مرتب به‌روز کنید؛ هشدارهای امنیتی فریم‌ورک را دنبال کنید.</li>
+<li>هدرهای امنیتی (CSP، HSTS، X-Content-Type-Options) را در Nginx یا <code>next.config</code> تنظیم کنید.</li>
+<li>برای Route Handlerهای عمومی در Nginx محدودیت نرخ بگذارید.</li>
+<li>لاگ‌ها را بچرخانید (log rotation) تا دیسک سرور پر نشود.</li>
+<li>از سرور و دیتابیس بکاپ منظم بگیرید و ریستور را تست کنید.</li>
+</ul>
+
+<p>بیشتر این موارد بین وردپرس و Next.js مشترک‌اند؛ نسخه کاملشان در <a href="/blog/website-security-maintenance-guide/">راهنمای امنیت و نگهداری سایت</a> آمده است.</p>
+
+<h2>جمع‌بندی</h2>
+
+<p>اگر سایت بخش پویا ندارد، خروجی ثابت بگیرید. اگر دارد، الگوی قابل‌اعتماد این است: build با <code>standalone</code> در CI، اجرا با PM2 یا Docker، Nginx جلوی آن برای SSL و فایل‌های ثابت، و دیپلوی خودکار با امکان برگشت. انتخاب بین سرور خودتان و سرویس‌های آماده را بر اساس دسترسی کاربران، هزینه و توان نگهداری تیمتان انجام دهید.</p>
+
+<p>درس قبل <a href="/blog/nextjs-api-live-data/">اتصال Next.js به API</a> بود. درس پایانی دوره، <a href="/blog/ai-assisted-web-development/">هوش مصنوعی در برنامه‌نویسی وب</a>، درباره سریع‌تر ساختن همه این‌ها بدون فدا کردن کیفیت است. نقشه دوره در <a href="/blog/nextjs-business-guide/">راهنمای Next.js</a> است.</p>
+
+<p>اگر پروژه Next.js دارید و برای راه‌اندازی یا نگهداری پایدارش روی سرور کمک می‌خواهید، <a href="/contact-us/#smart-configurator">فرم درخواست پروژه</a> را پر کنید.</p>

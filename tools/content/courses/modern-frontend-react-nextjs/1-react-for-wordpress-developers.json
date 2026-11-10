@@ -1,0 +1,53 @@
+{
+ "slug": "react-for-wordpress-developers",
+ "lesson_order": 1,
+ "difficulty": "beginner",
+ "title": "ری‌اکت برای توسعه‌دهنده وردپرس: کامپوننت، props، state و فرم به زبان ساده",
+ "seo_title": "آموزش ری‌اکت برای توسعه‌دهنده وردپرس",
+ "seo_desc": "آموزش ری‌اکت از زاویه یک توسعه‌دهنده وردپرس: کامپوننت به‌جای template-part، props، state، فرم کنترل‌شده، key در فهرست‌ها و استفاده درست از useEffect.",
+ "focuskw": "آموزش ری‌اکت",
+ "excerpt": "مفاهیم پایه React با معادل‌هایشان در وردپرس: کامپوننت، props، state، فرم‌ها، فهرست‌ها و useEffect؛ با مثال‌های TypeScript.",
+ "tldr": "در React رابط کاربری تابعی از داده است. کامپوننت‌ها مثل template-part هستند ولی ورودی مشخص (props) دارند. داده‌ای که با تعامل کاربر عوض می‌شود state است و فقط با تابع set تغییر می‌کند. فرم‌ها معمولاً کنترل‌شده‌اند، فهرست‌ها key پایدار می‌خواهند و useEffect فقط برای همگام شدن با سیستم‌های بیرونی است.",
+ "takeaways": [
+  "کامپوننت تابعی است که JSX برمی‌گرداند و نامش با حرف بزرگ شروع می‌شود.",
+  "props فقط‌خواندنی‌اند؛ داده از والد به فرزند جریان دارد.",
+  "state را مستقیم تغییر ندهید؛ همیشه با تابع set و مقدار جدید.",
+  "مقدارهای قابل محاسبه را در state جدا نگه ندارید.",
+  "اعتبارسنجی فرم در مرورگر برای تجربه کاربر است؛ سمت سرور دوباره بررسی کنید.",
+  "از اندیس آرایه به‌عنوان key استفاده نکنید.",
+  "هر effectی که چیزی را روشن می‌کند باید تابع پاک‌سازی داشته باشد."
+ ],
+ "faq": [
+  {
+   "question": "برای یادگیری React باید وردپرس را کنار بگذارم؟",
+   "answer": "نه. بسیاری از پروژه‌ها هر دو را ترکیب می‌کنند؛ مثلاً وردپرس برای محتوا و React یا Next.js برای بخش‌های تعاملی. خود ویرایشگر بلوک وردپرس هم با React ساخته شده است."
+  },
+  {
+   "question": "TypeScript برای شروع React لازم است؟",
+   "answer": "اجباری نیست، ولی تعریف نوع برای props و پاسخ API از ابتدا جلوی بسیاری از باگ‌ها را می‌گیرد و هزینه یادگیری‌اش کم است."
+  },
+  {
+   "question": "useEffect را برای گرفتن داده استفاده کنم؟",
+   "answer": "در Next.js داده اولیه را در Server Component بخوانید. useEffect برای همگام شدن با سیستم‌های بیرونی مثل تایمر، WebSocket یا رویدادهای پنجره مناسب است."
+  },
+  {
+   "question": "چرا key در فهرست مهم است؟",
+   "answer": "React با key تشخیص می‌دهد کدام آیتم عوض، اضافه یا حذف شده است. key ناپایدار مثل اندیس آرایه باعث می‌شود state یک آیتم به آیتم دیگری منتقل شود."
+  }
+ ],
+ "cover_label": "ری‌اکت برای توسعه‌دهنده وردپرس",
+ "cover_alt": "کاور آموزش ری‌اکت برای توسعه‌دهنده وردپرس با کامپوننت، props و state",
+ "content": "<p>وقتی از وردپرس به React آمدم، سخت‌ترین بخش سینتکس نبود؛ عوض کردن طرز فکر بود. در PHP صفحه را از بالا به پایین می‌سازید و تمام. در React رابط کاربری «تابعی از داده» است: داده عوض می‌شود و React خودش تصمیم می‌گیرد کدام قسمت صفحه دوباره ساخته شود. در این درس <strong>آموزش ری‌اکت</strong> را از همان زاویه‌ای شروع می‌کنم که برای یک توسعه‌دهنده وردپرس آشناست.</p>\n\n<p>این درس اول دوره <a href=\"/blog/nextjs-business-guide/\">آموزش Next.js برای کسب‌وکار</a> است. اگر React را بلدید، مستقیم به <a href=\"/blog/nextjs-app-router-routing/\">درس App Router</a> بروید.</p>\n\n<h2>کامپوننت: همان template-part، ولی با ورودی مشخص</h2>\n\n<p>در قالب وردپرس با <code>get_template_part()</code> یک تکه از صفحه را جدا می‌کنید و با آرگومان سوم داده به آن می‌دهید. کامپوننت React همین ایده است، با این فرق که یک تابع جاوااسکریپت است که JSX برمی‌گرداند:</p>\n\n<pre><code>type PriceCardProps = { title: string; price: number; unit?: string };\n\nexport function PriceCard({ title, price, unit = 'تومان' }: PriceCardProps) {\n  return (\n    &lt;article className=\"rounded-2xl border p-4\"&gt;\n      &lt;h3 className=\"font-bold\"&gt;{title}&lt;/h3&gt;\n      &lt;p&gt;{price.toLocaleString('fa-IR')} {unit}&lt;/p&gt;\n    &lt;/article&gt;\n  );\n}\n\n// استفاده:\n&lt;PriceCard title=\"طلای ۱۸ عیار\" price={6250000} /&gt;</code></pre>\n\n<p>سه نکته که تازه‌کارها معمولاً جا می‌اندازند:</p>\n\n<ul>\n<li>نام کامپوننت با حرف بزرگ شروع می‌شود؛ <code>priceCard</code> به‌عنوان تگ HTML ناشناخته تفسیر می‌شود.</li>\n<li>در JSX به‌جای <code>class</code> از <code>className</code> و به‌جای <code>for</code> از <code>htmlFor</code> استفاده می‌شود.</li>\n<li>هر چیزی داخل <code>{}</code> عبارت جاوااسکریپت است. <code>if</code> مستقیم داخل JSX کار نمی‌کند؛ از عملگر سه‌تایی یا <code>&&</code> استفاده کنید.</li>\n</ul>\n\n<h2>props: داده از بالا به پایین</h2>\n\n<p>props ورودی‌های کامپوننت‌اند و فقط‌خواندنی هستند. کامپوننت فرزند نباید props را تغییر دهد؛ اگر داده باید عوض شود، صاحب آن داده (کامپوننت والد) تغییرش می‌دهد. این قاعده «جریان یک‌طرفه داده» است و دلیل اینکه اپ‌های React با بزرگ شدن قابل‌فهم می‌مانند.</p>\n\n<p>با TypeScript نوع props را تعریف کنید. هزینه‌اش چند خط است و در عوض اگر جایی <code>price</code> را به‌صورت رشته بفرستید، قبل از اجرا خطا می‌گیرید، نه وقتی کاربر عدد اشتباه می‌بیند.</p>\n\n<h2>state: داده‌ای که کامپوننت خودش نگه می‌دارد</h2>\n\n<p>هر چیزی که با تعامل کاربر عوض می‌شود و باید روی صفحه دیده شود، state است. با هوک <code>useState</code> تعریف می‌شود:</p>\n\n<pre><code>'use client';\nimport { useState } from 'react';\n\nexport function Counter() {\n  const [count, setCount] = useState(0);\n  return (\n    &lt;button type=\"button\" onClick={() =&gt; setCount((c) =&gt; c + 1)}&gt;\n      تعداد کلیک: {count}\n    &lt;/button&gt;\n  );\n}</code></pre>\n\n<p>چند قاعده که خیلی از باگ‌ها را حذف می‌کند:</p>\n\n<ul>\n<li>state را مستقیم تغییر ندهید (<code>count++</code> یا <code>items.push()</code>)؛ همیشه با تابع set و یک مقدار جدید.</li>\n<li>وقتی مقدار جدید به مقدار قبلی وابسته است، از شکل تابعی استفاده کنید: <code>setCount((c) => c + 1)</code>.</li>\n<li>چیزی را که می‌شود از state یا props محاسبه کرد، در state جدا نگه ندارید. مثلاً جمع سبد خرید را از فهرست اقلام حساب کنید.</li>\n<li><code>'use client'</code> در Next.js لازم است، چون state فقط در مرورگر معنا دارد.</li>\n</ul>\n\n<h2>رویدادها و فرم‌ها</h2>\n\n<p>فرم‌ها جایی است که توسعه‌دهنده وردپرس بیشترین تفاوت را حس می‌کند. در React معمولاً مقدار هر فیلد در state نگه داشته می‌شود (فیلد «کنترل‌شده»):</p>\n\n<pre><code>'use client';\nimport { useState } from 'react';\n\nexport function LeadForm() {\n  const [phone, setPhone] = useState('');\n  const [status, setStatus] = useState&lt;'idle' | 'sending' | 'done' | 'error'&gt;('idle');\n  const valid = /^09\\d{9}$/.test(phone);\n\n  async function onSubmit(e: React.FormEvent) {\n    e.preventDefault();\n    if (!valid) return;\n    setStatus('sending');\n    const res = await fetch('/api/leads', { method: 'POST', body: JSON.stringify({ phone }) });\n    setStatus(res.ok ? 'done' : 'error');\n  }\n\n  return (\n    &lt;form onSubmit={onSubmit}&gt;\n      &lt;label htmlFor=\"phone\"&gt;شماره موبایل&lt;/label&gt;\n      &lt;input id=\"phone\" inputMode=\"numeric\" value={phone} onChange={(e) =&gt; setPhone(e.target.value)} /&gt;\n      &lt;button type=\"submit\" disabled={!valid || status === 'sending'}&gt;ثبت&lt;/button&gt;\n      {status === 'error' &amp;&amp; &lt;p role=\"alert\"&gt;ارسال نشد؛ دوباره تلاش کنید.&lt;/p&gt;}\n    &lt;/form&gt;\n  );\n}</code></pre>\n\n<p>اعتبارسنجی سمت مرورگر فقط برای تجربه کاربر است. همان قاعده‌ها را سمت سرور هم دوباره بررسی کنید؛ هر کسی می‌تواند بدون فرم شما مستقیم به <code>/api/leads</code> درخواست بفرستد.</p>\n\n<h2>فهرست‌ها و key</h2>\n\n<p>برای نمایش فهرست از <code>map</code> استفاده می‌شود و هر آیتم یک <code>key</code> یکتا و پایدار می‌خواهد:</p>\n\n<pre><code>{prices.map((p) =&gt; (\n  &lt;PriceCard key={p.symbol} title={p.title} price={p.price} /&gt;\n))}</code></pre>\n\n<p>از اندیس آرایه به‌عنوان key استفاده نکنید، مگر فهرست هیچ‌وقت مرتب یا فیلتر نشود. اگر ترتیب عوض شود و key اندیس باشد، React ممکن است state یک آیتم (مثلاً مقدار یک فیلد) را به آیتم دیگری بچسباند؛ باگی که پیدا کردنش ساعت‌ها طول می‌کشد.</p>\n\n<h2>useEffect: کمتر از آنچه فکر می‌کنید</h2>\n\n<p><code>useEffect</code> برای همگام شدن با چیزی بیرون از React است: تایمر، اتصال WebSocket یا گوش دادن به رویداد پنجره. اشتباه رایج، استفاده از آن برای دریافت داده اولیه صفحه یا محاسبه یک مقدار از state است. در Next.js داده اولیه را در Server Component بخوانید و مقدارهای مشتق‌شده را مستقیم هنگام رندر حساب کنید.</p>\n\n<pre><code>useEffect(() =&gt; {\n  const id = setInterval(refresh, 30_000);\n  return () =&gt; clearInterval(id); // پاک‌سازی: بدون آن با هر رندر یک تایمر جدید اضافه می‌شود\n}, []);</code></pre>\n\n<p>تابعی که از effect برمی‌گردد پاک‌سازی است. هر effectی که چیزی را «روشن» می‌کند (تایمر، اتصال، listener) باید آن را خاموش هم بکند.</p>\n\n<h2>استایل‌دهی: Tailwind و دیزاین سیستم کوچک</h2>\n\n<p>اگر در وردپرس با Tailwind کار کرده‌اید، در React هم همان کلاس‌ها را می‌نویسید. تفاوت این است که حالا کامپوننت‌ها خودشان واحد دیزاین سیستم‌اند: یک <code>Button</code> با چند حالت مشخص، به‌جای کپی کردن ده کلاس روی هر دکمه. قاعده من این است که هر الگویی که سه بار تکرار شد، کامپوننت شود. گردش کار ساخت Tailwind را در درس <a href=\"/blog/wordpress-tailwind-build-workflow/\">گردش کار مدرن وردپرس با Tailwind و esbuild</a> از دوره وردپرس توضیح داده‌ام.</p>\n\n<h2>از وردپرس به React: نقشه ذهنی</h2>\n\n<table>\n<thead><tr><th>در وردپرس</th><th>معادل نزدیک در React/Next.js</th></tr></thead>\n<tbody>\n<tr><td><code>get_template_part()</code></td><td>کامپوننت</td></tr>\n<tr><td>آرگومان‌های template-part</td><td>props</td></tr>\n<tr><td>فیلدهای ACF یک پست</td><td>داده‌ای که از API یا CMS خوانده می‌شود</td></tr>\n<tr><td>jQuery روی رویداد کلیک</td><td><code>onClick</code> و state</td></tr>\n<tr><td>هوک‌های <code>add_action</code></td><td>مفهوم متفاوت؛ هوک‌های React (<code>useState</code>، <code>useEffect</code>) برای state و اثرهای جانبی‌اند</td></tr>\n<tr><td>سلسله‌مراتب قالب</td><td>مسیریابی پوشه‌ای App Router</td></tr>\n</tbody>\n</table>\n\n<h2>جمع‌بندی</h2>\n\n<p>React بر چند ایده ساده بنا شده: کامپوننت‌های کوچک، props فقط‌خواندنی، state حداقلی و رابط کاربری‌ای که از داده ساخته می‌شود. اگر این‌ها را درست جا بیندازید، Next.js فقط لایه‌ای است که مشخص می‌کند کدام کامپوننت روی سرور و کدام در مرورگر اجرا شود.</p>\n\n<p>درس بعدی، <a href=\"/blog/nextjs-app-router-routing/\">App Router در Next.js</a>، این کامپوننت‌ها را به صفحه و مسیر تبدیل می‌کند. برای نقشه کامل دوره به <a href=\"/blog/nextjs-business-guide/\">راهنمای Next.js برای کسب‌وکار</a> برگردید.</p>\n\n<p>اگر پنل یا وب‌اپی لازم دارید که روی React ساخته شود، <a href=\"/contact-us/#smart-configurator\">فرم درخواست پروژه</a> را پر کنید.</p>\n",
+ "banners": [
+  {
+   "type": "service",
+   "item": "web-app-development",
+   "before_h2": 3
+  },
+  {
+   "type": "game",
+   "item": "type-code",
+   "before_h2": 8
+  }
+ ]
+}

@@ -1,0 +1,148 @@
+<p>سایتی که قیمت طلا، سکه یا ارز نشان می‌دهد، فقط وقتی ارزش دارد که قیمت‌هایش درست و تازه باشند. در کار روی این سایت‌ها سه مشکل را بارها دیدم: صفحه‌ای که با هر بازدید API بیرونی را صدا می‌زد و با بالا رفتن ترافیک خطای ۴۲۹ می‌گرفت، کلید API که در کد سمت مرورگر پیدا می‌شد، و صفحه‌ای که وقتی منبع داده فرمت پاسخش را عوض کرد، کاملاً سفید شد. این درس الگوهایی را نشان می‌دهد که برای <strong>اتصال Next.js به API</strong> استفاده می‌کنم تا هیچ‌کدام از این‌ها تکرار نشود.</p>
+
+<p>این درس چهارم دوره <a href="/blog/nextjs-business-guide/">آموزش Next.js برای کسب‌وکار</a> است و بر پایه مفاهیم <a href="/blog/nextjs-rendering-caching/">درس رندرینگ و کش</a> ساخته شده است.</p>
+
+<h2>معماری: مرورگر هرگز مستقیم به API بیرونی وصل نمی‌شود</h2>
+
+<p>ساختاری که برای داده بیرونی استفاده می‌کنم سه لایه دارد:</p>
+
+<ol>
+<li><strong>یک ماژول سمت سرور</strong> (مثلاً <code>lib/prices.ts</code>) تنها جایی است که API بیرونی را صدا می‌زند. کلید، timeout، کش و اعتبارسنجی همه همین‌جاست.</li>
+<li><strong>Server Componentها</strong> برای نمایش اولیه صفحه از همین ماژول می‌خوانند.</li>
+<li><strong>یک Route Handler</strong> (مثلاً <code>/api/prices</code>) همان داده را برای به‌روزرسانی‌های بعدی در مرورگر سرو می‌کند.</li>
+</ol>
+
+<p>نتیجه این است که هزار بازدیدکننده هم‌زمان، به هزار درخواست به API بیرونی تبدیل نمی‌شوند؛ همه از کش سرور شما می‌خوانند و فقط سرور، با نرخ کنترل‌شده، به منبع وصل می‌شود.</p>
+
+<h2>کلید API: فقط در متغیر محیطی سرور</h2>
+
+<p>در Next.js هر متغیر محیطی که با <code>NEXT_PUBLIC_</code> شروع شود، داخل کد مرورگر قرار می‌گیرد و هر کسی می‌تواند آن را ببیند. کلید API هرگز نباید این پیشوند را داشته باشد:</p>
+
+<pre><code># .env.local  (در git کامیت نمی‌شود)
+PRICES_API_URL=https://api.example.com/v1
+PRICES_API_KEY=xxxxxxxx
+
+# درست نیست: این مقدار در مرورگر دیده می‌شود
+# NEXT_PUBLIC_PRICES_API_KEY=xxxxxxxx</code></pre>
+
+<p>برای اطمینان بیشتر، بالای ماژول سمت سرور <code>import 'server-only';</code> بنویسید. اگر کسی اشتباهی این ماژول را در یک Client Component استفاده کند، build با خطا متوقف می‌شود.</p>
+
+<h2>ماژول داده: timeout، کد وضعیت و اعتبارسنجی</h2>
+
+<p>هر منبع داده دیر یا زود کند می‌شود، خطا می‌دهد یا فرمت پاسخش را عوض می‌کند. ماژول داده باید هر سه حالت را مدیریت کند:</p>
+
+<pre><code>// lib/prices.ts
+import 'server-only';
+import { z } from 'zod';
+
+const PriceSchema = z.object({
+  symbol: z.string(),
+  title: z.string(),
+  buy: z.number(),
+  sell: z.number(),
+  updated_at: z.string(),
+});
+const ResponseSchema = z.object({ data: z.array(PriceSchema) });
+export type Price = z.infer<typeof PriceSchema>;
+
+export async function getPrices(): Promise<Price[]> {
+  const res = await fetch(`${process.env.PRICES_API_URL}/prices`, {
+    headers: { Authorization: `Bearer ${process.env.PRICES_API_KEY}` },
+    next: { revalidate: 30, tags: ['prices'] },
+    signal: AbortSignal.timeout(5000), // بیش از ۵ ثانیه منتظر نمان
+  });
+  if (!res.ok) throw new Error(`prices api ${res.status}`);
+  const parsed = ResponseSchema.safeParse(await res.json());
+  if (!parsed.success) {
+    console.error('[prices] unexpected format', parsed.error.issues);
+    throw new Error('prices api format changed');
+  }
+  return parsed.data.data;
+}</code></pre>
+
+<p>اعتبارسنجی با کتابخانه‌ای مثل zod دو فایده دارد: نوع TypeScript مستقیم از همان طرح ساخته می‌شود و وقتی منبع داده مثلاً <code>sell</code> را به‌صورت رشته یا داخل یک آبجکت تو در تو فرستاد، خطا دقیقاً در لاگ مشخص است، نه به شکل «undefined» در وسط صفحه.</p>
+
+<h2>نرخ مجاز درخواست و خطای ۴۲۹</h2>
+
+<p>تقریباً همه APIهای قیمت محدودیت تعداد درخواست دارند. اگر از آن بگذرید، پاسخ <code>429 Too Many Requests</code> می‌گیرید و گاهی تا مدتی کامل مسدود می‌شوید. راه‌حل‌ها به ترتیب اهمیت:</p>
+
+<ul>
+<li><strong>کش سمت سرور با عددی که با سقف API جور باشد.</strong> اگر API در دقیقه ۶۰ درخواست اجازه می‌دهد و چهار نماد دارید که جدا خوانده می‌شوند، revalidate کمتر از ۴ ثانیه برای هر نماد شما را به سقف می‌رساند.</li>
+<li><strong>یک درخواست به‌جای چند درخواست.</strong> اگر API امکان گرفتن چند نماد در یک درخواست را دارد، از آن استفاده کنید.</li>
+<li><strong>احترام به هدر <code>Retry-After</code>.</strong> وقتی ۴۲۹ گرفتید، تا زمانی که API گفته دوباره درخواست نزنید.</li>
+<li><strong>تلاش دوباره با فاصله افزایشی</strong> (exponential backoff) برای خطاهای موقت مثل ۵۰۲ و ۵۰۳، با سقف تعداد تلاش. برای ۴۰۰ و ۴۰۱ تلاش دوباره فایده‌ای ندارد.</li>
+</ul>
+
+<h2>وقتی منبع داده از کار افتاد: آخرین داده سالم</h2>
+
+<p>برای کاربر، قیمتی که یک دقیقه قدیمی است و برچسب زمان دارد، خیلی بهتر از صفحه خطاست. الگوی ساده من نگه داشتن آخرین پاسخ سالم و نمایش آن با هشدار است:</p>
+
+<pre><code>let lastGood: { at: number; rows: Price[] } | null = null;
+
+export async function getPricesSafe() {
+  try {
+    const rows = await getPrices();
+    lastGood = { at: Date.now(), rows };
+    return { rows, stale: false };
+  } catch (e) {
+    if (lastGood) return { rows: lastGood.rows, stale: true, at: lastGood.at };
+    throw e; // هیچ داده‌ای نداریم؛ error.tsx نمایش داده می‌شود
+  }
+}</code></pre>
+
+<p>این حافظه فقط در همان پردازش سرور می‌ماند. اگر چند نمونه از سایت اجرا می‌شود یا سرور ری‌استارت می‌شود، آخرین داده سالم را در Redis یا دیتابیس نگه دارید. در رابط کاربری هم وقتی <code>stale</code> برقرار است، زمان آخرین به‌روزرسانی را نشان دهید تا کاربر بداند به چه داده‌ای نگاه می‌کند.</p>
+
+<h2>به‌روزرسانی در مرورگر: polling، SSE یا WebSocket</h2>
+
+<p>بعد از بارگذاری اولیه، قیمت‌ها باید در صفحه باز هم تازه شوند. سه روش رایج:</p>
+
+<table>
+<thead><tr><th>روش</th><th>کی مناسب است</th><th>هزینه</th></tr></thead>
+<tbody>
+<tr><td>Polling (درخواست دوره‌ای)</td><td>به‌روزرسانی هر چند ثانیه کافی است</td><td>ساده‌ترین؛ با کش سرور سبک است</td></tr>
+<tr><td>Server-Sent Events</td><td>جریان یک‌طرفه از سرور، تغییرات مکرر</td><td>اتصال باز برای هر کاربر</td></tr>
+<tr><td>WebSocket</td><td>ارتباط دوطرفه، مثل چت یا سفارش‌گذاری</td><td>پیچیده‌تر؛ معمولاً سرویس جدا می‌خواهد</td></tr>
+</tbody>
+</table>
+
+<p>برای بیشتر سایت‌های قیمت، polling با فاصله‌ای برابر revalidate سرور کافی است. نکته مهم این است که وقتی تب در پس‌زمینه است، درخواست نزنید:</p>
+
+<pre><code>'use client';
+import { useEffect, useState } from 'react';
+
+export function LivePrices({ initial }: { initial: Price[] }) {
+  const [rows, setRows] = useState(initial);
+  useEffect(() => {
+    const tick = async () => {
+      if (document.hidden) return; // تب دیده نمی‌شود؛ درخواست نزن
+      const res = await fetch('/api/prices');
+      if (res.ok) setRows((await res.json()).rows);
+    };
+    const id = setInterval(tick, 30_000);
+    return () => clearInterval(id);
+  }, []);
+  return <PriceTable rows={rows} />;
+}</code></pre>
+
+<p>داده اولیه از Server Component به‌عنوان <code>initial</code> می‌آید؛ پس صفحه از اول پر است و موتور جست‌وجو هم قیمت‌ها را در HTML می‌بیند.</p>
+
+<h2>نمایش عدد و تاریخ برای کاربر فارسی‌زبان</h2>
+
+<ul>
+<li>برای اعداد از <code>toLocaleString('fa-IR')</code> یا <code>Intl.NumberFormat('fa-IR')</code> استفاده کنید تا ارقام فارسی و جداکننده هزارگان درست باشند.</li>
+<li>تاریخ را با <code>Intl.DateTimeFormat('fa-IR-u-ca-persian', …)</code> شمسی کنید؛ برای بیشتر نیازها کتابخانه جدا لازم نیست.</li>
+<li>داده را همیشه به شکل عدد لاتین نگه دارید و فقط هنگام نمایش فارسی کنید. محاسبه روی رشته‌ای با ارقام فارسی، منبع باگ‌های عجیب است.</li>
+<li>تغییر قیمت را فقط با رنگ نشان ندهید؛ فلش یا علامت مثبت و منفی هم بگذارید تا برای همه کاربران قابل فهم باشد.</li>
+</ul>
+
+<h2>پایش: قبل از کاربر بفهمید</h2>
+
+<p>یکپارچه‌سازی با API بیرونی بدون پایش، بی‌صدا خراب می‌شود. حداقل‌ها: لاگ با پیشوند مشخص برای هر خطا، هشدار وقتی داده بیش از حد مجاز کهنه شد و یک مسیر سلامت (<code>/api/health</code>) که سرویس مانیتورینگ آن را بررسی کند. روش‌های پایش را در درس <a href="/blog/website-monitoring-uptime/">مانیتورینگ سایت</a> از دوره امنیت و نگهداری توضیح داده‌ام.</p>
+
+<h2>جمع‌بندی</h2>
+
+<p>اتصال درست به API یعنی کلید فقط روی سرور، یک ماژول داده با timeout و اعتبارسنجی، کشی که با سقف درخواست API هماهنگ است، آخرین داده سالم برای زمان قطعی و به‌روزرسانی سبک در مرورگر. این الگوها هم برای قیمت‌های بازار کار می‌کنند و هم برای هر داده بیرونی دیگر، از وضعیت سفارش تا موجودی انبار.</p>
+
+<p>درس قبل <a href="/blog/nextjs-rendering-caching/">رندرینگ و کش در Next.js</a> بود. درس بعد، <a href="/blog/nextjs-deploy-server/">دیپلوی Next.js روی سرور</a>، این پروژه را روی سرور واقعی می‌برد. نقشه کامل دوره در <a href="/blog/nextjs-business-guide/">راهنمای Next.js</a> است.</p>
+
+<p>اگر سایتتان باید به API قیمت، درگاه یا CRM وصل شود و این اتصال باید پایدار بماند، <a href="/contact-us/#smart-configurator">فرم درخواست پروژه</a> را پر کنید.</p>

@@ -1,0 +1,123 @@
+<p>بیشتر مشکلاتی که در پروژه‌های Next.js دیده‌ام، از جنس «چرا این صفحه به‌روز نمی‌شود؟» یا برعکس «چرا این صفحه این‌قدر کند است؟» بوده‌اند. هر دو یک ریشه دارند: تصمیم نگرفتن درباره اینکه صفحه کی ساخته شود و داده‌اش چقدر کش شود. در این درس <strong>رندرینگ در Next.js</strong> را از زاویه همین تصمیم‌ها توضیح می‌دهم: Server Component و Client Component، صفحه ثابت و پویا، ISR و revalidate.</p>
+
+<p>این درس سوم دوره <a href="/blog/nextjs-business-guide/">آموزش Next.js برای کسب‌وکار</a> است و بعد از <a href="/blog/nextjs-app-router-routing/">درس App Router</a> می‌آید.</p>
+
+<h2>Server Component: پیش‌فرضی که باید نگهش دارید</h2>
+
+<p>در App Router هر کامپوننتی که <code>'use client'</code> نداشته باشد، Server Component است. یعنی:</p>
+
+<ul>
+<li>روی سرور اجرا می‌شود و می‌تواند <code>async</code> باشد و مستقیم داده بخواند.</li>
+<li>کد آن به مرورگر فرستاده نمی‌شود؛ کتابخانه‌های سنگین (مثلاً برای تبدیل Markdown یا فرمت تاریخ) حجم جاوااسکریپت سایت را بالا نمی‌برند.</li>
+<li>به رازها (کلید API، رمز دیتابیس) دسترسی دارد، چون هیچ‌وقت در مرورگر اجرا نمی‌شود.</li>
+<li>نمی‌تواند state، رویداد کلیک یا هوک‌هایی مثل <code>useEffect</code> داشته باشد.</li>
+</ul>
+
+<pre><code>// Server Component: بدون 'use client'
+export default async function PricesPage() {
+  const prices = await getPrices(); // روی سرور، با کلید مخفی
+  return (
+    <section>
+      <h1>قیمت‌های امروز</h1>
+      <PriceTable rows={prices} />
+      <RefreshButton /> {/* فقط این تکه Client Component است */}
+    </section>
+  );
+}</code></pre>
+
+<h2>Client Component: جزیره‌های تعاملی</h2>
+
+<p><code>'use client'</code> مرز را مشخص می‌کند: آن فایل و هر چیزی که import می‌کند در مرورگر هم اجرا می‌شود. سه قاعده که رعایتشان حجم سایت را پایین نگه می‌دارد:</p>
+
+<ol>
+<li><strong>مرز را تا جای ممکن پایین ببرید.</strong> به‌جای Client کردن کل صفحه به‌خاطر یک دکمه، فقط همان دکمه را Client Component کنید.</li>
+<li><strong>داده را از سرور به‌عنوان props پاس بدهید.</strong> Client Component لازم نیست داده اولیه را خودش با <code>useEffect</code> بگیرد؛ این کار یک رفت‌وبرگشت اضافه و یک صفحه خالی اولیه می‌سازد.</li>
+<li><strong>props باید قابل سریال شدن باشند.</strong> رشته، عدد، آرایه و آبجکت ساده مشکلی ندارند؛ تابع معمولی را نمی‌شود از سرور به کلاینت پاس داد.</li>
+</ol>
+
+<p>یک نکته که خیلی‌ها را گیج می‌کند: Client Component هم در اولین بارگذاری روی سرور به HTML تبدیل می‌شود و بعد در مرورگر «زنده» (hydrate) می‌شود. «Client» یعنی کدش به مرورگر هم می‌رود، نه اینکه فقط در مرورگر رندر شود.</p>
+
+<h2>صفحه ثابت یا پویا؟</h2>
+
+<p>Next.js هنگام build برای هر مسیر تصمیم می‌گیرد آن را از قبل بسازد یا برای هر درخواست. اگر صفحه از چیزی وابسته به درخواست استفاده کند، مثل <code>cookies()</code>، <code>headers()</code> یا <code>searchParams</code>، پویا می‌شود. در غیر این صورت می‌تواند ثابت باشد. خروجی دستور <code>next build</code> نوع هر مسیر را نشان می‌دهد؛ عادت کنید بعد از هر تغییر مهم آن را نگاه کنید. صفحه‌ای که انتظار دارید ثابت باشد ولی پویا شده، معمولاً یعنی جایی ناخواسته کوکی یا هدر خوانده شده است.</p>
+
+<h2>کش داده: fetch و revalidate</h2>
+
+<p>در نسخه‌های جدید Next.js (از ۱۵ به بعد) <code>fetch</code> به‌طور پیش‌فرض کش نمی‌شود و باید صریح بگویید هر داده چقدر معتبر است. این تغییر نسبت به نسخه ۱۴ است و مثال‌های قدیمی اینترنت را گمراه‌کننده می‌کند:</p>
+
+<pre><code>// هر ۶۰ ثانیه حداکثر یک بار از منبع خوانده می‌شود
+const res = await fetch('https://api.example.com/prices', {
+  next: { revalidate: 60, tags: ['prices'] },
+});
+
+// همیشه تازه؛ برای داده‌ای که به کاربر وابسته است
+const me = await fetch('https://api.example.com/me', { cache: 'no-store' });</code></pre>
+
+<p>برای تنظیم کل صفحه هم می‌توانید در فایل صفحه بنویسید <code>export const revalidate = 300;</code>. انتخاب عدد یک تصمیم کسب‌وکاری است، نه فنی؛ از خودتان بپرسید «کاربر اگر داده‌ای ببیند که N ثانیه قدیمی است، مشکلی پیش می‌آید؟»</p>
+
+<table>
+<thead><tr><th>نوع داده</th><th>پیشنهاد</th></tr></thead>
+<tbody>
+<tr><td>صفحه «درباره ما»، قوانین</td><td>ثابت؛ بدون revalidate</td></tr>
+<tr><td>فهرست مقاله‌ها، صفحه محصول</td><td>revalidate چند دقیقه‌ای یا بازسازی با رویداد</td></tr>
+<tr><td>قیمت‌های بازار</td><td>چند ثانیه تا یک دقیقه، بسته به منبع و نرخ مجاز API</td></tr>
+<tr><td>سبد خرید، حساب کاربری</td><td><code>no-store</code>؛ هرگز کش مشترک</td></tr>
+</tbody>
+</table>
+
+<h2>ISR و بازسازی با رویداد</h2>
+
+<p>ISR یعنی صفحه ثابت می‌ماند و سریع سرو می‌شود، ولی بعد از گذشت زمان revalidate، اولین درخواست بعدی نسخه قدیمی را می‌گیرد و هم‌زمان نسخه جدید در پس‌زمینه ساخته می‌شود. این الگو برای وبلاگ و فروشگاه ایده‌آل است.</p>
+
+<p>بهتر از انتظار برای زمان، بازسازی با رویداد است. وقتی مقاله‌ای در CMS ذخیره شد، CMS یک وب‌هوک به سایت Next.js می‌فرستد و همان صفحه بلافاصله بازسازی می‌شود:</p>
+
+<pre><code>// app/api/revalidate/route.ts
+import { revalidatePath, revalidateTag } from 'next/cache';
+
+export async function POST(req: Request) {
+  if (req.headers.get('x-secret') !== process.env.REVALIDATE_SECRET) {
+    return new Response('forbidden', { status: 403 });
+  }
+  const { slug } = await req.json();
+  revalidatePath(`/blog/${slug}`);
+  revalidateTag('posts');
+  return Response.json({ revalidated: true });
+}</code></pre>
+
+<p>در وردپرس هدلس، این وب‌هوک روی هوک <code>save_post</code> فرستاده می‌شود؛ جزئیاتش در <a href="/blog/headless-wordpress-with-nextjs-guide/">راهنمای وردپرس هدلس با Next.js</a> آمده است. حتماً مسیر را با یک راز محافظت کنید، وگرنه هر کسی می‌تواند با درخواست‌های پشت‌سرهم سرور شما را مشغول بازسازی کند.</p>
+
+<h2>Streaming و Suspense: همه صفحه منتظر کندترین بخش نماند</h2>
+
+<p>اگر صفحه‌ای از سه منبع داده می‌خواند و یکی کند است، لازم نیست کل صفحه منتظر بماند. بخش کند را داخل <code>Suspense</code> بگذارید تا بقیه صفحه فوراً نمایش داده شود و آن بخش وقتی آماده شد برسد:</p>
+
+<pre><code>import { Suspense } from 'react';
+
+export default function Dashboard() {
+  return (
+    <>
+      <Summary />                       {/* سریع */}
+      <Suspense fallback={<ChartSkeleton />}>
+        <SlowChart />                   {/* کند؛ جدا استریم می‌شود */}
+      </Suspense>
+    </>
+  );
+}</code></pre>
+
+<p>اسکلت جایگزین را هم‌اندازه محتوای نهایی بسازید تا وقتی داده رسید صفحه جابه‌جا نشود. این جابه‌جایی همان CLS است که در <a href="/blog/core-web-vitals-complete-guide/">راهنمای Core Web Vitals</a> توضیح داده‌ام.</p>
+
+<h2>اشتباه‌های رایج کش</h2>
+
+<ul>
+<li><strong>کش کردن داده کاربر در کش مشترک:</strong> اگر پاسخی که به کوکی کاربر وابسته است کش شود، ممکن است کاربر دیگری آن را ببیند. داده شخصی همیشه <code>no-store</code>.</li>
+<li><strong>Client کردن کل صفحه برای یک تایمر:</strong> نتیجه‌اش جاوااسکریپت سنگین و صفحه‌ای است که موتور جست‌وجو ممکن است خالی ببیند.</li>
+<li><strong>revalidate صفر برای همه‌چیز «برای اطمینان»:</strong> هر بازدید به API بیرونی می‌رسد و با ترافیک بالا هم سرور کند می‌شود و هم به سقف درخواست API می‌خورید.</li>
+<li><strong>تست نکردن build تولید:</strong> رفتار کش در <code>next dev</code> با <code>next build</code> و <code>next start</code> فرق دارد. قبل از دیپلوی، نسخه تولید را محلی اجرا کنید.</li>
+</ul>
+
+<h2>جمع‌بندی</h2>
+
+<p>رندرینگ در Next.js با سه سؤال تعیین می‌شود: این کامپوننت به تعامل در مرورگر نیاز دارد؟ این صفحه به درخواست کاربر وابسته است؟ این داده چقدر می‌تواند قدیمی باشد؟ جواب درست به این سه، هم سایت را سریع می‌کند و هم هزینه سرور و API را پایین نگه می‌دارد.</p>
+
+<p>درس بعد، <a href="/blog/nextjs-api-live-data/">اتصال Next.js به API و داده زنده</a>، همین مفاهیم را روی یک داشبورد قیمت زنده پیاده می‌کند. درس قبل <a href="/blog/nextjs-app-router-routing/">App Router</a> بود و نقشه کامل دوره در <a href="/blog/nextjs-business-guide/">راهنمای Next.js</a> است.</p>
+
+<p>اگر سایت Next.js دارید که کند است یا داده‌هایش درست به‌روز نمی‌شوند، <a href="/contact-us/#smart-configurator">فرم درخواست پروژه</a> را پر کنید تا بررسی‌اش کنیم.</p>

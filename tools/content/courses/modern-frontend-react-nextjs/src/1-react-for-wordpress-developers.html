@@ -1,0 +1,139 @@
+<p>وقتی از وردپرس به React آمدم، سخت‌ترین بخش سینتکس نبود؛ عوض کردن طرز فکر بود. در PHP صفحه را از بالا به پایین می‌سازید و تمام. در React رابط کاربری «تابعی از داده» است: داده عوض می‌شود و React خودش تصمیم می‌گیرد کدام قسمت صفحه دوباره ساخته شود. در این درس <strong>آموزش ری‌اکت</strong> را از همان زاویه‌ای شروع می‌کنم که برای یک توسعه‌دهنده وردپرس آشناست.</p>
+
+<p>این درس اول دوره <a href="/blog/nextjs-business-guide/">آموزش Next.js برای کسب‌وکار</a> است. اگر React را بلدید، مستقیم به <a href="/blog/nextjs-app-router-routing/">درس App Router</a> بروید.</p>
+
+<h2>کامپوننت: همان template-part، ولی با ورودی مشخص</h2>
+
+<p>در قالب وردپرس با <code>get_template_part()</code> یک تکه از صفحه را جدا می‌کنید و با آرگومان سوم داده به آن می‌دهید. کامپوننت React همین ایده است، با این فرق که یک تابع جاوااسکریپت است که JSX برمی‌گرداند:</p>
+
+<pre><code>type PriceCardProps = { title: string; price: number; unit?: string };
+
+export function PriceCard({ title, price, unit = 'تومان' }: PriceCardProps) {
+  return (
+    <article className="rounded-2xl border p-4">
+      <h3 className="font-bold">{title}</h3>
+      <p>{price.toLocaleString('fa-IR')} {unit}</p>
+    </article>
+  );
+}
+
+// استفاده:
+<PriceCard title="طلای ۱۸ عیار" price={6250000} /></code></pre>
+
+<p>سه نکته که تازه‌کارها معمولاً جا می‌اندازند:</p>
+
+<ul>
+<li>نام کامپوننت با حرف بزرگ شروع می‌شود؛ <code>priceCard</code> به‌عنوان تگ HTML ناشناخته تفسیر می‌شود.</li>
+<li>در JSX به‌جای <code>class</code> از <code>className</code> و به‌جای <code>for</code> از <code>htmlFor</code> استفاده می‌شود.</li>
+<li>هر چیزی داخل <code>{}</code> عبارت جاوااسکریپت است. <code>if</code> مستقیم داخل JSX کار نمی‌کند؛ از عملگر سه‌تایی یا <code>&&</code> استفاده کنید.</li>
+</ul>
+
+<h2>props: داده از بالا به پایین</h2>
+
+<p>props ورودی‌های کامپوننت‌اند و فقط‌خواندنی هستند. کامپوننت فرزند نباید props را تغییر دهد؛ اگر داده باید عوض شود، صاحب آن داده (کامپوننت والد) تغییرش می‌دهد. این قاعده «جریان یک‌طرفه داده» است و دلیل اینکه اپ‌های React با بزرگ شدن قابل‌فهم می‌مانند.</p>
+
+<p>با TypeScript نوع props را تعریف کنید. هزینه‌اش چند خط است و در عوض اگر جایی <code>price</code> را به‌صورت رشته بفرستید، قبل از اجرا خطا می‌گیرید، نه وقتی کاربر عدد اشتباه می‌بیند.</p>
+
+<h2>state: داده‌ای که کامپوننت خودش نگه می‌دارد</h2>
+
+<p>هر چیزی که با تعامل کاربر عوض می‌شود و باید روی صفحه دیده شود، state است. با هوک <code>useState</code> تعریف می‌شود:</p>
+
+<pre><code>'use client';
+import { useState } from 'react';
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    <button type="button" onClick={() => setCount((c) => c + 1)}>
+      تعداد کلیک: {count}
+    </button>
+  );
+}</code></pre>
+
+<p>چند قاعده که خیلی از باگ‌ها را حذف می‌کند:</p>
+
+<ul>
+<li>state را مستقیم تغییر ندهید (<code>count++</code> یا <code>items.push()</code>)؛ همیشه با تابع set و یک مقدار جدید.</li>
+<li>وقتی مقدار جدید به مقدار قبلی وابسته است، از شکل تابعی استفاده کنید: <code>setCount((c) => c + 1)</code>.</li>
+<li>چیزی را که می‌شود از state یا props محاسبه کرد، در state جدا نگه ندارید. مثلاً جمع سبد خرید را از فهرست اقلام حساب کنید.</li>
+<li><code>'use client'</code> در Next.js لازم است، چون state فقط در مرورگر معنا دارد.</li>
+</ul>
+
+<h2>رویدادها و فرم‌ها</h2>
+
+<p>فرم‌ها جایی است که توسعه‌دهنده وردپرس بیشترین تفاوت را حس می‌کند. در React معمولاً مقدار هر فیلد در state نگه داشته می‌شود (فیلد «کنترل‌شده»):</p>
+
+<pre><code>'use client';
+import { useState } from 'react';
+
+export function LeadForm() {
+  const [phone, setPhone] = useState('');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
+  const valid = /^09\d{9}$/.test(phone);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!valid) return;
+    setStatus('sending');
+    const res = await fetch('/api/leads', { method: 'POST', body: JSON.stringify({ phone }) });
+    setStatus(res.ok ? 'done' : 'error');
+  }
+
+  return (
+    <form onSubmit={onSubmit}>
+      <label htmlFor="phone">شماره موبایل</label>
+      <input id="phone" inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value)} />
+      <button type="submit" disabled={!valid || status === 'sending'}>ثبت</button>
+      {status === 'error' && <p role="alert">ارسال نشد؛ دوباره تلاش کنید.</p>}
+    </form>
+  );
+}</code></pre>
+
+<p>اعتبارسنجی سمت مرورگر فقط برای تجربه کاربر است. همان قاعده‌ها را سمت سرور هم دوباره بررسی کنید؛ هر کسی می‌تواند بدون فرم شما مستقیم به <code>/api/leads</code> درخواست بفرستد.</p>
+
+<h2>فهرست‌ها و key</h2>
+
+<p>برای نمایش فهرست از <code>map</code> استفاده می‌شود و هر آیتم یک <code>key</code> یکتا و پایدار می‌خواهد:</p>
+
+<pre><code>{prices.map((p) => (
+  <PriceCard key={p.symbol} title={p.title} price={p.price} />
+))}</code></pre>
+
+<p>از اندیس آرایه به‌عنوان key استفاده نکنید، مگر فهرست هیچ‌وقت مرتب یا فیلتر نشود. اگر ترتیب عوض شود و key اندیس باشد، React ممکن است state یک آیتم (مثلاً مقدار یک فیلد) را به آیتم دیگری بچسباند؛ باگی که پیدا کردنش ساعت‌ها طول می‌کشد.</p>
+
+<h2>useEffect: کمتر از آنچه فکر می‌کنید</h2>
+
+<p><code>useEffect</code> برای همگام شدن با چیزی بیرون از React است: تایمر، اتصال WebSocket یا گوش دادن به رویداد پنجره. اشتباه رایج، استفاده از آن برای دریافت داده اولیه صفحه یا محاسبه یک مقدار از state است. در Next.js داده اولیه را در Server Component بخوانید و مقدارهای مشتق‌شده را مستقیم هنگام رندر حساب کنید.</p>
+
+<pre><code>useEffect(() => {
+  const id = setInterval(refresh, 30_000);
+  return () => clearInterval(id); // پاک‌سازی: بدون آن با هر رندر یک تایمر جدید اضافه می‌شود
+}, []);</code></pre>
+
+<p>تابعی که از effect برمی‌گردد پاک‌سازی است. هر effectی که چیزی را «روشن» می‌کند (تایمر، اتصال، listener) باید آن را خاموش هم بکند.</p>
+
+<h2>استایل‌دهی: Tailwind و دیزاین سیستم کوچک</h2>
+
+<p>اگر در وردپرس با Tailwind کار کرده‌اید، در React هم همان کلاس‌ها را می‌نویسید. تفاوت این است که حالا کامپوننت‌ها خودشان واحد دیزاین سیستم‌اند: یک <code>Button</code> با چند حالت مشخص، به‌جای کپی کردن ده کلاس روی هر دکمه. قاعده من این است که هر الگویی که سه بار تکرار شد، کامپوننت شود. گردش کار ساخت Tailwind را در درس <a href="/blog/wordpress-tailwind-build-workflow/">گردش کار مدرن وردپرس با Tailwind و esbuild</a> از دوره وردپرس توضیح داده‌ام.</p>
+
+<h2>از وردپرس به React: نقشه ذهنی</h2>
+
+<table>
+<thead><tr><th>در وردپرس</th><th>معادل نزدیک در React/Next.js</th></tr></thead>
+<tbody>
+<tr><td><code>get_template_part()</code></td><td>کامپوننت</td></tr>
+<tr><td>آرگومان‌های template-part</td><td>props</td></tr>
+<tr><td>فیلدهای ACF یک پست</td><td>داده‌ای که از API یا CMS خوانده می‌شود</td></tr>
+<tr><td>jQuery روی رویداد کلیک</td><td><code>onClick</code> و state</td></tr>
+<tr><td>هوک‌های <code>add_action</code></td><td>مفهوم متفاوت؛ هوک‌های React (<code>useState</code>، <code>useEffect</code>) برای state و اثرهای جانبی‌اند</td></tr>
+<tr><td>سلسله‌مراتب قالب</td><td>مسیریابی پوشه‌ای App Router</td></tr>
+</tbody>
+</table>
+
+<h2>جمع‌بندی</h2>
+
+<p>React بر چند ایده ساده بنا شده: کامپوننت‌های کوچک، props فقط‌خواندنی، state حداقلی و رابط کاربری‌ای که از داده ساخته می‌شود. اگر این‌ها را درست جا بیندازید، Next.js فقط لایه‌ای است که مشخص می‌کند کدام کامپوننت روی سرور و کدام در مرورگر اجرا شود.</p>
+
+<p>درس بعدی، <a href="/blog/nextjs-app-router-routing/">App Router در Next.js</a>، این کامپوننت‌ها را به صفحه و مسیر تبدیل می‌کند. برای نقشه کامل دوره به <a href="/blog/nextjs-business-guide/">راهنمای Next.js برای کسب‌وکار</a> برگردید.</p>
+
+<p>اگر پنل یا وب‌اپی لازم دارید که روی React ساخته شود، <a href="/contact-us/#smart-configurator">فرم درخواست پروژه</a> را پر کنید.</p>

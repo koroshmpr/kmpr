@@ -1,0 +1,162 @@
+<p>اولین باری که پروژه Next.js را باز کردم، دنبال فایلی می‌گشتم که «آدرس‌ها» را تعریف کند؛ چیزی شبیه تنظیمات پیوندهای یکتا در وردپرس. چنین فایلی وجود ندارد. در <strong>App Router در Next.js</strong> خود پوشه‌ها آدرس‌اند و چند نام فایل رزروشده تعیین می‌کنند هر آدرس چه چیزی نمایش بدهد. این درس همه آن‌ها را با یک مثال واقعی (سایتی با صفحه اصلی، وبلاگ و API قیمت) توضیح می‌دهد.</p>
+
+<p>این درس دوم دوره <a href="/blog/nextjs-business-guide/">آموزش Next.js برای کسب‌وکار</a> است و فرض می‌کند <a href="/blog/react-for-wordpress-developers/">مفاهیم پایه React</a> را می‌دانید.</p>
+
+<h2>قاعده اصلی: پوشه = بخش آدرس، page = صفحه</h2>
+
+<p>هر پوشه داخل <code>app/</code> یک بخش از آدرس است، ولی فقط وقتی فایل <code>page.tsx</code> داشته باشد آن آدرس قابل بازدید می‌شود. یعنی می‌توانید پوشه‌ای برای نگه داشتن کامپوننت‌ها داشته باشید بدون اینکه آدرس عمومی بسازد.</p>
+
+<pre><code>app/
+├─ layout.tsx              // ریشه: html، body، هدر و فوتر
+├─ page.tsx                // /
+├─ about/page.tsx          // /about
+├─ blog/
+│  ├─ page.tsx             // /blog
+│  └─ [slug]/
+│     ├─ page.tsx          // /blog/هر-مقاله
+│     └─ loading.tsx       // اسکلت بارگذاری مقاله
+├─ (marketing)/
+│  └─ webinar/page.tsx     // /webinar  — پرانتز در آدرس نمی‌آید
+├─ api/prices/route.ts     // /api/prices
+└─ not-found.tsx           // صفحه ۴۰۴ سفارشی</code></pre>
+
+<p>فایل‌های رزروشده‌ای که بیشتر از همه استفاده می‌شوند:</p>
+
+<ul>
+<li><code>page.tsx</code>: محتوای خود صفحه.</li>
+<li><code>layout.tsx</code>: قالبی که دور صفحه‌های آن پوشه و زیرپوشه‌ها می‌پیچد و هنگام جابه‌جایی بین آن‌ها دوباره ساخته نمی‌شود.</li>
+<li><code>loading.tsx</code>: چیزی که تا آماده شدن صفحه نمایش داده می‌شود.</li>
+<li><code>error.tsx</code>: رابط خطا برای آن بخش؛ باید Client Component باشد.</li>
+<li><code>not-found.tsx</code>: صفحه وقتی محتوا پیدا نشد.</li>
+<li><code>route.ts</code>: پاسخ‌دهنده API به‌جای صفحه.</li>
+</ul>
+
+<h2>layout: قالب مشترکی که دوباره بارگذاری نمی‌شود</h2>
+
+<p>layout ریشه اجباری است و تگ‌های <code>html</code> و <code>body</code> را می‌سازد. برای سایت فارسی، جهت و زبان همین‌جا تنظیم می‌شود:</p>
+
+<pre><code>// app/layout.tsx
+import type { Metadata } from 'next';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: { default: 'نام کسب‌وکار', template: '%s | نام کسب‌وکار' },
+  description: 'توضیح کوتاه سایت',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="fa" dir="rtl">
+      <body>
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </body>
+    </html>
+  );
+}</code></pre>
+
+<p>layoutها تو در تو هستند. اگر بخش وبلاگ ستون کناری دارد، <code>app/blog/layout.tsx</code> فقط دور صفحه‌های وبلاگ می‌پیچد و layout ریشه همچنان بیرون آن است. چون layout هنگام رفتن از یک مقاله به مقاله دیگر حفظ می‌شود، state داخل آن (مثلاً منوی بازشده) هم از بین نمی‌رود.</p>
+
+<h2>مسیرهای پویا: [slug] و generateStaticParams</h2>
+
+<p>پوشه‌ای که نامش داخل کروشه است، بخش متغیر آدرس را می‌گیرد. در صفحه مقاله، مقدار <code>slug</code> از <code>params</code> خوانده می‌شود:</p>
+
+<pre><code>// app/blog/[slug]/page.tsx
+import { notFound } from 'next/navigation';
+import { getPost, getAllSlugs } from '@/lib/posts';
+
+export async function generateStaticParams() {
+  const slugs = await getAllSlugs();
+  return slugs.map((slug) => ({ slug }));
+}
+
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await getPost(slug);
+  if (!post) notFound();
+  return <article><h1>{post.title}</h1>{/* ... */}</article>;
+}</code></pre>
+
+<p>در نسخه‌های جدید Next.js، <code>params</code> یک Promise است و باید <code>await</code> شود؛ اگر مثال‌های قدیمی را کپی کنید، این تفاوت را ببینید. <code>generateStaticParams</code> به Next.js می‌گوید کدام مقاله‌ها را هنگام build بسازد. اگر بعداً مقاله جدیدی اضافه شود، بسته به تنظیمات کش در اولین درخواست ساخته می‌شود؛ این را در <a href="/blog/nextjs-rendering-caching/">درس رندرینگ و کش</a> توضیح داده‌ام.</p>
+
+<p>چند شکل دیگر مسیر پویا:</p>
+
+<ul>
+<li><code>[...slug]</code> همه بخش‌های بعدی را می‌گیرد؛ مثلاً <code>/docs/a/b/c</code>.</li>
+<li><code>[[...slug]]</code> همان است ولی آدرس بدون بخش اضافه را هم پوشش می‌دهد.</li>
+</ul>
+
+<h2>گروه‌بندی مسیرها و پوشه‌های خصوصی</h2>
+
+<p>پوشه‌ای که نامش داخل پرانتز است، مثل <code>(marketing)</code>، در آدرس ظاهر نمی‌شود. از آن برای دو کار استفاده می‌کنم: مرتب کردن فایل‌ها و دادن layout جدا به یک گروه صفحه. مثلاً صفحه‌های لندینگ کمپین بدون هدر و فوتر اصلی، و صفحه‌های داشبورد با منوی کناری.</p>
+
+<p>پوشه‌ای که با زیرخط شروع شود، مثل <code>_components</code>، اصلاً مسیر نمی‌سازد و جای خوبی برای کامپوننت‌هایی است که فقط همان بخش استفاده می‌کند.</p>
+
+<h2>لینک و جابه‌جایی بین صفحه‌ها</h2>
+
+<p>برای لینک داخلی از <code>Link</code> استفاده کنید، نه تگ <code>a</code> ساده. <code>Link</code> صفحه مقصد را بدون بارگذاری کامل عوض می‌کند و لینک‌هایی را که در دید کاربر هستند از قبل آماده می‌کند:</p>
+
+<pre><code>import Link from 'next/link';
+
+<Link href={`/blog/${post.slug}`}>{post.title}</Link></code></pre>
+
+<p>خروجی <code>Link</code> همچنان یک تگ <code>a</code> واقعی با <code>href</code> است، پس برای موتور جست‌وجو قابل خزش است. برای جابه‌جایی از داخل کد، مثلاً بعد از ثبت فرم، از <code>useRouter</code> در Client Component یا <code>redirect</code> در سمت سرور استفاده می‌شود.</p>
+
+<h2>متادیتا و سئو هر صفحه</h2>
+
+<p>عنوان و توضیحات ثابت با <code>export const metadata</code> و عنوان وابسته به داده با <code>generateMetadata</code> ساخته می‌شود:</p>
+
+<pre><code>export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await getPost(slug);
+  return {
+    title: post?.seoTitle ?? 'مقاله',
+    description: post?.excerpt,
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: { images: post?.cover ? [post.cover] : [] },
+  };
+}</code></pre>
+
+<p>Next.js درخواست‌های تکراری <code>fetch</code> با آدرس و تنظیمات یکسان را در یک رندر یک بار اجرا می‌کند، پس خواندن مقاله هم در <code>generateMetadata</code> و هم در صفحه دو درخواست به API نمی‌زند. اگر داده را مستقیم از دیتابیس می‌خوانید، تابع را با <code>cache</code> از React بپیچید تا همین رفتار را داشته باشد. نقشه سایت هم با فایل <code>app/sitemap.ts</code> ساخته می‌شود. چک‌لیست کامل سئو داخلی را در <a href="/blog/on-page-seo-checklist/">چک‌لیست سئو داخلی</a> از دوره سئو ببینید.</p>
+
+<h2>Route Handler: API داخل همان پروژه</h2>
+
+<p>فایل <code>route.ts</code> به‌جای صفحه، پاسخ HTTP برمی‌گرداند. برای فرم‌ها، وب‌هوک‌ها و پراکسی کردن APIهای بیرونی (تا کلید API در مرورگر دیده نشود) از آن استفاده می‌کنم:</p>
+
+<pre><code>// app/api/leads/route.ts
+import { NextResponse } from 'next/server';
+
+export async function POST(req: Request) {
+  const body = await req.json().catch(() => null);
+  const phone = typeof body?.phone === 'string' ? body.phone : '';
+  if (!/^09\d{9}$/.test(phone)) {
+    return NextResponse.json({ error: 'شماره نامعتبر است' }, { status: 422 });
+  }
+  await saveLead(phone); // ذخیره یا ارسال به CRM
+  return NextResponse.json({ ok: true }, { status: 201 });
+}</code></pre>
+
+<p>هر متد HTTP یک تابع جدا با همان نام است (<code>GET</code>، <code>POST</code> و غیره). همان قواعد امنیتی REST API وردپرس اینجا هم صدق می‌کند: ورودی را اعتبارسنجی کنید، کد وضعیت درست برگردانید و برای مسیرهای عمومی محدودیت نرخ بگذارید.</p>
+
+<h2>loading و error: حالت‌هایی که اغلب فراموش می‌شوند</h2>
+
+<p>صفحه‌ای که به API وابسته است، دو حالت دیگر هم دارد: «در حال بارگذاری» و «خطا». <code>loading.tsx</code> به‌طور خودکار دور صفحه یک مرز Suspense می‌سازد و تا آماده شدن داده، اسکلت صفحه را نشان می‌دهد. <code>error.tsx</code> خطاهای آن بخش را می‌گیرد و دکمه «تلاش دوباره» می‌دهد، به‌جای اینکه کل سایت از کار بیفتد:</p>
+
+<pre><code>'use client';
+export default function Error({ reset }: { error: Error; reset: () => void }) {
+  return (
+    <div role="alert">
+      <p>این بخش الان بارگذاری نشد.</p>
+      <button type="button" onClick={() => reset()}>تلاش دوباره</button>
+    </div>
+  );
+}</code></pre>
+
+<h2>جمع‌بندی</h2>
+
+<p>App Router با چند قاعده ساده کار می‌کند: پوشه‌ها آدرس‌اند، <code>page</code> صفحه را می‌سازد، <code>layout</code> قالب مشترک را نگه می‌دارد، کروشه یعنی بخش پویا، پرانتز یعنی گروه بدون آدرس و <code>route.ts</code> یعنی API. اگر این ساختار را از اول درست بچینید، اضافه کردن بخش‌های جدید به پروژه ساده می‌ماند.</p>
+
+<p>درس قبل <a href="/blog/react-for-wordpress-developers/">ری‌اکت برای توسعه‌دهنده وردپرس</a> بود. در درس بعد، <a href="/blog/nextjs-rendering-caching/">رندرینگ و کش در Next.js</a>، می‌بینیم هر کدام از این صفحه‌ها کی و کجا ساخته می‌شوند. برای نقشه کامل دوره به <a href="/blog/nextjs-business-guide/">راهنمای Next.js</a> برگردید.</p>
+
+<p>اگر می‌خواهید سایت یا وب‌اپتان با Next.js و ساختاری قابل توسعه ساخته شود، <a href="/contact-us/#smart-configurator">فرم درخواست پروژه</a> را پر کنید.</p>
