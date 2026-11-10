@@ -11143,6 +11143,294 @@ html.is-standalone .gh {
     display: none;
   }
 }
+.kr-next, .kr-api, .kr-dl {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  color: #e2e8f0;
+  background: radial-gradient(120% 90% at 85% 0%, #1e1b4b, #020617);
+  overflow: auto;
+}
+.kr-nx__bar, .kr-api__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem 0.4rem 3.6rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  background: rgb(15 23 42 / 0.9);
+  border-bottom: 1px solid #334155;
+}
+.kr-nx__bar b, .kr-api__bar b {
+  color: #fde68a;
+}
+.kr-nx__bar b.is-late {
+  color: #fca5a5;
+}
+.kr-nx__body {
+  flex: 1;
+  display: grid;
+  align-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  max-width: 46rem;
+  width: 100%;
+  margin-inline: auto;
+}
+.kr-nx__url {
+  margin: 0;
+  font-size: clamp(0.85rem, 2.5cqw, 1.1rem);
+  font-weight: 900;
+  color: #fff;
+}
+.kr-nx__crumb {
+  margin: 0;
+  font: 700 0.85rem ui-monospace, monospace;
+  color: #93c5fd;
+  text-align: left;
+}
+.kr-nx__tree {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.kr-nx__tree button {
+  min-height: 42px;
+  padding: 0.35rem 0.8rem;
+  font: 700 clamp(0.72rem, 2cqw, 0.92rem) ui-monospace, monospace;
+  color: #e2e8f0;
+  background: #1e293b;
+  border: 1.5px solid #475569;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+.kr-nx__tree .is-dir {
+  border-color: #fbbf24;
+}
+.kr-nx__tree .is-file {
+  border-color: #38bdf8;
+}
+.kr-nx__tree [data-up] {
+  border-style: dashed;
+}
+.kr-nx__msg {
+  margin: 0;
+  min-height: 1.4em;
+  font-weight: 900;
+  color: #86efac;
+}
+.kr-api__tiles {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  align-content: center;
+}
+.kr-api__tile {
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  padding: 0.5rem 0.3rem;
+  color: #e2e8f0;
+  background: #0f172a;
+  border: 2px solid #334155;
+  border-radius: 0.8rem;
+  cursor: pointer;
+}
+.kr-api__tile.is-stale {
+  border-color: #ef4444;
+  animation: kr-ocr-hint 0.9s infinite;
+}
+.kr-api__ic {
+  font-size: clamp(1.2rem, 4cqw, 2rem);
+}
+.kr-api__n {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #94a3b8;
+}
+.kr-api__tile b {
+  font-size: clamp(0.8rem, 2.4cqw, 1.15rem);
+  font-weight: 900;
+  color: #fff;
+}
+.kr-api__tile i {
+  display: block;
+  width: 80%;
+  height: 6px;
+  border-radius: 6px;
+  background: #1e293b;
+  overflow: hidden;
+}
+.kr-api__tile u {
+  display: block;
+  height: 100%;
+}
+.kr-api__tile em {
+  min-height: 1em;
+  font-style: normal;
+  font-size: 0.7rem;
+  color: #fca5a5;
+}
+.kr-api__msg {
+  margin: 0;
+  padding: 0.3rem 0.8rem 0.6rem;
+  text-align: center;
+  font-weight: 800;
+  color: #fde68a;
+}
+.kr-api__modal, .kr-dl__review {
+  position: absolute;
+  inset: 12% 8%;
+  display: grid;
+  align-content: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1rem;
+  color: #e2e8f0;
+  background: #0f172a;
+  border: 3px solid #fde047;
+  border-radius: 0.8rem;
+  box-shadow: 6px 6px 0 #000;
+}
+.kr-api__modal[hidden], .kr-dl__review[hidden] {
+  display: none;
+}
+.kr-api__modal p, .kr-dl__review p {
+  margin: 0;
+  font-weight: 800;
+}
+.kr-api__modal pre, .kr-dl__review pre {
+  margin: 0;
+  padding: 0.5rem;
+  font: 700 0.82rem ui-monospace, monospace;
+  text-align: left;
+  white-space: pre-wrap;
+  color: #a5f3fc;
+  background: #020617;
+  border-radius: 0.4rem;
+}
+.kr-api__modal div, .kr-dl__review div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.kr-api__modal button, .kr-dl__review button, .kr-dl__tk button {
+  min-height: 42px;
+  padding: 0.35rem 0.8rem;
+  font-weight: 900;
+  color: #111;
+  background: #e0e7ff;
+  border: 2px solid #111;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+.kr-api__modal button {
+  font-family: ui-monospace, monospace;
+}
+.kr-api__modal button:disabled {
+  opacity: 0.4;
+}
+.kr-dl__lord {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.3rem 0.6rem;
+  padding: 0.4rem 0.8rem 0.4rem 3.6rem;
+  background: linear-gradient(#450a0a, #1c0507);
+}
+.kr-dl__clock {
+  grid-row: span 2;
+  font-size: clamp(1.8rem, 6cqw, 3rem);
+  transition: transform 0.2s;
+}
+.kr-dl__lord p {
+  margin: 0;
+  font-weight: 900;
+  color: #fecaca;
+  font-size: 0.85rem;
+}
+.kr-dl__bar {
+  height: 8px;
+  border-radius: 8px;
+  background: #1f2937;
+  overflow: hidden;
+}
+.kr-dl__bar u {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
+}
+.kr-dl__hud {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 900;
+  background: #0f172a;
+}
+.kr-dl__tickets {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  padding: 0.6rem;
+  align-content: center;
+}
+.kr-dl__tk {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.5rem;
+  background: #1e293b;
+  border: 2px solid #475569;
+  border-radius: 0.7rem;
+}
+.kr-dl__tk p {
+  margin: 0;
+  font-weight: 900;
+  font-size: 0.82rem;
+}
+.kr-dl__tk i {
+  display: block;
+  height: 6px;
+  border-radius: 6px;
+  background: #0f172a;
+  overflow: hidden;
+}
+.kr-dl__tk u {
+  display: block;
+  height: 100%;
+  background: #22c55e;
+}
+.kr-dl__tk div {
+  display: grid;
+  gap: 0.3rem;
+}
+.kr-dl__tk button:disabled {
+  opacity: 0.4;
+}
+.kr-dl__tk [data-ai] {
+  background: #c7d2fe;
+}
+@container (max-height: 420px) {
+  .kr-api__tiles {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .kr-dl__tk div {
+    grid-template-columns: 1fr 1fr;
+  }
+  .kr-dl__tk button {
+    min-height: 40px;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.72rem;
+  }
+}
+@container (max-width: 520px) {
+  .kr-dl__tickets {
+    grid-template-columns: 1fr;
+  }
+}
 .gc-top {
   margin-top: 1.5rem;
   display: flex;

@@ -15,6 +15,7 @@ import { createCanvas } from '../lib/canvas.js';
 import { showDrive, showQC, showDesk } from './korosh-minis.js';
 import { showLogHunt, showCodeFix, showDomainRace, showCrowd, showCues } from './korosh-makan.js';
 import { showBazaar, showStudio, showGateway } from './korosh-gilda.js';
+import { showNextRoutes, showApiDash, showDeadlineAI } from './korosh-khane.js';
 import { store } from '../lib/store.js';
 import { fa, listeners, clamp } from '../lib/util.js';
 import { HERO_H, drawHero, OL } from '../lib/hero.js';
@@ -89,6 +90,9 @@ const CHALLENGE = {
 	6: ['۲۰ کیف، ۴ مدل، زیر ۸۵٪ بودجه', (s) => s.spent <= s.budget * 0.95, (s) => s.spent <= s.budget * 0.85 && s.types >= 4],
 	7: ['همه انتخاب‌ها مطابق بریف', (s) => s.score >= s.max - 2, (s) => s.score === s.max],
 	8: ['درگاه وصل شود و هیچ مشتری‌ای نرود', (s) => s.lost <= 1, (s) => s.lost === 0],
+	9: ['همه صفحه‌ها بدون اشتباه', (s) => s.miss <= 1, (s) => s.miss === 0],
+	10: ['بدون شکایت و بدون ۴۲۹', (s) => s.strikes <= 1, (s) => !s.strikes && !s.r429],
+	11: ['۱۰ تیکت بدون حتی یک باگ در پروداکشن', (s) => s.bugs <= 1, (s) => s.bugs === 0],
 	5: ['ری‌استارت بدون مردن', (s) => s.bossTries <= 1, (s) => !s.bossTries],
 	100: ['بدون تصادف تا کوچه مائده', (s) => s.crashes <= 2, (s) => s.crashes === 0],
 	101: ['حوصله مائده بالای نصف بماند', (s) => s.pat >= 25, (s) => s.pat >= 50],
@@ -559,6 +563,8 @@ export function mount(stage, api) {
 	// comic panel before every stage, then play
 	let comic = null;
 	const playStage = (n) => {
+		// never stack two stages: close whatever comic / mini-game is still open
+		if (comic) { const c = comic; comic = null; try { c(); } catch (e) { /* ignore */ } }
 		s.mode = 'story';
 		pad.hidden = true;
 		music.stop();
@@ -577,7 +583,7 @@ export function mount(stage, api) {
 					[WAR]: { car: '207', theme: 'war', length: 3800, bombs: true, density: 0.6, goal: '🏢', hint: 'دایره قرمز = انفجار! لاین عوض کن · ⚡ گاز · 🛑 ترمز', winText: 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' },
 					[ARMY0 + 2]: { car: 'bus', theme: 'road', length: 4600, patience: 60, patienceLabel: 'تا کلاس فردا شب ⏳', trucks: true, density: 0.9, goal: '🎖', hint: 'اتوبوس سنگین است! ◀ ▶ آرام فرمان بده · ⚡ گاز · کامیون‌ها کندند', winText: 'رسیدیم مراغه! تسویه ✓', lateText: 'به کلاس نرسیدی… ⏳' },
 				};
-				const MAKAN = { 0: showLogHunt, 1: showCodeFix, 2: showDomainRace, 3: showCrowd, 4: showCues, 6: showBazaar, 7: showStudio, 8: showGateway };
+				const MAKAN = { 0: showLogHunt, 1: showCodeFix, 2: showDomainRace, 3: showCrowd, 4: showCues, 6: showBazaar, 7: showStudio, 8: showGateway, 9: showNextRoutes, 10: showApiDash, 11: showDeadlineAI };
 				if (DRIVES[n] || MAKAN[n] || n === PAND0 + 1 || n === BIO0 + 2) {
 					const finishMini = (ok, pts, stats) => {
 						s.lastStats = stats || null;
@@ -585,10 +591,10 @@ export function mount(stage, api) {
 						if (!s || s.over) return;
 						if (!ok) { s.mode = 'map'; mapEl.hidden = false; renderMap(); return; }
 						s.score += pts; api.setScore(s.score);
-						s.stageN = n; s.world = w; s.lv = { side: MAKAN[n] ? null : n === WAR ? 'war' : n === PAND0 + 1 ? 'qc' : n === BIO0 + 2 ? 'bio' : 'drive', isBoss: n === 2 || n === 8, map: [], ents: [], W: 1, goal: { x: 0, y: 0 } };
+						s.stageN = n; s.world = w; s.lv = { side: MAKAN[n] ? null : n === WAR ? 'war' : n === PAND0 + 1 ? 'qc' : n === BIO0 + 2 ? 'bio' : 'drive', isBoss: n === 2 || n === 8 || n === 11, map: [], ents: [], W: 1, goal: { x: 0, y: 0 } };
 						afterWin();
 					};
-					s.mode = 'story'; pad.hidden = true; music.play(n === WAR || n === BIO0 + 2 || n === 2 || n === 8 ? 'boss' : n === 4 ? 'night' : n === 6 ? 'desert' : 'plains');
+					s.mode = 'story'; pad.hidden = true; music.play(n === WAR || n === BIO0 + 2 || n === 2 || n === 8 || n === 11 ? 'boss' : n === 4 ? 'night' : n === 6 ? 'desert' : 'plains');
 					comic = MAKAN[n] ? MAKAN[n](stage, { sound: (k) => api.sfx(k), done: finishMini }) : n === BIO0 + 2 ? showDesk(stage, { rounds: 6, maxMiss: 3, sound: (k) => api.sfx(k), done: finishMini }) : n === PAND0 + 1 ? showQC(stage, { goal: 36, maxMiss: 6, sound: (k) => api.sfx(k), done: finishMini }) : showDrive(stage, { ...DRIVES[n], sound: (k) => api.sfx(k), done: finishMini });
 					return;
 				}
