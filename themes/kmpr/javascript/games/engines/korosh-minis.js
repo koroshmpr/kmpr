@@ -6,12 +6,13 @@
  */
 import { drawYousef, drawPerson } from './korosh-story.js';
 
-const OL = '#16120f';
-const fa = (v) => String(v).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+export const OL = '#16120f';
+export const fa = (v) => String(v).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 let FF = 'system-ui, sans-serif';
+export const font = () => FF;
 
-function shell(host, cls, pads) {
+export function shell(host, cls, pads) {
 	if (typeof document !== 'undefined') FF = getComputedStyle(document.body).fontFamily || FF;
 	const el = document.createElement('div');
 	el.className = `kr-mini ${cls}`;
@@ -22,13 +23,13 @@ function shell(host, cls, pads) {
 	fit();
 	return { el, cv, c, fit };
 }
-const txt = (c, t, x, y, size, color, align = 'center', stroke = true) => {
+export const txt = (c, t, x, y, size, color, align = 'center', stroke = true) => {
 	c.font = `900 ${size}px ${FF}`; c.textAlign = align; c.textBaseline = 'middle';
 	if (stroke) { c.lineJoin = 'round'; c.lineWidth = size * 0.28; c.strokeStyle = OL; c.strokeText(t, x, y); }
 	c.fillStyle = color; c.fillText(t, x, y);
 };
-const rr = (c, x, y, w, h, r, fill, stroke = OL, lw = 1.5) => { c.beginPath(); c.roundRect(x, y, w, h, r); c.fillStyle = fill; c.fill(); if (stroke) { c.lineWidth = lw; c.strokeStyle = stroke; c.stroke(); } };
-function endScreen(el, ok, title, lines, onRetry, onBack) {
+export const rr = (c, x, y, w, h, r, fill, stroke = OL, lw = 1.5) => { c.beginPath(); c.roundRect(x, y, w, h, r); c.fillStyle = fill; c.fill(); if (stroke) { c.lineWidth = lw; c.strokeStyle = stroke; c.stroke(); } };
+export function endScreen(el, ok, title, lines, onRetry, onBack) {
 	const box = el.querySelector('.kr-mini__end');
 	box.hidden = false;
 	box.innerHTML = `<div class="kr-mini__card ${ok ? 'is-ok' : 'is-bad'}"><p class="kr-mini__h">${title}</p>${lines.map((l) => `<p>${l}</p>`).join('')}
@@ -176,10 +177,10 @@ export function showDrive(host, cfg) {
 		topCar(c, st.x, PY, cfg.car, cfg.car === '207' ? '#cbd5e1' : '#f8fafc', st.t, keys.brake);
 		if (cfg.theme === 'war') { c.fillStyle = 'rgba(68,64,60,.25)'; c.fillRect(0, 0, W, H); }
 		// HUD
-		rr(c, 4, 4, 78, 20, 7, 'rgba(2,6,23,.8)', '#fbbf24', 1.2);
-		if (cfg.clock) { const m = Math.floor(st.clock), hh = Math.floor(m / 60), mm = m % 60, late = cfg.clock.deadline - st.clock < 6; txt(c, `⏰ ${fa(hh)}:${fa(String(mm).padStart(2, '0'))}`, 43, 14.5, 10, late && Math.floor(st.t * 4) % 2 ? '#fca5a5' : '#fde68a'); }
-		else if (cfg.patience) { c.fillStyle = '#ec4899'; c.fillRect(8, 16, 70 * (st.pat / cfg.patience), 4); txt(c, cfg.patienceLabel || 'حوصله', 43, 10, 7, '#fbcfe8', 'center', false); }
-		else if (cfg.bombs) txt(c, `🚙 ${'■'.repeat(st.hp)}${'□'.repeat(3 - st.hp)}`, 43, 14.5, 9, '#fde047');
+		rr(c, 40, 4, 78, 20, 7, 'rgba(2,6,23,.8)', '#fbbf24', 1.2);
+		if (cfg.clock) { const m = Math.floor(st.clock), hh = Math.floor(m / 60), mm = m % 60, late = cfg.clock.deadline - st.clock < 6; txt(c, `⏰ ${fa(hh)}:${fa(String(mm).padStart(2, '0'))}`, 79, 14.5, 10, late && Math.floor(st.t * 4) % 2 ? '#fca5a5' : '#fde68a'); }
+		else if (cfg.patience) { c.fillStyle = '#ec4899'; c.fillRect(44, 16, 70 * (st.pat / cfg.patience), 4); txt(c, cfg.patienceLabel || 'حوصله', 79, 10, 7, '#fbcfe8', 'center', false); }
+		else if (cfg.bombs) txt(c, `🚙 ${'■'.repeat(st.hp)}${'□'.repeat(3 - st.hp)}`, 79, 14.5, 9, '#fde047');
 		rr(c, W - 82, 4, 78, 20, 7, 'rgba(2,6,23,.8)', '#38bdf8', 1.2);
 		txt(c, `${fa(st.pts)} ⭐`, W - 43, 14.5, 9, '#e0f2fe');
 		// progress bar along the left edge of the road + pickup marks
@@ -276,7 +277,7 @@ export function showQC(host, cfg) {
 		for (const f of st.fly) { const u = 1 - f.life / 0.35; card(f.x + (f.tx - f.x) * u, f.y + (f.ty - f.y) * u, f, 1 - u * 0.6, 1 - u * 0.5); }
 		// Yousef at the left, firing cards
 		drawYousef(c, 34, 116, 0.95, st.t, st.say ? Math.abs(Math.sin(st.t * 14)) : 0);
-		if (st.say) { c.font = `900 7px ${FF}`; const w2 = c.measureText(st.say.t).width + 12; rr(c, 6, 4, Math.min(150, w2), 15, 7, '#fff', OL, 1.2); txt(c, st.say.t, 6 + Math.min(150, w2) / 2, 11.5, 7, OL, 'center', false); }
+		if (st.say) { c.font = `900 7px ${FF}`; const w2 = c.measureText(st.say.t).width + 12; rr(c, 40, 4, Math.min(170, w2), 15, 7, '#fff', OL, 1.2); txt(c, st.say.t, 40 + Math.min(170, w2) / 2, 11.5, 7, OL, 'center', false); }
 		// HUD
 		rr(c, 222, 4, 94, 32, 7, 'rgba(2,6,23,.75)', '#fde047', 1.2);
 		txt(c, `✓ ${fa(st.fixed)} از ${fa(GOAL)}`, 269, 13, 8, '#bbf7d0', 'center', false);

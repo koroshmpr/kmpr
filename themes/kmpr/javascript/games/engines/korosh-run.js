@@ -13,6 +13,7 @@
 import { CATALOG } from '../catalog.js';
 import { createCanvas } from '../lib/canvas.js';
 import { showDrive, showQC, showDesk } from './korosh-minis.js';
+import { showLogHunt, showCodeFix, showDomainRace, showCrowd, showCues } from './korosh-makan.js';
 import { store } from '../lib/store.js';
 import { fa, listeners, clamp } from '../lib/util.js';
 import { HERO_H, drawHero, OL } from '../lib/hero.js';
@@ -213,7 +214,8 @@ function buildLevel(n) {
 		arena = { x0: x, x1: x + 26 };
 		flat(W - x);
 		for (let y = 3; y < GY; y++) set(arena.x1 + 1, y, '#');
-		for (let i = 0; i < 3; i++) set(arena.x0 + 6 + i * 7, GY - 4, i === 1 ? 'P' : '=');
+		if (n === 5) { var restart = [0, 1, 2].map((i) => arena.x0 + 4 + i * 8); restart.forEach((x) => { set(x, GY - 4, 'Q'); set(x + 1, GY - 4, 'Q'); }); } // three restart switches
+		else for (let i = 0; i < 3; i++) set(arena.x0 + 6 + i * 7, GY - 4, i === 1 ? 'P' : '=');
 	} else {
 		flat(W - x);
 	}
@@ -221,7 +223,7 @@ function buildLevel(n) {
 	let cxT = Math.floor(isBoss ? arena.x0 - 8 : W / 2);
 	while (cxT < W - 20 && map[GY][cxT] !== '#') cxT++;
 	const goalX = isBoss ? (arena.x1 - 4) * T : (W - 10) * T;
-	return { map, W, ents, warps, arena, goal: { x: goalX, y: GY * T }, check: cxT * T, isBoss };
+	return { map, W, ents, warps, arena, goal: { x: goalX, y: GY * T }, check: cxT * T, isBoss, quiz: typeof restart !== 'undefined' ? restart : undefined, restart: typeof restart !== 'undefined' };
 }
 function buildSide(n) {
 	if (n === RAIN) return buildRain(n);
@@ -544,17 +546,18 @@ export function mount(stage, api) {
 					[WAR]: { car: '207', theme: 'war', length: 3800, bombs: true, density: 0.6, goal: '🏢', hint: 'دایره قرمز = انفجار! لاین عوض کن · ⚡ گاز · 🛑 ترمز', winText: 'رسیدیم شرکت! لپ‌تاپ رو بردار 💻' },
 					[ARMY0 + 2]: { car: 'bus', theme: 'road', length: 4600, patience: 60, patienceLabel: 'تا کلاس فردا شب ⏳', trucks: true, density: 0.9, goal: '🎖', hint: 'اتوبوس سنگین است! ◀ ▶ آرام فرمان بده · ⚡ گاز · کامیون‌ها کندند', winText: 'رسیدیم مراغه! تسویه ✓', lateText: 'به کلاس نرسیدی… ⏳' },
 				};
-				if (DRIVES[n] || n === PAND0 + 1 || n === BIO0 + 2) {
+				const MAKAN = { 0: showLogHunt, 1: showCodeFix, 2: showDomainRace, 3: showCrowd, 4: showCues };
+				if (DRIVES[n] || MAKAN[n] || n === PAND0 + 1 || n === BIO0 + 2) {
 					const finishMini = (ok, pts) => {
 						comic = null;
 						if (!s || s.over) return;
 						if (!ok) { s.mode = 'map'; mapEl.hidden = false; renderMap(); return; }
 						s.score += pts; api.setScore(s.score);
-						s.stageN = n; s.world = w; s.lv = { side: n === WAR ? 'war' : n === PAND0 + 1 ? 'qc' : n === BIO0 + 2 ? 'bio' : 'drive', map: [], ents: [], W: 1, goal: { x: 0, y: 0 } };
+						s.stageN = n; s.world = w; s.lv = { side: MAKAN[n] ? null : n === WAR ? 'war' : n === PAND0 + 1 ? 'qc' : n === BIO0 + 2 ? 'bio' : 'drive', isBoss: n === 2, map: [], ents: [], W: 1, goal: { x: 0, y: 0 } };
 						afterWin();
 					};
-					s.mode = 'story'; pad.hidden = true; music.play(n === WAR || n === BIO0 + 2 ? 'boss' : 'plains');
-					comic = n === BIO0 + 2 ? showDesk(stage, { rounds: 6, maxMiss: 3, sound: (k) => api.sfx(k), done: finishMini }) : n === PAND0 + 1 ? showQC(stage, { goal: 36, maxMiss: 6, sound: (k) => api.sfx(k), done: finishMini }) : showDrive(stage, { ...DRIVES[n], sound: (k) => api.sfx(k), done: finishMini });
+					s.mode = 'story'; pad.hidden = true; music.play(n === WAR || n === BIO0 + 2 || n === 2 ? 'boss' : n === 4 ? 'night' : 'plains');
+					comic = MAKAN[n] ? MAKAN[n](stage, { sound: (k) => api.sfx(k), done: finishMini }) : n === BIO0 + 2 ? showDesk(stage, { rounds: 6, maxMiss: 3, sound: (k) => api.sfx(k), done: finishMini }) : n === PAND0 + 1 ? showQC(stage, { goal: 36, maxMiss: 6, sound: (k) => api.sfx(k), done: finishMini }) : showDrive(stage, { ...DRIVES[n], sound: (k) => api.sfx(k), done: finishMini });
 					return;
 				}
 				if (n === ARMY0 + 1) { // the fuel bluff is a dialog, not a platform level
@@ -624,6 +627,7 @@ export function mount(stage, api) {
 		if (!fromCheckpoint) { s.bossTries = 0; s.bossCheck = 0; }
 		if (fromCheckpoint && lv.isBoss && s.bossCheck) lv.check = s.bossCheck;
 		s.boss = lv.isBoss ? makeBoss(WORLDS[s.world].boss, lv.arena) : null;
+		if (s.boss && lv.restart) { s.boss.hp = s.boss.max = 3; s.restart = { order: [0, 1, 2].sort(() => Math.random() - 0.5), step: 0 }; }
 		if (s.boss && fromCheckpoint && s.bossTries) { const k = Math.max(0.5, 1 - 0.15 * s.bossTries); s.boss.hp = s.boss.max = Math.max(3, Math.ceil(s.boss.max * k)); }
 		s.goalOn = !lv.isBoss;
 		s.camMin = 0;
@@ -787,6 +791,15 @@ export function mount(stage, api) {
 	};
 	const quizHit = (tx) => {
 		const b = s.boss;
+		if (s.lv.restart && b && b.active && b.hp > 0 && s.restart) {
+			const blk = s.lv.quiz.findIndex((x) => tx === x || tx === x + 1);
+			if (blk < 0) return;
+			if (blk === s.restart.order[s.restart.step]) {
+				s.restart.step++; snd('coin', 'coin');
+				if (s.restart.step >= 3) { b.inv = 0; damageBoss(1); s.banner = { t: b.hp > 0 ? `ری‌استارت ${fa(3 - b.hp)} از ۳ ✓` : 'سرور برگشت!', life: 1.4 }; s.restart = { order: [0, 1, 2].sort(() => Math.random() - 0.5), step: 0 }; }
+			} else { s.restart.step = 0; snd('down', 'wrong'); s.shake = 0.25; s.banner = { t: 'ترتیب غلط! از اول 😬', life: 1.2 }; const toward = s.p.x < b.x ? -1 : 1; [-1, 1].forEach((d) => bossShot(b.x, b.y + 10, toward * 2 + d * 0.5, -2.6)); }
+			return;
+		}
 		if (!b || b.type !== 'azizi' || !b.active || b.hp <= 0 || !s.quiz) return;
 		const blk = s.lv.quiz.findIndex((x) => tx === x || tx === x + 1);
 		if (blk < 0) return;
@@ -954,7 +967,7 @@ export function mount(stage, api) {
 			else {
 				// generous head-stomp: feet in the top third while falling — or while the boss jumps up into you
 				const onHead = p.y + p.h - b.y < Math.max(14, b.h * 0.35);
-				if (onHead && (b.type === 'bakhshi' || b.type === 'azizi')) { p.vy = keys.jump ? -7 : -5; p.stompT = 0.35; if (!s.banner || s.banner.life <= 0) s.banner = { t: b.type === 'bakhshi' ? 'با پریدن رو سرش رتبه بالا نمی‌ره! سئو جمع کن 🔑' : 'با پریدن نه! به سؤالش جواب بده 📘', life: 1.6 }; }
+				if (onHead && (b.type === 'bakhshi' || b.type === 'azizi' || s.lv.restart)) { p.vy = keys.jump ? -7 : -5; p.stompT = 0.35; if (!s.banner || s.banner.life <= 0) s.banner = { t: s.lv.restart ? 'پریدن روی سرور فایده ندارد؛ کلیدها را به ترتیب بزن 🔁' : b.type === 'bakhshi' ? 'با پریدن رو سرش رتبه بالا نمی‌ره! سئو جمع کن 🔑' : 'با پریدن نه! به سؤالش جواب بده 📘', life: 1.6 }; }
 				else if (onHead && (p.vy > 0.4 || (b.vy || 0) < -0.5)) { damageBoss(2); p.vy = keys.jump ? -8 : -6; p.stompT = 0.35; } // no position snap: it could push you through a ceiling
 				else if (onHead || (p.stompT || 0) > 0) { p.vy = Math.min(p.vy, -3); } // just bounce off his head, never a hit
 				else hurt();
@@ -969,8 +982,9 @@ export function mount(stage, api) {
 		addScore(300 * d, b.x + b.w / 2, b.y);
 		if (b.hp <= 0) {
 			b.dead = 2; s.goalOn = true;
+			s.won = 3; s.pressed = true; // boss stages end right here — no DEPLOY button walk
 			addScore(5000, b.x, b.y - 10);
-			s.banner = { t: 'باس شکست خورد! دکمه دیپلوی را بزن 🟥', life: 2.4 };
+			s.banner = { t: s.lv.restart ? 'سرور برگشت! قرعه‌کشی بزرگ برگزار شد 🎉' : 'باس شکست خورد! 🎉', life: 2.6 };
 			quip('boss', true);
 			api.unlock('boss');
 			music.stop();
@@ -1621,7 +1635,7 @@ export function mount(stage, api) {
 	};
 
 	const drawTile = (c, x, y, wd) => {
-		if (c === 'Q') { const px = x * T, py = y * T, blk = s.lv.quiz ? s.lv.quiz.findIndex((q) => x === q || x === q + 1) : -1, first = s.lv.quiz && x === s.lv.quiz[blk]; rr(px, py, T, T, first ? [3, 0, 0, 3] : [0, 3, 3, 0], QUIZ_COL[Math.max(0, blk)], OL, 1.4); R(px + 2, py + 2, T - 4, 2, 'rgba(255,255,255,.35)'); if (!first && blk >= 0) text(['A', 'B', 'C'][blk], px, py + 12, 10, '#fff'); return; }
+		if (c === 'Q') { const px = x * T, py = y * T, blk = s.lv.quiz ? s.lv.quiz.findIndex((q) => x === q || x === q + 1) : -1, first = s.lv.quiz && x === s.lv.quiz[blk]; rr(px, py, T, T, first ? [3, 0, 0, 3] : [0, 3, 3, 0], QUIZ_COL[Math.max(0, blk)], OL, 1.4); R(px + 2, py + 2, T - 4, 2, 'rgba(255,255,255,.35)'); if (!first && blk >= 0) text((s.lv.restart ? ['۱', '۲', '۳'] : ['A', 'B', 'C'])[blk], px, py + 12, 10, '#fff'); return; }
 		const px = x * T;
 		let py = y * T;
 		if (s.parts.some((q) => q.k === 'bump' && q.x === x && q.y === y)) py -= 4;
@@ -1794,6 +1808,12 @@ export function mount(stage, api) {
 				text('شایان', sx, sy - 4, 7, '#fde68a');
 			}
 			ctx.restore();
+		}
+		if (s.lv.restart && s.boss && s.boss.active && s.boss.hp > 0 && s.restart) {
+			const cw = Math.min(view.vw - 16, 230), cx2 = view.vw / 2 - cw / 2;
+			rr(cx2, 54, cw, 22, 8, 'rgba(2,6,23,.8)', 'rgba(147,197,253,.6)', 1);
+			const ord = s.restart.order.map((k, j) => `${j < s.restart.step ? '✓' : ''}${['۱', '۲', '۳'][k]}`).join('  ←  ');
+			text(`🔁 ری‌استارت به ترتیب: ${ord}`, view.vw / 2, 68.5, 8, '#fff');
 		}
 		if (s.boss && s.boss.type === 'azizi' && s.boss.active && s.boss.hp > 0 && s.quiz) {
 			// one compact card under the boss bar: question + the three answers with the colours/letters of their blocks

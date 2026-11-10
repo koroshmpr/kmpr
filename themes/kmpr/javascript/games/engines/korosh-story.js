@@ -19,18 +19,12 @@ export const INTRO = [
 
 // one panel per stage (4 worlds × 3 stages; every 3rd is a boss)
 export const STAGES = [
-	{ cap: 'نیمه‌شب. کوروش سایت جدید کاله را از صفر می‌سازد؛ اول صفحه مسابقه ماست سون.', say: 'اول فرم ثبت‌نام مسابقه.' },
-	{ cap: 'سایت جدید تقریباً آماده است… که ناگهان سایت قبلی خودش برمی‌گردد! حالا دو سایت داریم.', say: 'جدی؟! الان برگشتی؟ 😅', mood: 'shock' },
-	{ cap: 'صبح فردا: دامنه کاله تمام شده؛ درست روز قرعه‌کشی! باگ غول‌پیکر راه سایت را بسته.', say: 'دامنه رو تمدید کنید، این یکی با من!', mood: 'shock' },
-	{ cap: 'روز قرعه‌کشی ماست سون. هجوم مردم شروع شده و سرورها نفس‌نفس می‌زنند.', say: 'چقدر آدم! کش رو روشن کن!', mood: 'shock' },
-	{ cap: 'درخواست‌ها پشت سر هم می‌رسند و تایم‌اوت‌ها همه‌جا می‌دوند.', say: 'فقط باید تا قرعه‌کشی دووم بیاره.' },
-	{ cap: 'سرور اصلی زیر بار هجوم مردم هنگ کرده و همه درخواست‌ها را قورت می‌دهد.', say: 'ری‌استارتت می‌کنم؛ قرعه‌کشی باید برگزار شه!' },
-	{ cap: 'پرونده بعدی: فروشگاه کیف گیلدا. سایت ساخته شد، کلی کار سئو انجام شد و درگاه پرداخت هم گرفتیم.', say: 'همه‌چی آماده‌ست. بیاید خرید کنید!', mood: 'happy' },
-	{ cap: 'چند وقت بعد: مشتری‌ها آمدند… سبد خرید پر شد… و دکمه پرداخت؟ درگاه قطع است!', say: 'درگاه قطعه؟! الان؟!', mood: 'shock' },
-	{ cap: 'هر مشکل درگاه که حل می‌شد، مشکل بعدی سبز می‌شد. حالا وقت نبرد آخر با خود درگاه است.', say: 'امروز این درگاه وصل می‌شه!', mood: 'fire' },
-	{ cap: 'پرونده خانه سرمایه. قیمت دلار و طلا هر ثانیه عوض می‌شود و افزونه قیمت روز نباید یک لحظه قطع شود.', say: 'قیمت‌ها باید زنده بمونن.' },
-	{ cap: 'وبینار تا چند ساعت دیگر شروع می‌شود و لندینگ ثبت‌نامش هنوز بالا نیامده.', say: 'آخرین لندینگ. تمرکز!' },
-	{ cap: 'ارباب ددلاین: پشت همه این شب‌های بی‌خوابی، همیشه یک نفر بود.', say: 'ددلاین یا نه، امشب دیپلوی می‌کنیم!' },
+	{ scene: 'alarm', mood: 'shock', cap: 'برنامه‌نویس‌های کاله یک ادیت روی پلاگین لاگین زده‌اند؛ درخواست‌ها بی‌پایان شده و سایت خوابیده. کوروش و نگار تا ساعت ۱۱ شب در شرکت می‌مانند تا مقصر را پیدا کنند.', say: 'نگار: لاگ‌ها رو ببین… همه‌ش wp-login ـه!' },
+	{ scene: 'desk', tired: 1, mood: 'tired', cap: 'ساعت ۱۱ شب، خانه. با بکاپ و چند فانکشن باگ‌دار از نسخه اول ChatGPT، لندینگ ماست سون باید تا ساعت ۱ روی یک دامنه دیگر بالا بیاید: ۷ عکس از لحظه‌های خاص، امتیاز و کد معرف.', say: 'ChatGPT جان، این بار درست بنویس… 😅' },
+	{ mood: 'shock', cap: 'فردا صبح: دامنه سایتی که قرعه‌کشی رویش است تمام شده! یک ربات دامنه‌ربا هم منتظر است تا آن را بقاپد.', say: 'تمدید! همین الان!' },
+	{ scene: 'bam', mood: 'shock', cap: 'بام تهران، قرعه‌کشی زنده و جمعیت زیاد. کوروش و نگار استرس دارند که سایت قطع شود یا باگی قرعه‌کشی را خراب کند.', say: 'نگار: فقط تا لحظه قرعه‌کشی دووم بیار…' },
+	{ scene: 'akhgari', mood: 'fire', cap: 'ظهر جمعه. آقای اخگری (قدبلند، مثل بابالنگ‌دراز): «قرعه‌کشی کاله داریم؛ ۳۰ تا، توی تالار جشن!» کوروش در اتاق فنی پشت سن است و مجری را نمی‌بیند؛ نگار مثل کارگردان جایی ایستاده که هر دو را ببیند.', say: 'نگار: آماده… الان بزن!' },
+	{ mood: 'shock', cap: 'قرعه‌کشی آخر، بزرگ‌ترین جایزه… و سرور زیر بار هنگ می‌کند! سه کلید ری‌استارت را به ترتیبی که نشان داده می‌شود بزن.', say: 'نه الان!… ری‌استارت!' },
 ];
 
 export const OUTRO = [
@@ -228,6 +222,8 @@ export function drawMaedeh(c, x, by, k, face, mood, t) {
 /** front-facing chibi for the party crowd. o: { skin, hair, style: short|curly|shawl, top, pants, glasses, beard, mood: smile|laugh|shock|meh, clap, name } */
 function person(c, x, by, k, o, t) {
 	c.save(); c.translate(x, by); c.scale(k, k); c.lineJoin = 'round'; c.lineCap = 'round'; c.strokeStyle = OL;
+	const L = o.tall ? 9 : 0; // long legs (Mr. Akhgari, «بابالنگ‌دراز»)
+	if (L) { c.fillStyle = o.pants || '#1f2937'; c.fillRect(-3.1, -1, 2.4, L + 1); c.fillRect(0.7, -1, 2.4, L + 1); c.translate(0, -L); }
 	const jig = o.mood === 'laugh' ? Math.abs(Math.sin(t * 12)) * 1.2 : 0;
 	c.translate(0, -jig);
 	c.fillStyle = o.pants || '#1f2937'; c.fillRect(-3.4, -10, 3, 10); c.fillRect(0.4, -10, 3, 10);
@@ -273,6 +269,7 @@ function person(c, x, by, k, o, t) {
 const CAST = {
 	soldier: { skin: '#d9a07a', hair: '#1c1917', style: 'short', top: '#4d5d3a', pants: '#3f4a2e', name: 'مسئول پمپ' },
 	ostad: { skin: '#e3b38d', hair: '#9ca3af', style: 'short', top: '#1e3a8a', glasses: true, name: 'استاد' },
+	akhgari: { skin: '#e3b38d', hair: '#3f3f46', style: 'short', top: '#1e293b', pants: '#111827', tie: true, glasses: false, tall: true, name: 'آقای اخگری' },
 	shayan2: { skin: '#e3b08a', hair: '#151312', style: 'messy', top: '#1f2937', beard: true, polo: true, name: 'شایان' },
 	hossein: { skin: '#d9a684', hair: '#d1d5db', style: 'bald', top: '#78716c', pants: '#44403c', name: 'حسین' },
 	azizi: { skin: '#e8bf9a', hair: '#9ca3af', style: 'bald', top: '#556b2f', pants: '#3f3f46', glasses: true, goatee: true, name: 'آقای عزیزی' },
@@ -788,6 +785,20 @@ export function drawPanel(c, w, h, panel, t, worlds) {
 			['WP', 'PHP', 'JS', 'SQL', 'CSS'].forEach((b, i) => { const a = t * 1.5 + i * 1.256, x = w * 0.3 + Math.cos(a) * 70, y = h * 0.45 + Math.sin(a) * 34; c.fillStyle = '#fff'; c.strokeStyle = OL; c.lineWidth = 1.5; c.beginPath(); c.roundRect(x - 14, y - 8, 28, 16, 4); c.fill(); c.stroke(); c.fillStyle = '#047857'; c.font = `900 8px ${FF}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(b, x, y + 0.5); });
 			sfx(c, 'لول آپ!', w * 0.74, h * 0.3, 22, -0.1, '#10b981', t - 0.3);
 		}
+	} else if (sc === 'bam') {
+		const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#0b1033'); g.addColorStop(1, '#4c1d95'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+		for (let i = 0; i < 40; i++) { c.fillStyle = '#fde68a'; c.fillRect((i * 37) % w, h * 0.42 + ((i * 53) % 30), 2, 2); }
+		c.fillStyle = '#1e1b4b'; for (let i = 0; i < 22; i++) { const bh = 20 + ((i * 41) % 40); c.fillRect(i * 16, h * 0.62 - bh, 14, bh); }
+		c.fillStyle = '#1e293b'; c.fillRect(0, h * 0.62, w, h);
+		for (let i = 0; i < 30; i++) { const x = (i * 11) % w, y = h * 0.86 + Math.sin(i + t * 4) * 2; c.fillStyle = i % 3 ? '#334155' : '#475569'; c.beginPath(); c.arc(x, y, 6, 0, 7); c.fill(); if (i % 4 === 0) { c.fillStyle = '#93c5fd'; c.fillRect(x - 1.5, y - 14, 3, 5); } }
+		heroAt(w * 0.4, h * 0.78, 'stand', 1, 1.6, 0, 0); drawPerson(c, w * 0.55, h * 0.78, 1.5, 'negar', { mood: 'shock' }, t);
+		c.fillStyle = '#f8fafc'; c.strokeStyle = OL; c.lineWidth = 2; c.beginPath(); c.roundRect(w * 0.66, h * 0.2, w * 0.28, h * 0.3, 4); c.fill(); c.stroke(); c.fillStyle = '#ef4444'; c.beginPath(); c.arc(w * 0.69, h * 0.25, 3, 0, 7); c.fill(); c.fillStyle = OL; c.font = `900 8px ${FF}`; c.textAlign = 'center'; c.fillText('LIVE · قرعه‌کشی', w * 0.8, h * 0.36);
+		sfx(c, 'هــــو!', w * 0.2, h * 0.3, 16, -0.1, '#fde047', t - 0.3);
+	} else if (sc === 'akhgari') {
+		hall(c, w, h, t);
+		drawPerson(c, w * 0.7, h * 0.66, 1.6, 'akhgari', { mood: 'smile' }, t);
+		heroAt(w * 0.3, h * 0.66, 'stand', 1, 1.6, 0, 0.3); drawPerson(c, w * 0.45, h * 0.66, 1.4, 'negar', { mood: 'shock' }, t);
+		sfx(c, '۳۰ قرعه‌کشی!', w * 0.7, h * 0.2, 16, 0.08, '#fde047', t - 0.4);
 	} else if (sc === 'traffic') {
 		shake(2, 9);
 		const wd = worlds[8] || worlds[4];
