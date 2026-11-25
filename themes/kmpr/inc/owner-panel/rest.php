@@ -190,6 +190,10 @@ add_action('rest_api_init', function () {
     $r('settings/pwa-reset', 'POST', 'kmpr_panel_rest_pwa_reset');
     $r('settings/telegram-test', 'POST', 'kmpr_panel_rest_tg_test');
     $r('settings/llms', 'POST', 'kmpr_panel_rest_llms');
+    $r('auth', 'GET', 'kmpr_panel_rest_auth');
+    $r('auth', 'POST', 'kmpr_panel_rest_auth_update', array('days' => array('type' => 'integer', 'enum' => array(0, 7, 14, 30, 45, 60, 90, 180), 'required' => true)));
+    $r('auth/devices/(?P<id>[a-f0-9]{16})', 'DELETE', 'kmpr_panel_rest_device_revoke');
+    $r('auth/devices/others', 'POST', 'kmpr_panel_rest_device_revoke_others');
 });
 
 /** No caching / indexing of any panel response. */
@@ -1098,4 +1102,36 @@ function kmpr_panel_rest_llms()
     }
     $GLOBALS['kmpr_llms']->rebuild();
     return kmpr_panel_settings_data();
+}
+
+/* =========================================================================
+ * Sign-in: session length + trusted devices (inc/owner-panel/auth.php)
+ * ====================================================================== */
+
+function kmpr_panel_rest_auth()
+{
+    $uid = get_current_user_id();
+    return array('days' => kmpr_panel_session_days(), 'devices' => kmpr_panel_devices_public($uid));
+}
+
+function kmpr_panel_rest_auth_update(WP_REST_Request $req)
+{
+    update_option(KMPR_PANEL_DAYS_OPT, (int) $req['days'], true);
+    return kmpr_panel_rest_auth();
+}
+
+function kmpr_panel_rest_device_revoke(WP_REST_Request $req)
+{
+    kmpr_panel_dev_revoke(get_current_user_id(), (string) $req['id']);
+    return kmpr_panel_rest_auth();
+}
+
+function kmpr_panel_rest_device_revoke_others()
+{
+    $uid = get_current_user_id();
+    // REST requests don't carry the path-scoped device cookie, so keep the device tagged on this session.
+    $s   = WP_Session_Tokens::get_instance($uid)->get(wp_get_session_token());
+    kmpr_panel_dev_revoke_all($uid, (string) ($s['kmpr_dev'] ?? ''));
+    WP_Session_Tokens::get_instance($uid)->destroy_others(wp_get_session_token());
+    return kmpr_panel_rest_auth();
 }

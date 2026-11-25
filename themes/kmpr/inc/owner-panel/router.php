@@ -6,7 +6,8 @@
  *   /panel/                       SPA shell (any /panel/<screen>/… path renders the same shell)
  *   /panel/manifest.webmanifest   PWA manifest (scope /panel/)
  *   /panel/sw.js                  service worker (static assets only — API data is never cached)
- *   /panel/nonce                  fresh wp_rest nonce for long-lived tabs / installed app
+ *   /panel/nonce                  fresh wp_rest nonce for long-lived tabs / installed app (401 JSON when signed out)
+ *   /panel/login, /panel/logout   in-panel sign-in (trusted devices / installed app only) and sign-out
  *
  * Never indexed (X-Robots-Tag + meta robots), never counted as a view (exits before template_redirect),
  * not a post so it never reaches sitemaps / llms.txt; speculation rules exclude it in admin.php.
@@ -27,10 +28,19 @@ function kmpr_panel_route()
     }
     $path = (string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
     $base = kmpr_panel_base();
-    if (strpos($path, rtrim($base, '/')) === 0 && !kmpr_panel_can()) {
-        // Not an admin (or logged out): behave exactly like a non-existent URL (theme 404).
-        // Never redirect to the login page — that would reveal the hidden login URL.
-        return;
+    $door = false;
+    if (strpos($path, rtrim($base, '/')) === 0) {
+        // Trusted device: restore a dropped WP login / slide the device expiry (inc/owner-panel/auth.php).
+        kmpr_panel_dev_sync();
+        if (!kmpr_panel_can()) {
+            // Logged-out owner on a known device / the installed app (door key) → in-panel login.
+            // Anyone else: behave exactly like a non-existent URL (theme 404); never redirect to the
+            // login page — that would reveal the hidden login URL.
+            $door = !is_user_logged_in() && kmpr_panel_door_open();
+            if (!$door) {
+                return;
+            }
+        }
     }
     if ($path === rtrim($base, '/')) {
         wp_safe_redirect($base, 301);
@@ -79,11 +89,28 @@ function kmpr_panel_route()
         header('Content-Type: application/json; charset=utf-8');
         if (!kmpr_panel_can()) {
             status_header(401);
-            echo '{"ok":false}';
+            echo '{"ok":false,"code":"logged_out"}';
             exit;
         }
         status_header(200);
         echo wp_json_encode(array('ok' => true, 'nonce' => wp_create_nonce('wp_rest')));
+        exit;
+    }
+
+    if ($rest === 'logout') {
+        kmpr_panel_handle_logout();
+    }
+
+    if ($door) {
+        if ($rest === 'login') {
+            kmpr_panel_handle_login();
+        }
+        kmpr_panel_login_page();
+        exit;
+    }
+
+    if ($rest === 'login') {
+        wp_safe_redirect($base, 303); // already signed in
         exit;
     }
 
@@ -94,6 +121,7 @@ function kmpr_panel_route()
         exit;
     }
 
+    kmpr_panel_set_hint(); // lets this browser/app show the in-panel login after a sign-out
     status_header(200);
     header('Content-Type: text/html; charset=utf-8');
     kmpr_panel_shell();
@@ -128,7 +156,7 @@ function kmpr_panel_manifest()
         'description'      => 'مدیریت گیم‌سنتر، درخواست‌ها و تنظیمات kmpr.ir',
         'lang'             => 'fa-IR',
         'dir'              => 'rtl',
-        'start_url'        => $base,
+        'start_url'        => $base . '?k=' . kmpr_panel_door_key(), // opens the in-app login if signed out
         'scope'            => $base,
         'display'          => 'standalone',
         'orientation'      => 'any',
@@ -159,7 +187,7 @@ function kmpr_panel_boot()
         'sw'       => kmpr_panel_url('sw.js'),
         'site'     => home_url('/'),
         'admin'    => admin_url(),
-        'logout'   => wp_logout_url(kmpr_panel_url()),
+        'logout'   => kmpr_panel_logout_url(),
         'user'     => $u->display_name,
         'avatar'   => get_avatar_url($u->ID, array('size' => 64)),
         'badges'   => kmpr_panel_badges(),
@@ -184,7 +212,7 @@ function kmpr_panel_shell()
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="پنل KMPR">
 <title>پنل مدیریت</title>
-<link rel="manifest" href="<?= esc_url(kmpr_panel_url('manifest.webmanifest')); ?>">
+<link rel="manifest" href="<?= esc_url(kmpr_panel_url('manifest.webmanifest')); ?>" crossorigin="use-credentials">
 <link rel="icon" href="<?= esc_url(get_template_directory_uri() . '/public/images/panel/icon.svg'); ?>" type="image/svg+xml">
 <link rel="apple-touch-icon" href="<?= esc_url(get_template_directory_uri() . '/public/images/panel/apple-touch-icon.png'); ?>">
 <link rel="preload" href="<?= esc_url($font . 'Yekan-Bakh-FaNum-Regular.woff2'); ?>" as="font" type="font/woff2" crossorigin>

@@ -258,6 +258,9 @@ document.addEventListener('visibilitychange', () => !document.hidden && pollBadg
 })();
 
 /* ---------------- PWA ---------------- */
+// The installed app starts at /panel/?k=<door key>; keep the key out of the address bar / history.
+if (/[?&]k=/.test(location.search)) history.replaceState(history.state, '', location.pathname);
+
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
 	navigator.serviceWorker.register(boot.sw, { scope: boot.base }).catch(() => null);
 }

@@ -3,6 +3,7 @@
  * Owner panel — a mobile-first, app-like control panel at /panel/ (front-end route, not wp-admin).
  *
  *  - inc/owner-panel/helpers.php  shared formatting + tiny daily counters (online matches)
+ *  - inc/owner-panel/auth.php    long-lived per-device sign-in for admins, in-panel login/logout
  *  - inc/owner-panel/router.php   init-level router: /panel/* shell, manifest, service worker, nonce refresh
  *  - inc/owner-panel/rest.php     REST API kmpr/v1/panel/* (cookie auth + wp_rest nonce, manage_options)
  *  - inc/owner-panel/admin.php    admin-bar link, dashboard widget, speculation-rules exclusion
@@ -24,6 +25,7 @@ define('KMPR_PANEL_CAP', 'manage_options');
 define('KMPR_PANEL_SLUG', 'panel');
 
 require_once __DIR__ . '/owner-panel/helpers.php';
+require_once __DIR__ . '/owner-panel/auth.php';
 require_once __DIR__ . '/owner-panel/router.php';
 require_once __DIR__ . '/owner-panel/rest.php';
 require_once __DIR__ . '/owner-panel/admin.php';

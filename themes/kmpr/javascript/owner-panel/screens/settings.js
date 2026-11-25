@@ -1,6 +1,6 @@
 /**
  * تنظیمات — game storage (mode / keep-top-N / snapshot TTL), cleanup-now, play nudge, arcade install
- * counters, Telegram test, llms.txt regeneration, links to wp-admin.
+ * counters, sign-in length + trusted devices, Telegram test, llms.txt regeneration, links to wp-admin.
  */
 import { h, fill, icon, num, bytes, ago, sw, toast, confirmBox, skeleton, errorBox, chips, field, linkBtn, latin } from '../ui.js';
 import { api } from '../api.js';
@@ -56,6 +56,69 @@ export default {
 		drawUsage();
 		drawPwa();
 		drawLlms();
+
+		// Sign-in: session length + trusted devices (inc/owner-panel/auth.php). Degrades to a note if unavailable.
+		const authBox = h('div');
+		let auth = await api('auth').catch(() => null);
+		function drawAuth() {
+			if (!auth) {
+				fill(authBox, h('p', { class: 'op-muted' }, 'اطلاعات ورود در دسترس نیست.'));
+				return;
+			}
+			const days = chips(
+				[0, 14, 30, 45, 60, 90].map((v) => ({ value: v, label: v ? num(v) + ' روز' : 'خاموش' })),
+				auth.days,
+				async (v) => {
+					try {
+						auth = await api('auth', { method: 'POST', body: { days: v } });
+						toast(v ? 'ماندگاری ورود: ' + num(v) + ' روز' : 'ورود ماندگار خاموش شد');
+					} catch (e) {
+						toast(e.message, { tone: 'err' });
+					}
+					drawAuth();
+				},
+				'مدت ماندگاری ورود',
+			);
+			const revoke = (dv) => {
+				const b = h('button', { type: 'button', class: 'op-btn is-ghost', 'aria-label': 'باطل کردن ' + dv.label }, icon('trash', 18), 'باطل کردن');
+				b.addEventListener('click', async () => {
+					const txt = dv.current ? 'این همین دستگاه است؛ بعد از باطل کردن، از پنل خارج می‌شوید.' : 'این دستگاه دیگر به‌صورت خودکار وارد پنل نمی‌شود و نشست آن بسته می‌شود.';
+					if (!(await confirmBox('باطل کردن دستگاه', txt, { ok: 'باطل کن', danger: true }))) return;
+					try {
+						auth = await api('auth/devices/' + dv.id, { method: 'DELETE' });
+						if (dv.current) {
+							location.href = ctx.boot.logout;
+							return;
+						}
+						toast('دستگاه باطل شد');
+						drawAuth();
+					} catch (e) {
+						toast(e.message, { tone: 'err' });
+					}
+				});
+				return b;
+			};
+			fill(
+				authBox,
+				h('div', { class: 'op-field' }, h('span', { class: 'op-field__label' }, 'ماندن در حساب روی هر دستگاه'), days, h('p', { class: 'op-field__hint' }, 'از آخرین باز کردن پنل حساب می‌شود (لغزان). فقط برای مدیر؛ کاربران سایت را تغییر نمی‌دهد.')),
+				auth.devices.length
+					? h(
+							'ul',
+							{ class: 'op-mini' },
+							auth.devices.map((dv) =>
+								h(
+									'li',
+									null,
+									h('span', { class: 'op-mini__t' }, dv.label, dv.current ? h('span', { class: 'op-tag is-good' }, ' همین دستگاه') : null),
+									h('span', { class: 'op-mini__v op-muted' }, ago(dv.used.ts), dv.ip ? ' · ' : '', dv.ip ? h('bdi', { dir: 'ltr' }, dv.ip) : null),
+									revoke(dv),
+								),
+							),
+						)
+					: h('p', { class: 'op-muted' }, 'هنوز دستگاهی ثبت نشده است.'),
+			);
+		}
+		drawAuth();
 
 		// Storage form.
 		let mode = d.storage.mode;
@@ -157,6 +220,18 @@ export default {
 						d = await api('settings/pwa-reset', { method: 'POST' });
 						drawPwa();
 						toast('شمارنده‌ها صفر شد');
+					})),
+				),
+				h(
+					'section',
+					{ class: 'op-card' },
+					h('h2', { class: 'op-card__title' }, 'ورود و دستگاه‌ها'),
+					authBox,
+					h('div', { class: 'op-actions' }, action('خروج از همه دستگاه‌های دیگر', 'logout', async () => {
+						if (!(await confirmBox('خروج از دستگاه‌های دیگر', 'همه دستگاه‌ها و نشست‌های دیگر باطل می‌شوند؛ این دستگاه وارد می‌ماند.', { ok: 'خروج بده', danger: true }))) return;
+						auth = await api('auth/devices/others', { method: 'POST' });
+						drawAuth();
+						toast('دستگاه‌های دیگر خارج شدند');
 					})),
 				),
 				h(
