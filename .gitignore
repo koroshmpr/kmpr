@@ -18,3 +18,8 @@
 /themes/index.php
 
 .vscode/
+
+# QC tool output and deps
+/tools/*/out/
+/tools/*/node_modules
+/tools/*/new-games/out/
