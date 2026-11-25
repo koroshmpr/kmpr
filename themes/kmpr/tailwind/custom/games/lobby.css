@@ -95,7 +95,8 @@
 .gc-pane[hidden] { display: none; }
 
 /* ---- tab switch: soft «warp» (View Transitions) ---- */
-.gc-pane { view-transition-name: gc-pane; }
+/* name only while a tab switch runs (hub.js adds html.gc-vt): a permanent name makes the pane a backdrop root and kills the glass blur of the sticky chips */
+html.gc-vt .gc-pane { view-transition-name: gc-pane; }
 .gc-tabs { view-transition-name: gc-tabs; }
 ::view-transition-group(gc-pane) { animation-duration: 0.42s; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
 ::view-transition-old(gc-pane) { animation: gc-out 0.24s cubic-bezier(0.4, 0, 1, 1) both; }

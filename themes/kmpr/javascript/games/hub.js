@@ -579,8 +579,12 @@ function tabs() {
 		};
 		if (document.startViewTransition) {
 			busy = true;
+			document.documentElement.classList.add('gc-vt');
 			const vt = document.startViewTransition(run);
-			vt.finished.finally(() => (busy = false));
+			vt.finished.finally(() => {
+				busy = false;
+				document.documentElement.classList.remove('gc-vt');
+			});
 		} else {
 			run();
 			const pane = panes.find((p) => p.dataset.pane === name);
@@ -620,6 +624,12 @@ function tabs() {
 	document.querySelectorAll('[data-gh-tab]').forEach((a) =>
 		a.addEventListener('click', (e) => {
 			const k = a.dataset.ghTab;
+			if (k === 'profile' && phone()) {
+				// Phones: the HUD lives in «رتبه‌ها»; the profile tab opens the editor right away.
+				e.preventDefault();
+				$('[data-profile-edit]')?.click();
+				return;
+			}
 			if (!panes.some((p) => p.dataset.pane === k)) return;
 			e.preventDefault();
 			history.replaceState(null, '', `#${k}`);
@@ -629,6 +639,76 @@ function tabs() {
 	window.addEventListener('resize', moveInk);
 	fromHash();
 	moveInk();
+	if (location.hash === '#profile' && phone()) {
+		history.replaceState(null, '', '#games');
+		setTimeout(() => $('[data-profile-edit]')?.click(), 300);
+	}
+}
+
+const phone = () => window.matchMedia('(max-width: 1023.98px)').matches;
+
+/* ---------------- phones: one game grid filtered by the sticky genre chips (no reload, #cat-<slug>) ---------------- */
+function gridFilter() {
+	const all = $('[data-gc-all]');
+	const bar = $('[data-gc-chips]');
+	if (!all || !bar) return;
+	const items = $$('[data-cats]', all);
+	const wrap = $('#all-games');
+	const count = $('[data-gc-all-count]', all);
+	const title = $('[data-gc-all-title]', all);
+	const empty = $('[data-gc-all-empty]', all);
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const pills = $$('[data-gc-filter]', bar);
+	if (!pills.length) return;
+	const apply = (cat, animate) => {
+		const pill = pills.find((p) => p.dataset.gcFilter === cat) || pills[0];
+		cat = pill.dataset.gcFilter;
+		let n = 0;
+		items.forEach((li) => {
+			const ok = cat === 'all' || li.dataset.cats.split(' ').includes(cat);
+			li.hidden = !ok;
+			li.classList.remove('is-in');
+			if (ok) {
+				if (!reduced && animate) {
+					li.style.setProperty('--i', String(Math.min(n, 12)));
+					void li.offsetWidth;
+					li.classList.add('is-in');
+				}
+				n++;
+			}
+		});
+		pills.forEach((p) => {
+			const on = p === pill;
+			p.classList.toggle('is-on', on);
+			if (on) p.setAttribute('aria-current', 'true');
+			else p.removeAttribute('aria-current');
+		});
+		if (count) count.textContent = fa(n);
+		if (title) title.textContent = cat === 'all' ? 'همه بازی‌ها' : pill.dataset.gcName || pill.textContent.trim();
+		if (empty) empty.hidden = n > 0;
+		if (wrap) wrap.classList.toggle('is-filtered', cat !== 'all');
+		const track = pill.closest('.gc-chips');
+		if (track) {
+			const tr = track.getBoundingClientRect();
+			const pr = pill.getBoundingClientRect();
+			track.scrollBy({ left: pr.left + pr.width / 2 - (tr.left + tr.width / 2), behavior: reduced || !animate ? 'instant' : 'smooth' });
+		}
+		if (animate) {
+			const head = bar.getBoundingClientRect().bottom;
+			const top = all.getBoundingClientRect().top;
+			if (top < head || top > window.innerHeight * 0.55) window.scrollTo({ top: window.scrollY + top - head - 6, behavior: reduced ? 'instant' : 'smooth' });
+		}
+	};
+	bar.addEventListener('click', (e) => {
+		const p = e.target.closest('[data-gc-filter]');
+		if (!p || !phone()) return; // desktop keeps the real genre pages
+		e.preventDefault();
+		const cat = p.dataset.gcFilter;
+		history.replaceState(null, '', cat === 'all' ? '#games' : `#cat-${cat}`);
+		apply(cat, true);
+	});
+	const m = /^#cat-(.+)$/.exec(location.hash);
+	if (m && phone()) apply(decodeURIComponent(m[1]), false);
 }
 
 /* ---------------- presence list (data comes from pwa.js heartbeats) ---------------- */
@@ -689,6 +769,7 @@ export function initHub() {
 	presence();
 	heroArt();
 	quickPlay();
+	gridFilter();
 	window.addEventListener('kmpr:profile-changed', () => renderAll());
 	sync();
 }

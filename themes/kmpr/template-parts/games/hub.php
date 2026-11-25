@@ -38,16 +38,16 @@ $in_terms = function ($id, $slugs) {
 };
 $rails = array();
 if ($term) {
-    $rails[] = array('id' => 'rail-term', 'title' => $term->name, 'text' => $term->description, 'ids' => $ids);
+    $rails[] = array('kind' => 'term', 'id' => 'rail-term', 'title' => $term->name, 'text' => $term->description, 'ids' => $ids);
 } else {
     $by_date = $ids;
     usort($by_date, fn($a, $b) => strcmp(get_post_field('post_date', $b), get_post_field('post_date', $a)));
-    $rails[] = array('id' => 'rail-new', 'title' => '🆕 تازه‌ها', 'text' => 'جدیدترین بازی‌های گیم‌سنتر', 'ids' => array_slice($by_date, 0, 10));
+    $rails[] = array('kind' => 'new', 'id' => 'rail-new', 'title' => '🆕 تازه‌ها', 'text' => 'جدیدترین بازی‌های گیم‌سنتر', 'ids' => array_slice($by_date, 0, 10));
     $by_plays = $ids;
     usort($by_plays, fn($a, $b) => ($stats['games'][$b]['plays'] ?? 0) <=> ($stats['games'][$a]['plays'] ?? 0));
-    $rails[] = array('id' => 'rail-hot', 'title' => '🔥 محبوب‌ترین‌ها', 'text' => 'بیشترین دست بازی‌شده', 'ids' => array_slice($by_plays, 0, 10));
+    $rails[] = array('kind' => 'hot', 'id' => 'rail-hot', 'title' => '🔥 محبوب‌ترین‌ها', 'text' => 'بیشترین دست بازی‌شده', 'ids' => array_slice($by_plays, 0, 10));
     $online_ids = array_values(array_filter($ids, fn($id) => !empty($engines[(string) kmpr_game_meta($id, 'game_engine')]['online'])));
-    $rails[]    = array('id' => 'rail-online', 'title' => 'آنلاین با دوستان', 'text' => 'مقابل هوش مصنوعی، دو نفره یا با لینک دعوت', 'ids' => $online_ids, 'online' => true);
+    $rails[]    = array('kind' => 'online', 'id' => 'rail-online', 'title' => 'آنلاین با دوستان', 'text' => 'مقابل هوش مصنوعی، دو نفره یا با لینک دعوت', 'ids' => $online_ids, 'online' => true);
     foreach ((array) $genres as $gt) {
         if (!is_object($gt)) {
             continue;
@@ -57,13 +57,17 @@ if ($term) {
             continue; // same games as «آنلاین با دوستان» — don't show the row twice
         }
         if ($gids) {
-            $rails[] = array('id' => 'rail-' . $gt->term_id, 'title' => $gt->name, 'text' => $gt->description, 'ids' => $gids);
+            $rails[] = array('kind' => 'genre', 'id' => 'rail-' . $gt->term_id, 'title' => $gt->name, 'text' => $gt->description, 'ids' => $gids);
         }
     }
 }
 
 $catalog = array();
+$cats    = array(); // id => 'slug slug [online]' (phone grid filter)
 foreach ($ids as $id) {
+    $t          = wp_get_post_terms($id, 'game_category', array('fields' => 'slugs'));
+    $cats[$id]  = implode(' ', is_wp_error($t) ? array() : $t);
+    $cats[$id] .= !empty($engines[(string) kmpr_game_meta($id, 'game_engine')]['online']) ? ' online' : '';
     $d         = kmpr_game_data($id, 'medium_large');
     $catalog[] = array('id' => $id, 'engine' => $d['engine'], 'title' => $d['title'], 'url' => $d['url'], 'cover' => $d['cover']['url'] ?? '', 'accent' => $d['accent_hex'], 'genre' => $d['genre'], 'online' => !empty($engines[$d['engine']]['online']), 'icon' => kmpr_game_icon_svg($d['engine']));
 }
@@ -83,7 +87,7 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
     </div>
 
     <div class="container mx-auto px-4 sm:px-6 pt-6 lg:pt-8">
-        <nav aria-label="مسیر صفحه" class="mb-4">
+        <nav aria-label="مسیر صفحه" class="gc-crumbs mb-4">
             <ol class="flex flex-wrap items-center gap-2 text-sm text-slate-400">
                 <li><a href="<?= esc_url(home_url('/')); ?>" class="hover:text-secondary">خانه</a></li>
                 <li aria-hidden="true">/</li>
@@ -229,11 +233,14 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
         <?php endif; ?>
 
         <?php if ($genres && !is_wp_error($genres)) : ?>
-            <nav aria-label="ژانرها" class="mt-8 -mx-4 px-4 overflow-x-auto gc-noscroll">
-                <ul class="flex gap-2 w-max">
-                    <li><a href="<?= esc_url(get_post_type_archive_link('game')); ?>" class="gc-pill<?= !$term ? ' is-on' : ''; ?>"<?= !$term ? ' aria-current="page"' : ''; ?>>همه بازی‌ها</a></li>
+            <nav aria-label="ژانرها" class="gc-chipbar mt-8" data-gc-chips>
+                <ul class="gc-chips gc-noscroll">
+                    <li><a href="<?= esc_url(get_post_type_archive_link('game')); ?>" class="gc-pill<?= !$term ? ' is-on' : ''; ?>"<?= !$term ? ' aria-current="page" data-gc-filter="all"' : ''; ?>>همه<span class="gc-pill__long">بازی‌ها</span></a></li>
+                    <?php if (!$term && !empty($online_ids)) : ?>
+                        <li class="lg:hidden"><a href="#cat-online" class="gc-pill" data-gc-filter="online" data-gc-name="آنلاین با دوستان"><span class="size-1.5 rounded-full bg-emerald-400 shrink-0" aria-hidden="true"></span>آنلاین</a></li>
+                    <?php endif; ?>
                     <?php foreach ($genres as $gt) : $on = $term && $term->term_id === $gt->term_id; ?>
-                        <li><a href="<?= esc_url(get_term_link($gt)); ?>" class="gc-pill<?= $on ? ' is-on' : ''; ?>"<?= $on ? ' aria-current="page"' : ''; ?>><?= esc_html($gt->name); ?> <span class="opacity-70"><?= esc_html(kmpr_fa_num($gt->count)); ?></span></a></li>
+                        <li><a href="<?= esc_url(get_term_link($gt)); ?>" class="gc-pill<?= $on ? ' is-on' : ''; ?>"<?= $on ? ' aria-current="page"' : ''; ?><?= !$term ? ' data-gc-filter="' . esc_attr($gt->slug) . '" data-gc-name="' . esc_attr($gt->name) . '"' : ''; ?>><?= esc_html($gt->name); ?> <span class="gc-pill__n"><?= esc_html(kmpr_fa_num($gt->count)); ?></span></a></li>
                     <?php endforeach; ?>
                 </ul>
             </nav>
@@ -247,6 +254,7 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                         </div>
                         <ul class="gc-rail__track gc-noscroll" data-continue></ul>
                     </section>
+                    <script>try{var d=JSON.parse(localStorage.getItem('kmpr_arcade_v1')||'{}');if(d&&d.games&&Object.keys(d.games).some(function(k){return d.games[k]&&d.games[k].at;}))document.querySelector('[data-continue-rail]').hidden=false;}catch(e){}</script>
                 <?php endif; ?>
 
                 <?php foreach ($rails as $ri => $rail) :
@@ -256,7 +264,7 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                     if ($ri === 3) {
                         do_action('kmpr_games_hub_slot', 'after_hero', $term); // pass card after the first rows, not before the games
                     } ?>
-                    <section class="gc-rail" aria-labelledby="<?= esc_attr($rail['id']); ?>-title" data-gc-rail>
+                    <section class="gc-rail gc-rail--<?= esc_attr($rail['kind']); ?>" aria-labelledby="<?= esc_attr($rail['id']); ?>-title" data-gc-rail>
                         <div class="gc-rail__head">
                             <div>
                                 <h2 id="<?= esc_attr($rail['id']); ?>-title" class="gc-rail__title">
@@ -277,6 +285,24 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                         </ul>
                     </section>
                 <?php endforeach; ?>
+
+                <?php if ($ids) : ?>
+                    <section class="gc-all" aria-labelledby="gc-all-title" data-gc-all>
+                        <h2 id="gc-all-title" class="gc-all__title"><span data-gc-all-title><?= esc_html($term ? $term->name : 'همه بازی‌ها'); ?></span> <span class="gc-rail__count" data-gc-all-count><?= esc_html(kmpr_fa_num(count($ids))); ?></span></h2>
+                        <ul class="gc-grid">
+                            <?php foreach ($catalog as $c) : ?>
+                                <li data-cats="<?= esc_attr(trim($cats[$c['id']])); ?>">
+                                    <a href="<?= esc_url($c['url']); ?>" class="gc-app" style="--accent: <?= esc_attr($c['accent']); ?>">
+                                        <span class="gc-app__ic"><?= $c['icon']; // phpcs:ignore ?><?php if ($c['online']) : ?><i class="gc-app__live" aria-hidden="true"></i><?php endif; ?></span>
+                                        <span class="gc-app__t"><?= esc_html($c['title']); ?></span>
+                                        <span class="gc-app__best" data-best-wrap hidden>★ <span data-game-best="<?= esc_attr($c['engine']); ?>"></span></span>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <p class="gc-all__empty" data-gc-all-empty hidden>بازی‌ای در این دسته نیست.</p>
+                    </section>
+                <?php endif; ?>
 
                 <?php if (!$ids) : ?>
                     <p class="text-center text-slate-300 py-16 rounded-3xl border border-dashed border-white/10">هنوز بازی‌ای در این بخش منتشر نشده است.</p>
@@ -389,8 +415,13 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
     <?php endif; ?>
 
     <!-- CTA -->
-    <section class="container mx-auto px-4 sm:px-6 py-16">
-        <div class="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/60 p-8 sm:p-12 text-center">
+    <section class="gc-cta container mx-auto px-4 sm:px-6 py-16">
+        <a href="<?= esc_url(kmpr_request_url()); ?>" class="gc-cta__line">
+            <span class="gc-cta__ic" aria-hidden="true"><svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5.5A1.5 1.5 0 0 1 9.5 4h5A1.5 1.5 0 0 1 16 5.5V7M3 12.5h18"/></svg></span>
+            <span class="gc-cta__txt"><b>برای کسب‌وکارها:</b> بازی و ابزار تعاملی سفارشی</span>
+            <svg width="16" height="16" class="shrink-0 gc-cta__arr" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.8 5.2a.75.75 0 0 1 0 1.06L9.06 10l3.74 3.74a.75.75 0 1 1-1.06 1.06l-4.27-4.27a.75.75 0 0 1 0-1.06l4.27-4.27a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg>
+        </a>
+        <div class="gc-cta__card relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/60 p-8 sm:p-12 text-center">
             <div class="aurora w-[26rem] h-[26rem] -top-40 start-1/2 bg-secondary/20" aria-hidden="true"></div>
             <h2 class="relative text-2xl sm:text-4xl font-black text-white leading-relaxed"><?= esc_html(kmpr_game_opt('ga_cta_title')); ?></h2>
             <p class="relative mt-4 max-w-2xl mx-auto text-slate-300 leading-8"><?= esc_html(kmpr_game_opt('ga_cta_text')); ?></p>

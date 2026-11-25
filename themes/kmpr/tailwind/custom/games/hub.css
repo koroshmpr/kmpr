@@ -798,37 +798,67 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-/* mobile dock */
+/* mobile dock — frosted-glass pill like the site tab bar (no opacity/filter/will-change here: it would kill the blur) */
 .gdock {
 	position: fixed;
-	inset-inline: 0.75rem;
-	bottom: calc(0.75rem + env(safe-area-inset-bottom));
+	inset-inline: 1rem;
+	bottom: max(0.75rem, env(safe-area-inset-bottom));
 	z-index: 60;
+	max-width: 24rem;
+	height: 3.6rem;
+	margin-inline: auto;
 	display: grid;
 	grid-auto-flow: column;
 	grid-auto-columns: 1fr;
-	padding: 0.35rem;
-	border-radius: 1.4rem;
-	background: rgb(15 23 42 / 0.88);
-	backdrop-filter: blur(16px);
-	border: 1px solid rgb(255 255 255 / 0.1);
-	box-shadow: 0 20px 40px -10px rgb(0 0 0 / 0.8);
+	padding: 0 0.3rem;
+	border-radius: 999px;
+	background: rgb(15 23 42 / 0.62);
+	border: 1px solid rgb(255 255 255 / 0.09);
+	box-shadow: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 10px 30px -12px rgb(0 0 0 / 0.7);
+	-webkit-backdrop-filter: blur(20px) saturate(160%);
+	backdrop-filter: blur(20px) saturate(160%);
+	transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+	animation: gdock-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-.gdock a {
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	.gdock { background: rgb(15 23 42 / 0.96); }
+}
+@keyframes gdock-in { from { translate: 0 24px; } }
+.gdock.is-away { transform: translateY(calc(100% + 1.25rem + env(safe-area-inset-bottom))); }
+.gdock__tab {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 0.15rem;
-	min-height: 3.25rem;
-	border-radius: 1rem;
-	font-size: 0.75rem;
-	font-weight: 800;
-	color: #cbd5e1;
+	gap: 3px;
+	min-height: 2.75rem;
+	color: rgb(148 163 184);
+	-webkit-tap-highlight-color: transparent;
+	transition: color 0.25s ease;
 }
-.gdock a[aria-current='page'] {
-	color: #f59e0b;
-	background: rgb(245 158 11 / 0.1);
+.gdock__ic { display: block; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.gdock__tab:active .gdock__ic { transform: scale(0.84); }
+.gdock__t { font-size: 10px; font-weight: 700; line-height: 1; letter-spacing: -0.01em; }
+.gdock__tab[aria-current='page'] { color: #fff; }
+.gdock__tab[aria-current='page'] .gdock__t { color: #f59e0b; }
+.gdock__tab[aria-current='page']::before {
+	content: '';
+	position: absolute;
+	top: 5px;
+	left: 50%;
+	width: 16px;
+	height: 2px;
+	margin-left: -8px;
+	border-radius: 2px;
+	background: #f59e0b;
+	animation: gdock-ind 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes gdock-ind { from { transform: scaleX(0); } }
+.gdock__tab:focus-visible { outline: 2px solid #f59e0b; outline-offset: -4px; border-radius: 999px; }
+@media (prefers-reduced-motion: reduce) {
+	.gdock, .gdock__tab[aria-current='page']::before { animation: none; }
+	.gdock, .gdock__ic { transition: none; }
 }
 @media (min-width: 1024px) {
 	.gdock {

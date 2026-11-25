@@ -1,0 +1,297 @@
+/* ==========================================================================
+   Game Center hub on phones (< 1024px): compact «game app» layout
+   spotlight → «الان چی بازی کنم؟» row → sticky genre chips → continue / new rails → ONE app-icon grid
+   (markup: template-parts/games/hub.php · filter: hub.js gridFilter()). Desktop keeps the rails.
+   ========================================================================== */
+
+/* chips bar (all sizes) */
+.gc-chips {
+	display: flex;
+	gap: 0.5rem;
+	width: 100%;
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	scroll-padding-inline: 1rem;
+}
+.gc-chips > li { flex: 0 0 auto; }
+.gc-pill__n { opacity: 0.7; font-size: 0.8em; }
+
+/* the phone grid only exists < lg; desktop keeps the console rails */
+.gc-all { display: none; }
+.gc-cta__line { display: none; }
+
+@media (max-width: 1023.98px) {
+	/* ---- compact top ---- */
+	.gc > .container { padding-top: 0.75rem; }
+	.gc-crumbs {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+	.gc-hud { display: none; }
+	/* «رتبه‌ها» is the «me» screen on phones: level, XP and stats sit on top of it */
+	.gc:has(#ranks:not([hidden])) .gc-hud { display: grid; margin-bottom: 1rem; }
+
+	/* ---- spotlight: one short featured card ---- */
+	.gc .gc-spot {
+		margin-top: 0;
+		aspect-ratio: auto;
+		height: 14.5rem;
+		border-radius: 1.5rem;
+		box-shadow: 0 24px 50px -30px rgb(0 0 0 / 0.95);
+	}
+	.gc .gc-spot__img { height: 100%; object-position: 22% 30%; }
+	.gc .gc-spot__shade {
+		background:
+			linear-gradient(0deg, #020617 0%, rgb(2 6 23 / 0.82) 38%, transparent 78%),
+			linear-gradient(270deg, rgb(2 6 23 / 0.55), transparent 65%);
+	}
+	.gc .gc-spot__body { gap: 0.35rem; padding: 1rem 1.1rem 1.05rem; }
+	.gc .gc-spot__body .gc-chip { padding: 0.2rem 0.6rem; font-size: 0.7rem; }
+	.gc .gc-spot__body .gc-chip--online { display: none; }
+	.gc .gc-spot__title { font-size: 1.45rem; line-height: 1.4; }
+	.gc .gc-spot__text {
+		font-size: 0.82rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.gc .gc-spot__pitch { display: none; }
+	.gc .gc-spot__title, .gc .gc-spot__text { max-width: 68%; }
+	.gc .gc-spot__art--hero canvas { inset-inline-start: auto; inset-inline-end: 7%; bottom: 36%; height: 58%; }
+	.gc .gc-spot .gc-play {
+		min-height: 2.9rem;
+		padding: 0.55rem 1.6rem;
+		font-size: 1rem;
+		margin-top: 0.15rem;
+	}
+	.gc .gc-spot__dots { bottom: auto; top: 0.35rem; inset-inline-start: auto; inset-inline-end: 0.5rem; }
+	.gc .gc-spot__dot { width: 1.75rem; height: 2.75rem; }
+	.gc .gc-spot__dot span { width: 0.9rem; height: 0.22rem; }
+	.gc .gc-spot__dot[aria-selected='true'] span { width: 1.4rem; }
+
+	/* ---- «الان چی بازی کنم؟»: one swipeable row ---- */
+	.gc .gc-now {
+		display: flex;
+		gap: 0.6rem;
+		margin-top: 0.9rem;
+		margin-inline: -1rem;
+		padding-inline: 1rem;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scroll-padding-inline: 1rem;
+		scrollbar-width: none;
+		overscroll-behavior-x: contain;
+	}
+	.gc .gc-now::-webkit-scrollbar { display: none; }
+	.gc .gc-now__card {
+		flex: 0 0 min(78%, 17rem);
+		scroll-snap-align: start;
+		min-height: 4.25rem;
+		gap: 0.65rem;
+		padding: 0.6rem 0.8rem;
+		border-radius: 1.15rem;
+	}
+	.gc .gc-now__card--me { padding-bottom: 0.85rem; }
+	.gc .gc-now__ic { width: 2.6rem; height: 2.6rem; border-radius: 0.8rem; font-size: 1.3rem; }
+	.gc .gc-now__ic .gc-ico,
+	.gc .gc-now__ic svg { width: 30px; height: 30px; }
+	.gc .gc-now__k { font-size: 0.68rem; }
+	.gc .gc-now__t { font-size: 0.86rem; line-height: 1.6; }
+	.gc .gc-now__s { display: none; }
+	.gc .gc-now__card--daily .gc-now__s { display: block; font-size: 0.7rem; line-height: 1.5; }
+	.gc .gc-now__go { padding: 0.35rem 0.75rem; font-size: 0.72rem; }
+
+	/* ---- sticky genre chips (glass, under the app bar) ---- */
+	.gc-chipbar {
+		position: sticky;
+		top: calc(4rem + env(safe-area-inset-top));
+		z-index: 30;
+		margin-top: 1rem !important;
+		margin-inline: -1rem;
+		padding: 0.5rem 0;
+		background: rgb(2 6 23 / 0.72);
+		-webkit-backdrop-filter: blur(18px) saturate(160%);
+		backdrop-filter: blur(18px) saturate(160%);
+		border-bottom: 1px solid rgb(255 255 255 / 0.06);
+	}
+	.gc-chips { padding-inline: 1rem; gap: 0.4rem; }
+	.gc-chipbar .gc-pill {
+		min-height: 2.5rem;
+		padding: 0 0.95rem;
+		font-size: 0.8rem;
+		font-weight: 800;
+		color: #cbd5e1;
+		background: rgb(255 255 255 / 0.05);
+		border-color: rgb(255 255 255 / 0.08);
+		-webkit-tap-highlight-color: transparent;
+		transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+	.gc-chipbar .gc-pill:active { transform: scale(0.93); }
+	.gc-chipbar .gc-pill.is-on { color: #020617; background: #f59e0b; border-color: #f59e0b; }
+	.gc-chipbar .gc-pill.is-on .gc-pill__n { opacity: 0.6; }
+	.gc-pill__long { display: none; }
+
+	/* ---- rails: phones keep only «ادامه» + «تازه‌ها», as short rows of app icons ---- */
+	#all-games { gap: 1.6rem !important; margin-top: 1.1rem !important; }
+	.gc-rail--hot,
+	.gc-rail--online,
+	.gc-rail--genre,
+	.gc-rail--term,
+	#all-games.is-filtered > .gc-rail { display: none !important; }
+	.gc-rail .gc-rail__head { margin-bottom: 0.6rem; }
+	.gc-rail .gc-rail__title,
+	.gc-all__title { font-size: 1.05rem; gap: 0.45rem; }
+	.gc-rail .gc-rail__text,
+	.gc-rail .gc-rail__nav { display: none; }
+	.gc-rail .gc-rail__track, .gc-rail .gc-rail__track:has(.gc-card) { gap: 0.35rem; padding: 0.25rem 1rem; margin: -0.25rem -1rem; scroll-padding-inline: 1rem; }
+	.gc-rail .gc-rail__track:has(.gc-card) > .gc-rail__item { flex: 0 0 5.4rem; width: 5.4rem; }
+	.gc-rail .gc-card {
+		gap: 0;
+		padding: 0.2rem 0.1rem 0.3rem;
+		border: 0;
+		border-radius: 1rem;
+		background: none;
+		overflow: visible;
+	}
+	.gc-rail .gc-card::before,
+	.gc-rail .gc-card__meta,
+	.gc-rail .gc-card__play,
+	.gc-rail .gc-card__chips { display: none; }
+	.gc-rail .gc-card:hover,
+	.gc-rail .gc-card:focus-visible { transform: none; box-shadow: none; }
+	.gc-rail .gc-card__icon,
+	.gc-app__ic {
+		width: 4.1rem;
+		height: 4.1rem;
+		margin-bottom: 0.4rem;
+		border-radius: 1.15rem;
+		border-width: 2px;
+		transform: none;
+		box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.2), 0 10px 18px -10px color-mix(in srgb, var(--accent) 85%, transparent);
+	}
+	.gc-rail .gc-card__icon .gc-ico { width: 44px; height: 44px; }
+	.gc-rail .gc-card:hover .gc-card__icon { transform: none; }
+	.gc-rail .gc-card__title {
+		font-size: 0.74rem;
+		font-weight: 800;
+		line-height: 1.45;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	/* ---- the grid: a phone home screen of games ---- */
+	.gc-all { display: block; order: 1; scroll-margin-top: 8rem; }
+	#all-games > .am-hub { order: 2; }
+	/* one money block on phones: the wide pass card only when there is no end-of-page card */
+	#all-games:has(> .am-hub--after_rails) > .am-hub--after_hero { display: none; }
+	.gc-all__title {
+		display: flex;
+		align-items: center;
+		margin-bottom: 0.75rem;
+		font-weight: 900;
+		color: #fff;
+	}
+	.gc-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.8rem 0.5rem;
+	}
+	.gc-grid > li[hidden] { display: none; }
+	.gc-app {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		min-height: 6.6rem;
+		padding-top: 0.15rem;
+		color: #e2e8f0;
+		-webkit-tap-highlight-color: transparent;
+	}
+	.gc-app__ic {
+		position: relative;
+		display: grid;
+		place-items: center;
+		border: 2px solid #16120f;
+		background:
+			radial-gradient(70% 60% at 30% 20%, rgb(255 255 255 / 0.45), transparent 60%),
+			linear-gradient(150deg, color-mix(in srgb, var(--accent) 90%, #fff), color-mix(in srgb, var(--accent) 55%, #0b1023));
+		transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+	.gc-app__ic .gc-ico { width: 44px; height: 44px; filter: drop-shadow(0 2px 0 rgb(0 0 0 / 0.25)); }
+	.gc-app:active .gc-app__ic { transform: scale(0.88); }
+	.gc-app:focus-visible { outline: none; }
+	.gc-app:focus-visible .gc-app__ic { box-shadow: 0 0 0 3px #020617, 0 0 0 5px #f59e0b; }
+	.gc-app__live {
+		position: absolute;
+		top: -3px;
+		inset-inline-end: -3px;
+		width: 12px;
+		height: 12px;
+		border-radius: 999px;
+		background: #34d399;
+		border: 2px solid #020617;
+	}
+	.gc-app__t {
+		max-width: 100%;
+		font-size: 0.76rem;
+		font-weight: 800;
+		line-height: 1.45;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.gc-app__best { margin-top: 0.1rem; font-size: 0.66rem; font-weight: 800; color: #fcd34d; line-height: 1.4; }
+	.gc-app__best[hidden] { display: none; }
+	.gc-grid > li.is-in { animation: gc-app-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 22ms); }
+	@keyframes gc-app-in { from { opacity: 0; transform: translateY(8px) scale(0.94); } }
+	.gc-all__empty { padding: 2rem 0; text-align: center; font-size: 0.875rem; color: #94a3b8; }
+
+	/* ---- money: one compact block near the end ---- */
+	.gc .am-hub--after_rails,
+	.gc .am-hub--after_hero { margin-top: 0.5rem; }
+	.gc .am-hub .am-sup:not(.am-sup--mini) { gap: 0.7rem; padding: 1rem; border-radius: 1.4rem; }
+	.gc .am-hub .am-sup__uses,
+	.gc .am-hub .am-sup__qr,
+	.gc .am-hub .am-sup__banner,
+	.gc .am-hub .am-sup__hint { display: none; }
+	.gc .am-hub .am-sup__text { font-size: 0.82rem; line-height: 1.8; }
+
+	/* ---- B2B: one line instead of a full card ---- */
+	.gc-cta { padding-top: 1.75rem !important; padding-bottom: 1.5rem !important; }
+	.gc-cta__card { display: none; }
+	.gc-cta__line {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		min-height: 3rem;
+		padding: 0.5rem 0.9rem;
+		border-radius: 1rem;
+		font-size: 0.8rem;
+		color: #cbd5e1;
+		background: rgb(255 255 255 / 0.03);
+		border: 1px solid rgb(255 255 255 / 0.07);
+	}
+	.gc-cta__line b { color: #fff; font-weight: 900; }
+	.gc-cta__txt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.gc-cta__ic { display: grid; place-items: center; width: 2rem; height: 2rem; flex-shrink: 0; border-radius: 0.7rem; color: #f59e0b; background: rgb(245 158 11 / 0.12); }
+	.gc-cta__arr { color: #64748b; }
+}
+
+@media (min-width: 640px) and (max-width: 1023.98px) {
+	.gc .gc-spot { height: 17rem; }
+	.gc-grid { grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); }
+	.gc .gc-now__card { flex-basis: 17.5rem; }
+}
+
+@media (max-width: 1023.98px) and (prefers-reduced-motion: reduce) {
+	.gc-grid > li.is-in { animation: none; }
+	.gc-app__ic, .gc-chipbar .gc-pill { transition: none; }
+}
