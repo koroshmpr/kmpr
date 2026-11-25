@@ -39,35 +39,30 @@ $kmpr_quick = array_filter(array(
 
 <!-- ===== Bottom tab bar (mobile / tablet) — hidden while playing a game ===== -->
 <?php if (!is_singular(array('game', 'post'))) : // articles have their own lesson bar (with a menu button) ?>
-<nav class="kmpr-tabbar lg:hidden fixed inset-x-3 z-50 mx-auto max-w-md" aria-label="ناوبری اصلی موبایل"
+<nav class="kmpr-tabbar lg:hidden fixed inset-x-3 z-50 mx-auto max-w-md flex items-center gap-2.5" aria-label="ناوبری اصلی موبایل"
      :class="menuOpen || searchOpen ? 'translate-y-[140%] opacity-0' : ''">
-    <div class="relative grid grid-cols-5 items-end h-16 px-1.5 rounded-[1.75rem] border border-white/10 bg-slate-900/85 backdrop-blur-xl shadow-[0_18px_50px_-12px_rgb(0_0_0/0.85)]">
-        <?php foreach ($kmpr_tabs as $kmpr_tab) :
-            if ($kmpr_tab === null) : ?>
-                <a href="<?= esc_url(kmpr_request_url()); ?>" class="group relative flex flex-col items-center justify-end h-full pb-2 gap-1" aria-label="ثبت درخواست پروژه">
-                    <span class="absolute -top-5 size-14 rounded-2xl bg-gradient-to-br from-amber-400 to-secondary text-slate-950 flex items-center justify-center shadow-[0_12px_30px_-6px] shadow-secondary/70 ring-4 ring-slate-950 transition-transform duration-200 group-active:scale-90">
-                        <svg width="24" height="24" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                    </span>
-                    <span class="text-[11px] font-black text-secondary leading-none">پروژه جدید</span>
-                </a>
-            <?php else :
-                $kmpr_active = $kmpr_is($kmpr_tab['url']); ?>
-                <a href="<?= esc_url($kmpr_tab['url']); ?>" <?= $kmpr_active ? 'aria-current="page"' : ''; ?>
-                   class="kmpr-tab group relative flex flex-col items-center justify-center gap-1 h-full rounded-2xl transition-colors <?= $kmpr_active ? 'text-secondary' : 'text-slate-400 active:text-slate-100'; ?>">
-                    <?php if ($kmpr_active) : ?><span class="absolute top-1.5 h-1 w-5 rounded-full bg-secondary shadow-[0_0_12px] shadow-secondary" aria-hidden="true"></span><?php endif; ?>
-                    <span class="transition-transform duration-200 group-active:scale-90"><?= kmpr_nav_svg($kmpr_tab['icon']); // static markup ?></span>
-                    <span class="text-[11px] font-bold leading-none"><?= esc_html($kmpr_tab['label']); ?></span>
-                </a>
-            <?php endif;
-        endforeach; ?>
-        <button type="button" @click="menuOpen = true" :aria-expanded="menuOpen.toString()" aria-controls="kmpr-sheet"
-                class="group flex flex-col items-center justify-center gap-1 h-full rounded-2xl text-slate-400 active:text-slate-100 cursor-pointer">
+    <!-- glass pill: icons only, the active tab expands with its label -->
+    <div class="kmpr-glass flex-1 flex items-center justify-between h-16 px-2 rounded-full">
+        <?php foreach (array_filter($kmpr_tabs) as $kmpr_tab) :
+            $kmpr_active = $kmpr_is($kmpr_tab['url']); ?>
+            <a href="<?= esc_url($kmpr_tab['url']); ?>" <?= $kmpr_active ? 'aria-current="page"' : ''; ?> aria-label="<?= esc_attr($kmpr_tab['label']); ?>"
+               class="kmpr-tab group flex items-center justify-center gap-1.5 h-12 min-w-12 rounded-full transition-all duration-300 <?= $kmpr_active ? 'px-3.5 bg-secondary/15 text-secondary' : 'px-2 text-slate-300 active:text-white'; ?>">
+                <span class="transition-transform duration-200 group-active:scale-90"><?= kmpr_nav_svg($kmpr_tab['icon']); // static markup ?></span>
+                <?php if ($kmpr_active) : ?><span class="text-xs font-black leading-none whitespace-nowrap"><?= esc_html($kmpr_tab['label']); ?></span><?php endif; ?>
+            </a>
+        <?php endforeach; ?>
+        <button type="button" @click="menuOpen = true" :aria-expanded="menuOpen.toString()" aria-controls="kmpr-sheet" aria-label="منو"
+                class="group flex items-center justify-center h-12 min-w-12 px-2 rounded-full text-slate-300 active:text-white cursor-pointer">
             <span class="transition-transform duration-200 group-active:scale-90">
                 <svg width="22" height="22" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg>
             </span>
-            <span class="text-[11px] font-bold leading-none">منو</span>
         </button>
     </div>
+    <!-- separate round action button -->
+    <a href="<?= esc_url(kmpr_request_url()); ?>" class="kmpr-fab group shrink-0 size-16 rounded-full flex flex-col items-center justify-center gap-0.5 text-slate-950" aria-label="ثبت درخواست پروژه جدید">
+        <svg width="24" height="24" class="shrink-0 transition-transform duration-200 group-active:scale-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span class="text-[10px] font-black leading-none whitespace-nowrap">پروژه</span>
+    </a>
 </nav>
 <?php endif; ?>
 
