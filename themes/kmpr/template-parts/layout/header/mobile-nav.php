@@ -39,29 +39,27 @@ $kmpr_quick = array_filter(array(
 
 <!-- ===== Bottom tab bar (mobile / tablet) — hidden while playing a game ===== -->
 <?php if (!is_singular(array('game', 'post'))) : // articles have their own lesson bar (with a menu button) ?>
-<nav class="kmpr-tabbar lg:hidden fixed inset-x-3 z-50 mx-auto max-w-md flex items-center gap-2.5" aria-label="ناوبری اصلی موبایل"
+<nav class="kmpr-tabbar lg:hidden fixed inset-x-4 z-50 mx-auto max-w-sm flex items-center gap-2" aria-label="ناوبری اصلی موبایل"
      :class="menuOpen || searchOpen ? 'translate-y-[140%] opacity-0' : ''">
-    <!-- glass pill: icons only, the active tab expands with its label -->
-    <div class="kmpr-glass flex-1 flex items-center justify-between h-16 px-2 rounded-full">
+    <div class="kmpr-glass flex-1 grid grid-cols-4 h-14 px-1 rounded-full">
         <?php foreach (array_filter($kmpr_tabs) as $kmpr_tab) :
             $kmpr_active = $kmpr_is($kmpr_tab['url']); ?>
-            <a href="<?= esc_url($kmpr_tab['url']); ?>" <?= $kmpr_active ? 'aria-current="page"' : ''; ?> aria-label="<?= esc_attr($kmpr_tab['label']); ?>"
-               class="kmpr-tab group flex items-center justify-center gap-1.5 h-12 min-w-12 rounded-full transition-all duration-300 <?= $kmpr_active ? 'px-3.5 bg-secondary/15 text-secondary' : 'px-2 text-slate-300 active:text-white'; ?>">
-                <span class="transition-transform duration-200 group-active:scale-90"><?= kmpr_nav_svg($kmpr_tab['icon']); // static markup ?></span>
-                <?php if ($kmpr_active) : ?><span class="text-xs font-black leading-none whitespace-nowrap"><?= esc_html($kmpr_tab['label']); ?></span><?php endif; ?>
+            <a href="<?= esc_url($kmpr_tab['url']); ?>" <?= $kmpr_active ? 'aria-current="page"' : ''; ?>
+               class="kmpr-tab <?= $kmpr_active ? 'is-active' : ''; ?> flex flex-col items-center justify-center gap-[3px]">
+                <span class="kmpr-tab-ico"><?= kmpr_nav_svg($kmpr_tab['icon'], 21); // static markup ?></span>
+                <span class="kmpr-tab-txt"><?= esc_html($kmpr_tab['label']); ?></span>
             </a>
         <?php endforeach; ?>
-        <button type="button" @click="menuOpen = true" :aria-expanded="menuOpen.toString()" aria-controls="kmpr-sheet" aria-label="منو"
-                class="group flex items-center justify-center h-12 min-w-12 px-2 rounded-full text-slate-300 active:text-white cursor-pointer">
-            <span class="transition-transform duration-200 group-active:scale-90">
-                <svg width="22" height="22" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/></svg>
+        <button type="button" @click="menuOpen = true" :aria-expanded="menuOpen.toString()" aria-controls="kmpr-sheet"
+                class="kmpr-tab flex flex-col items-center justify-center gap-[3px] cursor-pointer">
+            <span class="kmpr-tab-ico">
+                <svg width="21" height="21" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
             </span>
+            <span class="kmpr-tab-txt">منو</span>
         </button>
     </div>
-    <!-- separate round action button -->
-    <a href="<?= esc_url(kmpr_request_url()); ?>" class="kmpr-fab group shrink-0 size-16 rounded-full flex flex-col items-center justify-center gap-0.5 text-slate-950" aria-label="ثبت درخواست پروژه جدید">
-        <svg width="24" height="24" class="shrink-0 transition-transform duration-200 group-active:scale-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        <span class="text-[10px] font-black leading-none whitespace-nowrap">پروژه</span>
+    <a href="<?= esc_url(kmpr_request_url()); ?>" class="kmpr-fab shrink-0 size-14 rounded-full flex items-center justify-center text-slate-950" aria-label="ثبت درخواست پروژه جدید">
+        <svg width="22" height="22" class="kmpr-fab-ico shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
     </a>
 </nav>
 <?php endif; ?>
@@ -80,9 +78,9 @@ $kmpr_quick = array_filter(array(
          @touchmove.passive="if (y0 !== null && $refs.scroller.scrollTop <= 0) { dy = Math.max(0, $event.touches[0].clientY - y0) }"
          @touchend="if (dy > 90) { menuOpen = false } dy = 0; y0 = null"
          :style="dy ? `transform:translateY(${dy}px);transition:none` : ''"
-         class="kmpr-sheet absolute inset-x-0 bottom-0 max-h-[88svh] flex flex-col rounded-t-[2rem] border-t border-white/10 bg-slate-900 shadow-[0_-30px_80px_-20px_rgb(0_0_0/0.9)]">
+         class="kmpr-sheet kmpr-sheet-glass absolute inset-x-0 bottom-0 max-h-[88svh] flex flex-col rounded-t-[1.75rem]">
         <div class="shrink-0 pt-3 pb-2 flex flex-col items-center">
-            <span class="h-1.5 w-11 rounded-full bg-white/20" aria-hidden="true"></span>
+            <span class="h-1 w-9 rounded-full bg-white/25" aria-hidden="true"></span>
         </div>
         <div x-ref="scroller" class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
             <div class="flex items-center justify-between gap-3 mb-4">
@@ -90,26 +88,26 @@ $kmpr_quick = array_filter(array(
                     <p class="text-base font-black text-white"><?= esc_html(get_bloginfo('name')); ?></p>
                     <p class="text-xs text-slate-400 mt-0.5 truncate"><?= esc_html(kmpr_field('job_title', 'طراح و توسعه‌دهنده وب', 'option')); ?></p>
                 </div>
-                <button type="button" @click="menuOpen = false" class="size-10 shrink-0 rounded-full bg-white/[0.06] border border-white/10 text-slate-300 flex items-center justify-center cursor-pointer" aria-label="بستن منو">
+                <button type="button" @click="menuOpen = false" class="kmpr-sheet-x size-9 shrink-0 rounded-full bg-white/[0.06] text-slate-300 flex items-center justify-center cursor-pointer" aria-label="بستن منو">
                     <svg width="16" height="16" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
                 </button>
             </div>
 
             <button type="button" @click="menuOpen = false; searchOpen = true"
-                    class="w-full flex items-center gap-3 h-12 px-4 rounded-2xl bg-white/[0.05] border border-white/10 text-sm text-slate-400 cursor-pointer mb-5">
+                    class="w-full flex items-center gap-2.5 h-11 px-4 rounded-full bg-white/[0.05] text-[13px] text-slate-400 cursor-pointer mb-5 transition-colors active:bg-white/[0.08]">
                 <svg width="18" height="18" class="shrink-0 text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
                 جستجو در مقالات، خدمات و پروژه‌ها…
             </button>
 
             <?php if ($kmpr_items) : ?>
-                <ul class="grid grid-cols-3 gap-2.5" role="list">
+                <ul class="grid <?= count($kmpr_items) % 4 === 0 ? 'grid-cols-4' : 'grid-cols-3'; ?> gap-y-4 gap-x-1" role="list">
                     <?php foreach ($kmpr_items as $kmpr_i => $kmpr_item) :
                         $kmpr_active = $kmpr_is($kmpr_item->url); ?>
                         <li class="kmpr-sheet-tile" style="--i:<?= (int) $kmpr_i; ?>">
                             <a href="<?= esc_url($kmpr_item->url); ?>" <?= $kmpr_active ? 'aria-current="page"' : ''; ?>
-                               class="flex flex-col items-center justify-center gap-2 h-[5.5rem] px-2 rounded-2xl border text-center transition-colors active:scale-[0.97] <?= $kmpr_active ? 'border-secondary/50 bg-secondary/15 text-secondary' : 'border-white/10 bg-white/[0.03] text-slate-200 active:bg-white/[0.07]'; ?>">
-                                <span class="<?= $kmpr_active ? 'text-secondary' : 'text-slate-300'; ?>"><?= kmpr_nav_svg(kmpr_nav_icon_for($kmpr_item->url), 22); ?></span>
-                                <span class="text-xs font-bold leading-tight"><?= esc_html($kmpr_item->title); ?></span>
+                               class="kmpr-tile flex flex-col items-center gap-2 px-1 text-center <?= $kmpr_active ? 'is-active text-white' : 'text-slate-300'; ?>">
+                                <span class="kmpr-tile-ico size-12 rounded-2xl flex items-center justify-center"><?= kmpr_nav_svg(kmpr_nav_icon_for($kmpr_item->url), 21); ?></span>
+                                <span class="text-[11px] font-bold leading-tight"><?= esc_html($kmpr_item->title); ?></span>
                             </a>
                         </li>
                     <?php endforeach; ?>
@@ -117,23 +115,23 @@ $kmpr_quick = array_filter(array(
             <?php endif; ?>
 
             <a href="<?= esc_url(kmpr_request_url()); ?>"
-               class="mt-5 flex items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-l from-secondary/25 via-secondary/10 to-transparent border border-secondary/30">
+               class="kmpr-sheet-tile mt-6 flex items-center justify-between gap-3 p-3 ps-4 rounded-2xl bg-white/[0.04] border border-white/[0.07] transition-colors active:bg-white/[0.07]" style="--i:10">
                 <span class="min-w-0">
-                    <span class="block text-sm font-black text-white">پروژه‌ای در ذهن دارید؟</span>
-                    <span class="block text-xs text-slate-300 mt-1">بریف را در کمتر از ۲ دقیقه بسازید</span>
+                    <span class="block text-[13px] font-black text-white">پروژه‌ای در ذهن دارید؟</span>
+                    <span class="block text-[11px] text-slate-400 mt-1">بریف را در کمتر از ۲ دقیقه بسازید</span>
                 </span>
-                <span class="shrink-0 inline-flex items-center gap-1.5 h-10 px-4 rounded-full bg-secondary text-slate-950 text-xs font-black whitespace-nowrap">
+                <span class="shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-secondary text-slate-950 text-xs font-black whitespace-nowrap">
                     شروع
                     <svg width="14" height="14" class="shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.61l4.16 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.61 9.25h10.64A.75.75 0 0 1 17 10Z" clip-rule="evenodd"/></svg>
                 </span>
             </a>
 
             <?php if ($kmpr_quick) : ?>
-                <div class="mt-4 grid <?= array(1 => 'grid-cols-1', 2 => 'grid-cols-2', 3 => 'grid-cols-3')[count($kmpr_quick)]; ?> gap-2.5">
+                <div class="kmpr-sheet-tile mt-3 grid <?= array(1 => 'grid-cols-1', 2 => 'grid-cols-2', 3 => 'grid-cols-3')[count($kmpr_quick)]; ?> gap-2" style="--i:11">
                     <?php foreach ($kmpr_quick as $kmpr_q) : ?>
                         <a href="<?= esc_url($kmpr_q[0]); ?>" <?= strpos($kmpr_q[0], 'tel:') === 0 ? '' : 'target="_blank" rel="noopener"'; ?>
-                           class="flex items-center justify-center gap-2 h-12 rounded-2xl border text-xs font-bold whitespace-nowrap <?= esc_attr($kmpr_q[2]); ?>">
-                            <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><?= $kmpr_q[3]; // static markup ?></svg>
+                           class="flex items-center justify-center gap-2 h-11 rounded-full bg-white/[0.04] text-slate-200 text-xs font-bold whitespace-nowrap transition-colors active:bg-white/[0.08]">
+                            <span class="<?= esc_attr(preg_replace('/\S*(bg|border)-\S+/', '', $kmpr_q[2])); ?>"><svg width="17" height="17" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><?= $kmpr_q[3]; // static markup ?></svg></span>
                             <?= esc_html($kmpr_q[1]); ?>
                         </a>
                     <?php endforeach; ?>
