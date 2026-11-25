@@ -124,6 +124,8 @@
 	outline: none;
 	overflow: hidden;
 	background: #020617;
+	/* own stacking context: engine layers (z-index 6-8) must stay under the shell's pause/over overlay */
+	isolation: isolate;
 }
 @media (min-width: 640px) {
 	.game-shell__stage {
@@ -1355,4 +1357,51 @@ html.game-focus.game-rotate .game-shell.is-focus .game-shell__frame {
 @keyframes kl-press { 50% { transform: scale(0.6); filter: brightness(1.6); } }
 @media (prefers-reduced-motion: reduce) {
 	.kl * , .kl *::after { animation-duration: 2.5s !important; }
+}
+
+/* ---------- No zoom on tap (game pages) ----------
+   touch-action: manipulation keeps scrolling + pinch but removes the double-tap zoom gesture
+   (iOS Safari zooms on two quick taps otherwise). Zero specificity so engine rules such as
+   `touch-action: none` on canvases/pads still win. Pinch is blocked only while a game is
+   focused (shell.js swaps the viewport meta and cancels iOS gesture events). */
+:where(.game-shell, .game-shell *) {
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+.game-shell__frame {
+	-webkit-touch-callout: none;
+}
+:where(.game-shell) :is(button, [role='button'], .game-icon-btn, .game-btn, canvas) {
+	-webkit-user-select: none;
+	user-select: none;
+}
+html.game-focus,
+html.game-focus body {
+	touch-action: manipulation;
+}
+/* iOS zooms into any focused field under 16px */
+.game-shell :is(input:not([type='checkbox'], [type='radio'], [type='range']), select, textarea) {
+	font-size: max(16px, 1em);
+}
+
+/* Landscape phones (≤ 520px tall): give the stage the screen height and drop the start-screen cover,
+   so «شروع بازی» is visible once the frame is scrolled into view. */
+@media (max-height: 520px) and (orientation: landscape) {
+	.game-shell__stage {
+		max-height: calc(100svh - 4.75rem);
+	}
+	.game-shell .game-screen__cover {
+		display: none !important;
+	}
+}
+
+/* Narrow phones: HUD pills must not overlap (labels clip instead of spilling into the next pill) */
+@media (max-width: 400px) {
+	.game-shell__bar { gap: 0.3rem; padding-inline: 0.5rem; }
+	.game-shell__stats { gap: 0.25rem; }
+	.hud-pill { padding: 0.2rem 0.4rem; overflow: hidden; flex-shrink: 1; }
+	.hud-pill > span { font-size: 0.65rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+	.hud-pill > b { font-size: 0.9rem; }
+	.hud-pill--score > b { font-size: 1.05rem; }
+	.game-shell__actions { gap: 0.2rem; }
 }

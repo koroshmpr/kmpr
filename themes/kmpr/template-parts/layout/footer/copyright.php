@@ -26,7 +26,7 @@ if (function_exists('have_rows') && have_rows('confirmation', 'option')) {
         <ul class="flex flex-wrap items-center justify-start gap-x-1 gap-y-0 -ms-2.5">
             <?php foreach ($kf_links as $l) : ?>
                 <li>
-                    <a href="<?= esc_url($l[0]); ?>" class="inline-flex items-center gap-1.5 min-h-10 px-2.5 rounded-full font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
+                    <a href="<?= esc_url($l[0]); ?>" class="inline-flex items-center gap-1.5 min-h-10 px-2.5 rounded-full font-medium whitespace-nowrap text-slate-400 hover:text-white hover:bg-white/5 transition-colors">
                         <?php if ($l[2]) : ?>
                             <svg width="13" height="13" class="shrink-0 text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 9.5 9.5 3 12l6.5 2.5L12 21l2.5-6.5L21 12l-6.5-2.5Z"/></svg>
                         <?php endif; ?>

@@ -1,0 +1,1 @@
+{ "name": "kmpr-site-qc", "private": true, "dependencies": { "lighthouse": "13.6.0" } }

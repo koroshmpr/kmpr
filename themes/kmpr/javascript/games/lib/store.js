@@ -5,6 +5,8 @@
  */
 const KEY = 'kmpr_arcade_v1';
 let memory = null;
+// Account sync (javascript/account) rewrote the profile in localStorage → drop the in-memory copy.
+if (typeof window !== 'undefined') window.addEventListener('kmpr:profile-reload', () => (memory = null));
 
 const uuid = () => {
 	if (window.crypto && crypto.randomUUID) return crypto.randomUUID();

@@ -365,6 +365,59 @@ export const CATALOG = {
 			{ id: 'fifteen', title: 'تور پر', desc: '۱۵ ماهی در یک سفر', icon: '🧺' },
 		],
 	},
+	mench: {
+		title: 'منچ',
+		kind: 'match',
+		category: 'iranian',
+		achievements: [
+			{ id: 'win', title: 'اولین برد', desc: 'منچ را مقابل ربات ببر', icon: '🎲' },
+			{ id: 'capture', title: 'برو خونه!', desc: 'یک مهره حریف را بزن', icon: '💥' },
+			{ id: 'hunter', title: 'شکارچی مهره', desc: 'در یک بازی ۳ مهره حریف را بزن', icon: '🎯' },
+			{ id: 'home', title: 'رسیدم!', desc: 'اولین مهره را به خانه برسان', icon: '🏠' },
+			{ id: 'clean', title: 'دست‌نخورده', desc: 'بدون اینکه مهره‌ای از دست بدهی ببر', icon: '🛡️' },
+			{ id: 'win_hard', title: 'استاد منچ', desc: 'ربات زرنگ را ببر', icon: '👑' },
+			{ id: 'local', title: 'دورهمی', desc: 'یک بازی چندنفره روی یک گوشی', icon: '👨‍👩‍👧' },
+		],
+	},
+	'server-ping': {
+		title: 'پینگ سرور',
+		kind: 'arcade',
+		category: 'arcade',
+		achievements: [
+			{ id: 'first', title: 'اولین پینگ', desc: 'اولین بسته را به پورت برسان', icon: '📶' },
+			{ id: 'combo5', title: 'تأخیر صفر', desc: '۵ ضربه دقیق پشت‌سرهم', icon: '⚡' },
+			{ id: 'golden', title: 'پورت قهوه', desc: 'یک پورت طلایی بگیر', icon: '☕' },
+			{ id: 'p50', title: 'آپتایم بالا', desc: '۵۰ پینگ در یک دور', icon: '🟢' },
+			{ id: 'p100', title: 'سرور بی‌خواب', desc: '۱۰۰ پینگ در یک دور', icon: '🖥️' },
+			{ id: 's2k', title: 'پهنای باند', desc: '۲٬۰۰۰ امتیاز بگیر', icon: '📡' },
+		],
+	},
+	bits: {
+		title: 'صفر و یک',
+		kind: 'arcade',
+		category: 'puzzle',
+		achievements: [
+			{ id: 'first', title: 'اولین کامپایل', desc: 'اولین بورد را حل کن', icon: '0️⃣' },
+			{ id: 'fast', title: 'بیلد سریع', desc: 'یک بورد ۶×۶ را زیر ۴۰ ثانیه حل کن', icon: '⏱️' },
+			{ id: 'byte', title: 'یک بایت کامل', desc: 'یک بورد ۸×۸ را حل کن', icon: '1️⃣' },
+			{ id: 'nohint', title: 'بدون استک‌اورفلو', desc: 'یک بورد ۸×۸ را بدون راهنما حل کن', icon: '🧠' },
+			{ id: 'all', title: 'ریلیز نهایی', desc: 'هر ۸ بورد را تمام کن', icon: '🚀' },
+			{ id: 's8k', title: 'کد تمیز', desc: '۸٬۰۰۰ امتیاز بگیر', icon: '✨' },
+		],
+	},
+	naqqash: {
+		title: 'نقاش‌باشی',
+		kind: 'match',
+		online: true,
+		category: 'casual',
+		achievements: [
+			{ id: 'first_hit', title: 'چشم تیز', desc: 'اولین حدس درست', icon: '👀' },
+			{ id: 'fastest', title: 'برق‌آسا', desc: 'اولین نفری باش که کلمه را حدس می‌زند', icon: '⚡' },
+			{ id: 'artist', title: 'نقاش‌باشی', desc: 'نقاشی‌ات را همه حدس بزنند', icon: '🖌️' },
+			{ id: 'podium', title: 'روی سکو', desc: 'یک بازی را اول شو', icon: '🏆' },
+			{ id: 'host', title: 'میزبان دورهمی', desc: 'یک بازی را با ۳ نفر یا بیشتر شروع کن', icon: '🎉' },
+		],
+	},
 };
 
 export const ENGINE_LOADERS = {
@@ -398,4 +451,8 @@ export const ENGINE_LOADERS = {
 	'math-sprint': () => import('./engines/math-sprint.js'),
 	'tehran-taxi': () => import('./engines/tehran-taxi.js'),
 	'caspian-fishing': () => import('./engines/caspian-fishing.js'),
+	mench: () => import('./engines/mench.js'),
+	'server-ping': () => import('./engines/server-ping.js'),
+	bits: () => import('./engines/bits.js'),
+	naqqash: () => import('./engines/naqqash.js'),
 };

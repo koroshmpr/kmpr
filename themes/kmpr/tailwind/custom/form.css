@@ -47,7 +47,7 @@ body {
 }
 
 .kmpr-input {
-	@apply block w-full min-h-12 rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm font-medium text-slate-100 outline-none transition-colors placeholder:text-slate-500 focus:border-secondary focus:ring-2 focus:ring-secondary/20;
+	@apply block w-full min-h-12 rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3 text-base font-medium text-slate-100 outline-none transition-colors placeholder:text-slate-500 focus:border-secondary focus:ring-2 focus:ring-secondary/20;
 }
 
 /* ===== Project request: live build preview ===== */
@@ -134,3 +134,44 @@ body {
 .rq-from { opacity: 0; transform: translate3d(calc(var(--dir, 1) * -28px), 0, 0); }
 .rq-out { opacity: 0; transform: translate3d(calc(var(--dir, 1) * 20px), 0, 0) scale(0.985); }
 .rq-to { opacity: 1; transform: none; }
+
+/* ===== Project request wizard: app-like card =====
+   Phone/tablet: the card is exactly one screen between the fixed header and the bottom tab bar
+   (svh = stable while the browser chrome shows/hides, so nothing jumps); the action bar is always visible. */
+.rq-card { scroll-margin-top: calc(4.25rem + env(safe-area-inset-top)); }
+@media (max-width: 1023.98px) {
+	.rq-card {
+		--rq-top: calc(3.5rem + env(safe-area-inset-top) + 0.5rem);
+		--rq-bottom: calc(5.75rem + env(safe-area-inset-bottom));
+		height: calc(100vh - var(--rq-top) - var(--rq-bottom));
+		height: calc(100svh - var(--rq-top) - var(--rq-bottom));
+		min-height: 25rem;
+		max-height: 46rem;
+		scroll-margin-top: var(--rq-top);
+	}
+	.rq-bar { padding-bottom: 0.875rem; }
+}
+@media (min-width: 640px) and (max-width: 1023.98px) {
+	.rq-card { --rq-top: calc(4rem + env(safe-area-inset-top) + 0.75rem); }
+}
+@media (min-width: 1024px) {
+	.rq-card { height: clamp(500px, calc(100svh - 19.5rem), 680px); } /* card + intro fit one screen when landing on #smart-configurator */
+	.rq-bar { padding-bottom: 1.5rem; }
+}
+/* Short phones (≤ 700px tall, e.g. 360×640): drop secondary copy so a step still fits without scrolling. */
+@media (max-height: 700px) and (max-width: 1023.98px) {
+	.rq-desc, .rq-sub { display: none !important; }
+	.rq-type { min-height: 3.5rem !important; flex-direction: row !important; align-items: center; }
+	.rq-title { margin-bottom: 0.75rem !important; }
+}
+/* While the wizard fills the phone screen, the floating back-to-top button would sit on the action bar. */
+@media (max-width: 1023.98px) {
+	html.rq-focus .kmpr-totop { opacity: 0 !important; pointer-events: none !important; }
+}
+/* On-screen keyboard open: give the field the room (progress header collapses). */
+.rq-kb .rq-head { display: none !important; }
+.rq-kb .rq-form { padding-top: 0.75rem; }
+/* Fallback when the wizard cannot start (no JS / failed bundle). */
+.rq-fallback { display: none; }
+.rq-failed:not(.rq-live) .rq-fallback { display: flex; }
+.rq-failed:not(.rq-live) .rq-card > :not(.rq-fallback) { display: none !important; }

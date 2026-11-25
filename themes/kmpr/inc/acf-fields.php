@@ -38,6 +38,18 @@ function kmpr_field($name, $default = null, $post_id = false)
 }
 
 /**
+ * On/off option that respects a saved "off" (kmpr_field() treats false as empty → default).
+ */
+function kmpr_option_on($name, $default = true)
+{
+    if (!function_exists('get_field')) {
+        return $default;
+    }
+    $value = get_field($name, 'option');
+    return ($value === null || $value === '') ? $default : (bool) $value;
+}
+
+/**
  * Normalise an ACF link / url field to array( url, title, target ).
  */
 function kmpr_link($value, $fallback_url = '', $fallback_title = '')
@@ -147,6 +159,15 @@ function kmpr_register_acf_schema()
                 'layout' => 'table', 'button_label' => 'افزودن نماد',
                 'sub_fields' => array(kmpr_acf('field_63c4e8b33fb80', 'conf_items', 'کد نماد (HTML)', 'textarea', array('rows' => 2))),
             )),
+
+            kmpr_acf_tab('field_kmpr_tab_speed', 'سرعت و انیمیشن'),
+            kmpr_acf('field_kmpr_font_display', 'font_display', 'نحوه بارگذاری فونت', 'select', array(
+                'choices'       => array('optional' => 'بدون پرش (optional) — پیشنهادی', 'swap' => 'جایگزینی (swap) — فونت همیشه نمایش داده می‌شود ولی ممکن است متن جابه‌جا شود'),
+                'default_value' => 'optional',
+                'instructions'  => 'optional: اگر فونت در لحظه اول نرسیده باشد، همان صفحه با فونت سیستم نمایش داده می‌شود و صفحه بعد با فونت اصلی (هیچ پرشی رخ نمی‌دهد). swap: متن ابتدا با فونت سیستم و بعد با فونت اصلی نمایش داده می‌شود.',
+            )),
+            kmpr_acf('field_kmpr_motion_on', 'motion_entrances', 'انیمیشن ورود بخش‌ها', 'true_false', array('ui' => 1, 'default_value' => 1, 'instructions' => 'خاموش: همه بخش‌ها بدون انیمیشن و فوراً نمایش داده می‌شوند.')),
+            kmpr_acf('field_kmpr_vt_on', 'page_transitions', 'انیمیشن جابه‌جایی بین صفحات', 'true_false', array('ui' => 1, 'default_value' => 1, 'instructions' => 'محو و بالا آمدن نرم صفحه جدید هنگام کلیک روی لینک‌ها (مرورگرهای جدید).')),
         ),
         'location' => array(array(array('param' => 'options_page', 'operator' => '==', 'value' => 'acf-options-theme-settings'))),
         'menu_order' => 0,

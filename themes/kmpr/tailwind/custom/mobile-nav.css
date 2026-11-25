@@ -63,12 +63,13 @@
 
 /* Header game-center button (animated SVG gamepad) */
 .kmpr-pad-ring {
-	background: conic-gradient(from var(--pad-a, 0deg), #e879f9, #f59e0b, #38bdf8, #e879f9);
+	background: conic-gradient(#e879f9, #f59e0b, #38bdf8, #e879f9);
 	opacity: 0.85;
+	/* Rotate the (circular) ring itself: transform runs on the compositor. Animating the gradient angle
+	   (@property) forced a style recalc + repaint on every frame of every page. */
 	animation: kmpr-pad-spin 6s linear infinite;
 }
-@property --pad-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
-@keyframes kmpr-pad-spin { to { --pad-a: 360deg; } }
+@keyframes kmpr-pad-spin { to { transform: rotate(360deg); } }
 .kmpr-pad-svg { transform-origin: 50% 60%; animation: kmpr-pad-wiggle 7s ease-in-out 2s infinite; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 @keyframes kmpr-pad-wiggle {
 	0%, 86%, 100% { transform: rotate(0); }
@@ -78,8 +79,15 @@
 	97% { transform: rotate(3deg); }
 }
 .kmpr-pad-a, .kmpr-pad-b, .kmpr-pad-x, .kmpr-pad-y { transition: filter 0.2s, opacity 0.2s; }
-.kmpr-pad-dot { animation: kmpr-pad-ping 2.4s ease-out infinite; }
-@keyframes kmpr-pad-ping { 0% { box-shadow: 0 0 0 0 rgb(52 211 153 / 0.6); } 70%, 100% { box-shadow: 0 0 0 7px rgb(52 211 153 / 0); } }
+.kmpr-pad-dot::after { /* ping as a scaled pseudo element (compositor) instead of an animated box-shadow (repaint per frame) */
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: rgb(52 211 153 / 0.6);
+	animation: kmpr-pad-ping 2.4s ease-out infinite;
+}
+@keyframes kmpr-pad-ping { 0% { transform: scale(1); opacity: 1; } 70%, 100% { transform: scale(2.75); opacity: 0; } }
 
 .kmpr-pad:hover .kmpr-pad-svg, .kmpr-pad:focus-visible .kmpr-pad-svg { animation: none; transform: rotate(-8deg) scale(1.14); }
 .kmpr-pad:hover .kmpr-pad-ring { animation-duration: 1.4s; opacity: 1; }
@@ -94,5 +102,5 @@
 .kmpr-pad:active .kmpr-pad-svg { transform: scale(0.88); }
 
 @media (prefers-reduced-motion: reduce) {
-	.kmpr-pad-ring, .kmpr-pad-svg, .kmpr-pad-dot, .kmpr-pad:hover * { animation: none !important; }
+	.kmpr-pad-ring, .kmpr-pad-svg, .kmpr-pad-dot::after, .kmpr-pad:hover * { animation: none !important; }
 }

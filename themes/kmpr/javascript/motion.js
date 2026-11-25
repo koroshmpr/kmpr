@@ -14,7 +14,7 @@
  *
  * Respects prefers-reduced-motion: everything is shown immediately.
  */
-const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce = !!window.KMPR_NO_MOTION || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const faDigits = (n) => Number(n).toLocaleString('fa-IR');
 
@@ -89,35 +89,55 @@ function countUp(el) {
 let io = null;
 
 function reveal(el) {
-	if (el.dataset.aosDelay) el.style.transitionDelay = `${parseInt(el.dataset.aosDelay, 10)}ms`;
-	if (el.dataset.aosDuration) el.style.transitionDuration = `${parseInt(el.dataset.aosDuration, 10)}ms`;
+	if (el.classList.contains('aos-wait')) {
+		// Replay the entrance now that it is on screen (CSS animation for [data-aos], word transition for [data-split]).
+		el.classList.remove('aos-wait');
+	}
 	el.classList.add('is-in');
-	if (el.dataset.count) countUp(el);
+	if (el.dataset.count && el.dataset.countArmed) countUp(el);
 }
+
+// Below the viewport at bind time? (Elements on screen or already scrolled past keep their first-paint entrance.)
+const isBelowFold = (el) => {
+	const r = el.getBoundingClientRect();
+	return r.top > window.innerHeight * 0.96 && (r.width || r.height);
+};
 
 /**
  * Bind every not-yet-bound reveal target. Idempotent: call again after Alpine/AJAX renders new markup.
+ * Only off-screen targets are parked (.aos-wait); on-screen ones were already animating from the first paint,
+ * so nothing that the visitor can see is ever hidden, split or reset (no flash, no layout jump).
  */
 export function scan(root = document) {
+	const targets = [...root.querySelectorAll('[data-aos], [data-split], [data-count]')].filter((el) => !el.dataset.motionBound);
+	if (!targets.length) return;
+	const canWait = !reduce && !!io;
+	const parked = canWait ? targets.filter(isBelowFold) : [];
+	const parkedSet = new Set(parked);
+
+	// Stagger only the parked children (changing the delay of a running animation would make it jump).
 	root.querySelectorAll('[data-stagger]').forEach((group) => {
 		const step = parseInt(group.dataset.stagger, 10) || 80;
 		group.querySelectorAll('[data-aos]').forEach((el, i) => {
-			if (!el.dataset.aosDelay) el.dataset.aosDelay = String(i * step);
+			if (parkedSet.has(el) && !el.dataset.aosDelay) el.style.setProperty('--aos-delay', `${Math.min(i * step, 600)}ms`);
 		});
 	});
-	root.querySelectorAll('[data-split]').forEach(splitWords);
 
-	const targets = [...root.querySelectorAll('[data-aos], [data-split], [data-count]')].filter((el) => !el.dataset.motionBound);
 	targets.forEach((el) => {
 		el.dataset.motionBound = '1';
-		// Counters start from zero immediately so the final value never flashes first.
-		if (el.dataset.count && !reduce) el.textContent = faDigits(0) + (el.dataset.suffix || '');
+		if (!parkedSet.has(el)) {
+			reveal(el);
+			return;
+		}
+		if (el.matches('[data-split]')) splitWords(el);
+		el.classList.add('aos-wait');
+		// Counters below the fold start from zero (invisible while parked) and count up on reveal.
+		if (el.dataset.count) {
+			el.dataset.countArmed = '1';
+			el.textContent = faDigits(0) + (el.dataset.suffix || '');
+		}
+		io.observe(el);
 	});
-	if (reduce || !io) {
-		targets.forEach(reveal);
-		return;
-	}
-	targets.forEach((el) => io.observe(el));
 }
 
 function initReveal() {
@@ -135,14 +155,18 @@ function initReveal() {
 			},
 			{ rootMargin: '0px 0px -8% 0px', threshold: [0, 0.02, 0.06, 0.12] }
 		);
+	} else {
+		document.documentElement.classList.remove('motion-ready');
 	}
 	scan();
 
-	// Safety net: never leave content hidden (e.g. print, very tall elements).
-	setTimeout(() => document.querySelectorAll('[data-motion-bound]:not(.is-in)').forEach((el) => {
+	// Safety net: never leave on-screen content parked (print, very tall elements, missed IO callbacks).
+	const sweep = () => document.querySelectorAll('.aos-wait').forEach((el) => {
 		const r = el.getBoundingClientRect();
 		if (r.top < window.innerHeight && r.bottom > 0) reveal(el);
-	}), 2500);
+	});
+	setTimeout(sweep, 2500);
+	window.addEventListener('beforeprint', () => document.querySelectorAll('.aos-wait').forEach(reveal));
 }
 
 function initPointerEffects() {
@@ -215,8 +239,18 @@ function initScrollProgress() {
 	update();
 }
 
+// Pause infinite decorations while they are off-screen (see .anim-off in motion.css).
+function initOffscreenPause() {
+	if (!('IntersectionObserver' in window)) return;
+	const els = document.querySelectorAll('.kb-banner, .border-glow, .marquee, .aurora, .orbit, .float-y, .text-shimmer, .word-rotator, .hp-scan, .rq-fill, [data-anim-pause]');
+	if (!els.length) return;
+	const pio = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('anim-off', !e.isIntersecting)), { rootMargin: '120px 0px' });
+	els.forEach((el) => pio.observe(el));
+}
+
 export default function initMotion() {
 	initReveal();
+	initOffscreenPause();
 	initPointerEffects();
 	initScrollProgress();
 }

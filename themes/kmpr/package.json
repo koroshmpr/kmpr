@@ -24,6 +24,7 @@
     "development:games": "node -e \"require('fs').rmSync('public/js/games',{recursive:true,force:true})\" && npx esbuild ./javascript/games/index.js --target=es2020 --bundle --format=esm --splitting --loader:.webp=dataurl --chunk-names=chunks/[name]-[hash] --outdir=./public/js/games",
     "development:monetize": "npx esbuild ./javascript/arcade-monetize.js --target=es2020 --bundle --format=iife --outfile=./public/js/arcade-monetize.js && npx esbuild ./javascript/arcade-sub.js --target=es2020 --bundle --format=iife --minify --outfile=./public/js/arcade-sub.js",
     "development:panel": "npx esbuild ./javascript/owner-panel/index.js --target=es2020 --bundle --format=iife --charset=utf8 --outfile=./public/js/owner-panel.js && npx esbuild ./javascript/owner-panel/sw.js --target=es2020 --bundle --format=iife --charset=utf8 --outfile=./public/js/owner-panel-sw.js && npx esbuild ./tailwind/custom/owner-panel.css --charset=utf8 --outfile=./public/css/owner-panel.css",
+    "development:account": "npx esbuild ./javascript/account/index.js --target=es2020 --bundle --format=iife --charset=utf8 --outfile=./public/js/account.js && npx esbuild ./tailwind/custom/account.css --charset=utf8 --outfile=./public/css/account.css",
     "development": "run-p \"development:**\"",
     "dev": "npm run development",
     "watch:tailwind:frontend": "npm run development:tailwind:frontend -- --watch",
@@ -39,6 +40,7 @@
     "production:games": "node -e \"require('fs').rmSync('public/js/games',{recursive:true,force:true})\" && npx esbuild ./javascript/games/index.js --target=es2020 --bundle --format=esm --splitting --loader:.webp=dataurl --chunk-names=chunks/[name]-[hash] --outdir=./public/js/games --minify",
     "production:monetize": "npx esbuild ./javascript/arcade-monetize.js --target=es2020 --bundle --format=iife --minify --outfile=./public/js/arcade-monetize.js && npx esbuild ./javascript/arcade-sub.js --target=es2020 --bundle --format=iife --minify --outfile=./public/js/arcade-sub.js",
     "production:panel": "npx esbuild ./javascript/owner-panel/index.js --target=es2020 --bundle --format=iife --charset=utf8 --outfile=./public/js/owner-panel.js --minify && npx esbuild ./javascript/owner-panel/sw.js --target=es2020 --bundle --format=iife --charset=utf8 --outfile=./public/js/owner-panel-sw.js --minify && npx esbuild ./tailwind/custom/owner-panel.css --charset=utf8 --outfile=./public/css/owner-panel.css --minify",
+    "production:account": "npx esbuild ./javascript/account/index.js --target=es2020 --bundle --format=iife --charset=utf8 --minify --outfile=./public/js/account.js && npx esbuild ./tailwind/custom/account.css --charset=utf8 --minify --outfile=./public/css/account.css",
     "production": "run-p \"production:**\"",
     "prod": "npm run production"
   },

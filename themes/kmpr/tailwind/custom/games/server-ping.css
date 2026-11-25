@@ -1,0 +1,9 @@
+/* games: server-ping («پینگ سرور») — the canvas takes every tap; never zoom, select or call out */
+.sp-canvas {
+	touch-action: none;
+	-webkit-touch-callout: none;
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	cursor: pointer;
+}

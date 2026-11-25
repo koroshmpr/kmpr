@@ -187,12 +187,33 @@
 		if (!unit) return;
 		const kind = go.dataset.amGo;
 		track({ ...evOf(unit), a: 'c' }, true);
+		if (kind === 'sup') {
+			set(LS, 'kmpr_am_thx', String(Date.now()));
+			setTimeout(thanks, 600); // after the new tab opened: a warm thank-you on every support card
+		}
 		if (kind === 'buy') {
 			if (openModal(unit.dataset.amS)) e.preventDefault();
 		} else if (kind === 'pay' && C.pay) {
 			const price = (C.price && C.price[variant]) || '';
 			go.href = C.pay.replace('{price}', price).replace('{variant}', variant);
 		}
+	});
+
+	/* ---------- thank-you state: shown for 30 days after a click on «حمایت» ---------- */
+	function thanks() {
+		const t = +get(LS, 'kmpr_am_thx') || 0;
+		if (!t || Date.now() - t > 30 * 864e5) return;
+		d.querySelectorAll('[data-am-thanks]').forEach((n) => {
+			n.hidden = false;
+			n.closest('.am-sup')?.classList.add('is-thanked');
+		});
+	}
+	thanks();
+	// Official donation banner (external image) that failed before this script ran → show our own button.
+	d.querySelectorAll('.am-sup__banner img').forEach((img) => {
+		const broken = () => img.closest('.am-sup__donate')?.classList.add('is-broken');
+		if (img.complete && !img.naturalWidth) broken();
+		else img.addEventListener('error', broken, { once: true });
 	});
 
 	/* ---------- hub / sidebar cards already in the page ---------- */

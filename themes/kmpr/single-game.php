@@ -153,7 +153,6 @@ while (have_posts()) :
                 </div>
 
                 <aside class="lg:col-span-5 flex flex-col gap-6" aria-label="جدول امتیاز و آمار شما">
-                    <?php do_action('kmpr_game_slot', $g['id'], 'sidebar'); ?>
                     <?php get_template_part('template-parts/games/leaderboard', null, array('game' => $g)); ?>
                     <section class="rounded-3xl bg-white/[0.025] border border-white/10 p-5 sm:p-6" aria-labelledby="mystats-title" style="--accent: <?= esc_attr($g['accent_hex']); ?>">
                         <div class="flex items-center justify-between gap-3 mb-4">
@@ -164,6 +163,7 @@ while (have_posts()) :
                             <p class="text-sm text-slate-400">در حال بارگذاری آمار…</p>
                         </div>
                     </section>
+                    <?php do_action('kmpr_game_slot', $g['id'], 'sidebar'); // support card after the scores, not before ?>
                 </aside>
             </div>
         </div>

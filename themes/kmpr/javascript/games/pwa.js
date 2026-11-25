@@ -319,6 +319,7 @@ async function devicePlayer() {
 		<input class="gc-hello__in" name="nick" maxlength="24" required autocomplete="nickname" placeholder="مثلاً: شاهین شب">
 		<p class="gc-hello__err" data-err aria-live="polite"></p>
 		<button type="submit" class="gc-hello__go">بزن بریم ▶</button>
+		${window.kmprAccount && !window.kmprAccount.user ? '<p class="gc-hello__acct">حساب داری یا می‌خواهی امتیازهایت روی همه دستگاه‌ها بماند؟ <button type="button" data-acct-open>ورود / ثبت‌نام</button></p>' : ''}
 	</form>`;
 	document.body.appendChild(d);
 	d.addEventListener('cancel', (e) => e.preventDefault()); // nickname is required once

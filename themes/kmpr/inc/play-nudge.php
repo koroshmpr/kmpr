@@ -91,7 +91,7 @@ function kmpr_nudge_context()
 
 add_action('wp_footer', function () {
     $ctx = kmpr_nudge_context();
-    if (!$ctx || !kmpr_nudge_opt('nudge_enabled')) {
+    if (!$ctx || !kmpr_nudge_opt('nudge_enabled') || ($ctx === '404' && !empty($GLOBALS['kmpr_gp_shown']))) { // 404 already shows the inline games strip
         return;
     }
     $ids = kmpr_nudge_opt('nudge_games');

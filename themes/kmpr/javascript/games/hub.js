@@ -296,13 +296,81 @@ function continuePlaying() {
 
 
 function daily() {
-	const el = $('[data-daily]');
-	if (!el) return;
 	const today = new Date().toLocaleDateString('en-CA');
 	const d = store.player.daily && store.player.daily.date === today ? store.player.daily : {};
-	const best = d[el.dataset.engine] || 0;
-	$('[data-daily-best]', el).textContent = best ? fa(best) : '—';
-	$('[data-daily-done]', el).hidden = best < Number(el.dataset.target);
+	$$('[data-daily]').forEach((el) => {
+		const best = d[el.dataset.engine] || 0;
+		$('[data-daily-best]', el).textContent = best ? fa(best) : '—';
+		$('[data-daily-done]', el).hidden = best < Number(el.dataset.target);
+		el.classList.toggle('is-done', best >= Number(el.dataset.target));
+	});
+}
+
+/* ---------- «یک بازی شانسی»: prefers games never played on this device ---------- */
+function quickPlay() {
+	const a = $('[data-quick-play]');
+	if (!a || !games.length) return;
+	const fresh = games.filter((g) => !(store.player.games[g.engine] && store.player.games[g.engine].plays));
+	const label = $('[data-quick-label]', a);
+	if (label) label.textContent = fresh.length ? `${fa(fresh.length)} بازی هنوز امتحان نکرده‌ای` : 'همه را امتحان کرده‌ای؛ این بار شانسی!';
+	a.addEventListener('click', (e) => {
+		if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+		const pool = fresh.length ? fresh : games;
+		const g = pool[Math.floor(Math.random() * pool.length)];
+		if (!g || !g.url) return;
+		e.preventDefault();
+		a.classList.add('is-rolling');
+		const t = $('.gc-now__t', a);
+		if (t) t.textContent = g.title;
+		setTimeout(() => (location.href = g.url), window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450);
+	});
+}
+
+/* ---------- play streak: distinct days with a finished game on this device (own key; store.recent keeps only 12) ---------- */
+function streak() {
+	const el = $('[data-gc-streak]');
+	if (!el) return;
+	const K = 'kmpr_gc_days';
+	const day = (t) => new Date(t).toLocaleDateString('en-CA');
+	let days = [];
+	try {
+		days = JSON.parse(localStorage.getItem(K) || '[]');
+	} catch (e) {
+		days = [];
+	}
+	const p = store.player;
+	(p.recent || []).forEach((r) => r.t && days.push(day(r.t)));
+	Object.values(p.games || {}).forEach((g) => g && g.at && days.push(day(g.at)));
+	days = [...new Set(days)].sort().slice(-60);
+	try {
+		localStorage.setItem(K, JSON.stringify(days));
+	} catch (e) {
+		/* private mode */
+	}
+	const has = new Set(days);
+	const today = day(Date.now());
+	let n = 0;
+	const cur = new Date();
+	if (!has.has(today)) cur.setDate(cur.getDate() - 1); // the streak stays alive until the end of today
+	while (has.has(day(cur))) {
+		n++;
+		cur.setDate(cur.getDate() - 1);
+	}
+	let played = 0;
+	let records = 0;
+	games.forEach((g) => {
+		const s = p.games[g.engine];
+		if (s && s.plays) played++;
+		if (s && s.best > 0) records++;
+	});
+	if (!played) return; // keep the friendly first-time copy
+	const title = $('[data-streak-title]', el);
+	const sub = $('[data-streak-sub]', el);
+	const bar = $('[data-streak-bar]', el);
+	el.classList.toggle('is-hot', n >= 2);
+	title.textContent = n > 1 ? `${fa(n)} روز پشت‌سرهم بازی!` : has.has(today) ? 'امروز بازی کردی 👏' : 'امروز یک دست بزن';
+	sub.textContent = `${fa(played)} از ${fa(games.length)} بازی امتحان شده · ${fa(records)} رکورد${!has.has(today) && n ? ' · زنجیره‌ات را نشکن' : ''}`;
+	if (bar) bar.style.width = `${Math.round((played / Math.max(1, games.length)) * 100)}%`;
 }
 
 function recentList() {
@@ -350,6 +418,7 @@ function renderAll() {
 	badges();
 	continuePlaying();
 	daily();
+	streak();
 	recentList();
 }
 
@@ -619,6 +688,7 @@ export function initHub() {
 	tabs();
 	presence();
 	heroArt();
+	quickPlay();
 	window.addEventListener('kmpr:profile-changed', () => renderAll());
 	sync();
 }

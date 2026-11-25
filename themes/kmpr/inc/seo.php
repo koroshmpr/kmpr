@@ -346,5 +346,6 @@ add_action('wp_head', function () {
 add_filter('perfmatters_critical_image_exclusions', function ($exclusions) {
     $exclusions[] = ':src=';
     $exclusions[] = 'x-bind:src';
+    $exclusions[] = 'kmpr-no-critical'; // hidden search-modal thumbnails come first in the HTML; never preload them over the real LCP image
     return $exclusions;
 });

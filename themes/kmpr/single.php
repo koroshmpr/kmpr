@@ -158,7 +158,7 @@ while (have_posts()) :
             <article id="lesson" class="lg:col-span-8 min-w-0" aria-label="<?= esc_attr(get_the_title()); ?>">
 
                 <?php if (has_post_thumbnail()) : ?>
-                    <figure class="mb-10 rounded-3xl overflow-hidden border border-white/10 bg-slate-900" data-aos="zoom-in">
+                    <figure class="mb-10 rounded-3xl overflow-hidden border border-white/10 bg-slate-900" data-hero-rise><?php /* LCP image: transform-only entrance, never faded from 0 */ ?>
                         <?php the_post_thumbnail('large', array('class' => 'w-full h-auto', 'alt' => esc_attr(get_the_title()), 'fetchpriority' => 'high', 'loading' => 'eager')); ?>
                     </figure>
                 <?php endif; ?>
@@ -332,6 +332,8 @@ while (have_posts()) :
                         <a href="<?= esc_url(kmpr_request_url()); ?>" data-magnetic class="shrink-0 self-start md:self-center inline-flex items-center gap-2 min-h-11 px-8 py-3.5 rounded-full bg-secondary hover:bg-amber-500 text-slate-950 text-sm font-black whitespace-nowrap transition-colors">ثبت درخواست پروژه</a>
                     </div>
                 </section>
+
+                <?php if (function_exists('kmpr_games_promo')) { kmpr_games_promo('post'); } ?>
 
                 <div class="mt-14">
                     <?php if (comments_open() || get_comments_number()) {

@@ -112,9 +112,13 @@ require_once KMPR_INC . 'article-banners.php'; // [kmpr_banner] in-article banne
 require_once KMPR_INC . 'acf-portfolio-extra.php';
 require_once KMPR_INC . 'acf-services-extra.php';
 require_once KMPR_INC . 'games.php';
+require_once KMPR_INC . 'games-draw.php'; // «نقاش‌باشی» online draw-and-guess rooms (own events table, dashboard switch)
 require_once KMPR_INC . 'games-lobby.php'; // lobby presence + generated 2D cover art
+require_once KMPR_INC . 'games-promo.php'; // «یک دست بازی» strip: 404, end of articles, [kmpr_games] (dashboard switches)
 require_once KMPR_INC . 'arcade-subscription.php'; // «پاس آرکید» real subscription: plans, manual/Zarinpal payment, approvals, perks (one master switch)
 require_once KMPR_INC . 'arcade-monetize.php'; // Game Center demand test: «پاس آرکید», support, sponsors, advergame funnel
+require_once KMPR_INC . 'accounts.php'; // visitor accounts: password login, one identity + synced data on every device (master switch)
+require_once KMPR_INC . 'accounts-friends.php'; // friends list, online status, «دعوت به بازی» (needs accounts.php)
 
 /**
  * Content sync bridge: applies queued kmpr_sync_* meta written by remote tools (MCP) via core APIs

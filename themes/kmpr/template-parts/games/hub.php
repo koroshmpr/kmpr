@@ -190,6 +190,44 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
             </section>
         <?php endif; ?>
 
+        <?php if (!$term && $ids) :
+            $quick = $ids[abs(crc32('kmpr-quick-' . wp_date('Y-m-d'))) % count($ids)];
+            $qd    = kmpr_game_data($quick, 'thumbnail'); ?>
+            <!-- «What should I play now?» — daily challenge · surprise me · my streak (all real, local data) -->
+            <section class="gc-now mt-5" aria-label="الان چی بازی کنم؟" data-gc-now>
+                <?php if ($daily) :
+                    $dn = kmpr_game_data($daily['id'], 'thumbnail'); ?>
+                    <a href="<?= esc_url($dn['url']); ?>" class="gc-now__card gc-now__card--daily" style="--accent: <?= esc_attr($dn['accent_hex']); ?>" data-daily data-engine="<?= esc_attr($daily['engine']); ?>" data-target="<?= (int) $daily['target']; ?>">
+                        <span class="gc-now__ic"><?= kmpr_game_icon_svg($daily['engine']); // phpcs:ignore ?></span>
+                        <span class="gc-now__body">
+                            <span class="gc-now__k">چالش امروز · <?= esc_html(shamsi_date('j F', time())); ?></span>
+                            <span class="gc-now__t"><?= esc_html($dn['title']); ?>: <b><?= esc_html(kmpr_game_num($daily['target'])); ?></b> امتیاز</span>
+                            <span class="gc-now__s">امروز: <b data-daily-best>—</b> <span class="gc-now__done" data-daily-done hidden>✓ انجام شد</span></span>
+                        </span>
+                        <span class="gc-now__go" aria-hidden="true">قبول</span>
+                    </a>
+                <?php endif; ?>
+                <a href="<?= esc_url($qd['url']); ?>" class="gc-now__card gc-now__card--dice" data-quick-play>
+                    <span class="gc-now__ic gc-now__dice" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+                    <span class="gc-now__body">
+                        <span class="gc-now__k">نمی‌دانی چی بازی کنی؟</span>
+                        <span class="gc-now__t">یک بازی شانسی</span>
+                        <span class="gc-now__s" data-quick-label>اول بازی‌هایی که هنوز امتحان نکرده‌ای</span>
+                    </span>
+                    <span class="gc-now__go" aria-hidden="true">بزن</span>
+                </a>
+                <div class="gc-now__card gc-now__card--me" data-gc-streak>
+                    <span class="gc-now__ic gc-now__flame" aria-hidden="true">🔥</span>
+                    <span class="gc-now__body">
+                        <span class="gc-now__k">پیشرفت من</span>
+                        <span class="gc-now__t" data-streak-title>اولین دستت را بزن!</span>
+                        <span class="gc-now__s" data-streak-sub>رکوردها و نشان‌هایت روی همین دستگاه ذخیره می‌شوند.</span>
+                    </span>
+                    <span class="gc-now__meter" aria-hidden="true"><span data-streak-bar style="width:0%"></span></span>
+                </div>
+            </section>
+        <?php endif; ?>
+
         <?php if ($genres && !is_wp_error($genres)) : ?>
             <nav aria-label="ژانرها" class="mt-8 -mx-4 px-4 overflow-x-auto gc-noscroll">
                 <ul class="flex gap-2 w-max">
@@ -243,10 +281,6 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                 <?php if (!$ids) : ?>
                     <p class="text-center text-slate-300 py-16 rounded-3xl border border-dashed border-white/10">هنوز بازی‌ای در این بخش منتشر نشده است.</p>
                 <?php endif; ?>
-
-                <?php if (!$ids) : ?>
-                    <p class="text-center text-slate-300 py-16 rounded-3xl border border-dashed border-white/10">هنوز بازی‌ای در این بخش منتشر نشده است.</p>
-                <?php endif; ?>
                 <?php do_action('kmpr_games_hub_slot', 'after_rails', $term); ?>
             </div>
         </section>
@@ -260,7 +294,7 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
                             <h2 class="flex items-center gap-2 text-lg font-black text-white"><span class="gc-tab__live" aria-hidden="true"></span> الان آنلاین</h2>
                             <span class="text-xs text-slate-400" data-online-label>در حال بررسی…</span>
                         </div>
-                        <ul class="gc-online" data-online aria-live="polite"></ul>
+                        <ul class="gc-online" data-online aria-live="polite"><li class="gc-online__wait">در حال پیدا کردن بازیکن‌های آنلاین…</li></ul>
                         <p class="mt-3 text-xs text-slate-400 leading-6">بازیکن‌هایی که همین حالا در گیم‌سنتر هستند (هر ۲۵ ثانیه به‌روز می‌شود).</p>
                     </div>
                     <div class="lg:col-span-7 flex flex-col gap-5">
@@ -349,6 +383,10 @@ $arrow = '<svg width="18" height="18" class="shrink-0" viewBox="0 0 20 20" fill=
             </section>
         <?php endif; ?>
     </div>
+
+    <?php if (!$term) : ?>
+        <script>(function(){var h=location.hash.slice(1),p=document.querySelectorAll('[data-pane]'),t=null;if(!h)return;try{p.forEach(function(x){if(x.dataset.pane===h||x.querySelector('#'+CSS.escape(h)))t=x;});}catch(e){}if(t)p.forEach(function(x){x.hidden=x!==t;});})();</script>
+    <?php endif; ?>
 
     <!-- CTA -->
     <section class="container mx-auto px-4 sm:px-6 py-16">

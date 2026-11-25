@@ -14,7 +14,7 @@
 /**
  * Add custom `@font-face` rules.
  */
-@import "../custom/fonts.css";
+/* @font-face is printed inline in <head> by inc/assets.php (switchable font-display). */
 @import "../custom/form.css";
 @import "../custom/motion.css";
 @import "../custom/mobile-nav.css";

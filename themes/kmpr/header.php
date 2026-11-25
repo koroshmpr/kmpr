@@ -14,15 +14,15 @@
     <link rel="icon" type="image/png" sizes="32x32" href="<?= esc_url($fav_url); ?>">
     <link rel="apple-touch-icon" href="<?= esc_url($fav_url); ?>">
     <?php endif; ?>
+    <?php wp_head(); ?>
     <script>
-        /* KMPR motion bootstrap: hide reveal targets only when JS + motion are available; never leave content hidden. */
+        /* KMPR motion bootstrap: enables CSS entrances (never hides content before JS; see tailwind/custom/motion.css). */
         (function (d) {
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            if (window.KMPR_NO_MOTION || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
             d.classList.add('motion-ready');
             setTimeout(function () { if (!window.__kmprMotion) d.classList.add('motion-fallback'); }, 3500);
         })(document.documentElement);
     </script>
-    <?php wp_head(); ?>
 </head>
 
 <body <?php body_class('font-yekan bg-slate-950 text-slate-100 antialiased selection:bg-secondary/30 selection:text-secondary'); ?>

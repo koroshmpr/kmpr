@@ -7,28 +7,44 @@
 	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.motion-ready:not(.motion-fallback) [data-aos] {
-	opacity: 0;
-	transition-property: opacity, transform, filter;
-	transition-duration: 900ms;
-	transition-timing-function: var(--ease-out-expo);
-	will-change: opacity, transform;
+/* Entrance model (no flash, no jump):
+   - Every [data-aos] / [data-split] element plays a CSS entrance from the very first paint (no JS needed),
+     so above-the-fold content never goes visible → hidden → animated.
+   - motion.js (inline at the end of <body>) then parks only the targets that are still BELOW the viewport
+     (.aos-wait, invisible while off-screen) and replays their entrance when they scroll in.
+   - fill-mode "backwards": once finished the element is back to its own styles (hover transforms keep working). */
+.motion-ready [data-aos] {
+	animation: var(--aos-anim, aos-fade-up) var(--aos-dur, 900ms) var(--ease-out-expo) var(--aos-delay, 0ms) backwards;
 }
-.motion-ready:not(.motion-fallback) [data-aos='fade-up'] { transform: translate3d(0, 36px, 0); }
-.motion-ready:not(.motion-fallback) [data-aos='fade-down'] { transform: translate3d(0, -28px, 0); }
-.motion-ready:not(.motion-fallback) [data-aos='fade-left'] { transform: translate3d(40px, 0, 0); }
-.motion-ready:not(.motion-fallback) [data-aos='fade-right'] { transform: translate3d(-40px, 0, 0); }
-.motion-ready:not(.motion-fallback) [data-aos='zoom-in'] { transform: scale(0.94); }
-.motion-ready:not(.motion-fallback) [data-aos='zoom-out'] { transform: scale(1.06); }
-.motion-ready:not(.motion-fallback) [data-aos='blur'] { filter: blur(12px); transform: translate3d(0, 16px, 0); }
-.motion-ready:not(.motion-fallback) [data-split]:not([data-split-done]) { opacity: 0; }
-.motion-ready [data-aos].is-in {
-	opacity: 1;
-	transform: none;
-	filter: none;
-}
+.motion-ready [data-aos='fade-down'] { --aos-anim: aos-fade-down; }
+.motion-ready [data-aos='fade-left'] { --aos-anim: aos-fade-left; }
+.motion-ready [data-aos='fade-right'] { --aos-anim: aos-fade-right; }
+.motion-ready [data-aos='zoom-in'] { --aos-anim: aos-zoom-in; }
+.motion-ready [data-aos='zoom-out'] { --aos-anim: aos-zoom-out; }
+.motion-ready [data-aos='blur'] { --aos-anim: aos-blur; }
+[data-aos-delay='50'] { --aos-delay: 50ms; } [data-aos-delay='100'] { --aos-delay: 100ms; } [data-aos-delay='120'] { --aos-delay: 120ms; }
+[data-aos-delay='150'] { --aos-delay: 150ms; } [data-aos-delay='200'] { --aos-delay: 200ms; } [data-aos-delay='250'] { --aos-delay: 250ms; }
+[data-aos-delay='300'] { --aos-delay: 300ms; } [data-aos-delay='350'] { --aos-delay: 350ms; } [data-aos-delay='400'] { --aos-delay: 400ms; }
+[data-aos-delay='450'] { --aos-delay: 450ms; } [data-aos-delay='500'] { --aos-delay: 500ms; } [data-aos-delay='550'] { --aos-delay: 550ms; }
+[data-aos-delay='600'] { --aos-delay: 600ms; } [data-aos-delay='650'] { --aos-delay: 650ms; } [data-aos-delay='700'] { --aos-delay: 700ms; }
+[data-aos-delay='800'] { --aos-delay: 800ms; } [data-aos-delay='950'] { --aos-delay: 950ms; } [data-aos-delay='1100'] { --aos-delay: 1100ms; }
+[data-aos-duration='600'] { --aos-dur: 600ms; } [data-aos-duration='800'] { --aos-dur: 800ms; }
+[data-stagger] > [data-aos]:nth-child(2) { --aos-delay: 70ms; } [data-stagger] > [data-aos]:nth-child(3) { --aos-delay: 140ms; }
+[data-stagger] > [data-aos]:nth-child(4) { --aos-delay: 210ms; } [data-stagger] > [data-aos]:nth-child(5) { --aos-delay: 280ms; }
+[data-stagger] > [data-aos]:nth-child(n + 6) { --aos-delay: 350ms; }
+/* Parked below the fold (set by motion.js): invisible until it scrolls in, then the entrance replays. */
+.motion-ready [data-aos].aos-wait { animation: none; opacity: 0; }
+@keyframes aos-fade-up { from { opacity: 0; transform: translate3d(0, 36px, 0); } }
+@keyframes aos-fade-down { from { opacity: 0; transform: translate3d(0, -28px, 0); } }
+@keyframes aos-fade-left { from { opacity: 0; transform: translate3d(40px, 0, 0); } }
+@keyframes aos-fade-right { from { opacity: 0; transform: translate3d(-40px, 0, 0); } }
+@keyframes aos-zoom-in { from { opacity: 0; transform: scale(0.94); } }
+@keyframes aos-zoom-out { from { opacity: 0; transform: scale(1.06); } }
+@keyframes aos-blur { from { opacity: 0; filter: blur(12px); transform: translate3d(0, 16px, 0); } }
 
-/* Word-by-word headline */
+/* Word-by-word headline. Above the fold: the whole heading rises (transform only → never hidden, LCP-safe).
+   Below the fold: motion.js splits it into words that rise in sequence when scrolled into view. */
+.motion-ready [data-split] { animation: hero-rise 0.9s var(--ease-out-expo) backwards; }
 .split-word {
 	display: inline-block;
 	overflow: hidden;
@@ -38,14 +54,12 @@
 }
 .split-word > span {
 	display: inline-block;
-}
-.motion-ready:not(.motion-fallback) [data-split] .split-word > span {
-	transform: translate3d(0, 110%, 0);
 	transition: transform 1s var(--ease-out-expo);
 	transition-delay: calc(var(--i, 0) * 70ms + var(--split-delay, 0ms));
 }
-.motion-ready [data-split].is-in .split-word > span {
-	transform: none;
+.motion-ready [data-split].aos-wait .split-word > span {
+	transform: translate3d(0, 110%, 0);
+	transition: none;
 }
 
 /* Cursor spotlight cards */
@@ -270,15 +284,14 @@
 html { background-color: #020617; } /* never let the white UA canvas show through during transitions */
 ::view-transition { background-color: #020617; }
 ::view-transition-group(root) { background-color: #020617; }
-::view-transition-old(root) { animation: vt-out 0.32s cubic-bezier(0.4, 0, 1, 1) both; transform-origin: 50% 0; }
-::view-transition-new(root) { animation: vt-in 0.62s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both; }
+::view-transition-old(root) { animation: vt-out 0.2s cubic-bezier(0.4, 0, 1, 1) both; transform-origin: 50% 0; }
+::view-transition-new(root) { animation: vt-in 0.38s cubic-bezier(0.16, 1, 0.3, 1) 0.04s both; }
 @keyframes vt-out {
-	to { opacity: 0; transform: scale(0.94) translateY(-2%); border-radius: 28px; }
+	to { opacity: 0; transform: scale(0.985); }
 }
+/* Short, small rise: a big slide (7vh + clip) read as the page "jumping" on every navigation. */
 @keyframes vt-in {
-	from { opacity: 0; transform: translateY(7vh); clip-path: inset(0 2.5% 0 2.5% round 32px); }
-	60% { opacity: 1; }
-	to { clip-path: inset(0 0 0 0 round 0); }
+	from { opacity: 0; transform: translate3d(0, 12px, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
 	@view-transition { navigation: none; }
@@ -333,3 +346,7 @@ html { background-color: #020617; } /* never let the white UA canvas show throug
 }
 @keyframes hp-scanline { from { transform: translateY(-100%); } to { transform: translateY(460%); } }
 @media (prefers-reduced-motion: reduce) { .hp-scan::after { animation: none; display: none; } }
+
+/* Infinite decorative animations pause while off-screen (motion.js toggles .anim-off): no per-frame style/paint work
+   for things nobody can see (article banners, glowing borders, marquees, auroras…). */
+.anim-off, .anim-off *, .anim-off::before, .anim-off::after, .anim-off *::before, .anim-off *::after { animation-play-state: paused !important; }

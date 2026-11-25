@@ -132,7 +132,7 @@ $kmpr_svg = function ($type, $size = 18) use ($kmpr_type_icons) {
                                 <li>
                                     <a href="<?= esc_url(get_permalink($kmpr_p)); ?>" class="group flex items-center gap-3 py-2.5 min-h-12">
                                         <?php if (has_post_thumbnail($kmpr_p)) : ?>
-                                            <?= get_the_post_thumbnail($kmpr_p, 'thumbnail', array('class' => 'size-11 shrink-0 rounded-xl object-cover bg-slate-800', 'loading' => 'lazy', 'alt' => esc_attr(get_the_title($kmpr_p)))); ?>
+                                            <?= get_the_post_thumbnail($kmpr_p, 'thumbnail', array('class' => 'size-11 shrink-0 rounded-xl object-cover bg-slate-800 kmpr-no-critical', 'loading' => 'lazy', 'alt' => esc_attr(get_the_title($kmpr_p)))); ?>
                                         <?php endif; ?>
                                         <span class="min-w-0 flex-1 text-sm font-bold text-slate-200 group-hover:text-secondary transition-colors line-clamp-2 leading-6"><?= esc_html(get_the_title($kmpr_p)); ?></span>
                                     </a>

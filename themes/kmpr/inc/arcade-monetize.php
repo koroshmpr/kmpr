@@ -54,7 +54,13 @@ function kmpr_am_defaults()
         'am_support_url'   => '',
         'am_support_title' => 'حمایت از سازنده',
         'am_support_text'  => 'همه بازی‌ها رایگان و بدون تبلیغ مزاحم‌اند. اگر لذت بردی، با یک قهوه انرژی بده.',
-        'am_support_btn'   => 'حمایت می‌کنم',
+        'am_support_btn'   => 'حمایت با قهوه ☕',
+        'am_support_banner' => 'https://www.coffeebede.com/banner.svg?u=koroshmpr',
+        'am_support_banner_alt' => 'برام یه قهوه بخر',
+        'am_support_kicker' => 'گیم‌سنتر مستقل و رایگان است',
+        'am_support_uses'  => "هزینه هاست و دامنه گیم‌سنتر\nساعت‌هایی که صرف ساختن بازی‌های تازه می‌شود\nرفع باگ و روان‌تر کردن بازی‌ها روی گوشی",
+        'am_support_tiers' => '',
+        'am_support_thanks' => 'مرسی که به فکر گیم‌سنتر بودی! هر حمایت یعنی یک بازی تازه زودتر می‌رسد.',
         'am_sponsor_label' => 'حامی این بازی',
         'am_sponsor_cta'   => 'جای برند شما — اسپانسر این بازی شوید',
         'am_adv_title'     => 'این بازی رو برای برندت می‌خوای؟',
@@ -173,7 +179,15 @@ add_action('acf/include_fields', function () {
             $f('am_support_url', 'لینک صفحه حمایت (کافه‌بده، حامی‌باش، دارمت…)', 'url', array('instructions' => 'اگر خالی باشد دکمه حمایت نمایش داده نمی‌شود.')),
             $f('am_support_title', 'تیتر'),
             $f('am_support_text', 'توضیح', 'textarea', array('rows' => 2, 'new_lines' => '')),
-            $f('am_support_btn', 'متن دکمه'),
+            $f('am_support_btn', 'متن دکمه (روی گوشی دکمه بزرگ همین است)'),
+            kmpr_acf('field_kmpr_am_support_qr', 'am_support_qr', 'کد QR لینک حمایت (برای دسکتاپ)', 'image', array('return_format' => 'id', 'preview_size' => 'thumbnail', 'mime_types' => 'png,webp,svg,jpg,jpeg', 'wrapper' => array('width' => 34), 'instructions' => 'خالی = QR پیش‌فرض کافه‌بده (یک بار در کتابخانه رسانه وارد شده). روی گوشی نمایش داده نمی‌شود.')),
+            array('key' => 'field_kmpr_am_support_banner_on', 'name' => 'am_support_banner_on', 'label' => 'بنر رسمی سرویس حمایت (دسکتاپ)', 'type' => 'true_false', 'ui' => 1, 'default_value' => 1, 'wrapper' => array('width' => 33)),
+            $f('am_support_banner', 'آدرس تصویر بنر', 'url', array('wrapper' => array('width' => 33), 'instructions' => 'اگر لود نشود دکمه خود سایت نمایش داده می‌شود.')),
+            $f('am_support_banner_alt', 'متن جایگزین بنر', 'text'),
+            $f('am_support_kicker', 'برچسب بالای تیتر'),
+            $f('am_support_uses', 'حمایت صرف چه می‌شود؟ (هر خط یکی)', 'textarea', array('rows' => 3, 'new_lines' => '', 'instructions' => 'شفاف و واقعی بنویسید؛ خالی = این فهرست نمایش داده نمی‌شود.')),
+            $f('am_support_tiers', 'مبلغ‌های پیشنهادی (اختیاری، هر خط: مبلغ تومان|عنوان)', 'textarea', array('rows' => 3, 'new_lines' => '', 'placeholder' => "30000|یک قهوه\n100000|یک شب کدنویسی", 'instructions' => 'هر مبلغ دکمه‌ای می‌شود که به همان لینک حمایت می‌رود. اگر در لینک {amount} بگذارید با مبلغ (تومان) جایگزین می‌شود؛ وگرنه مبلغ را در صفحه حمایت انتخاب می‌کنند. خالی = بدون مبلغ.')),
+            $f('am_support_thanks', 'پیام تشکر (بعد از کلیک روی حمایت)', 'text'),
 
             kmpr_acf_tab('field_kmpr_am_tab_b2b', 'اسپانسر و بازی تبلیغاتی'),
             $f('am_sponsor_label', 'برچسب اسپانسر'),
@@ -659,16 +673,120 @@ function kmpr_am_render_pass_card()
     <?php
 }
 
+/**
+ * Default donation QR: content/media/coffeebede-qr.png → Media Library once (option kmpr_am_qr_default).
+ */
+add_action('admin_init', function () {
+    if (get_option('kmpr_am_qr_default') || !function_exists('kmpr_pack_import_media') || !is_readable(get_template_directory() . '/content/media/coffeebede-qr.png')) {
+        return;
+    }
+    $id = kmpr_pack_import_media(array('file' => 'coffeebede-qr.png', 'alt' => 'کد QR صفحه حمایت در کافه‌بده', 'title' => 'QR حمایت از گیم‌سنتر'));
+    if (!is_wp_error($id) && $id) {
+        update_option('kmpr_am_qr_default', (int) $id, false);
+    }
+});
+
+function kmpr_am_support_qr_id()
+{
+    $id = (int) (function_exists('get_field') ? get_field('am_support_qr', 'option') : 0);
+    if (!$id) {
+        $id = (int) get_option('kmpr_am_qr_default');
+    }
+    return $id && wp_attachment_is_image($id) ? $id : 0;
+}
+
+function kmpr_am_support_banner_on()
+{
+    $v = function_exists('get_field') ? get_field('am_support_banner_on', 'option') : null;
+    return (($v === null || $v === '') ? true : (bool) $v) && (string) kmpr_am_opt('am_support_banner') !== '';
+}
+
+/**
+ * Suggested support amounts from «مبلغ‌های پیشنهادی» (amount|label per line).
+ */
+function kmpr_am_support_tiers()
+{
+    $out = array();
+    foreach (function_exists('kmpr_lines') ? kmpr_lines(kmpr_am_opt('am_support_tiers')) : array() as $line) {
+        $p   = array_map('trim', explode('|', $line, 2));
+        $amt = (int) kmpr_latin_digits_safe(preg_replace('/[^0-9۰-۹]/u', '', $p[0]));
+        if ($amt > 0) {
+            $out[] = array('amount' => $amt, 'label' => $p[1] ?? '');
+        }
+    }
+    return array_slice($out, 0, 4);
+}
+
+function kmpr_am_support_url($amount = 0)
+{
+    $url = (string) kmpr_am_opt('am_support_url');
+    return str_replace('{amount}', $amount ? (string) $amount : '', $url);
+}
+
+/**
+ * Support card. Full (hub) = kicker, what support pays for, suggested amounts, pass link;
+ * compact (sidebar) = same story, tighter. Subscribers (html.is-sub) see a thank-you line instead of asks.
+ * A click on any support link stores a local «thanks» flag → arcade-monetize.js shows the thank-you state.
+ */
 function kmpr_am_render_support_card($surface, $compact = false)
 {
+    $uses  = function_exists('kmpr_lines') ? kmpr_lines(kmpr_am_opt('am_support_uses')) : array();
+    $tiers = kmpr_am_support_tiers();
+    $has_a = strpos((string) kmpr_am_opt('am_support_url'), '{amount}') !== false;
+    $pass  = kmpr_am_pass_on() && function_exists('kmpr_sub_enabled') && kmpr_sub_enabled();
+    $uid   = 'am-sup-' . wp_unique_id();
+    $ext   = ' target="_blank" rel="noopener nofollow" data-am-go="sup"';
     ?>
-    <aside class="am-sup<?= $compact ? ' am-sup--mini' : ''; ?>" data-am="sup" data-am-s="<?= esc_attr($surface); ?>" aria-label="<?= esc_attr(kmpr_am_opt('am_support_title')); ?>">
-        <span class="am-sup__ic"><?= kmpr_am_icon('coffee', 24); ?></span>
-        <div class="am-sup__body">
-            <p class="am-sup__title"><?= esc_html(kmpr_am_opt('am_support_title')); ?></p>
-            <p class="am-sup__text"><?= esc_html(kmpr_am_opt('am_support_text')); ?></p>
+    <aside class="am-sup<?= $compact ? ' am-sup--mini' : ''; ?>" data-am="sup" data-am-s="<?= esc_attr($surface); ?>" aria-labelledby="<?= esc_attr($uid); ?>">
+        <div class="am-sup__fx" aria-hidden="true"></div>
+        <div class="am-sup__head">
+            <span class="am-sup__ic" aria-hidden="true"><?= kmpr_am_icon('coffee', $compact ? 24 : 30); ?><i class="am-sup__steam"></i></span>
+            <div class="min-w-0">
+                <p class="am-sup__kicker"><?= esc_html(kmpr_am_opt('am_support_kicker')); ?></p>
+                <h2 id="<?= esc_attr($uid); ?>" class="am-sup__title"><?= esc_html(kmpr_am_opt('am_support_title')); ?></h2>
+            </div>
         </div>
-        <a class="am-btn am-btn--ghost" href="<?= esc_url(kmpr_am_opt('am_support_url')); ?>" target="_blank" rel="noopener nofollow" data-am-go="sup"><?= esc_html(kmpr_am_opt('am_support_btn')); ?></a>
+        <p class="am-sup__text"><?= esc_html(kmpr_am_opt('am_support_text')); ?></p>
+        <p class="am-sup__thanks" data-am-thanks role="status" hidden><span aria-hidden="true">💛</span> <?= esc_html(kmpr_am_opt('am_support_thanks')); ?></p>
+        <p class="am-sup__member"><span aria-hidden="true">👑</span> تو با «<?= esc_html(kmpr_am_opt('am_pass_title')); ?>» از حامیان گیم‌سنتری؛ ممنونم!</p>
+        <?php if ($uses) : ?>
+            <div class="am-sup__uses">
+                <p class="am-sup__label">حمایت تو صرف این‌ها می‌شود</p>
+                <ul>
+                    <?php foreach ($uses as $u) : ?>
+                        <li><span class="am-perks__ic"><?= kmpr_am_icon('check', 13); ?></span><?= esc_html($u); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+        <div class="am-sup__ask">
+            <?php if ($tiers) : ?>
+                <ul class="am-sup__tiers" aria-label="مبلغ‌های پیشنهادی">
+                    <?php foreach ($tiers as $t) : ?>
+                        <li><a class="am-tier" href="<?= esc_url(kmpr_am_support_url($t['amount'])); ?>"<?= $ext; // phpcs:ignore ?>><b><?= esc_html(kmpr_am_num($t['amount'])); ?></b><small>تومان<?= $t['label'] !== '' ? ' · ' . esc_html($t['label']) : ''; ?></small></a></li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php if (!$has_a) : ?><p class="am-sup__hint">مبلغ را در صفحه حمایت انتخاب می‌کنی؛ هر مبلغی ارزشمند است.</p><?php endif; ?>
+            <?php endif; ?>
+            <div class="am-sup__btns">
+                <?php $qr = kmpr_am_support_qr_id(); $banner = kmpr_am_support_banner_on(); ?>
+                <div class="am-sup__donate<?= $banner ? ' has-banner' : ''; ?><?= $qr ? ' has-qr' : ''; ?>">
+                    <a class="am-btn am-btn--gold am-sup__go" href="<?= esc_url(kmpr_am_support_url()); ?>"<?= $ext; // phpcs:ignore ?>><?= kmpr_am_icon('coffee', 20); ?><span><?= esc_html(kmpr_am_opt('am_support_btn')); ?></span></a>
+                    <?php if ($banner) : ?>
+                        <a class="am-sup__banner" href="<?= esc_url(kmpr_am_support_url()); ?>"<?= $ext; // phpcs:ignore ?>><img src="<?= esc_url(kmpr_am_opt('am_support_banner')); ?>" width="468" height="100" alt="<?= esc_attr(kmpr_am_opt('am_support_banner_alt')); ?>" decoding="async" referrerpolicy="no-referrer"></a>
+                    <?php endif; ?>
+                    <?php if ($qr) : ?>
+                        <figure class="am-sup__qr">
+                            <?= wp_get_attachment_image($qr, 'full', false, array('class' => 'am-sup__qr-img', 'width' => 112, 'height' => 112, 'loading' => 'lazy', 'decoding' => 'async', 'sizes' => '112px', 'alt' => 'کد QR صفحه حمایت؛ با دوربین گوشی اسکن کنید')); ?>
+                            <figcaption>با دوربین گوشی اسکن کن</figcaption>
+                        </figure>
+                    <?php endif; ?>
+                </div>
+                <?php if ($pass && !$compact) : ?>
+                    <span class="am-sup__pass" data-am="pass" data-am-s="sup"><button type="button" class="am-btn am-btn--ghost" data-am-go="sub" aria-haspopup="dialog"><?= kmpr_am_icon('crown', 18); ?><span>یا «<?= esc_html(kmpr_am_opt('am_pass_title')); ?>» + نشان مشترک ویژه</span></button></span>
+                <?php endif; ?>
+            </div>
+        </div>
     </aside>
     <?php
 }
@@ -683,7 +801,7 @@ add_action('kmpr_games_hub_slot', function ($slot) {
     $want = array(
         'after_hero'  => array('pass'),
         'sidebar'     => array('sup', 'pass'),
-        'after_rails' => array('pass'), // fallback only; it renders before the sidebar in source order
+        'after_rails' => array('pass', 'sup'), // pass fallback + the wide support card at the end of the games tab
     );
     if (!isset($want[$slot])) {
         return;

@@ -167,7 +167,7 @@ function kmpr_requests_settings_page()
         <?php if ($test === 'ok') : ?>
             <div class="notice notice-success"><p>پیام آزمایشی با موفقیت به تلگرام ارسال شد.</p></div>
         <?php elseif ($test) : ?>
-            <div class="notice notice-error"><p>ارسال ناموفق بود. توکن، Chat ID و اینکه ربات را Start کرده‌اید (یا در گروه/کانال ادمین است) را بررسی کنید.</p></div>
+            <div class="notice notice-error"><p>ارسال ناموفق بود. توکن، Chat ID و اینکه ربات را Start کرده‌اید (یا در گروه/کانال ادمین است) را بررسی کنید.</p><?php $tg_err = get_transient('kmpr_tg_last_error'); if ($tg_err) : ?><p><strong>پاسخ تلگرام:</strong> <code dir="ltr"><?= esc_html($tg_err); ?></code></p><?php endif; ?></div>
         <?php endif; ?>
 
         <ol style="line-height:2">
@@ -263,11 +263,14 @@ function kmpr_tg_send($html, $buttons = array())
 
     if (is_wp_error($response)) {
         error_log('[kmpr] Telegram error: ' . $response->get_error_message());
+        set_transient('kmpr_tg_last_error', $response->get_error_message(), HOUR_IN_SECONDS);
         return false;
     }
     $code = wp_remote_retrieve_response_code($response);
     if ($code !== 200) {
         error_log('[kmpr] Telegram HTTP ' . $code . ': ' . wp_remote_retrieve_body($response));
+        $err = json_decode(wp_remote_retrieve_body($response), true);
+        set_transient('kmpr_tg_last_error', 'HTTP ' . $code . ' — ' . (is_array($err) && !empty($err['description']) ? $err['description'] : ''), HOUR_IN_SECONDS);
         return false;
     }
     return true;

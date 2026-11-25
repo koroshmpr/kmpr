@@ -54,6 +54,7 @@ $pad = '<svg width="20" height="20" class="shrink-0" viewBox="0 0 24 24" fill="c
                 <button type="button" class="gh__icon" data-gh-sound aria-pressed="false" aria-label="روشن کردن صدای بازی‌ها">
                     <svg width="18" height="18" class="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z" fill="currentColor"/><path d="m22 9-6 6M16 9l6 6"/></svg>
                 </button>
+                <?php do_action('kmpr_account_button', 'games'); ?>
                 <a href="<?= esc_url($games_url); ?>#profile" class="gh__player" data-gh-player aria-label="پروفایل بازیکن">
                     <span class="gh__player-av" data-gh-avatar></span>
                     <span class="flex flex-col min-w-0 leading-tight">

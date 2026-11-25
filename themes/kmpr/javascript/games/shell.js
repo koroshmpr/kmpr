@@ -399,9 +399,24 @@ export async function createShell(root) {
 	}
 	let focused = false;
 	let pushed = false;
+	// No zoom while playing: phones zoom on quick repeated taps / two-finger touches (2P games). The viewport
+	// is pinned only while a game is focused and restored on exit, so the rest of the page stays zoomable.
+	const vpMeta = document.querySelector('meta[name="viewport"]');
+	const vpOrig = vpMeta ? vpMeta.getAttribute('content') || '' : '';
+	const noGesture = (e) => e.cancelable && e.preventDefault();
+	const noMultiTouch = (e) => e.touches && e.touches.length > 1 && e.cancelable && e.preventDefault();
+	const lockZoom = (on) => {
+		if (vpMeta) vpMeta.setAttribute('content', on ? vpOrig.replace(/\s*,?\s*(user-scalable|maximum-scale|minimum-scale)=[^,]*/g, '') + ', maximum-scale=1, user-scalable=no' : vpOrig);
+		const fn = on ? 'addEventListener' : 'removeEventListener';
+		// iOS ignores user-scalable=no: cancel its pinch gesture events and multi-finger moves instead.
+		['gesturestart', 'gesturechange'].forEach((t) => document[fn](t, noGesture, { passive: false }));
+		document[fn]('touchmove', noMultiTouch, { passive: false });
+	};
+	frame.addEventListener('dblclick', (e) => e.target.closest('input, textarea') || e.preventDefault());
 	const enterFocus = (gesture = true) => {
 		if (!focused) {
 			focused = true;
+			lockZoom(true);
 			document.documentElement.classList.add('game-focus');
 			root.classList.add('is-focus');
 			if (!pushed) {
@@ -422,7 +437,8 @@ export async function createShell(root) {
 				.then(() => {
 					const o = (inst && inst.orientation) || (LANDSCAPE && 'landscape');
 					if (!o) return;
-					const lock = screen.orientation && screen.orientation.lock ? screen.orientation.lock(o) : Promise.reject();
+					const so = window.screen.orientation; // `screen` is the overlay helper in this scope
+					const lock = so && so.lock ? so.lock(o) : Promise.reject();
 					// A fullscreen element ignores CSS transforms: if the lock is refused, drop fullscreen and rotate with CSS.
 					return lock.catch(() => {
 						if (LANDSCAPE && window.innerHeight > window.innerWidth && fsElement()) (document.exitFullscreen || document.webkitExitFullscreen).call(document).catch?.(() => {});
@@ -435,6 +451,7 @@ export async function createShell(root) {
 	const exitFocus = () => {
 		if (!focused) return;
 		focused = false;
+		lockZoom(false);
 		if (state === 'running') pause();
 		saveSnap(true);
 		document.documentElement.classList.remove('game-focus');
@@ -606,6 +623,7 @@ export async function createShell(root) {
 			<p class="game-screen__score">${fa(final)}</p>
 			<p class="game-screen__text">بهترین امتیاز شما: <b>${fa(best)}</b></p>
 			${metaHtml}
+			${needsNick ? '' : `<div class="game-screen__actions">${overActions(false)}</div>`}
 			${achHtml}
 			${
 				needsNick
@@ -620,8 +638,8 @@ export async function createShell(root) {
 					: ''
 			}
 			<p class="game-screen__status" data-submit-status aria-live="polite"></p>
+			${needsNick ? `<div class="game-screen__actions">${overActions(true)}</div>` : ''}
 			<div data-kmpr-slot="game-over"></div>
-			<div class="game-screen__actions">${overActions(needsNick)}</div>
 			<p class="game-screen__keys" aria-hidden="true">Enter = دوباره · M = تغییر حالت</p>
 		</div>`);
 

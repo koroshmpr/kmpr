@@ -1,0 +1,443 @@
+/* ==========================================================================
+   Game Center extras: «الان چی بازی کنم؟» strip (hub) + «یک دست بازی» site strip
+   (markup: template-parts/games/hub.php, template-parts/games/promo.php)
+   ========================================================================== */
+
+/* ---------- hub: what to play now ---------- */
+.gc-now {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.75rem;
+}
+@media (min-width: 768px) {
+	.gc-now {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	.gc-now__card--me {
+		grid-column: 1 / -1;
+	}
+}
+@media (min-width: 1100px) {
+	.gc-now {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+	.gc-now__card--me {
+		grid-column: auto;
+	}
+}
+.gc-now__card {
+	--accent: #f59e0b;
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	min-height: 5.25rem;
+	padding: 0.85rem 1rem;
+	border-radius: 1.4rem;
+	background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, transparent), rgb(15 23 42 / 0.75) 65%);
+	border: 1px solid color-mix(in srgb, var(--accent) 35%, rgb(255 255 255 / 0.08));
+	color: #e2e8f0;
+	-webkit-tap-highlight-color: transparent;
+	transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.25s, box-shadow 0.25s;
+}
+a.gc-now__card:hover,
+a.gc-now__card:focus-visible {
+	transform: translateY(-3px);
+	border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+	box-shadow: 0 18px 40px -20px var(--accent);
+	outline: none;
+}
+a.gc-now__card:active {
+	transform: scale(0.98);
+}
+.gc-now__card--dice {
+	--accent: #a78bfa;
+}
+.gc-now__card--me {
+	--accent: #fb7185;
+	padding-bottom: 1.25rem;
+}
+.gc-now__ic {
+	display: grid;
+	place-items: center;
+	width: 3.25rem;
+	height: 3.25rem;
+	flex-shrink: 0;
+	border-radius: 1rem;
+	background: rgb(2 6 23 / 0.5);
+	border: 1px solid rgb(255 255 255 / 0.1);
+	font-size: 1.6rem;
+	line-height: 1;
+}
+.gc-now__ic .gc-ico,
+.gc-now__ic svg {
+	width: 40px;
+	height: 40px;
+}
+.gc-now__body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+	min-width: 0;
+	flex: 1;
+}
+.gc-now__k {
+	font-size: 0.72rem;
+	font-weight: 900;
+	color: color-mix(in srgb, var(--accent) 70%, #fff);
+}
+.gc-now__t {
+	font-size: 0.98rem;
+	font-weight: 900;
+	color: #fff;
+	line-height: 1.7;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.gc-now__t b {
+	color: #fcd34d;
+}
+.gc-now__s {
+	font-size: 0.75rem;
+	color: #cbd5e1;
+	line-height: 1.7;
+}
+.gc-now__s b {
+	color: #fff;
+}
+.gc-now__done {
+	color: #6ee7b7;
+	font-weight: 900;
+}
+.gc-now__card.is-done {
+	--accent: #34d399;
+}
+.gc-now__go {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 3.5rem;
+	min-height: 2.75rem;
+	padding: 0 1rem;
+	border-radius: 999px;
+	font-size: 0.85rem;
+	font-weight: 900;
+	white-space: nowrap;
+	color: #0f172a;
+	background: var(--accent);
+	box-shadow: 0 8px 20px -8px var(--accent);
+}
+/* pixel dice (5 pips) */
+.gc-now__dice {
+	position: relative;
+	background: #f8fafc;
+	border: 3px solid #1e1b4b;
+	box-shadow: inset -4px -4px 0 #c4b5fd;
+}
+.gc-now__dice i {
+	position: absolute;
+	width: 0.55rem;
+	height: 0.55rem;
+	background: #1e1b4b;
+}
+.gc-now__dice i:nth-child(1) { top: 0.45rem; left: 0.45rem; }
+.gc-now__dice i:nth-child(2) { top: 0.45rem; right: 0.45rem; }
+.gc-now__dice i:nth-child(3) { top: calc(50% - 0.275rem); left: calc(50% - 0.275rem); }
+.gc-now__dice i:nth-child(4) { bottom: 0.45rem; left: 0.45rem; }
+.gc-now__dice i:nth-child(5) { bottom: 0.45rem; right: 0.45rem; }
+.gc-now__card--dice:hover .gc-now__dice,
+.gc-now__card--dice.is-rolling .gc-now__dice {
+	animation: gc-roll 0.45s steps(4) infinite;
+}
+@keyframes gc-roll {
+	to { transform: rotate(360deg); }
+}
+.gc-now__flame {
+	filter: grayscale(0.8);
+	opacity: 0.7;
+}
+.gc-now__card--me.is-hot .gc-now__flame {
+	filter: none;
+	opacity: 1;
+	animation: gc-flicker 1.6s ease-in-out infinite;
+}
+@keyframes gc-flicker {
+	50% { transform: scale(1.12) rotate(-4deg); }
+}
+.gc-now__meter {
+	position: absolute;
+	bottom: 0.6rem;
+	inset-inline: 1rem;
+	height: 0.3rem;
+	border-radius: 999px;
+	background: rgb(255 255 255 / 0.08);
+	overflow: hidden;
+}
+.gc-now__meter span {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+	background: linear-gradient(90deg, #fb7185, #fbbf24);
+	transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+	.gc-now__card,
+	.gc-now__dice,
+	.gc-now__flame {
+		animation: none !important;
+		transition: none;
+	}
+}
+
+/* ---------- site strip «یک دست بازی» (404, end of articles, [kmpr_games]) ---------- */
+.gp {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	margin-block: 2.5rem;
+	padding: 1.25rem;
+	border-radius: 1.75rem;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: radial-gradient(ellipse at 100% 0%, rgb(217 119 6 / 0.2), transparent 55%), radial-gradient(ellipse at 0% 100%, rgb(168 85 247 / 0.18), transparent 55%), #020617;
+	text-align: start;
+}
+.gp__fx {
+	position: absolute;
+	inset: 50% -20% -40%;
+	z-index: -1;
+	background-image: linear-gradient(rgb(245 158 11 / 0.18) 1px, transparent 1px), linear-gradient(90deg, rgb(99 102 241 / 0.18) 1px, transparent 1px);
+	background-size: 44px 44px;
+	transform: perspective(500px) rotateX(60deg);
+	transform-origin: top;
+	-webkit-mask-image: linear-gradient(transparent, #000 35%, transparent);
+	mask-image: linear-gradient(transparent, #000 35%, transparent);
+}
+.gp__head {
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+	margin-bottom: 1.1rem;
+}
+@media (min-width: 640px) {
+	.gp {
+		padding: 1.75rem;
+	}
+	.gp__head {
+		flex-direction: row;
+		align-items: flex-end;
+		justify-content: space-between;
+	}
+}
+.gp__kicker {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-size: 0.75rem;
+	font-weight: 900;
+	color: #f0abfc;
+}
+.gp__title {
+	margin-top: 0.35rem;
+	font-size: 1.3rem;
+	font-weight: 900;
+	line-height: 1.6;
+	color: #fff;
+}
+.gp__text {
+	margin-top: 0.35rem;
+	max-width: 36rem;
+	font-size: 0.88rem;
+	line-height: 1.9;
+	color: #cbd5e1;
+}
+.gp__all {
+	align-self: flex-start;
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	min-height: 2.75rem;
+	padding: 0.6rem 1.4rem;
+	border-radius: 999px;
+	font-size: 0.88rem;
+	font-weight: 900;
+	white-space: nowrap;
+	color: #0f172a;
+	background: linear-gradient(90deg, #fbbf24, #f59e0b);
+	box-shadow: 0 10px 30px -12px rgb(245 158 11 / 0.8);
+	transition: transform 0.2s;
+}
+.gp__all:hover {
+	transform: translateY(-2px);
+}
+.gp__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.85rem;
+}
+@media (min-width: 480px) {
+	.gp__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+@media (min-width: 1024px) {
+	.gp__grid {
+		grid-template-columns: repeat(var(--gp-cols, 3), minmax(0, 1fr));
+	}
+}
+.gp-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+	border-radius: 1.25rem;
+	background: rgb(15 23 42 / 0.85);
+	border: 1px solid rgb(255 255 255 / 0.1);
+	-webkit-tap-highlight-color: transparent;
+	transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+}
+.gp-card:hover,
+.gp-card:focus-visible {
+	transform: translateY(-4px);
+	border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+	box-shadow: 0 20px 45px -18px color-mix(in srgb, var(--accent) 70%, transparent);
+	outline: none;
+}
+.gp-card:active {
+	transform: scale(0.98);
+}
+.gp-card__art {
+	position: relative;
+	display: grid;
+	place-items: center;
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+	background:
+		radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--accent) 45%, transparent), transparent 65%),
+		linear-gradient(160deg, color-mix(in srgb, var(--accent) 25%, #0f172a), #0b1020);
+}
+.gp-card__art::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background-image: linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+	background-size: 16px 16px;
+	pointer-events: none;
+}
+.gp-card__art img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.gp-card:hover .gp-card__art img {
+	transform: scale(1.06);
+}
+.gp-card__icon {
+	position: relative;
+	z-index: 1;
+	transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.4);
+}
+.gp-card__icon svg {
+	width: 72px;
+	height: 72px;
+	filter: drop-shadow(0 8px 14px rgb(0 0 0 / 0.45));
+}
+.gp-card:hover .gp-card__icon {
+	transform: rotate(-4deg) scale(1.1);
+}
+.gp-card__info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	padding: 0.8rem 1rem 0.95rem;
+	padding-inline-end: 3.75rem;
+}
+.gp-card__title {
+	font-size: 1rem;
+	font-weight: 900;
+	line-height: 1.7;
+	color: #fff;
+}
+.gp-card__meta {
+	font-size: 0.75rem;
+	color: #94a3b8;
+}
+.gp-card__play {
+	position: absolute;
+	bottom: 0.9rem;
+	inset-inline-end: 0.85rem;
+	display: grid;
+	place-items: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 999px;
+	color: #020617;
+	background: var(--accent);
+	box-shadow: 0 8px 20px -6px var(--accent);
+}
+/* phones: compact rows (art beside the title) so 3 games don't take 3 screens */
+@media (max-width: 479.98px) {
+	.gp-card {
+		flex-direction: row;
+		align-items: center;
+	}
+	.gp-card__art {
+		width: 6.5rem;
+		flex-shrink: 0;
+		aspect-ratio: 1;
+		align-self: stretch;
+	}
+	.gp-card__icon svg {
+		width: 52px;
+		height: 52px;
+	}
+	.gp-card__play {
+		bottom: auto;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}
+.gp--404 {
+	margin-top: 3rem;
+}
+
+/* lobby «الان آنلاین»: fixed-height scroll box → presence results never push the page (CLS) */
+.gc-online {
+	height: 17rem;
+	min-height: 17rem;
+	overscroll-behavior: contain;
+}
+@media (min-width: 1024px) {
+	.gc-online {
+		height: 24rem;
+		min-height: 24rem;
+	}
+}
+.gc-online__wait {
+	display: grid;
+	place-items: center;
+	height: 100%;
+	border-radius: 1rem;
+	border: 1px dashed rgb(255 255 255 / 0.1);
+	font-size: 0.85rem;
+	color: #94a3b8;
+}
+
+/* ranks «برترین بازیکن‌ها»: fixed-height scroll box (rows arrive async → no shift of the panels below) */
+[data-top-players] {
+	height: 23rem;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scrollbar-width: thin;
+}
+[data-top-players] > li:only-child {
+	margin-block: auto;
+}

@@ -4,6 +4,8 @@
  */
 const DRAFT_KEY = 'kmpr_request_draft_v1';
 
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const toLatinDigits = (value) =>
 	String(value || '')
 		.replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
@@ -17,7 +19,9 @@ export default function projectRequest(config = {}) {
 		directTelegram: config.telegram || '',
 		step: 1,
 		dir: 1, // 1 = forward, -1 = back (drives slide direction)
-		totalSteps: 4,
+		totalSteps: 5,
+		stepLabels: config.steps || [],
+		kb: false, // on-screen keyboard open (phones)
 		launched: false,
 		status: 'idle', // idle | sending | done | error
 		errorMessage: '',
@@ -54,6 +58,7 @@ export default function projectRequest(config = {}) {
 			if (preset && this.options.types && this.options.types[preset]) {
 				this.form.type = preset;
 			}
+			this.initViewport();
 			this.$watch('form', (value) => {
 				try {
 					const { website_url_confirm, ...draft } = value;
@@ -62,6 +67,63 @@ export default function projectRequest(config = {}) {
 					/* ignore */
 				}
 			}, { deep: true });
+		},
+
+		isCompact() {
+			return window.matchMedia('(max-width: 1023.98px)').matches;
+		},
+
+		// Phones: links to #smart-configurator land on the card itself (one full screen), not on the intro above it.
+		// Keyboard: track the visual viewport so the progress header collapses while typing.
+		initViewport() {
+			const toCard = (smooth) => {
+				if (!this.isCompact() || !this.$refs.card) return;
+				this.$refs.card.scrollIntoView({ behavior: smooth && !reduceMotion() ? 'smooth' : 'auto', block: 'start' });
+			};
+			if (window.location.hash === '#smart-configurator') {
+				requestAnimationFrame(() => toCard(false));
+			}
+			document.addEventListener('click', (e) => {
+				const a = e.target.closest && e.target.closest('a[href$="#smart-configurator"]');
+				if (!a || !this.isCompact()) return;
+				const url = new URL(a.href, window.location.href);
+				if (url.pathname !== window.location.pathname) return;
+				e.preventDefault();
+				history.replaceState(null, '', '#smart-configurator');
+				toCard(true);
+			});
+			if ('IntersectionObserver' in window && this.$refs.card) {
+				new IntersectionObserver(([entry]) => {
+					document.documentElement.classList.toggle('rq-focus', entry.isIntersecting);
+				}, { threshold: 0.6 }).observe(this.$refs.card);
+			}
+			const vv = window.visualViewport;
+			if (vv) {
+				const onResize = () => {
+					this.kb = this.isCompact() && vv.height < window.innerHeight * 0.78;
+					if (this.kb && document.activeElement) this.$nextTick(() => this.revealField(document.activeElement));
+				};
+				vv.addEventListener('resize', onResize, { passive: true });
+			}
+		},
+
+		// Keep the focused field visible above the keyboard by scrolling only the card's own step area
+		// (scrollIntoView would also move the page and push the action bar off-screen).
+		focusField(e) {
+			const el = e.target;
+			if (!el || !el.matches('input:not([type=radio]), textarea') || !this.isCompact()) return;
+			setTimeout(() => this.revealField(el), 320);
+		},
+
+		revealField(el) {
+			const vp = this.$refs.viewport;
+			if (!vp || !vp.contains(el)) return;
+			const v = vp.getBoundingClientRect();
+			const r = el.getBoundingClientRect();
+			const label = el.id ? vp.querySelector(`label[for="${el.id}"]`) : null;
+			const top = label ? Math.min(label.getBoundingClientRect().top, r.top) : r.top;
+			if (top < v.top + 8) vp.scrollTop -= v.top + 8 - top;
+			else if (r.bottom > v.bottom - 16) vp.scrollTop += r.bottom - (v.bottom - 16);
 		},
 
 		get progress() {
@@ -139,12 +201,21 @@ export default function projectRequest(config = {}) {
 			this.step = next;
 			const vp = this.$refs.viewport;
 			if (vp) vp.scrollTop = 0;
-			// Only nudge the viewport when the card's top is genuinely out of sight (never jump on desktop).
 			this.$nextTick(() => {
 				const card = this.$refs.card;
 				if (!card) return;
 				const r = card.getBoundingClientRect();
-				if (r.top < -40) window.scrollBy({ top: r.top - 96, behavior: 'smooth' });
+				if (this.isCompact()) {
+					// Phones: the card is one screen — make sure all of it (incl. the action bar) is visible.
+					if (r.top < 0 || r.bottom > window.innerHeight) card.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' });
+				} else if (r.top < -40) {
+					// Desktop: only nudge when the card's top is genuinely out of sight (never jump).
+					window.scrollBy({ top: r.top - 96, behavior: 'smooth' });
+				}
+				// Move focus to the new step's title for keyboard / screen-reader users (no scroll jump).
+				const stepEl = card.querySelectorAll('.rq-step')[this.step - 1];
+				const title = stepEl && stepEl.querySelector('.rq-title');
+				if (title && card.contains(document.activeElement)) title.focus({ preventScroll: true });
 			});
 		},
 
@@ -198,6 +269,10 @@ export default function projectRequest(config = {}) {
 				this.launched = true; // play the launch animation, then show success
 				await new Promise((r) => setTimeout(r, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1400));
 				this.status = 'done';
+				this.$nextTick(() => {
+					const card = this.$refs.card;
+					if (card && this.isCompact()) card.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' });
+				});
 				try {
 					window.localStorage.removeItem(DRAFT_KEY);
 				} catch (e) {

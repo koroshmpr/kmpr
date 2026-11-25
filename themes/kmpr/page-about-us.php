@@ -64,7 +64,7 @@ $icons = array(
                 </div>
 
                 <!-- Portrait: same cut-out as the homepage, warm "editorial" treatment (arch + amber backlight + outlined name) -->
-                <div class="lg:col-span-5 flex justify-center pt-24 sm:pt-16 lg:pt-10" data-aos="zoom-in" data-aos-delay="200">
+                <div class="lg:col-span-5 flex justify-center pt-24 sm:pt-16 lg:pt-10" data-hero-rise>
                     <figure class="about-portrait relative w-[16.5rem] sm:w-[20rem] xl:w-[22rem] aspect-[4/5]" data-tilt="5">
                         <div class="absolute inset-0 rounded-t-full rounded-b-[2rem] overflow-hidden border border-amber-300/30 bg-[#120c16] shadow-[0_0_60px_-10px_rgb(245_158_11/0.35)]" aria-hidden="true">
                             <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgb(245_158_11/0.55),transparent_68%),radial-gradient(ellipse_70%_50%_at_50%_0%,rgb(99_102_241/0.35),transparent_70%)]"></div>

@@ -59,6 +59,8 @@ $links = array(
                 <?php endforeach; ?>
             </ul>
         </nav>
+
+        <?php if (function_exists('kmpr_games_promo')) { kmpr_games_promo('404'); } ?>
     </div>
 </section>
 <?php
