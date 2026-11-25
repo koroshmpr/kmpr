@@ -136,7 +136,13 @@ function maybeEncourage() {
 	// Never interrupt an active game.
 	if (html.classList.contains('game-focus')) return;
 	shownThisSession = true;
-	setTimeout(() => sheet(deferred ? 'prompt' : 'ios'), 1200);
+	// Quiet hint: never auto-open the sheet; just make the small header install button glow for a moment.
+	setTimeout(() => {
+		document.querySelectorAll('[data-gh-install]:not([hidden]), [data-gh-install-menu]:not([hidden])').forEach((b) => {
+			b.classList.add('is-hint');
+			setTimeout(() => b.classList.remove('is-hint'), 4200);
+		});
+	}, 1500);
 }
 
 /* ---------------- service worker ---------------- */
